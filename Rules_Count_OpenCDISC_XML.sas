@@ -14,11 +14,11 @@
 *License            : public domain, ABSOLUTELY NO WARRANTY                                     *;
 *Platform           : tested in WinXP SAS/Base 9.2 and Win64 SAS/Base 9.3                       *;
 *Version            : V1.0                                                                      *;
-*Date		        : 11Feb2012                                                                 *;
+*Date		        : 19Feb2012                                                                 *;
 *************************************************************************************************;
 
 
-%macro Rules_Count_OpenCDISC_XML(dir=C:\Users\jhu\Documents\d-Wise\OpenCDISC\software\opencdisc-validator\config);
+%macro Rules_Count_OpenCDISC_XML(dir=C:\Temp\opencdisc-validator\config);
 
 /*get XML files list from OpenCDISC directory*/
 filename XMLList pipe "dir /B &dir\*.xml";
