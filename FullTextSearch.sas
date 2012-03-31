@@ -11,7 +11,9 @@ few modification by Jiangtang Hu@20120221
 
 options nomprint nomlogic nosymbolgen nonotes;
 
-%macro grep(librf,string);  /* parameters are unquoted, libref name, search string */
+/* parameters are unquoted, libref name, search string */
+
+%macro grep(librf,string) /store des="find a specific value in any variable in any SAS data set in a library";  
   %let librf = %upcase(&librf);
 
   proc sql noprint;
@@ -52,3 +54,4 @@ options notes;
 %mend;
 
 %*grep(sashelp,John);
+%grep(ct,EGORRES);

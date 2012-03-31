@@ -51,8 +51,8 @@ run;
 
 		order=&i;
 		source="&&XMLName&i";
-		temp=catx("",scan("&&XMLName&i",2,'-'),compress(scan("&&XMLName&i",3,'-'),'xml'));
-		module=substr(temp,1,length(temp)-1);
+		temp=substr("&&XMLName&i",length("config-")+1,length("&&XMLName&i")-length("config-")-length(".xml"));
+		module=tranwrd(temp,"-"," ");
 	run;
 
 	data module&i;
