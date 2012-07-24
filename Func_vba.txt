@@ -1,0 +1,27 @@
+Sub addComments()
+
+    For i = 2 To Cells(2, 2).End(xlDown).Row
+
+        Cells(i, 2).AddComment
+
+        Cells(i, 2).Comment.Visible = False
+
+        Cells(i, 2).Comment.Text Text:=Cells(i, 3).Value
+
+        '''''''''''''''''''''''''auto size
+
+        Cells(i, 2).Comment.Shape.TextFrame.AutoSize = True
+
+    Next i
+
+End Sub
+
+
+Sub delLast()
+For i = 2 To Cells(2, 2).End(xlDown).Row
+    If InStrRev(Cells(i, 2), " ") Then
+        Cells(i, 2).Value = Left(Cells(i, 2).Value, InStrRev(Cells(i, 2), " ") - 1)
+    End If
+Next i
+End Sub
+
