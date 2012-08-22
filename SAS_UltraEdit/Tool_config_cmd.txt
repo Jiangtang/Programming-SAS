@@ -1,0 +1,1 @@
+"C:\Users\jhu\Documents\GitHub\Programming-SAS\SAS_UltraEdit\runSASinultraedit.bat" "%f"  "%p%n.log"
