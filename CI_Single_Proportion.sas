@@ -5,11 +5,11 @@
 *                     Jiangtanghu.com/blog                                                                        *;
 *                                                                                                                 *;
 *Purpose            : Compute two-sided confidence intervals for single proportion with 11 methods:               *;
-*                     1.  Simple asymptotic, Without CC                                                           *;
+*                     1.  Simple asymptotic, Without CC | Wald                                                    *;
 *                     2.  Simple asymptotic, With CC                                                              *;
-*                     3.  Score method, Without CC                                                                *;
+*                     3.  Score method, Without CC | Wilson                                                       *;
 *                     4.  Score method, With CC                                                                   *;
-*                     5.  Binomial-based, 'Exact'                                                                 *;
+*                     5.  Binomial-based, 'Exact' | Clopper-Pearson                                               *;
 *                     6.  Binomial-based, Mid-p                                                                   *;
 *                     7.  Likelihood-based                                                                        *;
 *                     8.  Jeffreys                                                                                *;
@@ -50,11 +50,11 @@ run;
 
 /*method 1-5,8-11;*/
 data CI5;
-    length method $40.;
+    length method $50.;
     set param(where=(i not in (6 7)));
 
     if i=1 then do;
-          Method = "1. Simple asymptotic, Without CC";
+          Method = "1. Simple asymptotic, Without CC | Wald";
           p_CI_low = p-z*((sqrt(&n*p*(1-p)))/n);
           p_CI_up  = p+z*((sqrt(&n*p*(1-p)))/n);  
     end;
@@ -69,7 +69,7 @@ data CI5;
     end;
     
     if i=3 then do;
-          Method = "3. Score method, Without CC";
+          Method = "3. Score method, Without CC | Wilson";
           p_CI_low = ( 2*n*p+z**2 - (z*sqrt(z**2+4*n*p*(1-p)))) / (2*(n+z**2));
           p_CI_up  = ( 2*n*p+z**2 + (z*sqrt(z**2+4*n*p*(1-p)))) / (2*(n+z**2));         
     end;
@@ -84,7 +84,7 @@ data CI5;
     end;
     
     if i=5 then do;
-          Method = "5. Binomial-based, 'Exact'";
+          Method = "5. Binomial-based, 'Exact' | Clopper-Pearson";
           p_CI_low =1-betainv(1-alpha/2,n-r+1,r);
           p_CI_up  =  betainv(1-alpha/2,r+1,n-r);  
           
