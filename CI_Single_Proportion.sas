@@ -231,9 +231,10 @@ run;
       
 %mend CI_Single_Proportion;
 
-/*test;*/
+/*test;
 %CI_Single_Proportion(r=81,n=263);
 %CI_Single_Proportion(r=15,n=148);
 %CI_Single_Proportion(r=0, n=20 );
 %CI_Single_Proportion(r=1, n=29 );
 %CI_Single_Proportion(r=29,n=29 );
+*/
