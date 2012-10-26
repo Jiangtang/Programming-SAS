@@ -1,3 +1,5 @@
+/*http://www.sascommunity.org/wiki/Get_Name_of_Program*/
+
 %macro ___path;
 
 	%let ___name0 = %sysget(sas_execfilename);
