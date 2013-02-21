@@ -13,7 +13,7 @@ options nomprint nomlogic nosymbolgen nonotes;
 
 /* parameters are unquoted, libref name, search string */
 
-%macro grep(librf,string) /store des="find a specific value in any variable in any SAS data set in a library";  
+%macro grep(librf,string) ;  
   %let librf = %upcase(&librf);
 
   proc sql noprint;
