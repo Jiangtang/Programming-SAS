@@ -2,14 +2,14 @@
        to  =        /* end integer value */
      , from=1       /* starting integer value */
      , step=1       /* increment integer */
-     , osep=%str( ) /* sparator between integers */
+     , osep=%str( ) /* separator between integers */
      , opre=%str()  /* prefix for sequence of integers*/
      , osuf=%str()  /* suffix for sequence of integers*/
      ) ;
 
 /*
 return sequence of integers like 1 2 3 or
-    strings endded with sequences of intergers lile data1 data2 data3
+    strings ended with sequences of integers like data1 data2 data3
     starting at &FROM going to &TO in steps of &step
 
 examples:
