@@ -15,6 +15,7 @@ examples:
  %let list2 = c d ;
  %put %zip (lv1=list1, lv2=list2);
  %put %zip (lv1=list1, lv2=list2,osep =%str(,));
+ %put %zip (l1=a b, l2=c d,osep =%str(,));
 
  If lists do not have same length shorter length used and warning to the log.
  Empty lists result in empty list and no message.
