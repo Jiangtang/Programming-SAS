@@ -18,14 +18,15 @@ examples:
    %put %range(from=2,to=10,step=3,osep=%str(,));
    %put %range(from=2,to=10,step=3,osep=%str(,),osuf=%str(a));
 
-Credit: 
+Credit:
     source code from Ian Whitlock, Names, Names, Names - Make Me a List
                (SGF 2007)   http://www2.sas.com/proceedings/forum2007/052-2007.pdf
                (SESUG 2008) http://analytics.ncsu.edu/sesug/2008/SBC-128.pdf
     This snippet used a more efficient style from Chang Chung(http://changchung.com)
-    Jiangtang Hu (2013, http://www.jiangtanghu.com/):
-        1)use %let rg_i = ; to initiate the macro variable rather than %local rg_i;
-        2)add two parameters (prefix/suffix) so it works more than generating sequence of integers.
+    Jiangtang Hu (2013, http://www.jiangtanghu.com):
+        1)used %let rg_i = ; to initiate the macro variable rather than %local rg_i;
+        2)added two parameters (prefix/suffix) so it works more than generating sequence of integers
+        3)archived in https://github.com/Jiangtang/Programming-SAS/tree/master/ListProcessing
 */
 
  %let rg_i = ;
