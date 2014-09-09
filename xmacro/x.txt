@@ -1,0 +1,8 @@
+./dmscore/sasmacro/statutil.sas
+./stat/sample/xmacro.sas
+
+
+./dmscore/sasmacro/distance.sas
+./stat/sample/distnew.sas
+./stat/sample/stdize.sas
+s
