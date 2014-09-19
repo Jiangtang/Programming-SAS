@@ -1,0 +1,20 @@
+[CORE]
+
+[CORE\EXPLORER]
+
+[CORE\EXPLORER\MENUS]
+
+[CORE\EXPLORER\MENUS\MEMBERS]
+
+[CORE\EXPLORER\MENUS\MEMBERS\TABLE]
+"14;TCopy Variable Names to Clipboard"="filename _cb clipbrd;data _null_;file _cb; dsn='%8b'||'.'||'%32b';length name $32;do dsid = open(dsn,'I') while(dsid ne 0);do i = 1 to attrn(dsid,'NVARS');name = varname(dsid,i);put name @;end;dsid = close(dsid);end;run;filename _cb clear;"
+"15;Tproc freq - _character_"="proc freq data=%8b.%32b NLEVELS;tables _character_/list nopercent nocol norow nocum;run;"
+"16;Tproc contents - details"="proc contents data=%8b.%32b ;quit;"
+"17;Tproc means - _numeric_"="proc means data=%8b.%32b N MEAN STD MIN MAX  RANGE  MODE  Q1 MEDIAN Q3 ndec=2;var _numeric_;run;"
+"18;TFSVIEW"="FSVIEW %8b.%32b"
+
+
+proc registry
+
+      export="C:\Users\jhu.D-WISE\Dropbox\tech\0PCSetup\SAS\DMS_Util\&sysdate.export.reg";
+run;

@@ -18,6 +18,7 @@
 %*  MACRO: XLXP2SAS
 %*
 %*  USAGE: %xlxp2sas(arg1=value, arg2=value, ... argN=valueN);
+%*     %xlxp2sas(library=work, excelfile=test.xls, mapfile=excelxp.map);
 %*
 %*  DESCRIPTION:
 %*    This macro is used to import an Excel XP workbook that has been
