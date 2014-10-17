@@ -33,4 +33,9 @@ run;
 
 /*Retrieve file size, create time, and last modified date of an external file
 http://support.sas.com/kb/40/934.html
+
+filename foo pipe "dir &file /t:c  /a:-d ";   
+filename foo pipe "dir &file /t:w /a:-d";     
+filename foo pipe "ls -g -o ~/test.txt";
+
 */
