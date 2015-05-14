@@ -1,19 +1,6 @@
-/*
-Sample 33078: 
-How to find a specific value in any variable 
-in any SAS data set in a library
-
-http://support.sas.com/kb/33/078.html
-
-few modification by Jiangtang Hu@20120221
-
-;*/
-
 options nomprint nomlogic nosymbolgen nonotes;
 
-/* parameters are unquoted, libref name, search string */
-
-%macro grep(librf,string) ;  
+%macro search(librf,string);  /* parameters are unquoted, libref name, search string */
   %let librf = %upcase(&librf);
 
   proc sql noprint;
@@ -42,16 +29,14 @@ options nomprint nomlogic nosymbolgen nonotes;
       data _null_;
         set &librf..&&ds&i;
           %do j=1 %to &numvars;
-            if &&var&j = "&string" then
+            if find(&&var&j,"&string",'i')  then
             put "String &string found in dataset &librf..&&ds&i for variable &&var&j";
           %end;
         run;
     %end;
   %end; 
 
-options notes;
+*options notes;
 
-%mend;
+%mend search;
 
-%*grep(sashelp,John);
-%grep(ct,EGORRES);

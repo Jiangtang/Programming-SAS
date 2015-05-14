@@ -13,7 +13,7 @@
 %inc "&_dir.\DMS_setup.sas";
 
 options EXTENDOBSCOUNTER=NO;
-options encoding="utf-8";
+*options encoding="utf-8";
 
 options mautosource sasautos=(sasautos,
 	"C:\Users\jhu\Documents\GitHub\Programming-SAS\SAS_IDE\sasauto",

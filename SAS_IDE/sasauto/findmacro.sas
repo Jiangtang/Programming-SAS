@@ -4,7 +4,7 @@ http://www.lexjansen.com/pharmasug/2005/coderscorner/cc11.pdf
 Weiqin Pan,BMS
 */
 
-%MACRO findMacro(macroName=);
+%MACRO findmacro(macroName=);
 
 	%LOCAL nFName iFName macroFind i thisMacName macroFileName
 	l_macName l_FlName l_more msg total_len;
@@ -163,20 +163,9 @@ Weiqin Pan,BMS
 	%PUT &msg;
 	%PUT &_line;
 	&optionOld;
-%MEND findMacro;
+%MEND findmacro;
 
 
+%*findmacro(macroName=range);
 
 
-%xlog(dir);
-
-proc print data=sashelp.iris;run;
-
-%findMacro(macroName=adam_validate);
-
-
-%findMacro(macroName=mdval);
-
-
-
-%findMacro(macroName=xlog);
