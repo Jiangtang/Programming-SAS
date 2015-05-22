@@ -32,7 +32,7 @@
 *License            : public domain, ABSOLUTELY NO WARRANTY                                                       *;
 *Platform           : tested in SAS/Base 9.4 (TS1M2)                                                              *;
 *Version            : V1.0                                                                                        *;
-*Date		        : 21May2015                                                                                   *;
+*Date   	        : 21May2015                                                                                   *;
 *******************************************************************************************************************;
 
 
@@ -231,6 +231,8 @@ quit;
 data test1;
 	merge param7 max;
     by i;
+
+	if lik ^= 0 then
 	logLR = log(lik/max);
 run;
 
