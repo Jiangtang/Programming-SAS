@@ -1,6 +1,6 @@
 *******************************************************************************************************************;
 *Program    Name    : CI_Single_Proportion.sas                                                                    *;
-*Programmer Name	: Jiangtang Hu                                                                                *;
+*Programmer Name    : Jiangtang Hu                                                                                *;
 *                     Jiangtanghu@gmail.com                                                                       *;
 *                     Jiangtanghu.com/blog                                                                        *;
 *                                                                                                                 *;
