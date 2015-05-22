@@ -16,6 +16,7 @@
 *                     9.  Agresti-Coull,z^2/2 successes                                                           *;
 *                     10. Agresti-Coull,2 successes and 2 fail                                                    *;
 *                     11. Logit                                                                                   *;
+*                     12. Blaker                                                                                  *;
 *                                                                                                                 *;
 *Input              : r     - the number of interested responses                                                  *;
 *                     n     - total observations, 0 =< r <= n                                                     *;
@@ -29,16 +30,29 @@
 *                    http://www2.jura.uni-hamburg.de/instkrim/kriminologie/Mitarbeiter/Enzmann/Software/prop.CI.r *;
 *                                                                                                                 *;
 *License            : public domain, ABSOLUTELY NO WARRANTY                                                       *;
-*Platform           : tested in SAS/Base 9.1.3 SP4 and SAS/Base 9.2                                               *;
+*Platform           : tested in SAS/Base 9.4 (TS1M2)                                                              *;
 *Version            : V1.0                                                                                        *;
-*Date		        : 14Jul2011                                                                                   *;
+*Date		        : 21May2015                                                                                   *;
 *******************************************************************************************************************;
 
 
 %macro CI_Single_Proportion(r=,n=,alpha=0.05);
 
+proc fcmp outlib=work.func.CI;
+   function acceptbin(r, n, p) label = "computes the Blaker acceptability of p when x is observed and X is bin(n, p)";
+		p1 = 1 - CDF('BINOMIAL', r - 1,p,n);
+		p2 = CDF('BINOMIAL', r,p,n);
+
+		a1 = p1 + CDF('BINOMIAL', quantile('BINOM', p1, p, n)-1,  p, n) ;
+		a2 = p2 + 1 -  CDF('BINOMIAL', quantile('BINOM', 1-p2, p, n),  p, n) ;
+	    return (min(a1,a2));
+   endsub;
+run;
+
+options cmplib=work.func;
+
 data param;
-    do i=1 to 11;
+    do i=1 to 12;
           r=&r;
           n=&n;
           alpha=&alpha;
@@ -48,7 +62,7 @@ data param;
     end; 
 run;
 
-/*method 1-5,8-11;*/
+/*method 1-5,8-12;*/
 data CI5;
     length method $50.;
     set param(where=(i not in (6 7)));
@@ -120,6 +134,31 @@ data CI5;
           Method = "11. Logit";             
           p_CI_low=exp(log(p/(1-p)) - z*sqrt(n/(r*(n-r))))/(1+exp(log(p/(1-p)) - z*sqrt(n/(r*(n-r)))));
           p_CI_up =exp(log(p/(1-p)) + z*sqrt(n/(r*(n-r))))/(1+exp(log(p/(1-p)) + z*sqrt(n/(r*(n-r)))));
+    end;
+
+	if i=12 then do;
+          Method = "12. Blaker";  
+		  tolerance=1e-05;
+	      lower = 0;
+		  upper = 1;
+
+		  if r ^= 0 then do;
+		     lower = quantile('BETA',alpha/2, r, n-r+1);
+			 do while (acceptbin(r, n, lower + tolerance) < (alpha));
+		           lower = lower + tolerance;
+			 end;
+		  end;
+
+
+		  if r ^= n then do;	  
+			upper = quantile('BETA',1 - alpha/2, r+1, n-r);
+			do while (acceptbin(r, n, upper - tolerance) < (alpha));
+		              upper = upper - tolerance;
+		    end;
+		  end; 
+
+          p_CI_low=lower;
+          p_CI_up =upper;
     end;
 run;
 
@@ -217,7 +256,7 @@ data CI7;
 	if r=n then p_CI_up =1;
 run;
 
-/*put together,1-11;*/
+/*put together,1-12;*/
 data CI_SP;
     set CI5 CI6 CI7;
     p_CI=compress(catx("","[",put(round(p_CI_low,0.0001),6.4),",",put(round(p_CI_up,0.0001),6.4),"]"));
@@ -232,9 +271,66 @@ run;
 %mend CI_Single_Proportion;
 
 /*test;
+
+filename CI url 'https://raw.github.com/Jiangtang/Programming-SAS/master/CI_Single_Proportion.sas';
+%include CI;
+
+
 %CI_Single_Proportion(r=81,n=263);
 %CI_Single_Proportion(r=15,n=148);
 %CI_Single_Proportion(r=0, n=20 );
 %CI_Single_Proportion(r=1, n=29 );
 %CI_Single_Proportion(r=29,n=29 );
+
+
+
+
+
+check with SAS
+
+data test;
+input grp outcome $ count;
+datalines;
+1 f 81
+1 u 182
+;
+
+proc freq data=test;
+	tables outcome / binomial;
+	weight Count;
+run;
+
+ods select BinomialCLs;
+proc freq data=test;
+	tables outcome / binomial (CL=ALL);
+	weight Count;
+run;
+
+
+
+ods select BinomialCLs;
+proc freq data=test;
+	tables outcome / binomial (CL=
+							   WALD
+							   WILSON
+							   CLOPPERPEARSON
+							   MIDP
+							   LIKELIHOODRATIO
+							   JEFFREYS
+							   AGRESTICOULL
+							   LOGIT
+							   BLAKER  
+							  );
+	weight Count;
+run;
+
+ods select BinomialCLs; 
+proc freq data=test; 
+    tables outcome / binomial (CL = 
+							  WILSON(CORRECT) 
+							  WALD(CORRECT)
+							  ); 
+    weight Count; 
+run;
+
 */
