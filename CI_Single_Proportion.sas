@@ -13,10 +13,12 @@
 *                     6.  Binomial-based, Mid-p                                                                   *;
 *                     7.  Likelihood-based                                                                        *;
 *                     8.  Jeffreys                                                                                *;
-*                     9.  Agresti-Coull,z^2/2 successes                                                           *;
-*                     10. Agresti-Coull,2 successes and 2 fail                                                    *;
-*                     11. Logit                                                                                   *;
-*                     12. Blaker                                                                                  *;
+*                     9.  Agresti-Coull, pseudo frequency, z^2/2 successes| psi = z^2/2                           *;
+*                     10. Agresti-Coull, pseudo frequency, 2 successes and 2 fail| psi = 2                        *;
+*                     11. Agresti-Coull, pseudo frequency, psi = 1                                                *;
+*                     12. Agresti-Coull, pseudo frequency, psi = 3                                                *;
+*                     13. Logit                                                                                   *;
+*                     14. Blaker                                                                                  *;
 *                                                                                                                 *;
 *Input              : r     - the number of interested responses                                                  *;
 *                     n     - total observations, 0 =< r <= n                                                     *;
@@ -52,7 +54,7 @@ run;
 options cmplib=work.func;
 
 data param;
-    do i=1 to 12;
+    do i=1 to 14;
           r=&r;
           n=&n;
           alpha=&alpha;
@@ -62,9 +64,9 @@ data param;
     end; 
 run;
 
-/*method 1-5,8-12;*/
+/*method 1-5,8-14;*/
 data CI5;
-    length method $50.;
+    length method $75.;
     set param(where=(i not in (6 7)));
 
     if i=1 then do;
@@ -113,31 +115,69 @@ data CI5;
     end;
     
     if i=9 then do;
-          Method = "9. Agresti-Coull,z^2/2 successes";        
-          p_CI_low = ((r+((z**2)/2))/(n+z**2))-z*(sqrt(((r+((z**2)/2))/(n+(z**2)))*(1-((r+((z**2)/2))/(n+(z**2))))/(n+z**2)));
-          p_CI_up  = ((r+((z**2)/2))/(n+z**2))+z*(sqrt(((r+((z**2)/2))/(n+(z**2)))*(1-((r+((z**2)/2))/(n+(z**2))))/(n+z**2)));
+          Method = "9. Agresti-Coull, pseudo frequency, z^2/2 successes| psi = z^2/2";        
+          *p_CI_low = ((r+((z**2)/2))/(n+z**2))-z*(sqrt(((r+((z**2)/2))/(n+(z**2)))*(1-((r+((z**2)/2))/(n+(z**2))))/(n+z**2)));
+          *p_CI_up  = ((r+((z**2)/2))/(n+z**2))+z*(sqrt(((r+((z**2)/2))/(n+(z**2)))*(1-((r+((z**2)/2))/(n+(z**2))))/(n+z**2)));
+
+		  psi = z**2/2;
+		  p2=(r+psi)/(n+2*psi);		  
+
+          p_CI_low =p2 - z*(sqrt(p2*(1-p2)/(n+2*psi)));
+          p_CI_up  =p2 + z*(sqrt(p2*(1-p2)/(n+2*psi)));
           
           if p_CI_low<0 then p_CI_low=0;
-          if p_CI_up>1  then p_CI_up =1;
+          if p_CI_up>1  then p_CI_up =1; 
     end;
     
     if i=10 then do;
-          Method = "10. Agresti-Coull,2 successes and 2 failures";
-          p_CI_low =((r+2)/(n+4))-z*(sqrt(((r+2)/(n+4))*(1-((r+2)/(n+4)))/(n+4)));
-          p_CI_up  =((r+2)/(n+4))+z*(sqrt(((r+2)/(n+4))*(1-((r+2)/(n+4)))/(n+4)));
+          Method = "10. Agresti-Coull, pseudo frequency, 2 successes and 2 failures| psi = 2";
+          *p_CI_low =((r+2)/(n+4))-z*(sqrt(((r+2)/(n+4))*(1-((r+2)/(n+4)))/(n+4)));
+          *p_CI_up  =((r+2)/(n+4))+z*(sqrt(((r+2)/(n+4))*(1-((r+2)/(n+4)))/(n+4)));
+
+		  psi = 2;
+		  p2=(r+psi)/(n+2*psi);		  
+
+          p_CI_low =p2 - z*(sqrt(p2*(1-p2)/(n+2*psi)));
+          p_CI_up  =p2 + z*(sqrt(p2*(1-p2)/(n+2*psi)));
+          
+          if p_CI_low<0 then p_CI_low=0;
+          if p_CI_up>1  then p_CI_up =1;
+    end;
+
+	if i=11 then do;
+          Method = "11. Agresti-Coull, pseudo frequency, psi = 1";
+
+		  psi = 1;
+		  p2=(r+psi)/(n+2*psi);		  
+
+          p_CI_low =p2 - z*(sqrt(p2*(1-p2)/(n+2*psi)));
+          p_CI_up  =p2 + z*(sqrt(p2*(1-p2)/(n+2*psi)));
+          
+          if p_CI_low<0 then p_CI_low=0;
+          if p_CI_up>1  then p_CI_up =1;
+    end;
+
+	if i=12 then do;
+          Method = "12. Agresti-Coull, pseudo frequency, psi = 3";
+
+		  psi = 3;
+		  p2=(r+psi)/(n+2*psi);		  
+
+          p_CI_low =p2 - z*(sqrt(p2*(1-p2)/(n+2*psi)));
+          p_CI_up  =p2 + z*(sqrt(p2*(1-p2)/(n+2*psi)));
           
           if p_CI_low<0 then p_CI_low=0;
           if p_CI_up>1  then p_CI_up =1;
     end;
     
-    if i=11 then do;
-          Method = "11. Logit";             
+    if i=13 then do;
+          Method = "13. Logit";             
           p_CI_low=exp(log(p/(1-p)) - z*sqrt(n/(r*(n-r))))/(1+exp(log(p/(1-p)) - z*sqrt(n/(r*(n-r)))));
           p_CI_up =exp(log(p/(1-p)) + z*sqrt(n/(r*(n-r))))/(1+exp(log(p/(1-p)) + z*sqrt(n/(r*(n-r)))));
     end;
 
-	if i=12 then do;
-          Method = "12. Blaker";  
+	if i=14 then do;
+          Method = "14. Blaker";  
 		  tolerance=1e-05;
 	      lower = 0;
 		  upper = 1;
@@ -277,8 +317,9 @@ run;
 filename CI url 'https://raw.github.com/Jiangtang/Programming-SAS/master/CI_Single_Proportion.sas';
 %include CI;
 
-
 %CI_Single_Proportion(r=81,n=263);
+
+
 %CI_Single_Proportion(r=15,n=148);
 %CI_Single_Proportion(r=0, n=20 );
 %CI_Single_Proportion(r=1, n=29 );
