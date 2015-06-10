@@ -55,10 +55,11 @@ options cmplib=work.func;
 
 data param;
     do i=1 to 14;
-          r=&r;
-          n=&n;
-          alpha=&alpha;
-          p=r/n;
+          r = &r;
+          n = &n;
+          alpha = &alpha;
+          p = r/n;
+		  q = 1 - p;
           z = probit (1-alpha/2);
     output;
     end; 
@@ -71,14 +72,17 @@ data CI5;
 
     if i=1 then do;
           Method = "1. Simple asymptotic, Without CC | Wald";
-          p_CI_low = p-z*((sqrt(&n*p*(1-p)))/n);
-          p_CI_up  = p+z*((sqrt(&n*p*(1-p)))/n);  
+		  se = (sqrt(&n*p*(1-p)))/n; *standard error;
+          p_CI_low = p - z * se;
+          p_CI_up  = p + z * se;  
     end;
 
     if i=2 then do;
           Method = "2. Simple asymptotic, With CC";
-          p_CI_low = p-(z*((sqrt(&n*p*(1-p)))/n)+1/(2*&n));
-          p_CI_up  = p+(z*((sqrt(&n*p*(1-p)))/n)+1/(2*&n)); 
+		  se = (sqrt(&n*p*(1-p)))/n; *standard error;
+		  cc = 1/(2*&n);             *continuity correction;
+          p_CI_low = p - (z * se + cc);
+          p_CI_up  = p + (z * se + cc);
           
           if r=0 then p_CI_low=0;
           if r=n then p_CI_up =1;
@@ -86,14 +90,14 @@ data CI5;
     
     if i=3 then do;
           Method = "3. Score method, Without CC | Wilson";
-          p_CI_low = ( 2*n*p+z**2 - (z*sqrt(z**2+4*n*p*(1-p)))) / (2*(n+z**2));
-          p_CI_up  = ( 2*n*p+z**2 + (z*sqrt(z**2+4*n*p*(1-p)))) / (2*(n+z**2));         
+          p_CI_low = ( 2*r+z**2 - (z*sqrt(z**2+4*r*q)) ) / (2*(n+z**2));
+          p_CI_up  = ( 2*r+z**2 + (z*sqrt(z**2+4*r*q)) ) / (2*(n+z**2));        
     end;
     
     if i=4 then do;
           Method = "4. Score method, With CC";
-          p_CI_low = ( 2*n*p+z**2 -1 - z*sqrt(z**2-2-1/n+4*p*(n*(1-p)+1))) / (2*(n+z**2));
-          p_CI_up  = ( 2*n*p+z**2 +1 + z*sqrt(z**2+2-1/n+4*p*(n*(1-p)-1))) / (2*(n+z**2));  
+          p_CI_low = ( 2*r+z**2 -1 - z*sqrt(z**2 - 2- 1/n + 4*p*(n*q+1))) / (2*(n+z**2));
+          p_CI_up  = ( 2*r+z**2 +1 + z*sqrt(z**2 + 2- 1/n + 4*p*(n*q-1))) / (2*(n+z**2));  
           
           if r=0 then p_CI_low=0;
           if r=n then p_CI_up =1;  
@@ -101,8 +105,8 @@ data CI5;
     
     if i=5 then do;
           Method = "5. Binomial-based, 'Exact' | Clopper-Pearson";
-          p_CI_low =1-betainv(1-alpha/2,n-r+1,r);
-          p_CI_up  =  betainv(1-alpha/2,r+1,n-r);  
+          p_CI_low =1 - betainv(1 - alpha/2,n-r+1,r);
+          p_CI_up  =    betainv(1 - alpha/2,r+1  ,n-r);  
           
           if r=0 then p_CI_low=0;
           if r=n then p_CI_up =1;
@@ -110,15 +114,12 @@ data CI5;
     
     if i=8 then do;
           Method = "8. Jeffreys";   
-          p_CI_low = betainv(alpha/2, r+0.5,n-r+0.5);
-          p_CI_up  = betainv(1-alpha/2,r+0.5,n-r+0.5);
+          p_CI_low = betainv(  alpha/2, r+0.5,n-r+0.5);
+          p_CI_up  = betainv(1-alpha/2, r+0.5,n-r+0.5);
     end;
     
     if i=9 then do;
           Method = "9. Agresti-Coull, pseudo frequency, z^2/2 successes| psi = z^2/2";        
-          *p_CI_low = ((r+((z**2)/2))/(n+z**2))-z*(sqrt(((r+((z**2)/2))/(n+(z**2)))*(1-((r+((z**2)/2))/(n+(z**2))))/(n+z**2)));
-          *p_CI_up  = ((r+((z**2)/2))/(n+z**2))+z*(sqrt(((r+((z**2)/2))/(n+(z**2)))*(1-((r+((z**2)/2))/(n+(z**2))))/(n+z**2)));
-
 		  psi = z**2/2;
 		  p2=(r+psi)/(n+2*psi);		  
 
@@ -131,8 +132,6 @@ data CI5;
     
     if i=10 then do;
           Method = "10. Agresti-Coull, pseudo frequency, 2 successes and 2 failures| psi = 2";
-          *p_CI_low =((r+2)/(n+4))-z*(sqrt(((r+2)/(n+4))*(1-((r+2)/(n+4)))/(n+4)));
-          *p_CI_up  =((r+2)/(n+4))+z*(sqrt(((r+2)/(n+4))*(1-((r+2)/(n+4)))/(n+4)));
 
 		  psi = 2;
 		  p2=(r+psi)/(n+2*psi);		  
