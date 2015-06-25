@@ -1,0 +1,229 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!-- Produced from SAS data using SAS Clinical Standards Toolkit -->
+<ODM
+xmlns="http://www.cdisc.org/ns/odm/v1.3"
+xmlns:data="http://www.cdisc.org/ns/Dataset-XML/v1.0"
+ODMVersion="1.3.2"
+FileType="Snapshot"
+FileOID="cdisc01.MH"
+PriorFileOID="www.cdisc.org.Studycdisc01-Define-XML_2.0.0"
+CreationDateTime="2014-10-29T11:15:03"
+data:DatasetXMLVersion="1.0.0">
+<ClinicalData StudyOID="cdisc01" MetaDataVersionOID="MDV.CDISC01.SDTMIG.3.1.2.SDTM.1.2">
+<ItemGroupData ItemGroupOID="IG.MH" data:ItemGroupDataSeq="1">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.MH.DOMAIN" Value="MH"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100008"/>
+<ItemData ItemOID="IT.MH.MHSEQ" Value="1"/>
+<ItemData ItemOID="IT.MH.MHTERM" Value="ARTHRITIS"/>
+<ItemData ItemOID="IT.MH.MHCAT" Value="MEDICAL AND SURGICAL HISTORY"/>
+<ItemData ItemOID="IT.MH.MHBODSYS" Value="Musculoskeletal"/>
+<ItemData ItemOID="IT.MH.MHDTC" Value="2003-04-15"/>
+<ItemData ItemOID="IT.MH.MHSTDTC" Value="1996"/>
+<ItemData ItemOID="IT.MH.MHENRF" Value="DURING/AFTER"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.MH" data:ItemGroupDataSeq="2">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.MH.DOMAIN" Value="MH"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100008"/>
+<ItemData ItemOID="IT.MH.MHSEQ" Value="2"/>
+<ItemData ItemOID="IT.MH.MHTERM" Value="HEARING AIDS"/>
+<ItemData ItemOID="IT.MH.MHCAT" Value="MEDICAL AND SURGICAL HISTORY"/>
+<ItemData ItemOID="IT.MH.MHBODSYS" Value="Eyes-Ears-Nose-Throat"/>
+<ItemData ItemOID="IT.MH.MHDTC" Value="2003-04-15"/>
+<ItemData ItemOID="IT.MH.MHSTDTC" Value="1998"/>
+<ItemData ItemOID="IT.MH.MHENRF" Value="DURING/AFTER"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.MH" data:ItemGroupDataSeq="3">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.MH.DOMAIN" Value="MH"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100008"/>
+<ItemData ItemOID="IT.MH.MHSEQ" Value="3"/>
+<ItemData ItemOID="IT.MH.MHTERM" Value="DEPRESSION OF ALZHEIMER'S DISEASE"/>
+<ItemData ItemOID="IT.MH.MHCAT" Value="PSYCHIATRIC HISTORY"/>
+<ItemData ItemOID="IT.MH.MHPRESP" Value="Y"/>
+<ItemData ItemOID="IT.MH.MHOCCUR" Value="Y"/>
+<ItemData ItemOID="IT.MH.MHDTC" Value="2003-04-15"/>
+<ItemData ItemOID="IT.MH.MHSTDTC" Value="2003-04-11"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.MH" data:ItemGroupDataSeq="4">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.MH.DOMAIN" Value="MH"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100008"/>
+<ItemData ItemOID="IT.MH.MHSEQ" Value="4"/>
+<ItemData ItemOID="IT.MH.MHTERM" Value="PROBABLE ALZHEIMER'S DISEASE"/>
+<ItemData ItemOID="IT.MH.MHCAT" Value="PSYCHIATRIC HISTORY"/>
+<ItemData ItemOID="IT.MH.MHPRESP" Value="Y"/>
+<ItemData ItemOID="IT.MH.MHOCCUR" Value="Y"/>
+<ItemData ItemOID="IT.MH.MHDTC" Value="2003-04-15"/>
+<ItemData ItemOID="IT.MH.MHSTDTC" Value="2003-04-04"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.MH" data:ItemGroupDataSeq="5">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.MH.DOMAIN" Value="MH"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100014"/>
+<ItemData ItemOID="IT.MH.MHSEQ" Value="1"/>
+<ItemData ItemOID="IT.MH.MHTERM" Value="SLOW GAIT"/>
+<ItemData ItemOID="IT.MH.MHCAT" Value="MEDICAL AND SURGICAL HISTORY"/>
+<ItemData ItemOID="IT.MH.MHBODSYS" Value="Neurological"/>
+<ItemData ItemOID="IT.MH.MHDTC" Value="2003-10-06"/>
+<ItemData ItemOID="IT.MH.MHSTDTC" Value="2001"/>
+<ItemData ItemOID="IT.MH.MHENRF" Value="DURING/AFTER"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.MH" data:ItemGroupDataSeq="6">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.MH.DOMAIN" Value="MH"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100014"/>
+<ItemData ItemOID="IT.MH.MHSEQ" Value="2"/>
+<ItemData ItemOID="IT.MH.MHTERM" Value="DEPRESSION OF ALZHEIMER'S DISEASE"/>
+<ItemData ItemOID="IT.MH.MHCAT" Value="PSYCHIATRIC HISTORY"/>
+<ItemData ItemOID="IT.MH.MHPRESP" Value="Y"/>
+<ItemData ItemOID="IT.MH.MHOCCUR" Value="Y"/>
+<ItemData ItemOID="IT.MH.MHDTC" Value="2003-10-06"/>
+<ItemData ItemOID="IT.MH.MHSTDTC" Value="2003-10-01"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.MH" data:ItemGroupDataSeq="7">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.MH.DOMAIN" Value="MH"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100014"/>
+<ItemData ItemOID="IT.MH.MHSEQ" Value="3"/>
+<ItemData ItemOID="IT.MH.MHTERM" Value="PROBABLE ALZHEIMER'S DISEASE"/>
+<ItemData ItemOID="IT.MH.MHCAT" Value="PSYCHIATRIC HISTORY"/>
+<ItemData ItemOID="IT.MH.MHPRESP" Value="Y"/>
+<ItemData ItemOID="IT.MH.MHOCCUR" Value="Y"/>
+<ItemData ItemOID="IT.MH.MHDTC" Value="2003-10-06"/>
+<ItemData ItemOID="IT.MH.MHSTDTC" Value="2001"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.MH" data:ItemGroupDataSeq="8">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.MH.DOMAIN" Value="MH"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200001"/>
+<ItemData ItemOID="IT.MH.MHSEQ" Value="1"/>
+<ItemData ItemOID="IT.MH.MHTERM" Value="HEARING AIDS BOTH EARS"/>
+<ItemData ItemOID="IT.MH.MHCAT" Value="MEDICAL AND SURGICAL HISTORY"/>
+<ItemData ItemOID="IT.MH.MHBODSYS" Value="Eyes-Ears-Nose-Throat"/>
+<ItemData ItemOID="IT.MH.MHDTC" Value="2003-09-09"/>
+<ItemData ItemOID="IT.MH.MHSTDTC" Value="1962"/>
+<ItemData ItemOID="IT.MH.MHENRF" Value="DURING/AFTER"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.MH" data:ItemGroupDataSeq="9">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.MH.DOMAIN" Value="MH"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200001"/>
+<ItemData ItemOID="IT.MH.MHSEQ" Value="2"/>
+<ItemData ItemOID="IT.MH.MHTERM" Value="THYROIDECTOMY"/>
+<ItemData ItemOID="IT.MH.MHCAT" Value="MEDICAL AND SURGICAL HISTORY"/>
+<ItemData ItemOID="IT.MH.MHBODSYS" Value="Endocrine-Metabolic"/>
+<ItemData ItemOID="IT.MH.MHDTC" Value="2003-09-09"/>
+<ItemData ItemOID="IT.MH.MHSTDTC" Value="1959"/>
+<ItemData ItemOID="IT.MH.MHENRF" Value="BEFORE"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.MH" data:ItemGroupDataSeq="10">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.MH.DOMAIN" Value="MH"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200001"/>
+<ItemData ItemOID="IT.MH.MHSEQ" Value="3"/>
+<ItemData ItemOID="IT.MH.MHTERM" Value="DEPRESSION OF ALZHEIMER'S DISEASE"/>
+<ItemData ItemOID="IT.MH.MHCAT" Value="PSYCHIATRIC HISTORY"/>
+<ItemData ItemOID="IT.MH.MHPRESP" Value="Y"/>
+<ItemData ItemOID="IT.MH.MHOCCUR" Value="Y"/>
+<ItemData ItemOID="IT.MH.MHDTC" Value="2003-09-09"/>
+<ItemData ItemOID="IT.MH.MHSTDTC" Value="2002-09"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.MH" data:ItemGroupDataSeq="11">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.MH.DOMAIN" Value="MH"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200001"/>
+<ItemData ItemOID="IT.MH.MHSEQ" Value="4"/>
+<ItemData ItemOID="IT.MH.MHTERM" Value="PROBABLE ALZHEIMER'S DISEASE"/>
+<ItemData ItemOID="IT.MH.MHCAT" Value="PSYCHIATRIC HISTORY"/>
+<ItemData ItemOID="IT.MH.MHPRESP" Value="Y"/>
+<ItemData ItemOID="IT.MH.MHOCCUR" Value="Y"/>
+<ItemData ItemOID="IT.MH.MHDTC" Value="2003-09-09"/>
+<ItemData ItemOID="IT.MH.MHSTDTC" Value="2001-06"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.MH" data:ItemGroupDataSeq="12">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.MH.DOMAIN" Value="MH"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200002"/>
+<ItemData ItemOID="IT.MH.MHSEQ" Value="1"/>
+<ItemData ItemOID="IT.MH.MHTERM" Value="HYSTERECTOMY"/>
+<ItemData ItemOID="IT.MH.MHCAT" Value="MEDICAL AND SURGICAL HISTORY"/>
+<ItemData ItemOID="IT.MH.MHBODSYS" Value="Genitourinary"/>
+<ItemData ItemOID="IT.MH.MHDTC" Value="2003-09-18"/>
+<ItemData ItemOID="IT.MH.MHSTDTC" Value="1981"/>
+<ItemData ItemOID="IT.MH.MHENRF" Value="BEFORE"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.MH" data:ItemGroupDataSeq="13">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.MH.DOMAIN" Value="MH"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200002"/>
+<ItemData ItemOID="IT.MH.MHSEQ" Value="2"/>
+<ItemData ItemOID="IT.MH.MHTERM" Value="DEPRESSION OF ALZHEIMER'S DISEASE"/>
+<ItemData ItemOID="IT.MH.MHCAT" Value="PSYCHIATRIC HISTORY"/>
+<ItemData ItemOID="IT.MH.MHPRESP" Value="Y"/>
+<ItemData ItemOID="IT.MH.MHOCCUR" Value="Y"/>
+<ItemData ItemOID="IT.MH.MHDTC" Value="2003-09-18"/>
+<ItemData ItemOID="IT.MH.MHSTDTC" Value="2001-07"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.MH" data:ItemGroupDataSeq="14">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.MH.DOMAIN" Value="MH"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200002"/>
+<ItemData ItemOID="IT.MH.MHSEQ" Value="3"/>
+<ItemData ItemOID="IT.MH.MHTERM" Value="PROBABLE ALZHEIMER'S DISEASE"/>
+<ItemData ItemOID="IT.MH.MHCAT" Value="PSYCHIATRIC HISTORY"/>
+<ItemData ItemOID="IT.MH.MHPRESP" Value="Y"/>
+<ItemData ItemOID="IT.MH.MHOCCUR" Value="Y"/>
+<ItemData ItemOID="IT.MH.MHDTC" Value="2003-09-18"/>
+<ItemData ItemOID="IT.MH.MHSTDTC" Value="2000-07"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.MH" data:ItemGroupDataSeq="15">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.MH.DOMAIN" Value="MH"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200005"/>
+<ItemData ItemOID="IT.MH.MHSEQ" Value="1"/>
+<ItemData ItemOID="IT.MH.MHTERM" Value="RECURRENT BACK PAIN"/>
+<ItemData ItemOID="IT.MH.MHCAT" Value="MEDICAL AND SURGICAL HISTORY"/>
+<ItemData ItemOID="IT.MH.MHBODSYS" Value="Musculoskeletal"/>
+<ItemData ItemOID="IT.MH.MHDTC" Value="2003-09-15"/>
+<ItemData ItemOID="IT.MH.MHSTDTC" Value="1957"/>
+<ItemData ItemOID="IT.MH.MHENRF" Value="DURING/AFTER"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.MH" data:ItemGroupDataSeq="16">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.MH.DOMAIN" Value="MH"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200005"/>
+<ItemData ItemOID="IT.MH.MHSEQ" Value="2"/>
+<ItemData ItemOID="IT.MH.MHTERM" Value="TUBAL LIGATION"/>
+<ItemData ItemOID="IT.MH.MHCAT" Value="MEDICAL AND SURGICAL HISTORY"/>
+<ItemData ItemOID="IT.MH.MHBODSYS" Value="Genitourinary"/>
+<ItemData ItemOID="IT.MH.MHDTC" Value="2003-09-15"/>
+<ItemData ItemOID="IT.MH.MHSTDTC" Value="1999"/>
+<ItemData ItemOID="IT.MH.MHENRF" Value="BEFORE"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.MH" data:ItemGroupDataSeq="17">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.MH.DOMAIN" Value="MH"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200005"/>
+<ItemData ItemOID="IT.MH.MHSEQ" Value="3"/>
+<ItemData ItemOID="IT.MH.MHTERM" Value="DEPRESSION OF ALZHEIMER'S DISEASE"/>
+<ItemData ItemOID="IT.MH.MHCAT" Value="PSYCHIATRIC HISTORY"/>
+<ItemData ItemOID="IT.MH.MHPRESP" Value="Y"/>
+<ItemData ItemOID="IT.MH.MHOCCUR" Value="N"/>
+<ItemData ItemOID="IT.MH.MHDTC" Value="2003-09-15"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.MH" data:ItemGroupDataSeq="18">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.MH.DOMAIN" Value="MH"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200005"/>
+<ItemData ItemOID="IT.MH.MHSEQ" Value="4"/>
+<ItemData ItemOID="IT.MH.MHTERM" Value="PROBABLE ALZHEIMER'S DISEASE"/>
+<ItemData ItemOID="IT.MH.MHCAT" Value="PSYCHIATRIC HISTORY"/>
+<ItemData ItemOID="IT.MH.MHPRESP" Value="Y"/>
+<ItemData ItemOID="IT.MH.MHOCCUR" Value="Y"/>
+<ItemData ItemOID="IT.MH.MHDTC" Value="2003-09-15"/>
+<ItemData ItemOID="IT.MH.MHSTDTC" Value="2001"/>
+</ItemGroupData>
+</ClinicalData>
+</ODM>

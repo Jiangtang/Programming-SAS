@@ -1,0 +1,1130 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!-- Produced from SAS data using SAS Clinical Standards Toolkit -->
+<ODM
+xmlns="http://www.cdisc.org/ns/odm/v1.3"
+xmlns:data="http://www.cdisc.org/ns/Dataset-XML/v1.0"
+ODMVersion="1.3.2"
+FileType="Snapshot"
+FileOID="cdisc01.EG"
+PriorFileOID="www.cdisc.org.Studycdisc01-Define-XML_2.0.0"
+CreationDateTime="2014-10-29T11:15:02"
+data:DatasetXMLVersion="1.0.0">
+<ClinicalData StudyOID="cdisc01" MetaDataVersionOID="MDV.CDISC01.SDTMIG.3.1.2.SDTM.1.2">
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="1">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100008"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="1"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-06"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="INTP"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Interpretation"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="ABNORMAL"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="ABNORMAL"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.EGEVAL" Value="INVESTIGATOR"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-04-15"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-14"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="2">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100008"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="2"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-06"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="INTP"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Interpretation"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="ABNORMAL"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="ABNORMAL"/>
+<ItemData ItemOID="IT.EG.EGEVAL" Value="INVESTIGATOR"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-10-13"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="168"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="3">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100008"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="3"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-03"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="PRMEAN"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) PR Duration"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="200"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="200"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="200"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-04-15"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-14"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="4">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100008"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="4"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-03"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="PRMEAN"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) PR Duration"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="182"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="182"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="182"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-10-13"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="168"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="5">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100008"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="5"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-02"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QRSDUR"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) QRS Duration"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="92"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="92"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="92"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-04-15"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-14"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="6">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100008"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="6"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-02"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QRSDUR"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) QRS Duration"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="92"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="92"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="92"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-10-13"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="168"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="7">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100008"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="7"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-07"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QTCB"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="QTcB - Bazett's Correction Formula"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="426.2"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="426.2"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.EGDRVFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-04-15"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-14"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="8">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100008"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="8"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-07"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QTCB"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="QTcB - Bazett's Correction Formula"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="421.4"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="421.4"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGDRVFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-10-13"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="168"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="9">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100008"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="9"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-08"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QTCF"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="QTcF - Fridericia's Correction Formula"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="401.4"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="401.4"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.EGDRVFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-04-15"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-14"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="10">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100008"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="10"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-08"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QTCF"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="QTcF - Fridericia's Correction Formula"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="404.3"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="404.3"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGDRVFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-10-13"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="168"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="11">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100008"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="11"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-04"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QTMEAN"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) QT Duration"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="356"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="356"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="356"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-04-15"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-14"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="12">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100008"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="12"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-04"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QTMEAN"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) QT Duration"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="372"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="372"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="372"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-10-13"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="168"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="13">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100008"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="13"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-10"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="VRMEAN"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) Ventricular Rate"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="86"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="BEATS/MIN"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="86"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="86"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="BEATS/MIN"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-04-15"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-14"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="14">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100008"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="14"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-10"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="VRMEAN"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) Ventricular Rate"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="77"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="BEATS/MIN"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="77"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="77"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="BEATS/MIN"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-10-13"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="168"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="15">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100014"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="1"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-06"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="INTP"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Interpretation"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="ABNORMAL"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="ABNORMAL"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.EGEVAL" Value="INVESTIGATOR"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-10-06"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-9"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="16">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100014"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="2"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-06"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="INTP"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Interpretation"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="ABNORMAL"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="ABNORMAL"/>
+<ItemData ItemOID="IT.EG.EGEVAL" Value="INVESTIGATOR"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2004-03-30"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="168"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="17">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100014"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="3"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-03"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="PRMEAN"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) PR Duration"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="142"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="142"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="142"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-10-06"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-9"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="18">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100014"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="4"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-03"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="PRMEAN"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) PR Duration"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="134"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="134"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="134"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2004-03-30"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="168"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="19">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100014"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="5"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-02"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QRSDUR"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) QRS Duration"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="82"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="82"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="82"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-10-06"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-9"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="20">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100014"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="6"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-02"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QRSDUR"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) QRS Duration"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="84"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="84"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="84"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2004-03-30"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="168"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="21">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100014"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="7"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-07"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QTCB"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="QTcB - Bazett's Correction Formula"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="424.7"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="424.7"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.EGDRVFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-10-06"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-9"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="22">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100014"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="8"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-07"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QTCB"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="QTcB - Bazett's Correction Formula"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="441.1"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="441.1"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGDRVFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2004-03-30"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="168"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="23">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100014"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="9"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-08"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QTCF"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="QTcF - Fridericia's Correction Formula"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="414.9"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="414.9"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.EGDRVFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-10-06"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-9"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="24">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100014"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="10"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-08"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QTCF"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="QTcF - Fridericia's Correction Formula"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="420.4"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="420.4"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGDRVFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2004-03-30"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="168"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="25">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100014"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="11"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-04"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QTMEAN"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) QT Duration"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="396"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="396"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="396"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-10-06"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-9"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="26">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100014"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="12"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-04"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QTMEAN"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) QT Duration"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="382"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="382"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="382"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2004-03-30"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="168"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="27">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100014"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="13"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-10"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="VRMEAN"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) Ventricular Rate"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="69"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="BEATS/MIN"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="69"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="69"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="BEATS/MIN"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-10-06"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-9"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="28">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.100014"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="14"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-10"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="VRMEAN"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) Ventricular Rate"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="80"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="BEATS/MIN"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="80"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="80"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="BEATS/MIN"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2004-03-30"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="168"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="29">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200001"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="1"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-06"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="INTP"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Interpretation"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="NORMAL"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="NORMAL"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.EGEVAL" Value="INVESTIGATOR"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-09-09"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-21"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="30">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200001"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="2"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-06"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="INTP"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Interpretation"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="NORMAL"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="NORMAL"/>
+<ItemData ItemOID="IT.EG.EGEVAL" Value="INVESTIGATOR"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2004-02-02"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="126"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="31">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200001"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="3"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-03"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="PRMEAN"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) PR Duration"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="140"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="140"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="140"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-09-09"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-21"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="32">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200001"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="4"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-03"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="PRMEAN"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) PR Duration"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="160"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="160"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="160"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2004-02-02"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="126"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="33">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200001"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="5"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-02"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QRSDUR"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) QRS Duration"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="80"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="80"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="80"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-09-09"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-21"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="34">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200001"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="6"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-02"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QRSDUR"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) QRS Duration"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="80"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="80"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="80"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2004-02-02"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="126"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="35">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200001"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="7"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-07"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QTCB"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="QTcB - Bazett's Correction Formula"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="403.3"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="403.3"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.EGDRVFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-09-09"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-21"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="36">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200001"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="8"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-07"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QTCB"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="QTcB - Bazett's Correction Formula"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="464.8"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="464.8"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGDRVFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2004-02-02"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="126"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="37">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200001"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="9"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-08"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QTCF"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="QTcF - Fridericia's Correction Formula"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="402.2"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="402.2"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.EGDRVFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-09-09"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-21"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="38">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200001"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="10"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-08"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QTCF"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="QTcF - Fridericia's Correction Formula"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="442.1"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="442.1"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGDRVFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2004-02-02"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="126"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="39">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200001"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="11"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-04"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QTMEAN"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) QT Duration"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="400"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="400"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="400"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-09-09"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-21"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="40">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200001"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="12"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-04"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QTMEAN"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) QT Duration"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="400"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="400"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="400"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2004-02-02"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="126"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="41">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200001"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="13"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-10"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="VRMEAN"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) Ventricular Rate"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="61"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="BEATS/MIN"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="61"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="61"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="BEATS/MIN"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-09-09"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-21"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="42">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200001"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="14"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-10"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="VRMEAN"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) Ventricular Rate"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="81"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="BEATS/MIN"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="81"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="81"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="BEATS/MIN"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2004-02-02"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="126"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="43">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200002"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="1"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-06"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="INTP"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Interpretation"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="ABNORMAL"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="ABNORMAL"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.EGEVAL" Value="INVESTIGATOR"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-09-19"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-21"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="44">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200002"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="2"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-06"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="INTP"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Interpretation"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="ABNORMAL"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="ABNORMAL"/>
+<ItemData ItemOID="IT.EG.EGEVAL" Value="INVESTIGATOR"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2004-03-29"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="172"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="45">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200002"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="3"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-03"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="PRMEAN"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) PR Duration"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="120"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="120"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="120"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-09-19"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-21"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="46">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200002"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="4"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-03"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="PRMEAN"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) PR Duration"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="140"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="140"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="140"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2004-03-29"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="172"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="47">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200002"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="5"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-02"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QRSDUR"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) QRS Duration"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="80"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="80"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="80"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-09-19"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-21"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="48">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200002"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="6"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-02"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QRSDUR"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) QRS Duration"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="100"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="100"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="100"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2004-03-29"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="172"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="49">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200002"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="7"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-07"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QTCB"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="QTcB - Bazett's Correction Formula"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="389.9"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="389.9"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.EGDRVFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-09-19"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-21"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="50">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200002"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="8"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-07"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QTCB"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="QTcB - Bazett's Correction Formula"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="399.8"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="399.8"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGDRVFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2004-03-29"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="172"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="51">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200002"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="9"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-08"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QTCF"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="QTcF - Fridericia's Correction Formula"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="393.2"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="393.2"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.EGDRVFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-09-19"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-21"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="52">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200002"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="10"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-08"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QTCF"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="QTcF - Fridericia's Correction Formula"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="386.1"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="386.1"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGDRVFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2004-03-29"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="172"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="53">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200002"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="11"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-04"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QTMEAN"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) QT Duration"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="400"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="400"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="400"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-09-19"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-21"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="54">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200002"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="12"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-04"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="QTMEAN"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) QT Duration"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="360"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="360"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="360"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="msec"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2004-03-29"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="172"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="55">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200002"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="13"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-10"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="VRMEAN"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) Ventricular Rate"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="57"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="BEATS/MIN"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="57"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="57"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="BEATS/MIN"/>
+<ItemData ItemOID="IT.EG.EGBLFL" Value="Y"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="1"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="SCREEN"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="-13"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2003-09-19"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="-21"/>
+</ItemGroupData>
+<ItemGroupData ItemGroupOID="IG.EG" data:ItemGroupDataSeq="56">
+<ItemData ItemOID="IT.STUDYID" Value="CDISC01"/>
+<ItemData ItemOID="IT.EG.DOMAIN" Value="EG"/>
+<ItemData ItemOID="IT.USUBJID" Value="CDISC01.200002"/>
+<ItemData ItemOID="IT.EG.EGSEQ" Value="14"/>
+<ItemData ItemOID="IT.EG.EGSPID" Value="ECG-10"/>
+<ItemData ItemOID="IT.EG.EGTESTCD" Value="VRMEAN"/>
+<ItemData ItemOID="IT.EG.EGTEST" Value="Summary (Mean) Ventricular Rate"/>
+<ItemData ItemOID="IT.EG.EGPOS" Value="SUPINE"/>
+<ItemData ItemOID="IT.EG.EGORRES" Value="74"/>
+<ItemData ItemOID="IT.EG.EGORRESU" Value="BEATS/MIN"/>
+<ItemData ItemOID="IT.EG.EGSTRESC" Value="74"/>
+<ItemData ItemOID="IT.EG.EGSTRESN" Value="74"/>
+<ItemData ItemOID="IT.EG.EGSTRESU" Value="BEATS/MIN"/>
+<ItemData ItemOID="IT.EG.VISITNUM" Value="10"/>
+<ItemData ItemOID="IT.EG.VISIT" Value="WEEK 24"/>
+<ItemData ItemOID="IT.EG.VISITDY" Value="169"/>
+<ItemData ItemOID="IT.EG.EGDTC" Value="2004-03-29"/>
+<ItemData ItemOID="IT.EG.EGDY" Value="172"/>
+</ItemGroupData>
+</ClinicalData>
+</ODM>

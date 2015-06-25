@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.cdisc.org/ns/odm/v1.3"
+           xmlns="http://www.cdisc.org/ns/odm/v1.3"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:data="http://www.cdisc.org/ns/Dataset-XML/v1.0"
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <!-- include Dataset-XML extensions to core ODM -->
+  <xs:include schemaLocation="dataset-extension.xsd"/>
+
+  <!--
+      Dataset-XML 1.0 dataset1-0-0 schema
+      as developed by the CDISC XML Technologies Team
+  -->
+
+</xs:schema>

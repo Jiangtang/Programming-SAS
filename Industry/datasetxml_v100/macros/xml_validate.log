@@ -1,0 +1,487 @@
+The SAS System                                                                                                                 10:17 Wednesday, October 29, 2014
+
+NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
+      Licensed to R&D PACKAGE VALIDATION, Site 70158305.
+NOTE: This session is executing on the X64_7PRO  platform.
+
+
+
+NOTE: Updated analytical products:
+      
+      SAS/STAT 13.1
+      SAS/ETS 13.1
+      SAS/OR 13.1
+      SAS/IML 13.1
+      SAS/QC 13.1
+
+NOTE: Additional host information:
+
+ X64_7PRO WIN 6.1.7601 Service Pack 1 Workstation
+
+NOTE: SAS initialization used:
+      real time           0.48 seconds
+      cpu time            0.13 seconds
+      
+1          %* xml_validate                                                                   *;
+2          %*                                                                                *;
+3          %* Performs XML schema-level validation on a folder with XML files.               *;
+4          %*                                                                                *;
+5          %* Only file with extension ".xml" will be included. XML files can be included or *;
+6          %* excluded with the "_cstWhereClause" macro parameter.                           *;
+7          %*                                                                                *;
+8          %* @param _cstXMLStandard - required - The standard associated with the XML file. *;
+9          %* @param _cstXMLStandardVersion - required - The standard version associated     *;
+10         %*            with the XML file.                                                  *;
+11         %* @param _cstSchemaRepository - required - The Location of the schema repository.*;
+12         %* @param _cstXMLFolder - required - The location of the folder with XML files.   *;
+13         %* @param _cstWhereClause - optional - Where clause base on the xmlfilename       *;
+14         %*            that selects the XML files within the XML folder.                   *;
+15         %*            Example: %nrstr(where index(upcase(xmlfilename), "DEFINE") eq 0)    *;
+16         %* @param _cstScope - required - The space-separated list of the message scope    *;
+17         %*            values be add to the Results data set.                              *;
+18         %*            Values: USER | SYSTEM | _ALL_                                       *;
+19         %*            Default: USER                                                       *;
+20         %* @param _cstReturn - required - The macro variable that contains the return     *;
+21         %*            value as set by this macro.                                         *;
+22         %*            Default: _cst_rc                                                    *;
+23         %* @param _cstReturnMsg - required - The macro variable that contains the return  *;
+24         %*            message as set by this macro.                                       *;
+25         %*            Default: _cst_rcmsg                                                 *;
+26         %*                                                                                *;
+27         %*                                                                                *;
+28         %* @since 1.7                                                                     *;
+29         %* @exposure external                                                             *;
+30         
+31         %macro xml_validate(
+32           _cstXMLStandard=,
+33           _cstXMLStandardVersion=,
+34           _cstSchemaRepository=&DatasetXMLRoot/schema-repository,
+35           _cstXMLFolder=,
+The SAS System                                                                                                                 10:17 Wednesday, October 29, 2014
+
+36           _cstWhereClause=,
+37           _cstScope=USER,
+38           _cstReturn=_cst_rc,
+39           _cstReturnMsg=_cst_rcmsg
+40           );
+41         
+42         
+43           %local
+44             rc
+45             _cst_thisrc
+46             _cst_thisrcmsg
+47             _cstSaveOptions
+48             _cstMessageLength
+49             _cstLineNumberColExists
+50             _cstRandom
+51             _cstXMLSchemaFile
+52             _XMLFiles
+53             _cstLogXMLName
+54             LogXMLFile
+55             StandardXMLfile
+56           ;
+57         
+58           %let _cstRandom=%sysfunc(putn(%sysevalf(%sysfunc(ranuni(0))*10000,floor),z4.));
+59           %let _cstResultSeq=1;
+60           %let _cstSeqCnt=0;
+61           %let _cstSrcMacro=&SYSMACRONAME;
+62         
+63           %***************************************************;
+64           %*  Check _cstReturn and _cstReturnMsg parameters  *;
+65           %***************************************************;
+66           %if (%length(&_cstReturn)=0) or (%length(&_cstReturnMsg)=0) %then
+67           %do;
+68             %* We are not able to communicate other than to the LOG;
+69             %put [CSTLOG%str(MESSAGE).&sysmacroname] ERR%str(OR): %str
+70               ()macro parameters _CSTRETURN and _CSTRETURNMSG can not be missing.;
+71             %goto exit_macro_nomsg;
+72           %end;
+73         
+74           %if (%eval(not %symexist(&_cstReturn))) %then %global &_cstReturn;
+75           %if (%eval(not %symexist(&_cstReturnMsg))) %then %global &_cstReturnMsg;
+76         
+77           %*************************************************;
+78           %*  Set _cstReturn and _cstReturnMsg parameters  *;
+79           %*************************************************;
+80           %let &_cstReturn=0;
+81           %let &_cstReturnMsg=;
+82         
+83           %*************************************************;
+84           %*  Check for existence of _cstDebug             *;
+85           %*************************************************;
+86           %if ^%symexist(_cstDeBug) %then
+87           %do;
+88             %global _cstDeBug;
+89             %let _cstDebug=0;
+90           %end;
+91         
+92         
+93           %************************;
+The SAS System                                                                                                                 10:17 Wednesday, October 29, 2014
+
+94           %* Parameter checking   *;
+95           %************************;
+96         
+97         
+98           %***************************************************;
+99           %*  Check _cstSchemaRepository parameter           *;
+100          %***************************************************;
+101          %if %sysevalf(%superq(_cstSchemaRepository)=, boolean) %then
+102          %do;
+103            %let _cst_thisrc=1;
+104            %let _cst_thisrcmsg=Macro parameter _cstSchemaRepository cannot be missing;
+105            %goto exit_error;
+106          %end;
+107        
+108          %let rc = %sysfunc(filename(fileref,&_cstSchemaRepository)) ;
+109          %if %sysfunc(fexist(&fileref))=0 %then
+110          %do;
+111            %let _cst_thisrc=1;
+112            %let _cst_thisrcmsg=The folder &_cstSchemaRepository does not exist.;
+113            %goto exit_error;
+114          %end;
+115        
+116          %***************************************************;
+117          %*  Check _cstXMLFolder parameter                  *;
+118          %***************************************************;
+119          %if %sysevalf(%superq(_cstXMLFolder)=, boolean) %then
+120          %do;
+121            %let _cst_thisrc=1;
+122            %let _cst_thisrcmsg=Macro parameter _cstXMLFolder cannot be missing;
+123            %goto exit_error;
+124          %end;
+125        
+126          %let rc = %sysfunc(filename(fileref,&_cstXMLFolder)) ;
+127          %if %sysfunc(fexist(&fileref))=0 %then
+128          %do;
+129            %let _cst_thisrc=1;
+130            %let _cst_thisrcmsg=The folder &_cstXMLFolder does not exist.;
+131            %goto exit_error;
+132          %end;
+133        
+134          %***************************************************;
+135          %*  Check _cstXMLStandard parameter                *;
+136          %***************************************************;
+137          %if %sysevalf(%superq(_cstXMLStandard)=, boolean) %then
+138          %do;
+139            %let _cstReturn=1;
+140            %let _cstReturnMsg=Macro parameter _cstXMLStandard cannot be missing;
+141            %goto exit_error;
+142          %end;
+143        
+144          %***************************************************;
+145          %*  Check _cstXMLStandardVersion parameter         *;
+146          %***************************************************;
+147          %if %sysevalf(%superq(_cstXMLStandardVersion)=, boolean) %then
+148          %do;
+149            %let _cstReturn=1;
+150            %let _cstReturnMsg=Macro parameter _cstXMLStandardVersion cannot be missing;
+151            %goto exit_error;
+The SAS System                                                                                                                 10:17 Wednesday, October 29, 2014
+
+152          %end;
+153        
+154          %***************************************************;
+155          %*  Check if we can find the schema                *;
+156          %***************************************************;
+157          %let _cstXMLSchemaFile=;
+158          libname transf xmlv2 "&_cstSchemaRepository/availabletransforms.xml";
+159          data _null_;
+160            set transf.Transform(where=(StandardName="&_cstXMLStandard" and StandardVersion="&_cstXMLStandardVersion"));
+161            call symputx('_cstXMLSchemaFile',schema);
+162          run;
+163          libname transf clear;
+164        
+165          %if %sysevalf(%superq(_cstXMLSchemaFile)=, boolean) %then
+166          %do;
+167            %let _cst_thisrc=1;
+168            %let _cst_thisrcmsg=Schema can not be found in &_cstSchemaRepository/availabletransforms.xml for %str
+169                               ()StandardName=&_cstXMLStandard and StandardVersion=&_cstXMLStandardVersion..;
+170            %goto exit_error;
+171          %end;
+172        
+173          %if not %sysfunc(fileexist(&_cstSchemaRepository/&_cstXMLSchemaFile)) %then
+174          %do;
+175              %let _cst_thisrc=1;
+176              %let _cst_thisrcmsg=The file &_cstSchemaRepository/&_cstXMLSchemaFile does not exist.;
+177              %goto exit_error;
+178          %end;
+179        
+180        
+181          %***************************************************;
+182          %*  Check _cstScope parameter                      *;
+183          %***************************************************;
+184          %if %sysevalf(%superq(_cstScope)=, boolean) %then
+185          %do;
+186            %let _cstReturn=1;
+187            %let _cstReturnMsg=Macro parameter _cstScope cannot be missing;
+188            %goto exit_error;
+189          %end;
+190        
+191          %if %upcase(&_cstScope) ne USER and
+192              %upcase(&_cstScope) ne SYSTEM and
+193              %upcase(&_cstScope) ne _ALL_ %then
+194          %do;
+195            %let _cstReturn=1;
+196            %let _cstReturnMsg=Macro parameter _cstScope=&_cstScope is invalid;
+197            %goto exit_error;
+198          %end;
+199        
+200          %if %upcase(&_cstScope) eq _ALL_ %then %let _cstScope=USER SYSTEM;
+201        
+202          %*******************************;
+203          %* End of Parameter checking   *;
+204          %*******************************;
+205        
+206          data XMLfiles_&_cstRandom(keep=xmlfilepath xmlfilename);
+207            length xmlfilepath xmlfilename $4000 rc did memcnt i _XMLFiles 8;
+208            rc=filename("fref", "&_cstXMLFolder");
+209            did=dopen("fref");
+The SAS System                                                                                                                 10:17 Wednesday, October 29, 2014
+
+210            memcnt=dnum(did);
+211            _XMLFiles=0;
+212            do i = 1 to memcnt;
+213              xmlfilename=dread(did,i);
+214              xmlfilepath=cats("&_cstXMLFolder", "/", xmlfilename);
+215              if (scan(upcase(xmlfilepath), -1, ".")="XML") then do;
+216                _XMLFiles=_XMLFiles + 1;
+217                output;
+218              end;
+219            end;
+220            rc=dclose(did);
+221          run;
+222        
+223          data _null_;
+224            set XMLFiles_&_cstRandom end=end;
+225            length xmlfile $11;
+226            &_cstWhereClause;
+227            i+1;
+228            xmlfile="_XMLFile"||kleft(put(i,3.));
+229            call symputx(xmlfile,xmlfilepath);
+230            if end then call symputx ('_XMLFiles', _n_);
+231          run;
+232        
+233        
+234          data work._cstxmllog;
+235            %cstutil_resultsdsattr;
+236            call missing(of _all_);
+237            stop;
+238          run;
+239        
+240          %do _count=1 %to &_XMLFiles; %* Start of loop;
+241        
+242            %let _cst_thisrc=0;
+243            %let _cst_thisrcmsg=;
+244        
+245            %let _cstLogXMLPath=%sysfunc(pathname(work))/_xml_log&_cstRandom.&_count..xml;
+246            %let StandardXMLfile=&&_XMLFile&_count;
+247        
+248            data _null_;
+249        
+250              putlog "INFO: [CSTLOG%str(MESSAGE).&sysmacroname] XML Schema file = &_cstSchemaRepository/&_cstXMLSchemaFile";
+251              putlog "INFO: [CSTLOG%str(MESSAGE).&sysmacroname] XML file = &StandardXMLfile";
+252        
+253              dcl javaobj prefs("com/sas/ptc/transform/xml/StandardXMLTransformerParams");
+254              prefs.callvoidmethod('setImportOrExport',"IMPORT");
+255              prefs.callvoidmethod('setStandardName',"&_cstXMLStandard");
+256              prefs.callvoidmethod('setStandardVersion',"&_cstXMLStandardVersion");
+257              prefs.callvoidmethod('setValidatingStandardXMLString', "true");
+258              prefs.callvoidmethod('setValidatingXMLOnlyString', "true");
+259              prefs.callvoidmethod('setSchemaBasePath',tranwrd("&_cstSchemaRepository",'\','/'));
+260              prefs.callvoidmethod('setSasXMLPath',tranwrd("%sysfunc(pathname(work))",'\','/'));
+261              prefs.callvoidmethod('setStandardXMLPath',tranwrd("&StandardXMLfile",'\','/'));
+262              prefs.callvoidmethod('setAvailableTransformsFilePath',tranwrd("&_cstSchemaRepository/availabletransforms.xml",'\','/'));
+263        
+264              /* prefs.callvoidmethod('setAvailableTransformsFilePath',tranwrd("%sysfunc(pathname(work))/availabletransforms.xml",'\','/')); */
+265        
+266        
+267              prefs.callvoidmethod('setLogFilePath',tranwrd("&_cstLogXMLPath",'\','/'));
+The SAS System                                                                                                                 10:17 Wednesday, October 29, 2014
+
+268              prefs.callvoidmethod('setLogLevelString','INFO');
+269              prefs.callvoidmethod('setHeaderCommentText',"");
+270        
+271              dcl javaobj transformer("com/sas/ptc/transform/xml/StandardXMLImporter", prefs);
+272              transformer.exceptiondescribe(1);
+273              transformer.callvoidmethod('exec');
+274              transformer.delete();
+275              prefs.delete();
+276            run;
+277        
+278            %let _cstLogXMLName=_log&_cstRandom;
+279            libname &_cstLogXMLName xmlv2 "&_cstLogXMLPath";
+280        
+281            * Check to see if the line number/column number info was generated;
+282            %let _cstLineNumberColExists = %cstutilgetattribute(_cstDataSetName=&_cstLogXMLName..XMLTransformLog,
+283                                                                _cstVarName=LINENUMBER, _cstAttribute=VARNUM);
+284        
+285            * The message variable might get very long, but it is ok if it gets truncated;
+286            %let _cstSaveOptions = %sysfunc(getoption(varlenchk, keyword));
+287            options varlenchk=nowarn;
+288        
+289            %let _cstMessageLength = %cstutilgetattribute(_cstDataSetName=work._cstxmllog,
+290                                                          _cstVarName=MESSAGE, _cstAttribute=VARLEN);
+291            * Create a work results data set to capture the XML log information;
+292            data _cstxmllog&_cstRandom(drop=timestamp origin scope);
+293        
+294              set work._cstxmllog &_cstLogXMLName..XMLTransformLog(rename=(severity=resultseverity));
+295              call missing(actual,keyvalues,resultdetails);
+296        
+297              seqno=_n_;
+298              resultseq=1;
+299        
+300              %if (&_cstLineNumberColExists) %then
+301              %do;
+302                if (lineNumber^=.) then do;
+303                  message='(Line ' || compress(put(lineNumber,8.)) ||
+304                     '/Column ' || compress(put(columnNumber,8.)) || ') ' || ktrim(kleft(message));
+305                end;
+306                else do;
+307                  message=ktrim(kleft(message));
+308                end;
+309                drop LineNumber ColumnNumber;
+310              %end;
+311              %else
+312              %do;
+313                message=ktrim(kleft(message));
+314              %end;
+315        
+316              if length(message) GT &_cstMessageLength.-3 then
+317                message = ksubstr(message,1, &_cstMessageLength.-4)||' ...';
+318        
+319              srcdata=ktrim(kleft(origin));
+320              checkId='';
+321              ResultFlag=0;
+322              _cst_rc=0;
+323        
+324              if (resultseverity='INFO') then do;
+325                ResultId='DATA0097';
+The SAS System                                                                                                                 10:17 Wednesday, October 29, 2014
+
+326                ResultFlag=0;
+327                _cst_rc=0;
+328              end;
+329              else if (resultseverity='WARNING') then do;
+330                ResultId='DATA0098';
+331                ResultFlag=1;
+332               _cst_rc=1;
+333                ResultDetails="&StandardXMLfile";
+334                call symputx("_cst_thisrc",'1','L');
+335                call symputx("_cst_thisrcmsg",message,'L');
+336                putlog "WAR%str(NING): [CSTLOG%str(MESSAGE).&sysmacroname] " message;
+337              end;
+338              else do;
+339                * ERROR/CRITICAL ERROR;
+340                ResultId='DATA0099';
+341                ResultFlag=1;
+342                _cst_rc=1;
+343                ResultDetails="&StandardXMLfile";
+344                call symputx("_cst_thisrc",'1','L');
+345                call symputx("_cst_thisrcmsg",message,'L');
+346                putlog "ERR%str(OR): [CSTLOG%str(MESSAGE).&sysmacroname] " message;
+347              end;
+348        
+349              * Only keep the records that are in Scope;
+350              if findw("&_cstScope", scope, ' ', 'ir');
+351        
+352              resultseverity=lowcase(resultseverity);
+353        
+354            run;
+355        
+356            options &_cstSaveOptions;
+357        
+358            %if %symexist(_cstResultsDS) %then
+359            %do;
+360              %if %klength(&_cstResultsDS) > 0 and %sysfunc(exist(&_cstResultsDS)) %then
+361              %do;
+362        
+363                proc append base=&_cstResultsDS data=_cstxmllog&_cstRandom force;
+364                run;
+365        
+366                proc datasets lib=work nolist;
+367                  delete _cstxmllog&_cstRandom;
+368                quit;
+369                run;
+370        
+371              %end;
+372            %end;
+373        
+374            libname &_cstLogXMLName clear;
+375        
+376            %if %eval(&_cst_thisrc) eq 1 %then
+377            %do;
+378              %let &_cstReturn=&_cst_thisrc;
+379              %let &_cstReturnMsg=&_cst_thisrcmsg;
+380            %end;
+381            %else
+382            %do;
+383              %put NOTE: [CSTLOG%str(MESSAGE).&sysmacroname] %nrbquote(&StandardXMLfile) validated successfully.;
+The SAS System                                                                                                                 10:17 Wednesday, October 29, 2014
+
+384        
+385              %if %symexist(_cstResultsDS) %then %if %sysfunc(exist(&_cstResultsDS)) %then
+386              %do;
+387                %let _cstSeqCnt=%eval(&_cstSeqCnt+1);
+388                %cstutil_writeresult(
+389                            _cstResultId=DATA0097
+390                            ,_cstResultParm1=XML validation was successful
+391                            ,_cstResultSeqParm=&_cstResultSeq
+392                            ,_cstSeqNoParm=&_cstSeqCnt
+393                            ,_cstSrcDataParm=&_cstSrcMacro
+394                            ,_cstResultFlagParm=0
+395                            ,_cstRCParm=&_cst_thisrc
+396                            );
+397              %end;
+398            %end;
+399        
+400          %end;  %* End of loop;
+401        
+402          proc datasets lib=work nolist;
+403            delete _cstxmllog XMLfiles_&_cstRandom;
+404          quit;
+405          run;
+406        
+407        %goto exit_macro_nomsg;
+408        
+409          %****************************;
+410          %*  Handle any errors here  *;
+411          %****************************;
+412        %exit_error:
+413        
+414          %if %eval(&_cst_thisrc)>0 %then
+415          %do;
+416            %put ERR%STR(OR): [CSTLOG%str(MESSAGE).&_cstSrcMacro] &_cst_thisrcmsg;
+417        
+418            %if %symexist(_cstResultsDS) %then %if %sysfunc(exist(&_cstResultsDS)) %then
+419            %do;
+420              %let _cstSeqCnt=%eval(&_cstSeqCnt+1);
+421              %cstutil_writeresult(
+422                          _cstResultId=DATA0099
+423                          ,_cstResultParm1=&_cst_thisrcmsg
+424                          ,_cstResultSeqParm=&_cstResultSeq
+425                          ,_cstSeqNoParm=&_cstSeqCnt
+426                          ,_cstSrcDataParm=&_cstSrcMacro
+427                          ,_cstResultFlagParm=&_cst_thisrc
+428                          ,_cstRCParm=&_cst_thisrc
+429                          );
+430            %end;
+431        
+432          %end;
+433        
+434          %let &_cstReturn=&_cst_thisrc;
+435          %let &_cstReturnMsg=&_cst_thisrcmsg;
+436        
+437        %exit_macro_nomsg:
+438        
+439        %mend xml_validate;
+440        
+
+The SAS System                                                                                                                 10:17 Wednesday, October 29, 2014
+
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           0.49 seconds
+      cpu time            0.15 seconds
+      

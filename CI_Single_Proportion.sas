@@ -23,7 +23,7 @@
 *Input              : r     - the number of interested responses                                                  *;
 *                     n     - total observations, 0 =< r <= n                                                     *;
 *                     alpha - 0.05 by default                                                                     *;
-*Output             : confidence intervals using 11 methods                                                       *;
+*Output             : confidence intervals using 14 methods                                                       *;
 *Usage              : %CI_Single_Proportion(r=81,n=263)                                                           *;
 *                                                                                                                 *;
 *References         : Newcombe R.G., Two-sided confidence intervals for the single proportion:                    *;
@@ -84,8 +84,8 @@ data CI5;
           p_CI_low = p - (z * se + cc);
           p_CI_up  = p + (z * se + cc);
           
-          if r=0 then p_CI_low=0;
-          if r=n then p_CI_up =1;
+/*          if r=0 then p_CI_low=0;*/
+/*          if r=n then p_CI_up =1;*/
     end;
     
     if i=3 then do;
@@ -99,8 +99,8 @@ data CI5;
           p_CI_low = ( 2*r+z**2 -1 - z*sqrt(z**2 - 2- 1/n + 4*p*(n*q+1))) / (2*(n+z**2));
           p_CI_up  = ( 2*r+z**2 +1 + z*sqrt(z**2 + 2- 1/n + 4*p*(n*q-1))) / (2*(n+z**2));  
           
-          if r=0 then p_CI_low=0;
-          if r=n then p_CI_up =1;  
+/*          if r=0 then p_CI_low=0;*/
+/*          if r=n then p_CI_up =1;  */
     end;
     
     if i=5 then do;
@@ -108,8 +108,8 @@ data CI5;
           p_CI_low =1 - betainv(1 - alpha/2,n-r+1,r);
           p_CI_up  =    betainv(1 - alpha/2,r+1  ,n-r);  
           
-          if r=0 then p_CI_low=0;
-          if r=n then p_CI_up =1;
+/*          if r=0 then p_CI_low=0;*/
+/*          if r=n then p_CI_up =1;*/
     end;
     
     if i=8 then do;

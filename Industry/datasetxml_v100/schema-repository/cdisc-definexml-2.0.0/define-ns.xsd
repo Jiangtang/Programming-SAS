@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.cdisc.org/ns/def/v2.0"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:odm="http://www.cdisc.org/ns/odm/v1.3"
+           xmlns:def="http://www.cdisc.org/ns/def/v2.0"
+           xmlns:xlink="http://www.w3.org/1999/xlink"
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <!--
+      Define-XML 2.0.0 define-ns schema draft
+      as developed by the CDISC XML Technologies Team
+  -->
+
+  <xs:annotation>
+    <xs:documentation>Define-XML 2.0.0 draft define-ns schema as developed by the CDISC XML Technologies Team</xs:documentation>
+  </xs:annotation>
+
+  <xs:import namespace="http://www.w3.org/1999/xlink"     schemaLocation="../cdisc-odm-1.3.2/xlink.xsd"/>
+  <xs:import namespace="http://www.cdisc.org/ns/odm/v1.3" schemaLocation="../cdisc-odm-1.3.2/ODM1-3-2.xsd"/>
+
+
+   <!--
+         MetaDataVersion
+
+         we are purposefully using xs:id and xs:idref on the
+         def:leaf and def:DocumentRef constructs
+         to force parsers to validate whether these intended match pairs are
+         actually present in the define file. under standard ODM usage, the OID
+         and OIDref are NOT schema ID types to circumvent this checking.
+   -->
+
+  <xs:attribute name="DefineVersion" type="odm:text">
+    <xs:annotation><xs:documentation>Define version identification.</xs:documentation></xs:annotation>
+  </xs:attribute>
+
+  <xs:attribute name="StandardName" type="odm:text">
+    <xs:annotation><xs:documentation>Short name of the MetaDataVersion.</xs:documentation></xs:annotation>
+  </xs:attribute>
+
+  <xs:attribute name="StandardVersion" type="odm:text">
+    <xs:annotation><xs:documentation>The version of an external standard to which the data conforms.</xs:documentation></xs:annotation>
+  </xs:attribute>
+
+
+   <!--
+         Documents
+     -->
+  <xs:element name="DocumentRef" type="def:DEFINEcomplexTypeDefinition-DocumentRef" />
+    <xs:complexType name="DEFINEcomplexTypeDefinition-DocumentRef">
+      <xs:annotation><xs:documentation>Links to a def:leaf element with the location of the document.</xs:documentation></xs:annotation>
+      <xs:sequence>
+        <xs:group ref="def:DocumentRefElementPreExtension" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="def:PDFPageRef" minOccurs="0" maxOccurs="unbounded">
+          <xs:annotation><xs:documentation>The PDFPageRef element is a container for page references in a PDF file.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:group ref="def:DocumentRefElementPostExtension" minOccurs="0" maxOccurs="1"/>
+      </xs:sequence>
+      <xs:attribute name="leafID" type="xs:IDREF" use="required">
+        <xs:annotation><xs:documentation>Unique identifier for the def:leaf element with the document location.</xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attributeGroup ref="def:DocumentRefAttributeExtension"/>
+    </xs:complexType>
+
+    <xs:element name="AnnotatedCRF" type="def:DEFINEcomplexTypeDefinition-AnnotatedCRF"/>
+    <xs:complexType name="DEFINEcomplexTypeDefinition-AnnotatedCRF">
+      <xs:annotation><xs:documentation>An Annotated Case Report Form (CRF) is a Portable File Format (PDF) document that provides the mapping of data collection fields to the variables or discrete variable values contained within the datasets.</xs:documentation></xs:annotation>
+      <xs:sequence>
+        <xs:group ref="def:AnnotatedCRFElementPreExtension" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="def:DocumentRef" minOccurs="1" maxOccurs="unbounded">
+          <xs:annotation><xs:documentation>Links to a def:leaf element with the location of the document.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:group ref="def:AnnotatedCRFElementPostExtension" minOccurs="0" maxOccurs="1"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="def:AnnotatedCRFAttributeExtension"/>
+    </xs:complexType>
+
+    <xs:element name="SupplementalDoc" type="def:DEFINEcomplexTypeDefinition-SupplementalDoc"/>
+    <xs:complexType name="DEFINEcomplexTypeDefinition-SupplementalDoc">
+      <xs:annotation><xs:documentation>Supplemental data definitions</xs:documentation></xs:annotation>
+      <xs:sequence>
+        <xs:group ref="def:SupplementalDocElementPreExtension" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="def:DocumentRef" minOccurs="1" maxOccurs="unbounded">
+          <xs:annotation><xs:documentation>Links to a def:leaf element with the location of the document.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:group ref="def:SupplementalDocElementPostExtension" minOccurs="0" maxOccurs="1"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="def:SupplementalDocAttributeExtension"/>
+    </xs:complexType>
+
+
+   <!--
+         ValueList
+     -->
+  <xs:element name="ValueListRef" type="def:DEFINEcomplexTypeDefinition-ValueListRef"/>
+  <xs:complexType name="DEFINEcomplexTypeDefinition-ValueListRef">
+    <xs:annotation><xs:documentation>An item can make a reference to a Value List.</xs:documentation></xs:annotation>
+    <xs:attribute name="ValueListOID" type="odm:oidref" use="required">
+    <xs:annotation><xs:documentation>The ValueList identifier that this variable refers to.</xs:documentation></xs:annotation>
+    </xs:attribute>
+    <xs:attributeGroup ref="def:ValueListRefAttributeExtension"/>
+  </xs:complexType>
+
+  <xs:element name="ValueListDef" type="def:DEFINEcomplexTypeDefinition-ValueListDef">
+    <xs:unique name="UC-VLD-1">
+      <xs:selector xpath="odm:ItemRef"/>
+      <xs:field xpath="@ItemOID"/>
+    </xs:unique>
+    <xs:unique name="UC-VLD-2">
+      <xs:selector xpath="odm:ItemRef"/>
+      <xs:field xpath="@OrderNumber"/>
+    </xs:unique>
+  </xs:element>
+  <xs:complexType name="DEFINEcomplexTypeDefinition-ValueListDef">
+    <xs:annotation><xs:documentation>All references to the value attributes definitions are grouped beneath the ValueListDef element.</xs:documentation></xs:annotation>
+    <xs:sequence>
+      <xs:group ref="def:ValueListDefElementPreExtension" minOccurs="0" maxOccurs="1"/>
+      <xs:element ref="odm:ItemRef" minOccurs="1" maxOccurs="unbounded">
+        <xs:annotation><xs:documentation>The ItemRef element contains the reference to the value attributes definitions.</xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:group ref="def:ValueListDefElementPostExtension" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+    <xs:attribute name="OID" type="odm:oid" use="required">
+       <xs:annotation><xs:documentation>Unique identifier for the ValueList.</xs:documentation></xs:annotation>
+    </xs:attribute>
+    <xs:attributeGroup ref="def:ValueListDefAttributeExtension"/>
+  </xs:complexType>
+
+
+   <!--
+         WhereClause
+     -->
+  <xs:element name="WhereClauseRef" type="def:DEFINEcomplexTypeDefinition-WhereClauseRef"/>
+  <xs:complexType name="DEFINEcomplexTypeDefinition-WhereClauseRef">
+    <xs:annotation><xs:documentation>Each Value Level Metadata definition may have a Where clause attached to it to describe when that Value applies.</xs:documentation></xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="odm:text">
+        <xs:attribute name="WhereClauseOID" type="odm:oidref" use="required">
+        <xs:annotation><xs:documentation>The WhereClause identifier that this Value refers to.</xs:documentation></xs:annotation>
+        </xs:attribute>
+        <xs:attributeGroup ref="def:WhereClauseRefAttributeExtension"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:element name="WhereClauseDef" type="def:DEFINEcomplexTypeDefinition-WhereClauseDef"/>
+  <xs:complexType name="DEFINEcomplexTypeDefinition-WhereClauseDef">
+    <xs:annotation><xs:documentation>A WhereClause element defines the conditions under which the definition of a Value applies in a machine readable form.</xs:documentation></xs:annotation>
+    <xs:sequence>
+      <xs:group ref="def:WhereClauseDefElementPreExtension" minOccurs="0" maxOccurs="1"/>
+      <xs:element ref="odm:RangeCheck" minOccurs="1" maxOccurs="unbounded">
+        <xs:annotation><xs:documentation>A WhereClause element defines a condition by using one or more RangeCheck elements. </xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:group ref="def:WhereClauseDefElementPostExtension" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+    <xs:attribute name="OID" type="odm:oid" use="required">
+      <xs:annotation><xs:documentation>Unique identifier for the WhereClause element.</xs:documentation></xs:annotation>
+    </xs:attribute>
+    <xs:attribute ref="def:CommentOID" use="optional">
+      <xs:annotation><xs:documentation>The Comment identifier that this value refers to. Needed when the WhereClause references Items across different domains.
+        The Comment would define any join assumptions.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attributeGroup ref="def:WhereClauseDefAttributeExtension"/>
+  </xs:complexType>
+
+
+   <!--
+         Origin
+     -->
+  <xs:element name="Origin" type="def:DEFINEcomplexTypeDefinition-Origin"/>
+  <xs:complexType name="DEFINEcomplexTypeDefinition-Origin">
+    <xs:annotation><xs:documentation>The Origin element is intended to define the Origin metadata for an Item.</xs:documentation></xs:annotation>
+    <xs:sequence>
+      <xs:group ref="def:OriginElementPreExtension" minOccurs="0" maxOccurs="1"/>
+      <xs:element ref="odm:Description" minOccurs="0" maxOccurs="1">
+        <xs:annotation><xs:documentation>Short description of the origin.</xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element ref="def:DocumentRef" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation><xs:documentation>The DocumentRef element is a container for page references in a PDF file.</xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:group ref="def:OriginElementPostExtension" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+    <xs:attribute name="Type" type="odm:text" use="required">
+      <xs:annotation><xs:documentation>Origin or data source type.</xs:documentation></xs:annotation>
+    </xs:attribute>
+    <xs:attributeGroup ref="def:OriginAttributeExtension"/>
+  </xs:complexType>
+
+
+   <!--
+         PDFPageRef
+     -->
+  <!-- Note that currently Named destinations are only allowed for the Page Refs attribute -->
+  <xs:element name="PDFPageRef" type="def:DEFINEcomplexTypeDefinition-PDFPageRef"/>
+  <xs:complexType name="DEFINEcomplexTypeDefinition-PDFPageRef">
+    <xs:annotation><xs:documentation>This element is the container for CRF page references.</xs:documentation></xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="odm:text">
+        <xs:attribute name="PageRefs" type="odm:text" use="optional">
+          <xs:annotation><xs:documentation>List of PDF pages separated by a space.</xs:documentation></xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="FirstPage" type="odm:integer" use="optional">
+          <xs:annotation><xs:documentation>First page in a range of pages.</xs:documentation></xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="LastPage" type="odm:integer" use="optional">
+          <xs:annotation><xs:documentation>Last page in a range of pages.</xs:documentation></xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Type" type="def:pdfpagetype"  use="required">
+          <xs:annotation><xs:documentation>Type of page for page references indicated in the PageRefs attribute.</xs:documentation></xs:annotation>
+        </xs:attribute>
+        <xs:attributeGroup ref="def:PDFPageRefAttributeExtension"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+
+   <!--
+         ItemGroupDef
+     -->
+  <xs:attribute name="Structure" type="odm:text">
+    <xs:annotation><xs:documentation>Text description of the level of detail represented by individual records in the dataset.</xs:documentation></xs:annotation>
+  </xs:attribute>
+  <!--
+    DomainKeys replace by ItemRef/@KeySequence
+  <xs:attribute name="DomainKeys" type="odm:text">
+    <xs:annotation><xs:documentation>Space-separated list of variable names that comprise the natural key for a domain.</xs:documentation></xs:annotation>
+  </xs:attribute>
+  -->
+  <xs:attribute name="Class" type="odm:text">
+    <xs:annotation><xs:documentation>General class of the data domain.</xs:documentation></xs:annotation>
+  </xs:attribute>
+  <xs:attribute name="ArchiveLocationID" type="odm:text">
+    <xs:annotation><xs:documentation>Unique identifier of the def:leaf element that provides the actual location and file name of  the SAS transport file.</xs:documentation></xs:annotation>
+  </xs:attribute>
+
+
+   <!--
+         ItemDef
+     -->
+  <xs:attribute name="DisplayFormat" type="odm:text">
+    <xs:annotation><xs:documentation>Display format for numeric float variables in the form of m.n where m is an integer representing the number of characters including the decimal point and n is an integer representing the number of places following the decimal point.</xs:documentation></xs:annotation>
+  </xs:attribute>
+
+
+   <!--
+         CodeListItem
+     -->
+  <xs:attribute name="ExtendedValue" type="odm:YesOnly">
+    <xs:annotation><xs:documentation>Indicator for a coded value that has been used by the sponsor to extend external controlled terminology.</xs:documentation></xs:annotation>
+  </xs:attribute>
+
+
+   <!--
+         Comment
+     -->
+  <xs:element name="CommentDef" type="def:DEFINEcomplexTypeDefinition-CommentDef"/>
+  <xs:complexType name="DEFINEcomplexTypeDefinition-CommentDef">
+    <xs:annotation><xs:documentation>The Comment element allows referencing short comments self-contained in the Define-XML document or long comments normally included in external documents. For comments included in external documents, the reference could include specific pages of a document where the comments are included.</xs:documentation></xs:annotation>
+    <xs:sequence>
+      <xs:group ref="def:CommentDefElementPreExtension" minOccurs="0" maxOccurs="1"/>
+      <xs:element ref="odm:Description" minOccurs="0" maxOccurs="1">
+       <xs:annotation><xs:documentation>Short comment for a datset or variable.</xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element ref="def:DocumentRef" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation><xs:documentation>The DocumentRef element is a container for page references in a PDF file.</xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:group ref="def:CommentDefElementPostExtension" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+    <xs:attribute name="OID" type="odm:oid" use="required">
+      <xs:annotation><xs:documentation>Unique identifier of the comment within the XML document.</xs:documentation></xs:annotation>
+    </xs:attribute>
+    <xs:attributeGroup ref="def:CommentDefAttributeExtension"/>
+  </xs:complexType>
+
+
+   <!--
+         leaf
+     -->
+    <xs:element name="leaf" type="def:DEFINEcomplexTypeDefinition-leaf"/>
+    <xs:complexType name="DEFINEcomplexTypeDefinition-leaf">
+      <xs:annotation><xs:documentation>Contains the XLink information referenced by def:DocumentRef or def:ArchiveLocationID</xs:documentation></xs:annotation>
+      <xs:sequence>
+        <xs:group ref="def:leafElementPreExtension" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="title" minOccurs="1" maxOccurs="1">
+          <xs:annotation><xs:documentation>Text with the label for the document or dataset.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:group ref="def:leafElementPostExtension" minOccurs="0" maxOccurs="1"/>
+      </xs:sequence>
+      <xs:attribute name="ID" type="xs:ID" use="required">
+        <xs:annotation><xs:documentation>Unique identifier for the leaf that is referenced.</xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute ref="xlink:href" use="required">
+        <xs:annotation><xs:documentation>URL that can be used to identify the location of a document or dataset file relative to the folder containing the Define-XML file.</xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attributeGroup ref="def:leafAttributeExtension"/>
+    </xs:complexType>
+
+  <!--
+         Various
+     -->
+  <xs:attribute name="ItemOID" type="odm:oidref">
+      <xs:annotation><xs:documentation>Unique identifier for an ItemDef element.</xs:documentation></xs:annotation>
+  </xs:attribute>
+  <xs:attribute name="CommentOID" type="odm:oidref">
+    <xs:annotation><xs:documentation>Unique identifier for a Comment element.</xs:documentation></xs:annotation>
+  </xs:attribute>
+  <xs:attribute name="leafID" type="xs:IDREF">
+    <xs:annotation><xs:documentation>Unique identifier for a leaf element.</xs:documentation></xs:annotation>
+  </xs:attribute>
+
+  <!--
+     +===========================================================================+
+     | Simple Types/Enumerations                                                 |
+     +===========================================================================+
+   -->
+
+  <xs:simpleType name="pdfpagetype">
+    <xs:annotation><xs:documentation>Type of page for PDF page references.</xs:documentation></xs:annotation>
+    <xs:restriction base="xs:NMTOKEN">
+      <xs:enumeration value="PhysicalRef" />
+      <xs:enumeration value="NamedDestination" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!--
+     +===========================================================================+
+     | these are purposely empty attributeGroups to permit vendor extensions to  |
+     | the corresponding elements via the standard XML-Schema redefine mechanism |
+     +===========================================================================+
+   -->
+  <xs:attributeGroup name="DocumentRefAttributeExtension"></xs:attributeGroup>
+  <xs:attributeGroup name="AnnotatedCRFAttributeExtension"></xs:attributeGroup>
+  <xs:attributeGroup name="SupplementalDocAttributeExtension"></xs:attributeGroup>
+  <xs:attributeGroup name="ValueListRefAttributeExtension"></xs:attributeGroup>
+  <xs:attributeGroup name="ValueListDefAttributeExtension"></xs:attributeGroup>
+  <xs:attributeGroup name="WhereClauseRefAttributeExtension"></xs:attributeGroup>
+  <xs:attributeGroup name="WhereClauseDefAttributeExtension"></xs:attributeGroup>
+  <xs:attributeGroup name="OriginAttributeExtension"></xs:attributeGroup>
+  <xs:attributeGroup name="PDFPageRefAttributeExtension"></xs:attributeGroup>
+  <xs:attributeGroup name="CommentDefAttributeExtension"></xs:attributeGroup>
+  <xs:attributeGroup name="leafAttributeExtension"></xs:attributeGroup>
+
+  <!--
+     +=============================================================================+
+     | these are purposely empty element Groups to permit vendor extensions to the |
+     | corresponding elements via the standard XML-Schema redefine mechanism       |
+     +=============================================================================+
+   -->
+  <xs:group name="DocumentRefElementPreExtension"><xs:sequence/></xs:group>
+  <xs:group name="DocumentRefElementPostExtension"><xs:sequence/></xs:group>
+  <xs:group name="AnnotatedCRFElementPreExtension"><xs:sequence/></xs:group>
+  <xs:group name="AnnotatedCRFElementPostExtension"><xs:sequence/></xs:group>
+  <xs:group name="SupplementalDocElementPreExtension"><xs:sequence/></xs:group>
+  <xs:group name="SupplementalDocElementPostExtension"><xs:sequence/></xs:group>
+  <xs:group name="ValueListDefElementPreExtension"><xs:sequence/></xs:group>
+  <xs:group name="ValueListDefElementPostExtension"><xs:sequence/></xs:group>
+  <xs:group name="WhereClauseDefElementPreExtension"><xs:sequence/></xs:group>
+  <xs:group name="WhereClauseDefElementPostExtension"><xs:sequence/></xs:group>
+  <xs:group name="OriginElementPreExtension"><xs:sequence/></xs:group>
+  <xs:group name="OriginElementPostExtension"><xs:sequence/></xs:group>
+  <xs:group name="CommentDefElementPreExtension"><xs:sequence/></xs:group>
+  <xs:group name="CommentDefElementPostExtension"><xs:sequence/></xs:group>
+  <xs:group name="leafElementPreExtension"><xs:sequence/></xs:group>
+  <xs:group name="leafElementPostExtension"><xs:sequence/></xs:group>
+
+
+</xs:schema>

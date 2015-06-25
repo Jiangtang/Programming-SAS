@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xs:schema targetNamespace="http://www.cdisc.org/ns/odm/v1.2" 
+           xmlns="http://www.cdisc.org/ns/odm/v1.2"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+
+
+           xmlns:def="http://www.cdisc.org/ns/def/v1.0" 
+           xmlns:odm="http://www.cdisc.org/ns/odm/v1.2" 
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+           
+           
+    <xs:import namespace="http://www.cdisc.org/ns/def/v1.0" schemaLocation="define-ns.xsd"/>
+
+
+    <xs:redefine schemaLocation="../cdisc-odm-1.2.1/ODM1-2-1-foundation.xsd">
+
+    <!--  
+          MetaDataVersion
+      -->
+      <xs:attributeGroup name="MetaDataVersionAttributeExtension">
+      <xs:attributeGroup  ref="MetaDataVersionAttributeExtension"/>
+          <xs:attribute ref="def:DefineVersion"      use="required"/>
+          <xs:attribute ref="def:StandardName"    use="required"/>
+          <xs:attribute ref="def:StandardVersion" use="required"/>
+      </xs:attributeGroup>
+
+      <xs:group name="MetaDataVersionPreIncludeElementExtension">
+            <xs:sequence>
+              <xs:group ref="MetaDataVersionPreIncludeElementExtension"/>
+              <xs:element ref="def:AnnotatedCRF" minOccurs="0" maxOccurs="unbounded"/>
+              <xs:element ref="def:SupplementalDoc" minOccurs="0" maxOccurs="unbounded"/>
+              <xs:element ref="def:leaf" minOccurs="0" maxOccurs="unbounded"/>
+              <xs:element ref="def:ComputationMethod" minOccurs="0" maxOccurs="unbounded"/>
+              <xs:element ref="def:ValueListDef" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+      </xs:group>
+
+
+   
+    <!--  
+          ItemGroupDef 
+      -->
+      <xs:attributeGroup name="ItemGroupDefAttributeExtension">
+      <xs:attributeGroup  ref="ItemGroupDefAttributeExtension"/>
+          <xs:attribute ref="def:Label" use="required"/>
+          <xs:attribute ref="def:Class"/>
+          <xs:attribute ref="def:Structure"/>
+          <xs:attribute ref="def:DomainKeys"/>
+          <xs:attribute ref="def:ArchiveLocationID" use="required"/>
+      </xs:attributeGroup>
+    
+      <xs:group name="ItemGroupDefElementExtension">
+         <xs:sequence>
+            <xs:group ref="ItemGroupDefElementExtension"/>
+            <xs:element ref="def:leaf" minOccurs="0" maxOccurs="unbounded"/>
+         </xs:sequence>
+      </xs:group>
+    
+
+
+    <!--  
+          ItemDef
+          Label attribute is also valid on ItemDef Element
+      -->
+      <xs:attributeGroup name="ItemDefAttributeExtension">
+      <xs:attributeGroup  ref="ItemDefAttributeExtension"/>
+          <xs:attribute ref="def:Label"/>
+          <xs:attribute ref="def:DisplayFormat"/>
+  	   <xs:attribute ref="def:ComputationMethodOID"/>
+      </xs:attributeGroup>
+    
+      <xs:group name="ItemDefElementExtension">
+          <xs:sequence>
+              <xs:group ref="ItemDefElementExtension"/>
+              <xs:element ref="def:ValueListRef" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+       </xs:group>
+
+
+
+    <!--  
+          CodeListItem
+      -->
+      <xs:attributeGroup name="CodeListItemAttributeExtension">
+      <xs:attributeGroup  ref="CodeListItemAttributeExtension"/>
+          <xs:attribute ref="def:Rank"/>
+      </xs:attributeGroup>
+    
+    
+    </xs:redefine>
+
+    
+</xs:schema>

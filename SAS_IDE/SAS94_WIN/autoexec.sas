@@ -13,6 +13,7 @@
 %inc "&_dir.\DMS_setup.sas";
 
 options EXTENDOBSCOUNTER=NO;
+options cmdmac;
 *options encoding="utf-8";
 
 options mautosource sasautos=(sasautos,

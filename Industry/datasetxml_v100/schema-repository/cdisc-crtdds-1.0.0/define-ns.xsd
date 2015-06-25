@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xs:schema targetNamespace="http://www.cdisc.org/ns/def/v1.0" 
+           xmlns="http://www.w3.org/2001/XMLSchema" 
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+
+           xmlns:xlink="http://www.w3.org/1999/xlink" 
+           xmlns:odm="http://www.cdisc.org/ns/odm/v1.2" 
+           xmlns:def="http://www.cdisc.org/ns/def/v1.0" 
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+
+    <xs:import namespace="http://www.w3.org/1999/xlink"     schemaLocation="../core/xlink.xsd"/>
+    <xs:import namespace="http://www.cdisc.org/ns/odm/v1.2" schemaLocation="../cdisc-odm-1.2.1/ODM1-2-1.xsd"/>
+
+
+   <!--  
+         MetaDataVersion
+         
+         we are purposefully using xs:id and xs:idref on the 
+         def:leaf and def:DocumentRef constructs to force parsers
+         to validate whether these intended match pairs are actually
+         present in the define file. under standard ODM usage, the OID 
+         and OIDref are NOT schema ID types to circumvent this checking.
+     -->
+     
+   <xs:complexType name="DEFINEcomplexTypeDefinition-DocumentRef">
+     <xs:simpleContent>
+       <xs:extension base="string">
+	      <xs:attribute name="leafID" type="xs:IDREF" use="required"/>
+       </xs:extension>
+     </xs:simpleContent>
+   </xs:complexType>
+        
+   <xs:element name="DocumentRef" type="def:DEFINEcomplexTypeDefinition-DocumentRef" />
+
+	<xs:element name="AnnotatedCRF">
+	   <xs:complexType>
+	      <xs:sequence>
+	         <xs:element ref="def:DocumentRef" minOccurs="1" maxOccurs="unbounded"/>
+	      </xs:sequence>
+	   </xs:complexType>
+	</xs:element>
+
+	<xs:element name="SupplementalDoc">
+	   <xs:complexType>
+	      <xs:sequence>
+	         <xs:element ref="def:DocumentRef" minOccurs="1" maxOccurs="unbounded"/>
+	      </xs:sequence>
+	   </xs:complexType>
+	</xs:element>
+
+	<xs:attribute name="DefineVersion" type="string"/>
+               <xs:attribute name="StandardName" type="string"/>
+               <xs:attribute name="StandardVersion" type="string"/>
+
+	<xs:element name="leaf">
+	   <xs:complexType>
+	      <xs:sequence>
+	         <xs:element name="title" minOccurs="1" maxOccurs="unbounded"/>
+	      </xs:sequence>
+	      <xs:attribute name="ID" type="xs:ID" use="required"/>
+	      <xs:attribute ref="xlink:href" use="required"/>
+	   </xs:complexType>
+	</xs:element>
+
+
+	 <xs:element name="ComputationMethod">
+       <xs:complexType>
+         <xs:simpleContent>
+           <xs:extension base="string">
+              <xs:attribute name="OID" type="odm:oid" use="required"/>
+           </xs:extension>
+         </xs:simpleContent>
+        </xs:complexType>
+	 </xs:element>
+    
+	 <xs:element name="ValueListDef">
+	    <xs:complexType>
+	       <xs:sequence>
+	          <xs:element ref="odm:ItemRef" minOccurs="1" maxOccurs="unbounded"/>
+	       </xs:sequence>
+	       <xs:attribute name="OID" type="string" use="required"/>
+	    </xs:complexType>
+	 </xs:element>
+
+
+   <!--  
+         ItemGroupDef
+     -->
+	<xs:attribute name="Label" type="string"/>
+	<xs:attribute name="Structure" type="string"/>
+	<xs:attribute name="DomainKeys" type="string"/>
+	<xs:attribute name="Class" type="string"/>
+	<xs:attribute name="ArchiveLocationID" type="string"/>
+
+
+
+   <!--  
+         ItemDef
+         Label attribute is also valid on ItemDef Element
+     -->
+	<xs:attribute name="DisplayFormat" type="string"/>
+	<xs:attribute name="ComputationMethodOID" type="string"/>
+
+	<xs:element name="ValueListRef">
+	   <xs:complexType>
+	      <xs:attribute name="ValueListOID" type="string" use="required"/>
+	   </xs:complexType>
+	</xs:element>
+
+
+   <!--  
+         CodeListItem
+     -->
+	<xs:attribute name="Rank" type="float"/>
+
+
+
+
+</xs:schema>
