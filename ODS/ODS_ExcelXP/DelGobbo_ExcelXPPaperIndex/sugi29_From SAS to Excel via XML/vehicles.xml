@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="windows-1252" ?>
+<VEHICLES>
+  <FORD>
+    <ROW>
+      <Model>Mustang</Model>
+      <Year>1965</Year>
+    </ROW>
+    <ROW>
+      <Model>Explorer</Model>
+      <Year>1982</Year>
+    </ROW>
+    <ROW>
+      <Model>Taurus</Model>
+      <Year>1998</Year>
+    </ROW>
+    <ROW>
+      <Model>F150</Model>
+      <Year>2000</Year>
+    </ROW>
+  </FORD>
+</VEHICLES>
