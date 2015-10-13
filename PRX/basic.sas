@@ -16,6 +16,10 @@ CALL PRXCHANGE -- Performs a pattern-matching replacement.
 CALL PRXDEBUG -- Enables Perl regular expressions in a DATA step to send debugging output to the SAS log. 
 CALL PRXFREE -- Frees memory that was allocated for a Perl regular expression.
 
+
+
+---use find(); never use index()
+
 */
 
 
