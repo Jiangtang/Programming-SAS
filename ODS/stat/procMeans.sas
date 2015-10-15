@@ -214,7 +214,7 @@ proc template;
 
       define probt;
          define header hprobt; 
-             text  "P:@ P{X > |t|} = tail * [1 - probt(t,df)]@Note: you can also calculate tCritic = tinv(1 - alpha/tail,df)";  
+             text  "P:@ P{X > |t|} = tail * (1 - probt(t,df))@Note: you can also calculate tCritic = tinv(1 - alpha/tail,df)";  
              text2 "PROBT";
              split = '@';              
          end;

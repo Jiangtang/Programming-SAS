@@ -1,3 +1,8 @@
+/*
+https://communities.sas.com/t5/SAS-Enterprise-Guide/Reading-json-file-into-SAS-using-SAS-enterprise-guide/td-p/205044/page/2
+
+*/
+
 filename foo temp;
 data _null_;
 file foo;
