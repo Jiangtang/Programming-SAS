@@ -5,52 +5,52 @@
 http://blogs.sas.com/content/iml/2011/10/19/four-essential-functions-for-statistical-programmers.html
 
 PDF function: This function is the probability density function. 
-	It returns the probability density at a given point for a variety of distributions. 
-	(For discrete distribution, the PDF function evaluates the probability mass function.)
+    It returns the probability density at a given point for a variety of distributions. 
+    (For discrete distribution, the PDF function evaluates the probability mass function.)
 
 CDF function: This function is the cumulative distribution function. 
-	The CDF returns the probability that an observation from the specified distribution 
-	is less than or equal to a particular value. 
-	For continuous distributions, this is the area under the PDF up to a certain point.
+    The CDF returns the probability that an observation from the specified distribution 
+    is less than or equal to a particular value. 
+    For continuous distributions, this is the area under the PDF up to a certain point.
 
 QUANTILE function: This function is closely related to the CDF function,
-	but solves an inverse problem. Given a probability, P, it returns the smallest value, q, 
-	for which CDF(q) is greater than or equal to P.
+    but solves an inverse problem. Given a probability, P, it returns the smallest value, q, 
+    for which CDF(q) is greater than or equal to P.
 
 
 
 To calculate probablities for discrete distributions, use
-	PDF('distribution', parameters);
+    PDF('distribution', parameters);
 
 To calcualte P(X <= x), use 
-	CDF('distribution', parameters);
+    CDF('distribution', parameters);
 
 */
 
 
 
 data _null_;
-	* Assume X ~ B(15,0.2), P(X = 3);
-	*binomial PDF('BINOMIAL',k,p,n);
-	binom = PDF('BINOMIAL',3,0.2,15);
+    * Assume X ~ B(15,0.2), P(X = 3);
+    *binomial PDF('BINOMIAL',k,p,n);
+    binom = PDF('BINOMIAL',3,0.2,15);
 
-	* X ~ Poisson, lambda= 2, P(X= 3);
-	*Poisson PDF('POISSON',k,lambda);
-	poisson = PDF('POISSON',3,2);
+    * X ~ Poisson, lambda= 2, P(X= 3);
+    *Poisson PDF('POISSON',k,lambda);
+    poisson = PDF('POISSON',3,2);
 
-	*Assume that X ~Normal(4, 1.2), Calculate P(X <= 3);
-	*Normal CDF('NORMAL',k,mu,standard deviation);
-	normal = CDF('NORMAL',3,4,1.2);
+    *Assume that X ~Normal(4, 1.2), Calculate P(X <= 3);
+    *Normal CDF('NORMAL',k,mu,standard deviation);
+    normal = CDF('NORMAL',3,4,1.2);
 
-	*Assume that X ~Uniform over [1,2], Calculate P(X < 1.4) ;
-	*Uniform CDF('UNIFORM',k,a,b);
-	uniform = CDF('UNIFORM',1.4,1,2);
+    *Assume that X ~Uniform over [1,2], Calculate P(X < 1.4) ;
+    *Uniform CDF('UNIFORM',k,a,b);
+    uniform = CDF('UNIFORM',1.4,1,2);
 
-	*X ~ Exponential, lambda=2, P(X = 3);
-	*Exponential CDF('EXPONENTIAL',k,1/lambda);
-	exponential = CDF('EXPONENTIAL',3,0.5);
+    *X ~ Exponential, lambda=2, P(X = 3);
+    *Exponential CDF('EXPONENTIAL',k,1/lambda);
+    exponential = CDF('EXPONENTIAL',3,0.5);
 
-	put _all_;
+    put (_all_) (=/);
 run;
 
 /* PROBNORM computes normal probabilities
@@ -66,38 +66,38 @@ Suppose our random variable Z is standard normal
 
 
 data _null_;
-	
-	*the probability Z is between 0 and 1.24;
-	normp1 = probnorm(1.24) - probnorm(0);
-	
-	*the probability Z is greater than 1.24;
-	normp2 = 1 - probnorm(1.24);
+    
+    *the probability Z is between 0 and 1.24;
+    normp1 = probnorm(1.24) - probnorm(0);
+    
+    *the probability Z is greater than 1.24;
+    normp2 = 1 - probnorm(1.24);
 
-	*the probability Z is less than 1.24;
-	normp3 = probnorm(1.24);
+    *the probability Z is less than 1.24;
+    normp3 = probnorm(1.24);
 
-	*the probability Z is between -0.54 and 0;
-	normp4 = probnorm(0) - probnorm(-0.54);
+    *the probability Z is between -0.54 and 0;
+    normp4 = probnorm(0) - probnorm(-0.54);
 
-	*the probability Z is less than -0.54;
-	normp5 = probnorm(-0.54);
+    *the probability Z is less than -0.54;
+    normp5 = probnorm(-0.54);
 
-	* the probability Z is between -1.75 and -0.79;
-	normp6 = probnorm(-0.79) - probnorm(-1.75);
+    * the probability Z is between -1.75 and -0.79;
+    normp6 = probnorm(-0.79) - probnorm(-1.75);
 
-	*the probability Z is between -0.79 and 1.16;
-	normp7 = probnorm(1.16) - probnorm(-0.79);
+    *the probability Z is between -0.79 and 1.16;
+    normp7 = probnorm(1.16) - probnorm(-0.79);
 
 /*
   What if X is normal with mean 266 and standard deviation 16 (like the pregnancy 
  example in class)?  If you're clever, you can let SAS standardize for you, 
  as the eighth example here will show: 
  8. What is the probability X is between 260 and 280? 
-	*/
+    */
 
-	normp8 = probnorm((280-266)/16) - probnorm((260-266)/16);
+    normp8 = probnorm((280-266)/16) - probnorm((260-266)/16);
 
-	put _all_;
+   put (_all_) (=/);
 run;
 
 
@@ -148,6 +148,8 @@ data;
 
    x = quantile('NORMAL', .90 , 266 , 16); /* The 90th percentile of the normal distribution with mean 
                           266 and standard deviation 16 */
+
+   put (_all_) (=/);
 
 run;
 
