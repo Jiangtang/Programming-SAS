@@ -1,0 +1,130 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="learn Unix Spectre">
+   <meta name="Description" content="Learning Unix for Spectre">
+   <title>Learning Unix</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Learning Unix</h1></center>
+
+<h2>
+Introduction</h2>
+It is a common conception among programmers working on Unix platforms that
+so long as they have a working knowledge of the common Unix commands then
+they know enough about Unix. This is true in most cases. But if you are
+using Spectre, then as you get more proficient with it, your speed and
+therefore your workload will increase to the point where you are responsible
+for perhaps hundreds of programs at a time. To help you cope with this,
+Spectre has many utilities to help you organise your work and you need
+to have an awareness of them. But you will still find that you need to
+know more about Unix beyond what is usual and understand "<b>redirection</b>",
+"<b>piping</b>" and "<b>substitution</b>" and use these where appropriate.
+You have maybe never heard of these terms. Programmers who move into Spectre
+Administration or a Spectre technical support role will need to know how
+to maintain or write simple <b>shell scripts</b>, which is at a higher
+level of knowledge. For more complex shell scripts, you will need to know
+some of the more powerful tools for this, such as <b>gawk</b>, which is
+more complicated still.
+<h2>
+Common Unix Commands</h2>
+The document you can link to below is aimed at programmers using Spectre.
+After you have worked through it and tried out the examples then you should
+know enough about Unix to be able to cope with the increased workload that
+might be the result of using Spectre. In addition to what is contained
+in the document, you should be thoroughly familiar with the utility scripts
+that come with Spectre which are described on another page of this web
+site that you can link to <a href="scripts/util.html">here</a>.
+<p><a href="unixcom.html">Common Unix Commands</a>
+<h2>
+Writing bash shell scripts</h2>
+I taught myself to write shell scripts. I have to admit that I found it
+difficult but maybe it would have been easier if I had sent myself on some
+courses. If you are a programmer who wants to learn to write shell scripts
+then it is unlikely you will be sent on courses for this so you will have
+to be self taught as well. At least you can benefit from my experience
+using the following document. It should be enough to get you started, at
+least.
+<p><a href="bashscr.html">Writing bash shell scripts</a>
+<h2>
+Writing shell scripts that call SAS&reg; software</h2>
+If you are a programmer using Spectre then you might end up choosing to
+do all your development work in batch. Spectre favours the raw Unix environment
+and working on programs in batch mode because great speed can be achieved
+once you know the Unix environment well. But working in batch, you will
+still need to know things like the contents of datasets, formats etc. that
+you would normally get from an interactive session. But it is an easy matter
+to have shell scripts that call SAS software to give you this information.
+Spectre has many scripts that call SAS software, such as <a href="scripts/contentsl">contentsl</a>that
+gives you details about a SAS software dataset. These scripts that call
+SAS software are very easy to write. The only hard part of it is the SAS
+software code itself but if you are a programmer who uses SAS software
+then that shouldn't be a problem. Find out more about it in the link below.
+<p><a href="sasscr.html">Writing shell scripts that call SAS&reg; software</a>
+<h2>
+Writing gawk programs</h2>
+Sometimes you will need a script that has to do a lot of text manipulation
+like you may have to do with SAS software from time to time. You can use
+SAS software in a shell script, and many of the utility scripts that come
+with Spectre do this, but SAS software is slow to invoke and for cases
+where SAS software datasets are not being read or written it is better
+to use the language <b>gawk</b> for this. If you have written code for
+SAS/AF&reg; applications then you will notice that gawk is similar as you
+can have a block of code that is run at the start, a main block of code
+and a block of code that can be run at the end. You will see familiar functions
+in gawk such as substr() that work in an identical way to SAS software
+code. A superior language to gawk is Perl and if you had to make a choice
+between learning either of those two languages then you should learn Perl,
+but I learned gawk because it was more familiar to me due to all the SAS/AF
+applications I had written in the past. The script "<b>getitles</b>" will
+likely need to be tailored for your site. This is the script that extracts
+the titles from the first ten lines of your output reports so that it can
+be used in a PDF bookmark. This is mainly a gawk program. You can link
+to getitles below to see what it looks like or learn more about gawk by
+linking to "Writing gawk programs" below.
+<br><a href="scripts/getitles" target="_blank">getitles</a>
+<p><a href="gawk.html">Writing gawk programs</a>
+<h2>
+Conclusion</h2>
+If you are a programmer working with Spectre then at some stage you will
+need to increase your level of skill with Unix to match what is found in
+the "Common Unix Commands" document above. Spectre is aimed at making programmers
+who use it highly productive so this skill will help you manage hundreds
+of programs at a time. If you are the Spectre Administrator or Spectre
+technical support then it would be useful if you could maintain and write
+simple shell scripts in addition, so knowing what is in "Writing bash shell
+scripts" and "Writing shell scripts that call SAS software" should help.
+Being able to write gawk programs would be of extra benefit as someone
+will have to maintain the script "<b>getitles</b>", which uses gawk, that
+is an essential script used by Spectre to extract titles from output reports.
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+</html>

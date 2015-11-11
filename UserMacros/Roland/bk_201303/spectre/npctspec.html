@@ -1,0 +1,114 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="%npcttab design specification">
+   <meta name="KeyWords" content="%npcttab design specification">
+   <title>%npcttab design specification</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+%npcttab design specification</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 03 Jun 2006)</b></center>
+
+<h2>
+Introduction</h2>
+This document specifies the programming design for the %npcttab macro.
+An overview of what the macro does is on the page you linked from. If you
+want to see the macro dependencies then click <a href="macdep.html#npcttab" target="_blank">here</a>.
+<h2>
+Design specification</h2>
+
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Initial processing on macro invocation:</tt>
+<br><tt>&nbsp;&nbsp; Declare local macro variable</tt>
+<p><tt>Check for enough parameters set:</tt>
+<br><tt>&nbsp;&nbsp; (Check all parameters for specification mistakes and
+report findings and abort at end of checking if an error is found).</tt>
+<p><tt>Assign parameter defaults:</tt>
+<p><tt>Store line size:</tt>
+<p><tt>Add total treatment group:</tt>
+<br><tt>&nbsp;&nbsp; Repeat all the input observations for the total treatment
+group (do whether requested or not)</tt>
+<p><tt>Create a report for no data:</tt>
+<br><tt>&nbsp;&nbsp; If there is no input data then call the macro defined
+to nodata= to deal with it</tt>
+<p><tt>Sort input data ready for a filter step (if performed):</tt>
+<br><tt>&nbsp;&nbsp; (this will be done if anywhen=after is set)</tt>
+<p><tt>Filter for anywhen=after:</tt>
+<br><tt>&nbsp;&nbsp; (this is not done first time through)</tt>
+<p><tt>Summarize for events:</tt>
+<br><tt>&nbsp;&nbsp; (only done if events=Y)</tt>
+<br><tt>&nbsp;&nbsp; Summarize for low level, mid level and high level
+events</tt>
+<p><tt>Get rid of duplicates from input data:</tt>
+<br><tt>&nbsp;&nbsp; (now we have the event totals we want to drop duplicates
+for subjects so we get the unique subjects)</tt>
+<p><tt>Summarize for unique subjects:</tt>
+<br><tt>&nbsp;&nbsp; Summarize for low level, mid level and high level
+events</tt>
+<br><tt>&nbsp;&nbsp; Merge in event counts if requested</tt>
+<br><tt>&nbsp;&nbsp; Set up an "any low level term" which is really the
+mid level subject count</tt>
+<p><tt>Add in the "any low level term":</tt>
+<br><tt>&nbsp;&nbsp; Include the "any low level term" with the rest of
+the low level terms</tt>
+<p><tt>Create a zero grid of subject count:</tt>
+<br><tt>&nbsp;&nbsp; Create zeroes for all subject counts for all combinations</tt>
+<p><tt>Merge on top of zero values:</tt>
+<br><tt>&nbsp;&nbsp; Merge the real subject counts on top of the zero grid</tt>
+<p><tt>Calculate percentages:</tt>
+<br><tt>&nbsp;&nbsp; Calculate percentages based on the population total
+dataset and set up _str which will have the subject count, percentage and
+the event count (the latter if requested)&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; Set _str to spaces if the subject count is zero as
+well as the population total zero</tt>
+<p><tt>Calculate p-values:</tt>
+<br><tt>&nbsp;&nbsp; If requested, call %npctpvals to calculate p-values</tt>
+<p><tt>Transpose the datasets:</tt>
+<br><tt>&nbsp;&nbsp; Transpose all the datasets using the treatment arm
+as the ID value</tt>
+<br><tt>&nbsp;&nbsp; Merge the separate transposed dataset back together
+and add the pvalue dataset if created</tt>
+<p><tt>minpct= and mincount= processing:</tt>
+<br><tt>&nbsp;&nbsp; (If either of these is set then filter according to
+the value specified. Filtering is done against the treatment arm value
+defined to trtord= which be default is the total of all treatment arms).</tt>
+<p><tt>minpctany= and mincountany= processing:</tt>
+<br><tt>&nbsp;&nbsp; (If either of these is set then filter according to
+the value specified. This applies to all treatment arms).</tt>
+<p><tt>anywhen=after processing:</tt>
+<br><tt>&nbsp;&nbsp; (If anywhen=Y then from the data we have left, create
+a summary dataset with just those terms in so we can select the input data
+with only those terms).</tt>
+<br><tt>&nbsp;&nbsp; Branch to the filter step above ("Filter for anywhen=after")</tt>
+<p><tt>Add default high level ordering variable if none specified (the
+inverse of the count):</tt>
+<p><tt>Add default mid level ordering variable if none specified (the inverse
+of the count):</tt>
+<p><tt>Add default low level ordering variable if none specified (the inverse
+of the count):</tt>
+<p><tt>Set default level ordering variables:</tt>
+<p><tt>Calculate report width:</tt>
+<p><tt>Limit the length of the high and mid level character variables:</tt>
+<br><tt>&nbsp;&nbsp; (this is done because these values are shown across
+the page of the report and are not allowed to flow. If they are too long
+then "proc report" will refuse to show them).</tt>
+<p><tt>Produce the report:</tt>
+<p><tt>Delete temporary datasets:</tt>
+<p><tt>Exit %npcttab:</tt></td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+This concludes the programming design specification for the %npcttab macro.
+</body>
+</html>

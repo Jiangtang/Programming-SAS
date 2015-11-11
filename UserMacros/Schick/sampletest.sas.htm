@@ -1,0 +1,474 @@
+*<PRE>;
+options nosource;
+
+/*  DO_ITALL - CREATES SAMPLES BY DIFFERENT SAMPLE SIZES
+               AND TESTS ALL SAMPLES BY GIVEN TEST DISTRIBUTIONS
+               WITH GIVEN ALPHA TO CALCULATE CONFIDENCE INTERVALS
+               AND PRODUCES GRAPHS WITH WISKERS-BOX PLOTS;
+               SELECTION OF SAMPLES BY UNIFORM RANDOM FUNCTION
+               RANUNI(0).
+
+    Written:  October 6 and 7, 2000
+    Developed using SAS 6.12 for Windows
+    Author:   Arnold Schick
+
+    Procs:    PROC MEANS, PROC SORT, PROC GPLOT, PROC APPEND
+    Other:    SAS MACRO language, %SYSFUNC MACRO functions
+    Macros:   INTERVAL and some utilities, like DATE, DATUM, PURGE,
+              all included in the source here.
+              INTERVALL can also be used to test samples separatly
+              (see explanation of macro INTERVAL below).
+
+    Created Data Sets: RESULT with statistic values of every sample.
+                      _LABEL_ to annotate the plot.
+
+    Note:     Do not use _ONE or _TWO or _THREE or _MINMAX_ or
+              RESULT or _LABEL_ as a data set name.
+
+
+    Macro Call: %DO_ITALL(DATA,VAR,ALPHA,MIN,MAX,STEP,DISTRIBUTION);
+
+MACRO VARIABLE      DESCRIPTION
+------------------+-------------------------------------------------
+ In Request:
+
+ DATA               Name of SAS data set with input data.
+                    If the value is SHOWGRAPH or ZEIGEGRAFIK
+                    then it will jump to the plot part and issue
+                    the last produced PLOT only.
+
+ VAR                Analyze variable name of within SAS data set DATA.
+
+ ALPHA              Specifies that confidence intervals
+                    are to be  100(1-p) percent confidence intervals,
+                    where 0.0001 < p < 0.9999.
+
+ MIN                Minimum sample size of first created sample
+                    SAS data set.
+
+ MAX                Maximum sample size of last created sample
+                    SAS data set.
+
+ STEP               Step size of next created sample SAS data sets
+                    Number of created sample SAS data sets
+                    are INT((MAX-MIN)/STEP) from MIN to MAX by STEPs.
+                    Data set names (library WORK) of created samples:
+                    WORK.SAMP<sample size><first letter of distribution>
+
+ DISTRIBUTION       Name of test distribution
+                    where:
+                      T or STUDENT or
+                      GOSSET            t- or Student distribution
+                      NORMAL            normal distribution
+                      F or FISHER       F- or Fisher distributtion
+                      CHI or CHI SQUARE Chi-Square distribution
+                                        note: do not use CHI-SQUARE
+--------------------------------------------------------------------
+
+
+    Macro Call: %INTERVAL(DATA,RESULT,VAR,N,ALPHA,DISTRIBUTION);
+
+MACRO VARIABLE      DESCRIPTION
+------------------+-------------------------------------------------
+ In Request:
+
+ DATA               Name of SAS data set with input data.
+
+ RESULT             Name of SAS data set with result data.
+
+ VAR                Analyze variable name of within SAS data set DATA.
+
+ N                  Number of observations in sample SAS data set RESULT
+
+ ALPHA              Specifies that confidence intervals
+                    are to be  100(1-p) percent confidence intervals,
+                    where 0.0001 < p <0.9999.
+
+ DISTRIBUTION       Name of test distribution
+                    where
+                      T or STUDENT or
+                      GOSSET            t- or Student distribution
+                      NORMAL            normal distribution
+                      F or FISHER       F- or Fisher distributtion
+                      CHI or CHI SQUARE Chi-Square distribution
+                                        note: do not use CHI-SQUARE
+--------------------------------------------------------------------
+
+Example:
+
+data one;
+     keep weight;
+     do i=1 to 1700;
+        weight = 40 + (80-40)*ranuni(0);
+        output;
+     end;
+run;
+
+     *   data,variable,alpha,min,max,step,test distribution ;
+     *     |    |      |      |   |  |    |                 ;
+%do_itALL(one,weight  ,3    , 12,182,40  ,normal);
+%do_itALL(one,weight  ,3    , 15, 85,20  ,chi square);  * use:chi or chi square >>not<< chi-square;
+%do_itALL(one,weight  ,3    , 15, 85,20  ,student);
+%do_itALL(one,weight  ,3    , 15, 85,20  ,fisher);
+
+
+or call INTERVAL separatly:
+
+     *   data,result,variable,sample size,alpha,test distribution ;
+     *     |    |      |      |           |     |  ;
+%interval(one,mydata,weight  ,29         ,3    ,f);
+
+
+
+For more information:
+
+ Arnold Schick
+
+ e-mail: schick@yours.com
+
+ If you  find an error-condition  (it is provided 'as it is')
+ please let me know about this error-condition.  And when you
+ have good tips for better formulation in SAS, let it also know.
+
+  */
+
+
+%macro purge(ds);   /* utilitiy macro to purge a data set */
+  %if %sysfunc(exist(&ds))=1 %then %do;
+      proc delete data=&ds;
+      run;
+  %end;
+%mend;
+
+%macro interval(data,ds_name,var,n,alpha,distrib);
+  %global min max;
+
+  data _one;                /* create uniform order */
+    set &data;
+    _order=ranuni(0);
+  run;
+
+  proc sort data=_one;      /* sort by order */
+     by _order;
+  run;
+
+  data &ds_name (label="&distrib"); /* create data set with sample of size &n */
+     set _one (drop=_order);
+     if _N_ <= &n;
+  run;
+
+  %purge(_one);            /* purge utility data set _ONE */
+
+  %let obs=0;              /* check sample size gt 0  */
+  %let dsid=%sysfunc(open(&ds_name,I));
+  %if &dsid > 0 %then %do;
+      %let obs=%sysfunc(attrn(&dsid,NLOBS));
+      %let dsid=%sysfunc(close(&dsid));
+  %end;
+  %if &obs=0 %then %goto fin;
+
+  proc sort data=&ds_name; /* sort variable by its order */
+       by &var;
+  run;
+                           /* find out statistic values  */
+  proc means data=&ds_name noprint;
+       output out=_two (drop= _type_ _freq_);
+  run;
+
+  data _null_;             /* look up median of sample   */
+    set &ds_name;
+    if _N_ > int(&n/2+0.5) then do;
+      call symput('median',&var);
+      stop;
+    end;
+  run;
+
+  data _three;              /* calculate confidence interval CI */
+    set _two end=last;
+    length ds_name $8. distrib $18. ;
+    retain mean t std n min max;
+    keep ci_u ci_l t std mean n alpha min max median ds_name distrib
+         DF var;
+
+    if compress(_stat_) = "MEAN" then mean= &var;
+    if compress(_stat_) = "N"    then n   = &var;
+    if compress(_stat_) = "STD"  then std = &var;
+    if compress(_stat_) = "MIN"  then min = &var;
+    if compress(_stat_) = "MAX"  then max = &var;
+
+    if last then do;
+      distrib = "&distrib &alpha% CI";
+      var = "&var";
+      _a_ = 1-(&alpha/100/2);
+      alpha = &alpha;
+      %if %upcase(&distrib)=%STR(T) or
+          %upcase(&distrib)=STUDENT %then %do;
+        DF = N-1;
+        t=tinv(_a_,DF);           /* t-Distribution          */
+      %end;
+      %if %upcase(&distrib)=NORMAL %then %do;
+        DF = . ;
+        t=probit(_a_);             /* Normal-Distribution     */
+      %end;
+      %if %upcase(&distrib)=CHI or
+          %upcase(&distrib)=%STR(CHI SQUARE) %then %do;
+        DF = 1;
+        t=cinv(_a_,DF);             /* Chi-Square-Distribution */
+      %end;
+      %if %upcase(&distrib)=FISHER or
+          %upcase(&distrib)=%STR(F) %then %do;
+        DF = N-2;
+        t=finv(_a_,1,DF);         /* Fisher-Distribution     */
+      %end;
+      ci_u = mean + t*std/sqrt(n); /* upper CI */
+      ci_l = mean - t*std/sqrt(n); /* lower CI */
+      put _a_ 9.3 t 12.6 ci_l 10.3 ci_u 10.3 n 6. DF 6. "    WORK.&ds_name";
+      median = &median;
+      ds_name = "&ds_name";
+      call symput('min',min);
+      call symput('max',max);
+      output;
+    end;
+  run;
+
+                                   /* add to the result     */
+  proc append base=result data=_three force;
+  run;
+
+  %purge(_two);                    /* clean up library WORK */
+  %purge(_three);
+
+  %fin : ;
+
+%mend;
+
+
+%macro do_itALL(data,var,a,sampMin,sampMax,sampStep,distrib);
+
+  %macro date;                     /* look up actual date and time */
+    %global DA TI;
+    data _NULL_;
+      x = put(Datepart(datetime()),worddatx.);
+      y = put(TIME(),TIME8.);
+      call symput('DA',x);
+      call symput('TI',y);
+    run;
+  %mend;
+
+  %macro datum;  /* write date and time, call with percent sign !! */
+    &DA &TI
+  %mend;
+
+  %if %upcase(&data)=SHOWGRAPH or %UPCASE(&data)=ZEIGEGRAFIK
+      %then %do;
+         proc sort data=result ( where=(n is not missing) );
+              by n;
+         run;
+         data _NULL_;
+            set result end=last;
+            retain _min;
+            if _N_=1 then do;
+               _min=n;
+               call symput('sampMin',n);
+            end;
+            if last  then do;
+               call symput('sampStep',int((n-_min)/_N_) );
+               call symput('sampMax',n);
+               call symput('var',var);
+            end;
+         run;
+         %goto graph;
+      %end;
+
+                       /* check macro parameters, if these exist   */
+  %if &data= or &var=  or  &a=  %then %do;
+     %put Info: Please check macro parameters, some are missing;
+     %goto fin;
+  %end;
+
+                        /* check sample size parameters            */
+  %if &sampStep=  or &sampStep < 1 %then %do;
+     %put Info: Stepsize &sampStep call parameter must be ge 1;
+     %goto fin;
+  %end;
+
+  %if &sampMin=  or &sampMax=  or &sampMax < &sampMin %then %do;
+     %put Info: no correct sample size min &sampMin or max &sampMin call parameter;
+     %goto fin;
+  %end;
+
+  data _NULL_;          /* check parameter: test distribution      */
+     check = upcase("&distrib");
+     if check in ("CHI" "CHI SQUARE" "F" "FISHER" "T" "STUDENT" "GOSSET" "NORMAL")
+        then ok=1;
+        else ok=0;
+     call symput('ok',ok);
+  run;
+  %if not &ok %then %do;
+     %put Info: Test Distribution &distrib not supported or unknown;
+     %goto fin;
+  %end;
+
+                        /* now, lets go                            */
+  %purge(result);       /* clean up previous results, if any exist */
+
+  data _NULL_;          /* log the header title from this run      */
+    put " "; put " ";
+    put " Creation of Samples from Data=%UPCASE(&data) with variable=%UPCASE(&var), Alpha=&a% ";
+    put "              min  sample size=&sampMin";
+    put "              max  sample size=&sampMax, step sample size=&sampStep";
+    put "   test distribution=&distrib";
+    put " ";
+    put "  t-Quantil     t       lower CI  upper CI    N    DF   Data Set Name";
+  run;
+
+                        /* main loop for all samples with different sizes by &sampStep */
+  %do n=&sampMin %to &sampMax %by &sampStep;
+    %let ds_name=Samp&n.%substr(&distrib,1,1);
+    %interval(&data,&ds_name,&var,&n,&a,&distrib);
+  %end;
+
+  %graph : ;
+                        /* utilities to prepare the PLOT */
+  proc means data=result noprint;
+       var n max;
+       output out=_MINMAX_ min=min_x min_y max=max_x max_y;
+  run;
+
+  data _NULL_;          /* utlitiy to find out MIN MAX area on PLOT */
+    set _MINMAX_;
+    dx = (max_x-min_x)*0.1;
+    dy = (max_y-min_y)*0.1;
+    call symput('min_x',min_x-dx); call symput('min_y',min_y-dy);
+    call symput('max_x',max_x+dx); call symput('max_y',max_y+dy);
+    call symput('dx',dx);          call symput('dy',dy);
+  run;
+  %purge(_MINMAX_);
+
+  data _label_;         /* utility to annotate the PLOT */
+    set result end=last;
+    length function $8. text $18. ;
+    retain x 0 y 0 function ' ' xsys '2' ysys '2' style "zapf   " median
+           size 2 position "3" text min  max ci_l ci_u n;
+    keep function x y xsys ysys style size position text;
+    text = ds_name;
+    x=n;             y=min;        function="MOVE";  output;
+                     y=ci_l;       function="DRAW";  output;
+    x=n-&sampStep/8; y=ci_l;                         output;
+                     y=ci_u;                         output;
+    x=n;                                             output;
+                     y=max;                          output;
+                     y=ci_u;       function="MOVE";  output;
+    x=n+&sampStep/8;               function="DRAW";  output;
+                     y=ci_l;                         output;
+    x=n;                                             output;
+    x=n-&sampStep/8; y=median;     function="MOVE";  output;
+    x=n+&sampStep/8;               function="DRAW";  output;
+    x=n;             y=min;        function="LABEL"; style="simplex"; position="5"; size=0.56; output;
+    x=n;             y=max;        function="LABEL"; style="simplex"; position="2"; text=distrib; output;
+    size=2; style="zapf"; position="3";
+  run;
+
+                        /* SYMBOL statements for the PLOT */
+  symbol1 i=join r=2 color=red    w=1 L=2;
+  symbol2 i=none r=1 color=blue   w=2 v=plus  h=3;
+  symbol3 i=none r=2 color=white;
+
+                        /* range on X-AXIS */
+  %let n_mi=%eval(&sampMin-&sampStep/2);
+  %let n_ma=%eval(&sampMax+&sampStep/2);
+
+                        /* AXIS statements for the PLOT   */
+  axis1 label=("&var");
+  axis2 label=("Sample Size N") order=(&n_mi to &n_ma by &sampStep);
+
+                        /* TITLE statements for the PLOT  */
+  title1  h=0.45 cm  f=zapf "Sample Tests";
+  title2  h=0.27 cm  f=simplex "test distributions and CI niveau are noted at the top";
+  title3  h=0.27 cm  f=simplex "data set names are noted at the bottom";
+
+                        /* FOOTNOTE statements for the PLOT */
+  %date;
+  footnote1 j=r h=0.25 cm f=simplex "produced: %datum ";
+  footnote2 h=0.3 cm " ";
+
+                        /* produce the PLOT */
+  proc gplot data=result;
+    plot ( ci_u ci_l mean min max ) * n / overlay vaxis=axis1
+                                                  haxis=axis2
+                                          annotate=_label_ ;
+  run; quit;
+
+  %goto next;
+  %fin : ;
+  %next : ;
+
+  %put;                 /* put an empty line into log */
+
+%mend;                  /* folk, that is all for now  */
+
+
+
+                        /* needed OPTIONS and GOPTIONS statements */
+options nonotes nomprint nomlogic nosymbolgen nomacrogen ps=2000;
+
+goptions reset=symbol colors=(black blue red green white)
+                      htitle=6 htext=3 gunit=pct border;
+
+* Example;
+
+    data eins;          /* create origin sample  */
+         keep weight;
+         do i=1 to 1700;
+            weight = 40 + (80-40)*ranuni(0);
+            output;
+         end;
+    run;
+
+      *******************************************************;
+      * macro parameters:                                    ;
+      *                       sample size                    ;
+      *   data,variable,alpha,min,max,step,test distribution ;
+      *    |     |      |      |   |  |    |                 ;
+%do_itALL(eins,weight  ,3    , 12,182,40  ,normal);
+%do_itALL(eins,weight  ,3    , 15, 85,20  ,chi square);  * use >>not<< chi-square ;
+%do_itALL(eins,weight  ,3    , 15, 85,20  ,student);
+%do_itALL(eins,weight  ,3    , 15, 85,20  ,fisher);
+      *                                                      ;
+      *   data,result,variable,sample size,alpha,test distribution ;
+      *     |    |       |       |           |     |         ;
+%interval(eins,mdata99t,weight  ,99         ,4    ,t);
+%interval(eins,mdata45n,weight  ,45         ,5    ,normal);
+%do_itALL(showgraph);
+      *                                                      ;
+      *                                    End of Example    ;
+      *******************************************************;
+options notes source;
+*</PRE>;
+<script type="text/javascript" src="http://hb.lycos.com/hb.js"></script>
+<script type="text/javascript" src="http://ratings.lycos.com/ratings/lycosRating.js.php"></script>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var cm_role = "live";
+var cm_host = "tripod.lycos.com";
+var cm_taxid = "/memberembedded";
+var tripod_member_name = "schick";
+var tripod_member_page = "schick/sampletest.sas";
+var tripod_ratings_hash = "1247466536:85400a0b977dcca9714740a8004a219e";
+
+var lycos_ad_category = {"dmoz":"computers\/open_source","ontarget":"&CAT=technology&L2CAT=computing&L3CAT=programming","find_what":"software knowledge base"};
+
+var lycos_ad_remote_addr = "203.125.122.2";
+var lycos_ad_www_server = "www.tripod.lycos.com";
+var lycos_ad_track_small = "http://members.tripod.com/adm/img/common/ot_smallframe.gif?rand=228632";
+var lycos_ad_track_served = "http://members.tripod.com/adm/img/common/ot_adserved.gif?rand=228632";
+//--><!]]></script>
+<script type="text/javascript" src="http://scripts.lycos.com/catman/init.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-start.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-middle.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-end.js"></script>
+<noscript>
+ <img src="http://members.tripod.com/adm/img/common/ot_noscript.gif?rand=228632" alt="" width="1" height="1" />
+ <!-- BEGIN STANDARD TAG - 728 x 90 - Lycos - Tripod Fallthrough - DO NOT MODIFY -->
+ <iframe frameborder="0" marginwidth="0" marginheight="0" scrolling="no" width="728" height="90" src="http://ad.yieldmanager.com/st?ad_type=iframe&ad_size=728x90&section=209094"></iframe>
+ <!-- END TAG -->
+</noscript>

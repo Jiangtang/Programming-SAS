@@ -1,0 +1,141 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="General standards for clinical reports">
+   <meta name="KeyWords" content="General standards clinical reports">
+   <title>General Standards for Clinical Reports</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+General Standards for Clinical Reports</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 21 Mar 2007)</b></center>
+
+<h2>
+Introduction</h2>
+There are a number of standards used in creating clinical reports that
+are not specified anywhere and yet they are commonly used. They are mainly
+standards of the nature "making sure it is all there". An awareness of
+these standards is useful for when you come to create your own reporting
+macros. I will list the standards I know below along with an explanation,
+as well as mention how they are handled by Spectre.
+<h2>
+Page x of Y labels</h2>
+Instead of labelling pages "Page 1", "Page 2" etc., it is standard to have
+pages labelled in the way "Page 1 of N", "Page 2 of N" etc. where "N" is
+the total number of pages. I have never seen any table or listing created
+for submission purposes that is not labelled in this way. The reason the
+total number of pages is shown on every page is to make sure all pages
+are present in the report. I guess this comes from the days of paper submissions
+where there was a possibility that the report file was only partially printed
+so you had to make sure that all the pages were there. Having the total
+number of pages displayed enabled you to check this. This standard is still
+used because even with electronic submission I suppose it is remotely possible
+that a report file could be truncated but in any case, printouts are sometimes
+made from electronically submitted PDFs and it is important to know that
+all the pages have been printed. This "Page x of Y" labelling is for "making
+sure it is all there". Spectre adds these labels where it finds the target
+character "FF"x on a page using either the "pagexofy" script or using the
+%pagexofy macro where the reporting macros are being used outside of the
+full Spectre system. It has macros that can help you put this "FF"x character
+in your title line but you would normally use the client titles macro to
+do this.
+<h2>
+"No data" reports</h2>
+If you have to report on something but you have no data to match then instead
+of not creating the report at all, it is standard to produce a "No Data"
+report. To give an example, this could be "study deaths" and yet none occurred
+during the study so instead of producing no report for this it is better
+to produce a report that has all the normal titles (but usually no footnotes)
+with a message like "NO DATA" clearly shown on the single page. This shows
+that you have not forgotten to produce the report, or that some error resulted
+in no report, but instead you have produced the report letting people know
+that there was no matching data. Spectre comes with a macro %nodata to
+help you create this type of report. The macro has processing to suppress
+footnotes and any "by" title lines which will not be needed for this report.
+<h2>
+Show all treatment arms</h2>
+Sometimes, certain types of Adverse Event will not occur in a treatment
+arm. When producing a table where this is the case, it is better to show
+this treatment arm plugged with zero counts and zero percentages rather
+than not show the treatment arm at all. This lets people know that you
+haven't somehow excluded the treatment arm from the analysis. The two main
+reporting macros %unistats and %npcttab work in this way by creating this
+treatment arm as a variable and plugging it with zeroes.
+<h2>
+Show zero population treatment arms</h2>
+Not only might there be no Adverse Events for a treatment arm, it might
+not even be possible for this to occur because the subset of patients you
+are analysing might not be represented in a treatment arm. Suppose you
+were reporting on paedeatric Adverse Events then none of them might be
+in the highest dosage treatment arm. Instead of leaving out this treatment
+arm then it is better if this arm is shown but with a zero population.
+And since it is not possible for Adverse Events to be in this treatment
+arm and it is also meaningless to calculate percentages of this zero population
+then instead of plugging this arm with zero counts and zero percentages,
+it is better to leave it plugged with spaces. The two main reporting macros
+%unistats and %npcttab work in this way but you must be sure to use the
+third positional parameter of %popfmt so that it can find all the treatment
+arm values you want to show.
+<h2>
+Single line footnotes</h2>
+Less common than it used to be, it was standard to show a single solid
+footnote line even if there were no footnote lines containing information
+that needed to be displayed. This comes from the days of impact printers
+where the ribbon might have run out of ink over a segment or for laser
+printers that might be running low on toner such that the end of a page
+gets missed off. If you see at least one footnote on a page then you know
+that the printing got to the end of the page so it is highly likely that
+all the data has been displayed. Spectre does not enforce this standard
+and you will have to do it in your code if you need it. You can do this
+in the client titles macro if you wish if this is a standard the client
+uses. The %titles macro will put in a blank line as a footnote if none
+were put out by the client titles macro but this is only to ensure the
+page has the full number of lines on it. This is done to help the pages
+print with the correct layout if a non-Spectre printing method is used.
+<h2>
+Alignment of footnotes and titles</h2>
+This standard is nothing to do with "making sure it is all there". Instead
+it lists the most common alignment used for titles and footnotes in clinical
+reports.
+<p>Footnotes are always left-aligned although some footnotes might be deliberately
+indented from the left. Report header lines that may contain the study
+identifier, date of program run, name of program and name of output file
+are usually at the top of the page, are left-aligned and may have text
+placed at the right so that the contents span the full width of the line.
+The "Page x of Y" label is usually in the right-most position of the top
+header line.&nbsp; Title lines that state the title of the report are normally
+centred. "By" title lines are normally left-aligned. The client titles
+macro will automatically left-align footnotes defined in the .titles member
+(but allows you to put in spaces for indentation purposes) through a call
+to the %titlegen macro. Header lines are put out by the client titles macro
+and it is up to the programmer to make sure everything is in the right
+place. If a space is used in front of a title in the .titles member then
+it will be left-aligned by the %titlegen macro that gets called by the
+client titles macro. This can be used for "by" titles lines. For "by" title
+lines that are created in a reporting macro, left-alignment can be achieved
+using the %latitle macro. Similarly, footnotes can be left-aligned using
+the %lafootnote macro.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button on your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+</body>
+</html>

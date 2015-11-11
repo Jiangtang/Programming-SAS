@@ -1,0 +1,429 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="macros Spectre">
+   <meta name="Description" content="Spectre sas macros">
+   <title>Spectre Macros</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Spectre Macros</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 15 Sep 2011)</b>
+<p><a href="updates2.html" target="_blank">Latest Updates</a></center>
+
+<h2>
+Introduction</h2>
+The macros in Spectre are there to help you do the bulk of safety reporting
+and to provide you with a complete set of utility macros to help you in
+complex cases. It is important to be aware of them so that you do not "re-invent
+the wheel" and write macros that effectively already exist. Many of these
+macros are public domain macros, written my myself in the past, that I
+have made available for a number of years. When I wrote Spectre, I often
+had a need for these macros so I simply copied them from my web site. Sometimes
+I needed to amend them, other times not. You can link to these macros from
+"<a href="http://www.datasavantconsulting.com/roland/">Roland's SAS Macros</a>".
+Most of them can be found on the "sasautos extensions" page.
+<p>Many of the macros are very short and yet they are useful. If you can
+be aware of them then they should be of enormous help to you, especially
+in the field of clinical reporting. I spent many years building up a collection
+of macros which you will find here and on the web site linked to above.
+If there were any more macros that needed writing, I would have thought
+of them and written them.
+<p>If you become familiar with all these macros then it might even change
+the way you code. I was heavily influenced with the philosophy of Unix
+when I wrote them so most of them take the form of simple utilities. Many
+of the macros are "function style" macros that "return" a value when called.
+Not many programmers are aware of this type of macro and yet they are commonly
+used. The %lowcase macro is one of these, though most programmers think
+it a macro function.
+<p>Apart from %npcttab and %unistats, which are introduced using many demonstrations,
+you are expected to learn about the macros from reading their headers.
+This is also true of %npcttab and %unistats - the demonstration programs
+for these two complex macros are just there to get you started until you
+have the confidence to learn from the headers. If your system is set up
+then you can see a list of all the macros with brief purpose and usage
+using the command "<b>showme macros</b>". You can then look at this list
+and if a macro interests you then you can view the macro header using a
+command like "<b>showme zerogrid.sas</b>" which will show you the header
+of the macro "zerogrid.sas". Because these macro headers are easy to access,
+you are expected to learn from the headers and call the macros correctly,
+so there is much less error checking done inside the macros than is normal
+for the industry. The only checking done in most cases is to ensure you
+have supplied enough parameter values for it to continue. Reducing the
+number of checks also saves a little CPU time and this is helpful where
+pharmaceutical companies use low-powered servers for their SAS&reg; work.
+<p>A great help to learning about these macros would be to have <a href="http://support.sas.com/rnd/le/index.html" target="_blank">SAS&reg;
+Learning Edition</a> (assuming you have not got a full copy of SAS&reg;
+software) and to try out the macros. The recommendation on the main page
+is to download this web site to your laptop or home PC and to have SAS
+Learning Edition installed as well so you can try out examples. You will
+learn more about the macros if you use them for real instead of just reading
+about them. SAS Learning Edition will allow most, but not all, macros to
+run. It lacks "proc printto", for example, and this will prevent %openrep
+from working.
+<p><i>(When you use your browser to view the macros you will see a first
+line that is a narrow "/*" followed by two blank lines. If you view the
+same macro as "Source", from the "View" pull-down menu, you will see the
+first line is "/*&lt;pre>&lt;b>" and that there are no following blank
+lines. The "&lt;pre>" tells the browser that what follows is "pre-formatted"
+and the "&lt;b>" tells it to display it as "bold". I have put the "&lt;pre>&lt;b>"
+there so that your browser will display the macro correctly. This will
+not affect the operation of the macro as the entire header is treated as
+a comment. Note that one of the macros <b>%quotelst </b>must be viewed
+as "Source" as the browser changes some of the characters. Certainly, if
+you make a copy of it by copying and pasting, you must make that copy from
+the "Source" window. This is clearly stated in the header of the macro
+and a warning about this is repeated below).</i>
+<h2>
+The Main Reporting Macros</h2>
+The main reporting macros are %popfmt, %unistats and %npcttab. Most large
+pharmaceutical companies (as well as some small ones) have such macros,
+though they might be named differently. %popfmt creates a "population format"
+that takes as input a treatment arm format and creates a new format with
+population totals at the end. %unistats creates a report of summary statistics
+(for numeric variables) and category counts and percentages (for categorical
+variables). %npcttab creates a report of patient counts and percentages
+of the population total with optional event counts. It seems that no reporting
+system is complete without these macros. How to use them has been fully
+described elsewhere, so they they are simply linked to here so you can
+look at the code, if you are interested.
+<br><a href="clinmacros/popfmt.sas" target="_blank">%popfmt</a>
+<br><a href="clinmacros/unistats.sas" target="_blank">%unistats</a>
+<br><a href="clinmacros/npcttab.sas" target="_blank">%npcttab</a>
+<h2>
+The Main Reporting Sub-Macros</h2>
+The main reporting macros use some subordinate macros. In the case of calculating
+p-values, there is an advantage in doing this outside of the main macro.
+The thinking is that the main macro can be stable and "validated" while
+the subordinate macros, that calculates p-values, can be updated independently.
+I am expecting the following two p-value macros to change. I have no statistics
+qualification, so as I learn more about the subject, I expect to make further
+amendments.
+<br><a href="clinmacros/unipvals.sas" target="_blank">%unipvals</a>
+<br><a href="clinmacros/npctpvals.sas" target="_blank">%npctpvals</a>
+<p>The macro %unistats, when first written, was not intended to produce
+a report since the output values could be presented in many ways. One common
+way of presenting output was identified, however, so a macro was written
+to do this. %unistats has the appearance of being able to produce a report
+but in reality it calls another macro named %unicatrep to do this. Keeping
+this as a separate macro is useful, as it allows the report be deferred
+until after some manipulation of the output dataset. You can read about
+the structure of the output datasets on the detailed page for %unistats.
+<br><a href="clinmacros/unicatrep.sas" target="_blank">%unicatrep</a>
+<p>Another sub-macro for %unistats is %unimap. This is another macro that
+will likely need changing in the future so I kept it separate. It links
+statistics labels to statistics keywords. For example, a label for standard
+deviation could be "SD", "sd", "STD" or it could have a footnote marker
+attached like "sd*" but they all have to link to "STD" which is a keyword.
+There may be cases I have not thought of, so it made sense to me to keep
+this separate. This is another case where the main macro can be stable
+and validated while its submacro can be subject to change. It is a very
+good idea to organize major macros in this way such that easily identifiable
+changeable code is performed in submacros.
+<br><a href="clinmacros/unimap.sas" target="_blank">%unimap</a>
+<h2>
+%titles, %openrep and %closerep</h2>
+%titles is the macro that calls user-defined titles (and footnotes) into
+your program. %openrep creates a temporary file ready to receive report
+output and %closerep takes this temporary file and adds "Page X of Y" labels.
+Note that <b>%closerep</b> will also substitute the character <b>"A0"x</b>
+with a space. This is very useful. Sometimes, using "proc report", you
+need to maintain the alignment of text string in a column such as keeping
+a decimal point in the same place and if you use the "center" or "right"
+options then the values will get shifted in some cases unless you do something
+to stop it happening. To get around this, the character "A0"x is placed
+at the end of the field to prevent the text getting shifted and it needs
+to be removed for the final report. %unistats uses this technique, although
+you are probably not aware of it. You can use this technique as well -
+suppose you wanted a variable to have a blank label, you can not set it
+to a blank because SAS software will then add a label that is the same
+as the variable name, but if you set the label to the "A0"x character then
+%closerep will convert it to a space character. Actually it is not %closerep
+that does this, it is the script it calls to add page numbers named "pagexofy".
+<br><a href="sysmacros/titles.sas" target="_blank">%titles</a>
+<br><a href="sysmacros/openrep.sas" target="_blank">%openrep</a>
+<br><a href="sysmacros/closerep.sas" target="_blank">%closerep</a>
+<h2>
+%titles sub-macros</h2>
+A call to the %titles macro spawns calls to several macros that get information
+about the job and program running. It also calls a titles macro corresponding
+to the client. Assuming the client is company "XY", as defined in the member
+"protocol.txt", then it will call a macro named %xytitles and this is included
+in the list below as an example client titles macro. It also calls a macro
+named %maxtitle to tell you how many titles and footnotes have been set
+up, but you will want to use this elsewhere, so it will be described later.
+<br><a href="sysmacros/jobinfo.sas" target="_blank">%jobinfo</a>
+<br><a href="sysmacros/protinfo.sas" target="_blank">%protinfo</a>
+<br><a href="sysmacros/proginfo.sas" target="_blank">%proginfo</a>
+<br><a href="sysmacros/xytitles.sas" target="_blank">%xytitles</a>
+<h2>
+%zerogrid and %allfmtvals</h2>
+I use these two macros a lot, especially %zerogrid, which has been around
+for a few years. Sometimes you need all possible combinations of different
+values and to merge your data on top of it to make sure everything is represented.
+Usually, you need to merge your data on top of a grid of zero values and
+that is what %zerogrid is for. It creates the grid of all combinations
+of values you specify plus whatever you choose set to zero (or set to something
+else). To give a meaningful example, suppose you had to produce a report
+of what equipment all the stores had but you had to show all categories
+of equipment for each store, even if some stores lacked some items of equipment.
+This is where you would use %zerogrid to make sure all equipment types
+were represented. Sometimes, the complete set of possible items does not
+exist in your data. You could create a dummy dataset which includes these
+categories, of course, and use that as input to the %zerogrid macro, but
+sometimes you know that all these values are defined to a format. You could
+then use %allfmtvals to create a dataset containing every "start" value
+for the format and then use the resulting dataset as input to %zerogrid.
+I couldn't imagine doing my job without these two macros. %unistats calls
+them as well.
+<br><a href="utilmacros/zerogrid.sas" target="_blank">%zerogrid</a>
+<br><a href="utilmacros/allfmtvals.sas" target="_blank">%allfmtvals</a>
+<h2>
+%quotelst and %commas</h2>
+Suppose you write a macro that requires the user to provide a list of variables.
+To keep things simple, the list is best requested as a space delimited
+list. But once you have that list you might need to use it in an "in()"
+function in your code. You will then need each variable in the list to
+be in quotes. That is what the %quotelst macro is for. But it goes beyond
+the "in()" function. Suppose a list of variables has been supplied and
+you want to search the list of a particular variable. Using %index() might
+let you down because the variable you are searching for might match part
+of the name of a longer different variable. One safe way of coping with
+this is to quote the list of variables and quote the variable you are searching
+for and then use %index() on the quoted version of the list and the variable.
+That way you will be sure you got a good match. I use %quotelst a lot when
+I am writing macros.
+<p>The %commas macro is a variation on %quotelst. It calls it but sets
+the quote marks to nothing and asks for a comma delimiter. This is what
+you will need if you are writing a macro that supplies a variable list
+to "proc sql". You will need to use comma delimiters for "proc sql" and
+so I wrote the %commas macro.
+<br><a href="utilmacros/quotelst.sas" target="_blank">%quotelst</a>&nbsp;
+<b># You must view this macro as "Source" from the "View" pull-down menu
+for reasons stated in the header</b>
+<br><a href="utilmacros/commas.sas" target="_blank">%commas</a>
+<h2>
+%words</h2>
+Suppose you wrote a macro where the user had to input a list of variables.
+You might have to do something for each variable in turn. Your code will
+be shorter if you know how many items there are and so I wrote %words to
+return the number of items so you could code something like:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%do i=1 %to %words(&amp;varlist);</tt>
+<br><tt>&nbsp; whatever..</tt>
+<br><tt>%end;</tt></td>
+</tr>
+</table>
+
+<p>It is a function-style macro just like %quotelst and %commas. If you
+look inside the code you will see that the value it "returns" does not
+have a semicolon after it. This is deliberate and is normal for a function-style
+macro.
+<br><a href="utilmacros/words.sas" target="_blank">%words</a>
+<h2>
+%nobs and %attrn</h2>
+First a warning about %nobs. This is a very common macro found at many
+sites that gives the number of observations in a dataset but they tend
+to work in different ways for different sites. Mine is a function-style
+macro that returns a positive number of observations if the dataset is
+OK and has observations but it returns "0" if not so that I can use the
+zero in a boolean expression such as:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%if %nobs(test) %then %do;</tt></td>
+</tr>
+</table>
+
+<p>I have had this macro for many years and have become aware that most
+sites have variations on this macro so I tend to use %attrn (short for
+"attribute numeric") instead where it makes sense to do so. This, again,
+is a function-style macro. It makes sense to use it when you want to avoid
+any conflict with a different %nobs macro and you know the dataset exists.
+You could use it like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%let nobs=%attrn(dset,nobs);</tt></td>
+</tr>
+</table>
+
+<p>...or like this as for the %nobs example above:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%if %attrn(dset,nobs) %then %do;</tt></td>
+</tr>
+</table>
+
+<p>Here they are. Note that when they return their values the line is not
+ended with a semicolon. This is normal for function-style macros:
+<br><a href="utilmacros/nobs.sas" target="_blank">%nobs</a>
+<br><a href="utilmacros/attrn.sas" target="_blank">%attrn</a>
+<h2>
+%attrc and %attrv</h2>
+Before we forget about %attrn I thought I would give %attrc and %attrv
+a mention. They are short for "attribute character" and "attribute for
+a variable". %attrn and %attrc work at the dataset level but %attrv works
+at the variable level. I will leave you to work out how to use them from
+the headers.
+<br><a href="utilmacros/attrc.sas" target="_blank">%attrc</a>
+<br><a href="utilmacros/attrv.sas" target="_blank">%attrv</a>
+<h2>
+%getvalue</h2>
+Sometimes I have a dataset with unique values in it and I need to produce
+a report for each value. If "by" processing is not convenient I can use
+%nobs (or %attrn) to find out how many observations are in it and then
+extract each value in turn and produce a report. I don't use it that often
+but you might need it one day.
+<br><a href="utilmacros/getvalue.sas" target="_blank">%getvalue</a>
+<h2>
+%maxtitle</h2>
+I use this macro a lot when I am using Spectre. Or I at least use what
+it creates for me because I know the %titles macro calls it at the end
+of its processing to tell me how many titles and footnotes there are. It
+creates two global macro variables named _maxtitle_ and _maxfoot_ that
+you can use in a titles or footnotes statement like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>title%eval(&amp;_maxtitle_+1) "My Title";</tt></td>
+</tr>
+</table>
+
+<p>It normally displays the values of _maxtitle_ and _maxfoot_ in the log
+but you can call it in "quiet" mode if you like if you do not want a message
+written to the log. If you are setting up extra titles and footnotes in
+your reporting macro then you will need to know these values of _maxtitle_
+and _maxfoot_ so that you don't overwrite a title or footnote that has
+already been set up
+<br><a href="utilmacros/maxtitle.sas" target="_blank">%maxtitle</a>
+<h2>
+%lafootnote and %latitle</h2>
+Every pharmaceutical company that I know of requires the footnotes on their
+reports to be left-aligned. This is very simple to do. All you need to
+do is to follow your footnote with a lot of space characters, usually in
+a second string, so that your first string does not get more than 262 characters
+(or whatever it is that SAS software complains about) so I wrote the %lafootnote
+macro to do this. Sometimes you will need to left-align a titles. This
+is often a "by line" that you want to be left-aligned so I wrote %latitle
+for this. Spectre normally put a page marker "FF"x in the rightmost position
+of the top line of each page of a report to receive the "Page X of Y" labels
+but it could be that you are creating an ad-hoc report and you want to
+add these labels afterwards. %latitles has the ability to put this page
+marker in. %ctitlepgmrk is another macro I wrote that will keep titles
+centred but add this page mark.
+<br><a href="utilmacros/lafootnote.sas" target="_blank">%lafootnote</a>
+<br><a href="utilmacros/latitle.sas" target="_blank">%latitle</a>
+<br><a href="sysmacros/ctitlepgmrk.sas" target="_blank">%ctitlepgmrk</a>
+<h2>
+%lookahead</h2>
+You might know of the lag() function for storing the last value of a variable.
+But sometimes you will want to look ahead in a dataset. "Time to Event"
+calculations come to mind. For this I wrote the %lookahead macro. It isn't
+very efficient so use it sparingly.
+<br><a href="utilmacros/lookahead.sas" target="_blank">%lookahead</a>
+<h2>
+%nodata</h2>
+Usually you need to produce a report, even if you have no data. The report
+will normally have titles, in this case, but no footnotes. And if one of
+your titles was your "by line" then you will need to suppress it. You would
+think that producing a report with nothing in it is simple but actually
+it is quite complicated. So I wrote a macro to do that named %nodata and
+this has to call other macros which will be listed below.
+<br><a href="utilmacros/nodata.sas" target="_blank">%nodata</a>
+<br><a href="utilmacros/titlelen.sas" target="_blank">%titlelen</a>
+<br><a href="sysmacros/titlegen.sas" target="_blank">%titlegen</a>
+<br><a href="utilmacros/bytitle.sas" target="_blank">%bytitle</a>
+<h2>
+%nodupkey</h2>
+You will often have sorted "nodupkey" to drop surplus observations but
+which ones were dropped? You sometimes need to know this and go back and
+check the data to see if there is something wrong. I wrote %nodupkey for
+this so that it lists the observations it is dropping.
+<br><a href="utilmacros/nodupkey.sas" target="_blank">%nodupkey</a>
+<h2>
+%varlist</h2>
+Sometimes you need to get a list of variable from a dataset. They might
+be all the variables, the character variables or the numeric variables.
+I wrote three macros for this:
+<br><a href="utilmacros/varlist.sas" target="_blank">%varlist</a>
+<br><a href="utilmacros/varlistn.sas" target="_blank">%varlistn</a>
+<br><a href="utilmacros/varlistc.sas" target="_blank">%varlistc</a>
+<h2>
+%nvars</h2>
+Sometimes you need a count of variables in a a dataset. They might be all
+the variables, the character variables or the numeric variables. I wrote
+three macros for this. Now if you are paying attention and thinking the
+same way as I do, you will already know how I am going to do this for the
+last two cases.
+<br><a href="utilmacros/nvars.sas" target="_blank">%nvars</a>
+<br><a href="utilmacros/nvarsn.sas" target="_blank">%nvarsn</a>
+<br><a href="utilmacros/nvarsc.sas" target="_blank">%nvarsc</a>
+<h2>
+%qreadpipe</h2>
+Sometimes you will need to run a Unix command and need to use the result
+in your program. I wrote a macro named %qreadpipe that will assign the
+results of a Unix command to a macro variable. And if you are wondering
+why the name starts with a "q" it is because it returns the result "macro
+quoted". To use it in ordinary sas code the you can surrounfd it with the
+%unquote() function.
+<br><a href="utilmacros/rqeadpipe.sas" target="_blank">%qreadpipe</a>
+<h2>
+%remove</h2>
+You might need to remove occurrences of a string from a macro variable
+and assign the result to a new macro variable. I haven't used this one
+in a while.
+<br><a href="utilmacros/remove.sas" target="_blank">%remove</a>
+<h2>
+%complibs</h2>
+Sometimes you need to compare whole libraries to find out what changes
+to datasets have occurred. This could be a new study increment or perhaps
+you are doing some sort of test and you want to make sure the server configuration
+change is going to give you the same datasets with the same code as before.
+I wrote %complibs for this a few years ago and it has been updated since.
+It calls the macros %supasort, %dsall and %dslist.
+<br><a href="utilmacros/complibs.sas" target="_blank">%complibs</a>
+<br><a href="utilmacros/supasort.sas" target="_blank">%supasort</a>
+<br><a href="utilmacros/dsall.sas" target="_blank">%dsall</a>
+<br><a href="utilmacros/dslist.sas" target="_blank">%dslist</a>
+<h2>
+Conclusion</h2>
+You have been introduced to many of the Spectre macros.
+<br>&nbsp;
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="../contact.html">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+<br>&nbsp;
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+</html>

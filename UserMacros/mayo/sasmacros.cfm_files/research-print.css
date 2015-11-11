@@ -1,0 +1,218 @@
+body { 
+		font-size: 12px;
+		background-color: #fff; 
+		margin: 0 0 30px 0;
+		text-align: center;
+		font-family: Verdana, Arial, sans-serif; 		
+}
+
+
+/* NEW CODE - RESEARCH TEMPLATE LAYOUT */
+
+.templateborder {
+	margin: 0 auto;
+	padding: 0;
+	border: 1px solid #fff;
+	text-align: left;
+	width: 6.8in;
+	background: #fff;
+}
+
+.templatecontent {
+	margin: 0;
+	padding: 0;
+	width: 6.8in; 
+}
+
+#toplinks {
+	display: none;
+	visibility: collapse;
+}
+
+#linkscontainer {
+	display: none;
+	visibility: collapse;
+}
+
+
+
+#logocont {
+	display: none;
+	visibility: collapse;
+}
+
+.templateleftcol {
+	display: none;
+	visibility: collapse;
+}
+
+.templaterightcol {
+	padding: 0 0 0 10px;
+	margin: 0;
+}
+
+.templatecentercol {
+	width: 450px;
+	background: #fff;
+	margin: 0;
+	padding: 0;
+
+}
+
+.rightlinkbox {
+	display: none;
+	visibility: collapse;
+}
+
+.alert {
+	margin: 0;
+	padding:10px 0;
+}
+
+.leftside {
+    float: left;
+    width: 200px;
+    padding: 0;
+    margin: 0;
+}
+
+.rightside {
+    float: right;
+    width: 200px;
+    padding: 0;
+    margin: 0 50px 0 0;
+}
+
+.templateonecentercol {
+	width: 6.8in;
+	background: #fff;
+	margin: 0;
+	padding: 0;
+}
+
+.profileimageright {
+	float: right;
+	width: 93px;
+	border: 1px solid #ccc;
+	padding: 2px;
+	margin: 0 0 5px 30px;
+	background: #fff;
+}
+
+.bottomnav {
+	display: none;
+	visibility: collapse;
+}
+
+.legal {
+	border-top: 1px solid #666;
+	background: none;
+	padding: 10px 0 0 0;
+	color: #000;
+	text-align: center;
+}
+
+.printlogo {
+	display: inline;
+	border-bottom: 1px solid #666;
+}
+
+.bluebox {
+	display: none;
+}
+
+
+
+
+/* PROFILES */
+
+
+.profile-left {
+	width: 160px;
+	float: left;
+	display: inline;
+	padding: 0;
+	margin: 0 0 0 10px;
+	border: 1px solid #ccc;
+}
+
+.profile-center {
+	width: 4in;
+	float: left;
+	display: inline;
+	padding: 0;
+	margin: 0 0 0 10px;
+}
+
+.profile-right {
+	width: 300px;
+	padding: 0;
+	margin: 0 0 0 10px;
+	display: none;
+}
+
+
+ul, ol {
+    margin: 5px 0 10px 0;
+	 padding: 0;
+}
+
+li {
+    line-height: 1.5em;
+}
+
+.publication-row {
+padding:0;
+list-style: none;
+margin: 3px 0;
+clear: both;
+}
+
+.publication-row li{
+padding: 12px 10px 12px 10px;
+margin: 0;
+}
+
+#branding {
+	display: block;
+	height: 96px;
+	background: #333399;
+	text-align:left;
+	margin-left:auto;
+	margin-right:auto;
+	position: relative;
+}
+
+.mc-bw-logo {
+	position: absolute;
+	top: 10px;
+	left: 10px;
+}
+
+.mc-bw-logo a img {
+	display: block;
+	width: 250px;
+	height: 51px;
+	border: none;
+}
+
+.research-word {
+	position: absolute;
+	top: 23px;
+	right: 10px;
+}
+
+.research-word a img {
+	display: block;
+	width: 90px;
+	height: 18px;
+	border: none;
+}
+
+.page-navigation {
+	display: none;
+}
+
+#uni-banner {
+	display: none;
+}

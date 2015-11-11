@@ -1,0 +1,385 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="Power Reporting using Spectre">
+   <meta name="KeyWords" content="power clinical reporting Spectre">
+   <title>Power Reporting using Spectre</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Power Reporting using Spectre (Clinical)</h1></center>
+
+<h2>
+Introduction</h2>
+This document will give you information on how to get the maximum benefit
+from Spectre (Clinical) and how to work at speed with it.
+<h2>
+Validating reporting macros</h2>
+The get the full benefits from Spectre, you need to validate the reporting
+macros you use. This applies not only to the Spectre reporting macros themselves,
+such as %npcttab and %unistats and their sub-macros, but other macros that
+you write that might call these macros, such as for lab tables. You should
+aim at building up a comprehensive set of reporting macros that can be
+used for reporting different studies and have them fully validated and
+stored in a read-only library. This should be done in accordance with your
+Standard Operating Procedures with test pack(s), full documentation and
+change controls applied. Although this is a lot of work to do up-front,
+it will save a lot of validation effort and time in the long run.
+<p>Before leaving this topic, you have to consider how you are going to
+design your reporting macros that you are going to validate.
+<h2>
+Designing reporting macros</h2>
+The reporting macro you will validate must be stable and not have to be
+amended from study to study, or you will have to do the validation work
+every time. It is likely that your data selection rules will vary from
+study to study. If this selection of data can be easily done by passing
+one or a few parameters to a study reporting macro, then it is best to
+do it like that. Hopefully, you have useful flags in your data to simplify
+the data selection process. But then again, your data structure might vary
+from study to study and so having a generic macro to handle data selection
+as well might be difficult. If that is the case, this data selection part
+should be left out of your reporting macro. Instead, the reporting macro
+should work on your data <b><i>after </i></b>you have made the selection.
+Your reporting macro would not be generic if you had to change the code
+inside the macro and nor could it be "validated" in any sense of the word.
+So, if you can, have the macro validated and self-contained so that you
+can easily select on the data you want by setting parameters. That way
+the macro could be called in your "<b>sascode:</b>" line in your titles
+member. But if this is not possible then the macro should be designed to
+be called after you have made the data selection in your code.
+<h2>
+Data selection rules</h2>
+The data selection rules should be clear for every reporting program you
+create. Even with validated macros, your data selection rules will need
+to be QC'ed. This will likely be done with a code review so it is important
+that both the programmer and the QC programmer know what the selection
+rules are for the data. There should be a reference document for this that
+lists the data selection rules for each and every table.
+<h2>
+Utility macros</h2>
+You should never need to write a non-statistical utility macro so if you
+feel you need one then check all the existing macros as it is 99% certain
+that it already exists somewhere. Be aware of what macros already exist
+within Spectre. You can see a complete list of these macros and their purposes
+<a href="maclist2.html" target="_blank">here</a>.
+If you don't see what you want then try the list of macros on my old web
+site. Nearly every single macro in Spectre originally came from the old
+web
+site. You can see the complete list <a href="http://www.datasavantconsulting.com/roland/maclist2.html" target="_blank">here</a>.
+I spent since 1986 building up that collection so the list is fairly complete,
+but if you do spot the need for a utility macro (non-statistical) that
+I haven't thought of then send me an e-mail.
+<h2>
+Setting up and exporting Unix variables for studies</h2>
+If you are working on multiple studies then you need a quick method of
+moving to these study folders. You can set up Unix variables for this in
+your <b>.bashrc</b> member or <b>.bashrc_own</b> or whatever is the file
+in your home directory you are allowed to edit. A study might have a <b>p</b>rograms
+folder, a <b>d</b>erived datasets folder, a <b>s</b>tats dataset folder
+and a <b>r</b>aw dataset folder. If this study could be meaningfully referred
+to as "abc" then you could set up variables and export them like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>abcp=/data/sas/xxx/pr0g/drug/study/inc/programs</tt>
+<br><tt>abcd=/data/sas/xxx/data/drug/study/inc/der&nbsp;</tt>
+<br><tt>abcs=/data/sas/xxx/data/drug/study/inc/stat&nbsp;</tt>
+<br><tt>abcr=/data/sas/xxx/data/drug/study/inc/rawdata</tt>
+<br><tt>export abcp abcd abcs abcr</tt></td>
+</tr>
+</table>
+
+<p>Once you have done this for all the studies you might be working on
+then it is easy to move to a folder of your choice using these Unix variables
+like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>cd $abcp</tt></td>
+</tr>
+</table>
+
+<p>And once you have done your work in that folder then you can return
+to the previous folder using the command:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>cd -</tt></td>
+</tr>
+</table>
+
+<p>These Unix variables are useful in other Unix commands. For example,
+here is how you would copy all the macros owned by you (assuming they match
+the pattern m_*.sas) from the programs folder of study "abc" into your
+current folder:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>cp $(myfiles $abcp/m_*.sas) .</tt></td>
+</tr>
+</table>
+
+<h2>
+aliases</h2>
+While we are on the subject of editing our <b>.bashrc</b> (or <b>.bashrc_own</b>)
+members, there are always aliases we can set up in it to save ourselves
+a bit of time. I have aliased the "crtitlesds" command to "crt" as I use
+it thousands of times so I wanted to make it shorter, plus I have other
+aliases set up. Here is an extract from my <b>.bashrc</b> file:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>alias rm='rm -i'</tt>
+<br><tt>alias cp='cp -i'</tt>
+<br><tt>alias p='echo $prog'</tt>
+<br><tt>alias c='cat $prog.titles|grep ^sascode:'</tt>
+<br><tt>alias r='cat $prog.titles|egrep -i "^table |^appendix "'</tt>
+<br><tt>alias dtv='dtpad -viewOnly '</tt>
+<br><tt>alias crt='crtitlesds'</tt></td>
+</tr>
+</table>
+
+<p>You will see from the above that I have aliased a few things so that
+I can extract information from my .titles member quickly. "<b>p</b>" will
+give me my current program name, "<b>c</b>" will give me my "sascode:"
+entry and "<b>r</b>" will give me my table/appendix reference number. I
+could enter the command "titles" and just look inside my .titles member
+instead, but using these aliases saves me a tiny amount of time and multiplied
+by a thousand or more, it makes it worthwhile to set them up.
+<h2>
+xterm windows</h2>
+One of the advantages of Spectre over a web based system is that by staying
+close to Unix you have a host of useful utilities at your disposal. You
+can also use as many xterm windows as you wish so that you could have windows
+with "cd" set to directories in different studies at the same time. I normally
+work with three xterm windows and add more as required using the command
+below which opens a new window while keeping the current window active:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>xterm &amp;</tt></td>
+</tr>
+</table>
+
+<p>You can customize the xterm windows and I do this to reduce eye strain.
+I find the default black text on a white background too tiring to look
+at for long periods so I change the background colour. I also do this for
+interactive SAS&reg; software sessions. You can either create or edit an
+existing file in your home directory named <b>.Xdefaults</b> to customize
+your xterm windows. This is what I have in my own <b>.Xdefaults</b> file.
+Lines starting with a "<b>!</b>" are treated as comment lines. You will
+see that I have set my background colour for xterm windows to "AntiqueWhite".
+Note that for SAS software interactive sessions the background is set to
+"wheat" except <b>I have commented it out</b> because it does not work
+for me any more.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>xterm*background: AntiqueWhite&nbsp;</tt>
+<br><tt>xterm*geometry: 81x24&nbsp;</tt>
+<br><tt>!sas*background: wheat&nbsp;</tt>
+<br><tt>!xterm*foreground: black&nbsp;</tt>
+<br><tt>ghostscript*background: white&nbsp;</tt>
+<br><tt>ghostscript*foreground: black&nbsp;</tt>
+<br><tt>!ghostscript*useXPutImage: false&nbsp;</tt>
+<br><tt>!ghostscript*useXSetTile: false&nbsp;</tt>
+<br><tt>!ghostscript*useBackingPixmap: false</tt></td>
+</tr>
+</table>
+
+<p>For changing the background color of my <b>interactive sas</b> sessions,
+I used to be able to do it as shown above with the "<b>sas*background:
+wheat</b>" entry but that does not work for me any more. Now I do it by
+using "<b>reshelper</b>" instead, called from the toolbox command box.
+If you click on the "Colors" button and double-click on the background
+color "white" (or whatever the background is set to) and select a different
+color (from the list displayed) then that color will replace the white
+(this only works for Unix/Linux).
+<h2>
+"fsv" scripts</h2>
+You have a number of scripts at your disposal to allow you to browse SAS
+software datasets directly from the Unix command line in the current directory.
+You will find using these is easier than starting up an interactive SAS
+software session and also better. You should get used to using these as
+they will speed your work. They are as follows:
+<blockquote>
+<li>
+<a href="scripts/fsv" target="_blank">fsv</a>: Browse a dataset with all
+formats applied</li>
+
+<li>
+<a href="scripts/fsvraw" target="_blank">fsvraw</a>: Browse a dataset with
+no user formats applied</li>
+
+<li>
+<a href="scripts/fsvdc" target="_blank">fsvdc</a>: Browse a dataset with
+user formatted fields shown unformatted and formatted next to each other</li>
+
+<li>
+<a href="scripts/fsvacct" target="_blank">fsvacct</a>: Browse a dataset
+with fields from the acct dataset merged in as specified</li>
+</blockquote>
+
+<h2>
+"contents" scripts</h2>
+There are two scripts that do a "proc contents" on the specified datasets
+or a whole library that you should find more useful than running "proc
+contents" yourself. The reason being, these scripts put the output in a
+form that can be passed to other Unix utilities. Suppose you wanted to
+know what variables were in what datasets that were something to do with
+"date" then you could find out like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>contentsl | fgrep -i date</tt></td>
+</tr>
+</table>
+
+<p>Using the above is far faster and better that running proc contents
+yourself and you will often make use of it. The two scripts are as follows:
+<ul>
+<li>
+<a href="scripts/contents" target="_blank">contents</a>: Show contents
+in short form</li>
+
+<li>
+<a href="scripts/contentsl" target="_blank">contentsl</a>: Show contents
+in long form</li>
+</ul>
+
+<h2>
+"formats" scripts</h2>
+You will often need to know what formats exist either for a study or local
+to a directory and how the start values map to their labels. The scripts
+that exist to help you are again more convenient than using SAS software
+yourself. Scripts such as these put information about SAS software objects
+at your fingertips in your Unix session and help speed your work. The scripts
+are as follows:
+<ul>
+<li>
+<a href="scripts/showfmts" target="_blank">showfmts</a>: Display a list
+of all study formats</li>
+
+<li>
+<a href="scripts/showfmt" target="_blank">showfmt</a>: Display a single
+study format</li>
+
+<li>
+<a href="scripts/showlfmts" target="_blank">showlfmts</a>: Display a list
+of all local formats</li>
+
+<li>
+<a href="scripts/showlfmt" target="_blank">showlfmt</a>: Display a single
+local format</li>
+</ul>
+
+<h2>
+batch development scripts</h2>
+Spectre is very much Unix oriented. Part of the reasoning behind it is
+that once programmers know the Unix environment well then greater speed
+plus a higher number of programs per programmer should be possible than
+by going through an interactive reporting system. Recognizing that most
+programmers are used to developing all their code in interactive SAS software
+sessions, scripts exist to encourage you to do this in batch, instead,
+by providing scripts that make batch development just as convenient as
+interactive development. One of the most convenient aspects of interactive
+development is the ease of moving from window to window like the program
+window to the log window to the output window. Spectre provides scripts
+so that you can do the same in batch mode. It relies on your declaring
+what your program is to a Unix variable named "prog" that you have exported.
+Suppose you were working on a demog table named "t_demog" then you declare
+it to the "prog" variable like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>export prog&nbsp;&nbsp; # only needed once per xterm window</tt>
+<br><tt>prog=t_demog</tt></td>
+</tr>
+</table>
+
+<p>Once your program name (without the .sas extension) is declared to the
+"prog" variable then the following scripts can be invoked <b><i>without
+values </i></b>to work on your program:
+<ul>
+<li>
+<a href="scripts/sasb" target="_blank">sasb</a>: Run the program</li>
+
+<li>
+<a href="scripts/sc" target="_blank">sc</a>: Scan the log for important
+notes, warnings and errors</li>
+
+<li>
+<a href="scripts/pgm" target="_blank">pgm</a>: Edit your program</li>
+
+<li>
+<a href="scripts/log" target="_blank">log</a>: Browse the log</li>
+
+<li>
+<a href="scripts/lst" target="_blank">lst</a>: Browse the .lst file</li>
+
+<li>
+<a href="scripts/lis" target="_blank">lis</a>: Browse the .lis file</li>
+</ul>
+Habits die hard so it might take you a long time to change over from developing
+your code interactively to doing it in batch. But when you become good
+with Unix, perhaps with the help of the learning materials on this web
+site, you will be tempted to move over to batch development and you will
+find that the above scripts will make you feel just at home using batch
+as you did developing your programs interactively. Some time after you
+have made the transition you will find that you are working faster in batch
+than you ever did when working interactively.
+<h2>
+wt</h2>
+"<b><a href="scripts/wt" target="_blank">wt</a></b>" is short for "<b>w</b>hich
+<b>t</b>itles
+member". It is short so you can type it in fast. It has a table reference
+number for an argument and it returns the titles member without the ".titles"
+extension. Nearly everybody you will be in contact with will refer to tables
+and listings by their table or listing reference number so you need to
+translate this into the program name quickly. You will be using "wt" a
+lot to switch to a new value of "prog" using copy and paste like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>$ wt 13.2.1.3</tt>
+<br><tt>t_demog</tt>
+<br><tt>$ prog=t_demog</tt></td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+Hopefully, the above information will prove useful to you for getting the
+most out of Spectre and allowing you to work at speed.
+<br><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+</body>
+</html>

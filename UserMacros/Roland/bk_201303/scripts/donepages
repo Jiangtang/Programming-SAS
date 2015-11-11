@@ -1,0 +1,33 @@
+#!/bin/bash
+#<pre><b>
+# Script     : donepages
+# Version    : 2.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 23-Feb-2007
+# Purpose    : Production script to read in a donelist file and output with the
+#              number of pages at the end.
+# SubScripts : getlsps
+# Notes      : This must be run in the same directory where donelist.tmp is
+# Usage      : donepages donelist.tmp > donepages.txt
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   The donelist file to calculate page numbers for
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  16Feb07         v2.0 takes a donelist file as a parameter
+# rrb  23Feb07         debugged
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# One parameter only
+if [ $# -ne 1 ] ; then
+  echo "Usage: donepages donelist.tmp > donelist.txt" 1>&2
+  exit 1
+fi
+
+cat "$1" | xargs -I {} getlsps -e -f2 {} | \
+gawk '{printf "%-23s %-37s %5d\n", $1, $2, $5}'

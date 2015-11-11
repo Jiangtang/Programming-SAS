@@ -1,0 +1,125 @@
+#!/bin/bash
+#<pre><b>
+# Script     : getlsps
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 23-Feb-2007
+# Purpose    : To determine the line size, page size and number of pages of an
+#              output listing.
+# SubScripts : none
+# Notes      : This utility prints out three numbers after scanning the file:
+#              1) Line size (maximum number of characters in a line)
+#              2) Page size (maximum lines per page)
+#              3) Pages (total page count)
+#
+#              You can use these values to make decisions on how you want the
+#              print layout.
+#
+# Usage      : getlsps file.ext
+#              
+#===============================================================================
+# OPTIONS:
+#-opt- -------------------------------description-------------------------------
+#  e   (switch) echo all supplied parameters at start
+#  f   (value)  parameter value of the input file
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   file name (only one allowed)
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  22Feb07         Shorten a comment line
+# rrb  23Feb07         Remove DOS CR in echo of parameters
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Define give-usage-message-then-exit function.
+usage () {
+  echo "Usage: getlsps -e -f <field> file.ext" 1>&2
+  exit 1
+}
+
+
+# The following variable names and defaults have been generated for you
+# to help you start. You can rename the variables to something more 
+# meaningful but be sure to change all occurrences of that name in the code.
+switche=0               # Default switch=off for echo input file                             
+valuef=1                # Default value for field
+
+
+# "case" statement for action to take on selected options
+while getopts "ef:" param ; do
+  case $param in
+   "?") # bad option supplied
+        usage
+        ;;
+   "e") # (switch) echo input file name
+        switche=1
+        ;;
+   "f") # (value) field
+        valuef=$OPTARG
+        ;;
+  esac
+done
+
+
+# shift to bring first parameter to position 1
+shift $(($OPTIND - 1))
+
+
+if [ $# -ne 1 ] ; then
+  echo "Usage: getlsps filename (only one file name allowed)" 1>&2
+  usage
+fi
+
+
+file=$(echo "$@" | awk '{print $fieldno}' fieldno=$valuef)
+
+
+# echo the input parameters (without a DOS CR) if requested
+if [ $switche == 1 ] ; then
+  inparams=$(echo "$@" | sed 's%\r$%%')
+  echo -n "$inparams "
+fi
+
+
+gawk '
+# Begin block - initialise page count to 1
+BEGIN {pages=1}
+
+# ======== Main code block start ========
+{
+
+# A form feed character in position one 
+# indicates the first line of a new page
+if (index($0,"\f")==1)
+  {
+  ls=length($0)-1  # subtract 1 so we do not count the form feed
+  pages++          # increment the page count
+  if (lines > maxps ) 
+    maxps=lines    # set maxps (maximum number of lines on a page)
+  lines=1          # reset line count to 1 for first line on new page
+  }
+# Any other line
+else
+  {
+  ls=length($0)
+  lines++          # increment the line count
+  }
+
+# Set maximum line size
+if (ls>maxls)
+  maxls=ls         # set maxls (maximum line size)
+  
+}
+# ======== End of main code block ========
+
+# End block - print results
+END {
+if (lines > maxps ) 
+  maxps=lines    # set maxps (maximum number of lines on a page)
+print maxls, maxps, pages
+}' "$file"

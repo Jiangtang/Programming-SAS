@@ -1,0 +1,26 @@
+#!/bin/bash
+#<pre><b>
+# Script     : dirtree
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 18-Feb-2007
+# Purpose    : Display the directory tree structure downwards from the current
+#              directory.
+# SubScripts : none
+# Notes      : none
+# Usage      : dirtree
+#
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+find -type d | sed 's%[^/]*/%    %g' | cut -b5-

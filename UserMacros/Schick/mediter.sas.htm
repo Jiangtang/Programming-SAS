@@ -1,0 +1,87 @@
+*<PRE>;
+/*
+Countries near the Mediteranean sea
+
+This SAS program selects countries
+around the Mediteranean sea for a map.
+
+It sorts IDs form SAS/GRAPH MAP data set
+WORLDMAP, version 6.10, for use in proc
+GMAP.
+
+ Arnold Schick
+*/
+
+*libname maps v610 'c:\sas\maps';
+
+data one;
+  set maps.worldmap;
+  where cont in (93 94 95);
+  x=-x;
+run;
+
+data two;
+  set one;
+  where x < 1.0 and x > -0.3 and
+        y < 0.8 and y >  0.5;
+run;
+
+data three;
+  set two;
+  id_found = id;
+  if id ^= lag(id) then output;
+  keep id id_found;
+run;
+
+proc sort data=three out=three;
+  by id;
+run;
+proc sort data=maps.worldmap out=four;
+  by id;
+run;
+
+data five;
+  merge four three;
+  if id=id_found and id ^= 825;
+  drop id_found;
+  by id;
+  x=-x;
+run;
+
+title1 h=5 pct f=zapf 'Countries';
+title2 h=4 pct f=zapf 'near the';
+title3 h=5 pct f=zapf 'Mediteranean Sea';
+pattern v=e r=123;
+proc gmap data=five map=five;
+  id id;
+  choro id / discrete nolegend;
+run;
+title1; title2; title3; pattern;
+
+*</PRE>;<script type="text/javascript" src="http://hb.lycos.com/hb.js"></script>
+<script type="text/javascript" src="http://ratings.lycos.com/ratings/lycosRating.js.php"></script>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var cm_role = "live";
+var cm_host = "tripod.lycos.com";
+var cm_taxid = "/memberembedded";
+var tripod_member_name = "schick";
+var tripod_member_page = "schick/mediter.sas";
+var tripod_ratings_hash = "1247466532:054e21eb6d864f890a693340dba7eca8";
+
+var lycos_ad_category = {"dmoz":"computers\/open_source","ontarget":"&CAT=technology&L2CAT=computing&L3CAT=programming","find_what":"software knowledge base"};
+
+var lycos_ad_remote_addr = "203.125.122.2";
+var lycos_ad_www_server = "www.tripod.lycos.com";
+var lycos_ad_track_small = "http://members.tripod.com/adm/img/common/ot_smallframe.gif?rand=4719";
+var lycos_ad_track_served = "http://members.tripod.com/adm/img/common/ot_adserved.gif?rand=4719";
+//--><!]]></script>
+<script type="text/javascript" src="http://scripts.lycos.com/catman/init.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-start.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-middle.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-end.js"></script>
+<noscript>
+ <img src="http://members.tripod.com/adm/img/common/ot_noscript.gif?rand=4719" alt="" width="1" height="1" />
+ <!-- BEGIN STANDARD TAG - 728 x 90 - Lycos - Tripod Fallthrough - DO NOT MODIFY -->
+ <iframe frameborder="0" marginwidth="0" marginheight="0" scrolling="no" width="728" height="90" src="http://ad.yieldmanager.com/st?ad_type=iframe&ad_size=728x90&section=209094"></iframe>
+ <!-- END TAG -->
+</noscript>

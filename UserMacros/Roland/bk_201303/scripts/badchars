@@ -1,0 +1,80 @@
+#!/bin/bash
+#<pre><b>
+# Script     : badchars
+# Version    : 1.1
+# Author     : Roland Rashleigh-Berry
+# Date       : 17-Mar-2004
+# Purpose    : Show bad characters (not clean 7 bit) in the input stream
+# SubScripts : none
+# Notes      : YOU SHOULD PIPE INTO THIS UTILITY using the "badlines" script.
+#              It will print out the bad characters in the inpput stream shown as
+#              hex values in angle brackets such as <0><f6><f9>
+# Usage      : badlines file.ext | badchars
+#              
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+# N/A  You must pipe into this utility
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+# 
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+
+# make sure no file has been specified
+if [ $# -gt 0 ] ; then
+  echo "Usage: You should pipe into this utility using \"badlines\"" 1>&2
+  exit 1
+fi
+
+
+#--------------- YOU SHOULD PIPE INTO THIS UTILITY --------------
+gawk '
+
+# ==================== FUNCTION DEFINITIONS =====================
+
+# Function to initialise the _ord_ array equating characters
+# with decimal numbers
+function _ord_init (    i,t)
+{
+for (i=0; i<=255; i++) 
+  {
+  t = sprintf("%c", i)
+  _ord_[t]=i
+  }
+}
+
+# Function to equate a character with the decimal number.
+function ord (char)
+{
+return _ord_[char]
+}
+
+
+# ===================== BEGIN BLOCK ======================
+BEGIN {
+_ord_init()
+}
+
+
+# ==================== MAIN CODE BLOCK ====================
+{
+newstr=""
+for (i=1; i<=length($0); i++)
+  {
+  bite=substr($0,i,1)
+  num=ord(bite)+0
+  if ((num>=32 && num<=126) || num==9 || num==10)
+    newstr=newstr bite
+  else
+    {
+    newstr=newstr sprintf("<%x>",num)
+    }
+  }
+print newstr
+
+}'

@@ -1,0 +1,45 @@
+#!/bin/bash
+#<pre><b>
+# Script     : mynewlis
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 24-Nov-2004
+# Purpose    : To list all user-owned .lis files created since the last
+#              "timestamp" command was issued.
+# SubScripts : oplist
+# Notes      : Assumes the script "timestamp" has been run to create a time-
+#              stamped file in the home directory named timestamp.tmp . Only
+#              files created after the time stamp will be listed. "oplist" is
+#              used to list the files in table number order.
+# Usage      : mynewlis 
+#              cp $(mynewlis) /new/dir
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+if [ ! -f $HOME/timestamp.tmp ] ; then
+  echo "Error: (mynewlis) You have to run the \"timestamp\" script before using this" 1>&2
+  exit 1
+fi
+
+iam=$(whoami)
+
+lines=$(find . -newer $HOME/timestamp.tmp -name '*.lis*' -user $iam | sed
+'s%^\./%%' | grep -v '/' | wc -l)
+
+if [ $lines -eq 0 ] ; then
+  echo "no new .lis files have been created since the last timestamp" 1>&2
+  exit 0
+fi
+
+oplist $(find . -newer $HOME/timestamp.tmp -name '*.lis*' -user $iam | sed
+'s%^\./%%' | grep -v '/') | sed 's/^.*: //'

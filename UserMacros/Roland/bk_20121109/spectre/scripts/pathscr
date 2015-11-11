@@ -1,0 +1,54 @@
+#!/bin/sh
+#<pre><b>
+# Script     : pathscr
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 13-Jan-2004
+# Purpose    : List all files with no file extension defined to the PATH system
+#              environment variable.
+# SubScripts : none
+# Notes      : The number of the directory in the path list is shown. Output is
+#              sorted into script and directory number order which will be the 
+#              order in which the script/command is searched for when invoked.
+#
+#              The files listed might not be scripts. They might be binaries or
+#              command files as well as scripts. Also, in some rare cases, a 
+#              script will have a file extension, but these will not be shown.
+#
+# Usage      : pathscr 
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A   
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Within the $( ), change the path colons to spaces. You will
+# then be left with a list of directories. For true directories,  
+# list out the files and drop those with a period in the name.
+# Format the output, sort and display.
+
+rm -f $HOME/pathscr.tmp
+
+holddir=`pwd`
+
+i=0
+for dir in `echo $PATH | sed "s/:/ /g"` ; do
+  if [ -d $dir ] ; then
+    i=`expr $i + 1`
+    cd $dir
+    ls | fgrep -v "." | awk '{printf "%-20s%2d   %-40s\n",$0,"'$i'","'$dir'"}' \
+     >> $HOME/pathscr.tmp
+    cd $holddir
+  fi
+done
+
+sort $HOME/pathscr.tmp
+
+rm -f $HOME/pathscr.tmp

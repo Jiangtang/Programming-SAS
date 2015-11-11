@@ -1,0 +1,63 @@
+#!/bin/bash
+#<pre><b>
+# Script     : myfiles
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 12-Nov-2003
+# Purpose    : To print out a list of user-owned files
+# SubScripts : none
+# Notes      : If no parameter is supplied then all files owned by the user in
+#              the current directory is listed.
+# Usage      : myfiles
+#              myfiles [sd]*.sas
+#              myfiles -u rwolf s*.sas 
+#===============================================================================
+# OPTIONS:
+#-opt- -------------------------------description-------------------------------
+#  u   (value)  User  (defaults to current user)
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   (optional) File pattern
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+#
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Define give-usage-message-then-exit function
+usage () {
+  echo 'Usage: myfiles *.sas' 1>&2
+  exit 1
+}
+
+valueu=$(whoami)                   # Default value for User  
+
+# "case" statement for action to take on selected options
+while getopts "u:" param ; do
+  case $param in
+   "?") # bad option supplied
+        usage
+        ;;
+   "u") # (value) User
+        valueu=$OPTARG
+        ;;
+  esac
+done
+
+
+# shift to bring first parameter to position 1
+shift $(($OPTIND - 1))
+
+
+if [ $# -lt 1 ]
+then
+  ls -lp | gawk '$3==userid {print \
+  substr(substr($0,25),index(substr($0,25),$6)+13)}' userid="$valueu" 
+else
+  ls -ldp -- "$@" | gawk '$3==userid {print \
+  substr(substr($0,25),index(substr($0,25),$6)+13)}' userid="$valueu" 
+fi

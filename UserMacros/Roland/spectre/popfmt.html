@@ -1,0 +1,347 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="%popfmt Spectre">
+   <meta name="Description" content="Spectre's %popfmt macro">
+   <title>popfmt</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+%popfmt</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 28 Apr 2006)</b></center>
+
+<h2>
+Introduction</h2>
+This page is about a very important macro named <b>%popfmt</b>. You have
+to call this macro before you can call the major reporting macros <b>%unistats
+</b>and
+<b>%npcttab</b>
+or any other major reporting macros that might get written for the reporting
+system. At its simplest level, it is a macro that creates a treatment format
+based on the treatment format you give it (or the one assigned to the treatment
+variable) but with treatment totals at the end. So suppose you had a treatment
+arm that formats to "<b>Drug A</b>" it would create a new format so that
+the treatment arm would be formatted to "<b>Drug A@(N=xxx)</b>" where "xxx"
+is the total population for that treatment arm. Even if you do not think
+you need such a format, you still have to call this macro as it provides
+useful information to other reporting macros through the global macro variables
+it sets up.
+<p>%popfmt calls other macros. To see a list of dependencies then click
+<a href="macdep.html#popfmt" target="_blank">here</a>.
+<h2>
+Calling %popfmt</h2>
+The macro has a number of parameters and these are shown below, copied
+from the macro header. Note that the first three parameters are "positional"
+parameters. "Positional" parameters do not need you to supply the parameter
+name with an equals sign when you specify the values. You just give the
+values directly but they must be in the specified order and they must be
+the first values you pass to the macro.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>/ dsin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(pos) Input dataset</tt>
+<br><tt>/ trtvar&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(pos) Treatment arm variable</tt>
+<br><tt>/ dstrt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(pos) Input dataset containing complete set of trtvar values.</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+If you are sure your input dataset contains all the trtvar</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+values you need then you need not specify this. If you do</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+specify this and there is no data in your input dataset</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+corresponding to a treatment arm then this will have (N=0).</tt>
+<br><tt>/ trtfmt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(Optional) treatment variable format. If omitted it uses</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+the currently assigned format for the treatment variable.</tt>
+<br><tt>/ uniqueid=patno&nbsp;&nbsp;&nbsp; Variable(s) that uniquely identify
+a patient. If more</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+than one variable then separate with spaces.</tt>
+<br><tt>/ prefix=TRT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Prefix for
+a list of variables that will end in the unique</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+values of the treatment variable that will get written to</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+the global macro variable _trtlist_ . If you transpose your</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+data with this prefix then the variable list can be used in</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+your proc report.</tt>
+<br><tt>/ totaln=99&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Number
+value to represent "total" for all treatment arms.</tt>
+<br><tt>/ totalc="Z"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Character
+value (in quotes) to represent "total" for all</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+treatment arms.</tt>
+<br><tt>/ pvaluen=9999&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Number value to represent
+the pvalue treatment arm.</tt>
+<br><tt>/ pvaluec="ZZZZ"&nbsp;&nbsp;&nbsp; Character value to represent
+the pvalue treatment arm.</tt>
+<br><tt>/ pvallbl="p-value" Label text for the pvalue treatment arm.</tt>
+<br><tt>/ totstr=Total&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Text to represent
+the "total" for all treatments. If you set</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+this to null then the format created will not contain an</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+entry for the total treatment groups.</tt>
+<br><tt>/ split=@&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Split character to put before the (N=xxx) ending. If you</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+want a space instead then set this to %str( ).</tt>
+<br><tt>/ suffix&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(in quotes) suffix to put after the (N=xxx) ending as part</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+of the created format. Default is nothing.</tt></td>
+</tr>
+</table>
+
+<p>The first three parameters are positional to save you time typing. They
+will be the parameters you will most often set. The first positional parameter
+is the input dataset which is normally the "acct" dataset that you get
+after selecting on the "population". The population might be the "Full
+Analysis set". The second positional parameter is the treatment arm variable.
+The third positional parameter is a dataset you are sure contains a full
+set of treatment arm values, since the dataset you supplied as the second
+parameter, might not contain all the treatment arm values and yet will
+will probably need to show this treatment arm on the report, even with
+a zero population total. So a typical call to the %popfmt macro will look
+like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>proc sort data=stat.acct(keep=patno trtgrp agegrp</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+where=(fascd=1 and agegrp=1))</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; out=acct(drop=fascd);</tt>
+<br><tt>&nbsp; by patno;</tt>
+<br><tt>run;</tt>
+<p><tt>%popfmt(acct,trtgrp,stat.acct(where=(fascd=1)))</tt></td>
+</tr>
+</table>
+
+<p>The other parameters are not positional so you must supply the name
+of the parameter when you specify the values. If you wanted your total
+column to have the label "Overall" rather than "Total" and you do not want
+a split character put before the "(N=xxx)" ending on the format created
+then you could make the call to %popfmt like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%popfmt(acct,trtgrp,stat.acct(where=(fascd=1)),totstr=Overall,split=%str(
+))</tt></td>
+</tr>
+</table>
+
+<p>Note that <b>uniqueid=</b> will be set to a value that is best for your
+site. It is the minimum variables that will uniquely define a patient.
+If you are using an acct dataset that is a collection from many studies
+then you will probably have to change this to ensure the set of variables
+defined a unique patient. You might have to set "<b>uniqueid=site patient</b>",
+for example, since you might have the same patient number in different
+studies being combined.
+<p>When %popfmt is called it sets up a large number of global macro variables
+as will be shown later. Another thing it does is to set up a dataset in
+the work area named <b>_popfmt </b>with two variables. The first variable
+is the treatment arm variable that you supplied and the second variable
+is "total" - the population total for that treatment arm. Added to the
+list of values for the treatment arms will be that for the treatment arm
+total. Using the macro defaults, this value will be numeric <b>99</b> if
+the treatment arm variable is numeric or the character "<b>Z</b>" if the
+treatment arm variable is character. This is shown above in the parameter
+list copied from the macro header. You can change these values if you wish
+when you call the macro. This dataset will be used by the major reporting
+macros to calculate percentages based on populations. If you write macros
+then you may need to use this dataset so it is important to know it is
+there.
+<h2>
+Thinking with %popfmt</h2>
+Not all the tables you produce will have columns that are treatment arms
+with population totals. Suppose you select on a single treatment arm and
+your columns are Adverse Events that are "<b>related</b>" to study drug
+and "<b>regardless of relationship</b>" to study drug. You may have patient
+counts and percentages but in this case the percentage will be that of
+the treatment arm population which will be the same for both columns. Using
+%popfmt is also applicable here, but you will have to learn how to <b><i>think
+</i></b>with
+%popfmt. The dataset you supply to %popfmt need not be an acct dataset,
+even if it contains patient details from that dataset, and the variable
+you define for the treatment arm need not be a real treatment arm variable.
+Staying with this example, the variable that shows relationship to the
+study drug might be "relatecd". This has to be the variable to merge on
+and the percentages calculated so we need to feed in a <b>fake acct</b>
+dataset to the %popfmt macro with the full population count in each value
+of relatecd. This is how that might be done. Note the creation of "fakeacct"
+with the full population output for relatecd=1 and relatecd=999.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>proc format;</tt>
+<br><tt>&nbsp; value rel</tt>
+<br><tt>&nbsp; 1="RELATED"</tt>
+<br><tt>&nbsp; 999="REGARDLESS OF RELATIONSHIP"</tt>
+<br><tt>&nbsp; ;</tt>
+<br><tt>run;</tt>
+<p><tt>*- acct data -;</tt>
+<br><tt>proc sort data=stat.acct(keep=protocol sitecd patient fascd trtcd
+age</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+where=(fascd=1 and trtcd=1 ))</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; out=acct(drop=fascd
+trtcd);</tt>
+<br><tt>&nbsp; by protocol sitecd patient;</tt>
+<br><tt>run;</tt>
+<p><tt>data fakeacct;</tt>
+<br><tt>&nbsp; set acct;</tt>
+<br><tt>&nbsp; relatecd=1;output;</tt>
+<br><tt>&nbsp; relatecd=999;output;</tt>
+<br><tt>&nbsp; format relatecd rel.;</tt>
+<br><tt>run;</tt>
+<p><tt>%popfmt(fakeacct,relatecd,uniqueid=protocol sitecd patient,totstr=OVERALL)</tt></td>
+</tr>
+</table>
+
+<p>The "fakeacct" dataset is only used to give the correct population total
+for both relatecd=1 and relatecd=999 and this creates the _popfmt dataset
+with these totals in that a later macro will use to calculate percentages.
+As soon as "fakeacct" has been used by %popfmt it can be deleted as it
+will no longer be required. The acct dataset is still required and will
+be used to merge with the adverse event data so that only data for that
+population is selected. Here is how it might be done:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="99%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>*- adverse event data -;</tt>
+<br><tt>proc sort data=s.adv(keep=protocol sitecd patient atpercd</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+amsoc ampt relatecd&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+where=(atpercd=2))</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; out=adv(drop=atpercd);</tt>
+<br><tt>&nbsp; by protocol sitecd patient;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>*- set up duplicate for "regardless of relationship" -;</tt>
+<br><tt>data adv;</tt>
+<br><tt>&nbsp; set adv;</tt>
+<br><tt>&nbsp; output;</tt>
+<br><tt>&nbsp; relatecd=999;</tt>
+<br><tt>&nbsp; output;</tt>
+<br><tt>run;</tt>
+<br>&nbsp;
+<p><tt>*- merge acct and adv data -;</tt>
+<br><tt>data adv;</tt>
+<br><tt>&nbsp; merge acct(in=_acct) adv(in=_adv where=(relatecd in (1,999)));</tt>
+<br><tt>&nbsp; by protocol sitecd patient;</tt>
+<br><tt>&nbsp; if _acct and _adv;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>Using the above method the data going into a reporting macro can merge
+with _popfmt on "relatecd" and calculate percentages.
+<p>There will be a lot of tables that the main reporting macros %popfmt,
+%unistats and %npcttab can handle that may not be obvious when you first
+look at the table. The above is such an example. As a rough guide, <b>if
+a table looks similar in layout to one of the normal tables that come out
+of the main reporting macros, then it is likely that these macros can produce
+that table</b>. But you have to be able to <b><i>think </i></b>with the
+%popfmt macro to make that possible.
+<h2>
+The global macro variables set up</h2>
+As mentioned in the Introduction, the %popfmt macro is a very important
+macro. It wites a lot of useful information to global macro variables that
+other reporting macros can use. For example, it writes what treatment variable
+was used and what the uniqueid= value was so later macros can default to
+these values and so save the user the bother of supplying these values.
+It calculates column widths so later macros can default to these widths.
+The idea is to provide enough information so that it is easy to call later
+macros with the minimum number of paraneters set. This is to aid in automation
+which is the ultimate goal the reporting system is seeking to achieve.
+<p>When global macro variables are set up or if macros alter the values
+of global macro variables already set up then it is a convention that the
+macro reports on this and writes the information to the log. Here is a
+real life example.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>MSG: (popfmt) The following global macro variables have been set
+up</tt>
+<br><tt>MSG: (popfmt) and can be resolved in your code.</tt>
+<br><tt>_popfmt_=popfmt.&nbsp;&nbsp; (output format with (N=xxx) population
+totals added)</tt>
+<br><tt>_rawfmt_=TRTNARR.&nbsp;&nbsp; (input format)</tt>
+<br><tt>_popnfmt_=popnfmt.&nbsp; (format for giving pure population totals)</tt>
+<br><tt>_poptfmt_=poptfmt.&nbsp; (copy of input format but containing total
+treatment arm)</tt>
+<br><tt>_trtvar_=trtrand&nbsp;&nbsp;&nbsp; (name of treatment variable)</tt>
+<br><tt>_trtvartype_=N&nbsp; (treatment variable type N/C)</tt>
+<br><tt>_trttotstr_=99 (treatment total string identifier)</tt>
+<br><tt>_uniqueid_=patient&nbsp;&nbsp; (variable(s) used to uniquely identify
+subjects)</tt>
+<br><tt>_trttotvar_=TRT99&nbsp; (transposed treatment total variable)</tt>
+<br><tt>_trtpvalstr_=9999&nbsp; (p-value string identifier)</tt>
+<br><tt>_trtpvalvar_=TRT9999&nbsp; (p-value variable)</tt>
+<br><tt>_trtpref_=TRT&nbsp; (treatment variable prefix used in transpose)</tt>
+<br><tt>_trtvarlist_=TRT1 TRT2 (transposed treatment variables)</tt>
+<br><tt>_trtinlist_=1 2&nbsp; (treatment arm values)</tt>
+<br><tt>_trtnum_=2&nbsp; (number of treatment arms)</tt>
+<br><tt>_trtcwidths_=23 15&nbsp;&nbsp;&nbsp; (column widths according to
+format popfmt.)</tt>
+<br><tt>_trtfwidths_=23 15&nbsp;&nbsp;&nbsp; (column widths according to
+format poptfmt.)</tt>
+<br><tt>_trttotcwidth_=7&nbsp;&nbsp; ("Total" column width according to
+format popfmt.)</tt>
+<br><tt>_trttotfwidth_=5&nbsp;&nbsp; ("Total" column width according to
+format poptfmt.)</tt>
+<br><tt>_n1_=177</tt>
+<br><tt>_n2_=187</tt>
+<br><tt>_n99_=364</tt>
+<p><tt>MSG: (popfmt) Dataset "_popfmt" has been created containing population
+totals</tt>
+<br><tt>MSG: (popfmt) with one observation per treatment group and one
+observation for</tt>
+<br><tt>MSG: (popfmt) the total of all treatment groups. Use this to merge
+with and</tt>
+<br><tt>MSG: (popfmt) calculate percentages. Variables are as follows:</tt>
+<br><tt>trtrand: Treatment group (dataset is sorted in this order)</tt>
+<br><tt>total: Total population for the treatment group</tt></td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+You have been introduced to the very important macro %popfmt and you have
+seen how to use it and what information it writes to the log. It has been
+stressed that you have to be able to <b><i>think </i></b>with this macro
+so that you can use it and the other reporting macros to create tables
+that at first sight do not look as though they are capable of being produced
+using the reporting macros.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+</body>
+</html>

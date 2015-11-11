@@ -1,0 +1,93 @@
+#!/bin/bash
+#<pre><b>
+# Script     : showprot_win
+# Version    : 1.2
+# Author     : Roland Rashleigh-Berry
+# Date       : 07-Mar-2007
+# Purpose    : To list the contents of the protocol dataset (uses SAS)
+# SubScripts : none
+# SubMacros  : %allocr
+# Notes      : WINDOWS VERSION
+#              Output goes to standard output (the terminal by default). This
+#              is used to browse the protocol dataset as browsing it online
+#              would stop "crprotocolds" working for other users.
+# Usage      : showprot_win
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not supply any parameters
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  20Feb07         Call %allocr macro
+# rrb  02Mar07         Use "&_ptlibref_.." instead of "der."
+# rrb  07Mar07         Added display of "pagexofy" variable
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# No parameters required
+if [ $# -gt 0 ] ; then
+  echo "Error: (showprot) Do not supply any parameters" 1>&2
+  exit 2
+fi
+
+# Write SAS code to a temporary file
+cat > $HOME/showprot_$$.sas << -----FINISH-----
+filename _outfile "$HOMEW\showprot_$$.tmp";
+%allocr
+options validvarname=v7 nofmterr noovp nodate nonumber;
+data _null_;
+  file _outfile notitles noprint;
+  set &_ptlibref_..protocol;
+  put;
+  put @1 "Drugname: " drugname;
+  put @1 "Protocol: " protocol;
+  put @1 "Report: " report;
+  put @1 "Titlestyle: " titlestyle;
+  put @1 "Paper: " paper;
+  put @1 "Lmargin: " lmargin;
+  put @1 "Rmargin: " rmargin;
+  put @1 "Tmargin: " tmargin;
+  put @1 "Bmargin: " bmargin;
+  put @1 "Dflayout: " dflayout;
+  put @1 "Dfllayout: " dfllayout;
+  put @1 "Dfplayout: " dfplayout;
+  put @1 "Dfltlayout: " dfltlayout;
+  put @1 "Dfptlayout: " dfptlayout;
+  put @1 "clean: " clean;
+  put @1 "pagexofy: " pagexofy;
+  put @1 "pop1: " pop1;
+  put @1 "poplabel1: " poplabel1;
+  put @1 "pop2: " pop2;
+  put @1 "poplabel2: " poplabel2;
+  put @1 "pop3: " pop3;
+  put @1 "poplabel3: " poplabel3;
+  put @1 "pop4: " pop4;
+  put @1 "poplabel4: " poplabel4;
+  put @1 "pop5: " pop5;
+  put @1 "poplabel5: " poplabel5;
+  put @1 "pop6: " pop6;
+  put @1 "poplabel6: " poplabel6;
+  put @1 "pop7: " pop7;
+  put @1 "poplabel7: " poplabel7;
+  put @1 "pop8: " pop8;
+  put @1 "poplabel8: " poplabel8;
+  put @1 "pop9: " pop9;
+  put @1 "poplabel9: " poplabel9;
+  put;
+run;
+-----FINISH-----
+
+# run the code
+sas -nosplash -nologo -icon -log "$HOMEW" -sysin "$HOMEW\showprot_$$.sas"
+
+# if output file exists then cat it and delete it
+if [ -f $HOME/showprot_$$.tmp ] ; then
+  cat $HOME/showprot_$$.tmp 
+  rm -f $HOME/showprot_$$.tmp 
+fi
+
+# tidy up
+rm -f $HOME/showprot_$$.sas $HOME/showprot_$$.log

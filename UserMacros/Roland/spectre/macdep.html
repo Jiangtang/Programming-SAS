@@ -1,0 +1,136 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="macro dependencies Spectre">
+   <meta name="Description" content="Macro dependencies within Spectre">
+   <title>macro dependencies</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Macro dependencies</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 12 Mar 2007)</b></center>
+
+<h2>
+Introduction</h2>
+The dependencies of the major macros will be shown on this page.
+<h2>
+<a NAME="titles"></a>%titles</h2>
+
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%titles&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %jobinfo&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %protinfo&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %proginfo&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %lowcase&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %attrn&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %readpipe&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; layout2lsps (script)&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; toupper (script)&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %xytitles (the client style titles macro)&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %casestrmac&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %lowcase&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %maxtitle&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %attrn&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %titlegen&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %maxtitle</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="openrep"></a>%openrep and %closerep</h2>
+
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%openrep&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %endwith&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %readpipe&nbsp;</tt>
+<br><tt>%closerep&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %endwith&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %readpipe</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="popfmt"></a>%popfmt</h2>
+
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%popfmt&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %varfmt&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %attrv&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %vartype&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %attrv&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %words</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="unistats"></a>%unistats</h2>
+
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%unistats&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %words&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %quotelst&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %vartype&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %attrv&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %varfmt&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %attrv&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %varlen&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %attrv&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %vartype&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %attrv&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %varnum&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %unimap&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %words&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %windex&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %words&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %remove&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %unipvals&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %unicatrep&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %words&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %fmtord</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %verifyb&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %fmtpath&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %words&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %words&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %allfmtvals&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %zerogrid&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %commas&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %quotelst&nbsp;</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="npcttab"></a>%npcttab</h2>
+
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%npcttab&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %quotelst&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %dequote</tt>
+<br><tt>&nbsp;&nbsp; %varfmt</tt>
+<br><tt>&nbsp;&nbsp; %attrn&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %varlen&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %attrv&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %vartype&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %attrv&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %zerogrid&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %commas&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %quotelst&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %npctpvals&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %attrn&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; %words&nbsp;</tt></td>
+</tr>
+</table>
+
+</body>
+</html>

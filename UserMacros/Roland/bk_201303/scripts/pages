@@ -1,0 +1,98 @@
+#!/bin/bash
+#<pre><b>
+# Script     : pages
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 22-Jun-2004
+# Purpose    : Production script to print pages of a given range
+# SubScripts : none
+# Notes      : Default is to start at page 1 and print all the pages. You can
+#              specify multiple files.
+# Usage      : pages -b 2 -e 5 filename
+#              pages -b1 -e2 *.lis
+#===============================================================================
+# OPTIONS:
+#-opt- -------------------------------description-------------------------------
+#  b   (value)  begin page                                        
+#  e   (value)  end page                                          
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   file name(s) or file pattern(s) or both
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Define give-usage-message-then-exit function. E
+usage () {
+  echo "Usage: pages -b <begin page> -e <end page> filename" 1>&2
+  exit 1
+}
+
+
+# Defaults
+valueb=1                            # Default value for begin page                                        
+valuee=9999999                      # Default value for end page                                          
+
+
+# "case" statement for action to take on selected options
+while getopts "b:e:" param ; do
+  case $param in
+   "?") # bad option supplied
+        usage
+        ;;
+   "b") # (value) begin page
+        valueb=$OPTARG
+        ;;
+   "e") # (value) end page
+        valuee=$OPTARG
+        ;;
+  esac
+done
+
+
+# shift to bring first parameter to position 1
+shift $(($OPTIND - 1))
+
+
+# Must be one file at least
+if [ $# -lt 1 ] ; then
+  echo "Error: (pages) No filenames supplied" 1>&2
+  usage
+fi
+
+
+# loop through each file name
+for file in "$@" ; do
+
+  gawk '
+  BEGIN {pagecnt=1}
+
+  # main block
+  {
+  # a new page will have a form feed character at the start
+  if (substr($0,1,1)=="\f")
+    pagecnt++
+
+  # exit if we have gone past the end page
+  if (pagecnt>endpage)
+    exit
+
+  # output lines from the start page onwards
+  if (pagecnt>=startpage)
+    {
+    # drop the form feed from the start page if it is there
+    if (substr($0,1,1)=="\f" && pagecnt==startpage)
+      print substr($0,2)
+    else
+      print $0
+    }
+    
+  }' startpage="$valueb" endpage="$valuee" "$file"
+
+done

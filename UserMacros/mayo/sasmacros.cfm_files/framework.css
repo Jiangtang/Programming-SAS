@@ -1,0 +1,113 @@
+/* 
+================================
+TEMPLATE HEADER
+================================
+*/
+
+/* 
+================================
+LAB TEMPLATE
+================================
+*/
+
+
+/* 
+================================
+DEPARTMENTS LISTING PAGE
+================================
+*/
+
+.deptheaderlink {
+   padding:  10px 10px;
+    margin: 0 0 0 0;
+    color: #fff;
+    font-size: 18px;
+    background: #424242;
+    border-bottom: 1px solid #fff;
+}
+
+.deptlisting-top {
+	padding-bottom: 5px;
+}
+
+.deptlisting-top-about {
+	float: left;
+	width: 486px;
+	border-right: 1px solid #8C8C8C;
+}
+
+.deptlisting-top-links {
+	float: left;
+	width: 276px;
+}
+
+.deptlisting-shadow {
+	clear: both;
+	background: url(/mayo/images/shadow-white.gif) top repeat-x;
+	height: 10px;
+}
+
+.deptlisting-content-colone {
+	width: 243px;
+	padding: 0;
+	margin: 0 10px 0 10px;
+	float: left;
+	display: inline;
+}
+
+.deptlisting-content-coltwo {
+	width: 240px;
+	padding: 0;
+	margin: 0 10px 0 0;
+	float: left;
+}
+
+.deptlisting-content-colthree {
+	width: 240px;
+	padding: 0;
+	margin: 0;
+	float: left;
+}
+
+
+
+
+/* 
+================================
+DEPARTMENTS / DIVISIONS / PROGRAMS
+================================
+*/
+
+/* 
+================================
+PROFILES
+================================
+*/
+
+.profile-right {
+	width: 160px;
+	float: left;
+	display: inline;
+	padding: 0;
+	margin: 0 0 0 10px;
+}
+
+.profile-left {
+	width: 160px;
+	float: left;
+	display: inline;
+	padding: 0;
+	margin: 0 0 0 10px;
+	border: 1px solid #ccc;
+}
+
+.profile-center {
+	width: 405px;
+	float: left;
+	display: inline;
+	padding: 0;
+	margin: 0 0 0 10px;
+}
+
+
+

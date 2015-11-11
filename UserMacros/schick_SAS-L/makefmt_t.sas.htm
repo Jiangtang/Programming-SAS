@@ -1,0 +1,644 @@
+*<PRE>;
+/*
+Subject: Re: Date in DD-MMM-YYYY
+   Date: Mon, 3 Feb 1997 16:20:00 MST
+   From: "Brian O. Mullin" <mullinb{DHWTOWERS/TOWERS2/mullinb}@DHW.STATE.ID.US>
+Newsgroups: comp.soft-sys.sas
+
+
+on   Fri, 24 Jan 1997 11:20:02 EDT   Ian Whitlock
+<whitloi1@WESTATPO.WESTAT.COM> writes:
+
+>   Subject: Date in DD-MMM-YYYY
+>   Summary: Make a format.
+>   Respondent: Ian Whitlock <whitloi1@wqestat.com>
+>
+>   Gregory T Weber <Gregory_T_Weber@SBPHRD.COM> wants to display dates
+>   with dashes as in
+>
+>   >   01-JAN-1997
+>
+>   I would make a format to cover the range of dates on interest.  Here is
+>   the code for January 97.  Change the loop control values to a suitable
+>   range.
+>
+>        data fmtdata ( drop = temp ) ;
+>           length temp $ 9 ;
+>           retain fmtname 'tempdate' ;
+>           do start = "01jan97"d to "01feb97"d - 1 ;
+>              temp = put ( start , date9. ) ;
+>              label = substr(temp,1,2)||'-'||
+>                      substr(temp,3,3)||'-'||
+>                      substr(temp,6,4) ;
+>              output ;
+>           end ;
+>        run ;
+>
+>        proc format cntlin = fmtdata ;
+>           value dashdate
+>              "01jan97"d - "31jan97"d = [tempdate11.]
+>              other = [date9.]  ;
+>        run ;
+>
+>        data _null_ ;
+>           d = today() ;
+>           put d= dashdate11. ;
+>           d = '01jan2000'd ;
+>           put d= dashdate11. ;
+>        run ;
+
+>   I had to use the double format specification to allow an "other" group
+>   format as introduced in 6.07. because I don't know how to do it using
+>   CNTLIN.  Can someone simplify the code to eliminate the need for
+>   TEMPDATE.?
+>
+>   Ian Whitlock
+>
+
+
+Ian's desire to construct the format in one step is definitely worthwhile.
+ Format dashdate is dependent upon tempdate, and deleting tempdate from the
+library will destroy dashdate as well.  In addition, processing time can
+ increase when a format is constructed utilizing a previously defined
+format.  Tech Report P-222 states"  You should use user-defined formats at
+no greater than one level of nested depth.  The SAS System will support up
+to five levels of nested depth, but the overhead requirements increase
+dramatically with each additional level."  My tests do not always bear this
+out; however, it does occasionally happen.
+
+
+The following macro constructs source code for value formats and informats.
+ Within that realm I believe that it supports all possible options, except
+not sorted.
+
+I am not sure that the code has been simplified.  However, the format
+dashdate is no longer dependent upon tempdate.
+
+Brian
+
+ -----
+Brian O.  Mullin
+Idaho Division of Health,
+Center for Vital Statistics and Health Policy
+mullinb{dhwtowers/towers2/mullinb}@dhw.state.id.us
+------
+Example section, see at bottom  */
+
+/***************************************************************************
+******
+     *  FILE:                        makefmt.sas
+     *  AUTHOR:                      BRIAN O. MULLIN
+     *  CREATION DATE:               08-03-96
+     *  Last moddified:              1-29-97
+     *  Copyright 1997 by Brian O. Mullin
+     *
+     *
+     *
+     *  EXTERNAL FILES CREATED:            file you specify with a filname
+     *                                       statement prior to invoking the
+     *                                       macro.  the filename is then a
+     *                                       parameter in the macro call
+     *
+     *  EXTERNAL FILES USED (NOT SPECIFIED AS INPUT PARAMETERS):  none
+     *
+     *  DATA SETS CREATED: _null_
+     *
+     *  DATA SET VARIABLES CREATED:  __start
+     *                               __end
+     *                               __label
+     *                               __value
+     *                               __valuex
+     *                               __rangop
+     *                               i
+     *                               note:   none of these variables can be
+present
+     *                                       on the input dataset.
+     *
+     *  DATA SETS CLEANED UP?:    by default
+     *
+     *  LOCAL VARIABLES CREATED (OTHER THAN PARAMETERS): no
+     *
+     *  GLOBAL VARIABLES CREATED: no
+     *
+     *  OTHER MACRO VARIABLES CREATED: no
+     *
+     *  PURPOSE:   the macro writes a flat file containing
+     *               the source code for a value format or informat it is
+similar to
+     *               creating a format with catlin, except that instead of
+the
+     *               format being added to a format library the source code
+is
+     *               written to a flat file.
+     *
+     *               It offers more flexibility than cntlin.  A format can
+be
+     *               generated dynamically which inaddition to containing
+     *               specified labels can be built on other formats or
+informats
+     *               without creating an interm format.
+     *
+     *               The macro is designed to produce the source code of a
+value
+     *               format or informat using the output dataset produced by
+     *               cntlout.
+     *
+     *
+     *
+     *  PURPOSE  OF PARAMETERS:
+     *
+     *               filename: The file that the source code is to be
+written to.
+     *                       This parameter is required.  It is the only
+parameter
+     *                       required.
+     *
+     *               start:  this is the start of the range.
+     *
+     *               end:    this is the end of the range.  If an end
+variable
+     *                       is not specified, end defaults to start.
+     *
+     *               label:  this the label on the right hand side of the
+variable.
+     *
+     *               fmtname:the name of the format being created.  This
+defaults
+     *                       to the name of the variable specified in start.
+     *
+     *               data:   the input dataset.
+     *
+     *               cond:   a subsetting condition to be placed on the
+input
+     *                       dataset.
+     *                       i.e.
+     *                               where x = 1;
+     *
+     *               type:   the type of the format or informat to be
+created.
+     *                       This parameter cna be either a variable or a
+constant
+     *                       string.  If it is a constant string, it must be
+     *                       enclosed in quotes.
+     *
+     *                       It can take on the following values:
+     *                               N - numeric format
+     *                               I - numeric informat
+     *                               C - character format
+     *                               J - character informat
+     *
+     *                       this variable is documented in the SAS
+Procedures Guide
+     *                       pg 301.
+     *
+     *
+     *               hlo:    this variable indicates the properties of a
+particular
+     *                       range of a format, which is specified by a
+record in
+     *                       the input dataset.
+     *
+     *                       It can take on the following values:
+     *                               H - ending range is high
+     *                               L - ending range is low
+     *                               O - range is other
+     *                               F - format or informat used for
+formatted value
+     *                                   or informatted value
+     *                               I - numeric informat range (informat
+defined
+     *                                   with unquoted numeric range)
+     *
+     *                       This variable is documented in Tech Report
+P-222 Changes
+     *                       and Enhancements to Base SAS Software version
+6.07 pg 210.
+     *
+     *                       currently the macro does not support
+     *                               S - notsorted
+     *                               R - round option
+     *                               N - no ranges
+     *
+     *               sexcl:  Y if start range value is excluded
+     *
+     *               eexcl:  Y if end range value is excluded
+     *
+     *               replace:This is a constant unquoted string.  If the
+value of the
+     *                       macro parameter is YES then the proc format
+option,
+     *                       NOREPLACE, is not written to the flatfile.
+     *
+     * SPECIFICATIONS:
+     *   %MAKEFMT  (
+     *                FILENAME= fileref-specifing-source-code-destination,
+     *               <data    = input-dataset-name,>
+     *               <cond    = where clause,>
+     *               <fmtname = constant-string,>
+     *               <label   = dataset variable,>
+     *               <start   = dataset variable,>
+     *               <end     = dataset variable,>
+     *               <type    = dataset variable or constant string,
+enclosed in quotes,>
+     *               <sexcl   = dataset variable,>
+     *               <eexcl   = dataset variable,>
+     *               <hlo     = dataset variable,>
+     *               <replace = YES|NO,>
+     *                );
+     *
+     *
+     *
+     * EXAMPLES:
+     *
+     *   Example 1:  Writing source code from a data set produced
+     *               by cntlout.
+     *
+     *
+     *
+     *              PROC FORMAT cntlout = one2ten;
+     *                      value one2ten
+     *                      1='one'
+     *                      2='two'
+     *                      3='three'
+     *                      4='four'
+     *                      5='five'
+     *                      6='six'
+     *                      7='seven'
+     *                      8='eight'
+     *                      9='nine'
+     *                      10='ten';
+     *
+     *              %makefmt (filename      = sastxt,
+     *                        data          = one2ten,
+     *                        cond          = where fmtname='ONE2TEN',
+     *                        fmtname       = one2ten,
+     *                        replace       = yes);
+     *              run;
+     *
+     *              %inc sastxt;
+     *              run;
+     *
+     *
+     *
+     *
+     *
+     *   Example 2:  Building a simple format.
+     *
+     *              data ID_Fips (label = "A sample of Idaho's fips codes");
+     *                      infile cards pad;
+     *                      input
+     *                              fips
+     *                              @40 county $10.;
+     *                      cards4;
+     *                                 1    ADA
+     *                                 3    ADAMS
+     *                                 5    BANNOCK
+     *                                 7    BEAR LAKE
+     *                                 9    BENEWAH
+     *                                11    BINGHAM
+     *                                13    BLAINE
+     *                                15    BOISE
+     *                                17    BONNER
+     *                                19    BONNEVILLE
+     *                                21    BOUNDARY
+     *                                23    BUTTE
+     *                                25    CAMAS
+     *                                27    CANYON
+     *                                29    CARIBOU
+     *                                31    CASSIA
+     *                                33    CLARK
+     *                                35    CLEARWATER
+     *                                37    CUSTER
+     *                                39    ELMORE
+     *                                41    FRANKLIN
+     *              ;;;;
+     *                     run;
+     *
+     *                  %makefmt  ( data    = id_fips,
+     *                              filename= sastxt,
+     *                              fmtname = id_fips,
+     *                              label   = county,
+     *                              start   = fips,
+     *                              type    = 'N'
+     *                            );
+     *              run;
+     *
+     *
+     *
+     *
+     *
+     *   Example 3:  Building a format utilizing an existing format.
+     *
+     *
+     *             data dashtime;
+     *                      length startc $ 20 startn 5;
+     *                      do startn = "01jan96:00:00:00"d to
+"01mar97:00:00:00";
+     *                         label =
+     *                           put            (startn ,tod8.    ) ||
+     *                                          ' '                 ||
+     *                            compress(day  (startn)            ||
+     *                                          '-'                 ||
+     *                            put     (month(startn),monname3.) ||
+     *                                          '-'                 ||
+     *                               left (year (startn))
+     *                                    );
+     *
+     *                         startc = startn;
+     *                          type='n';
+     *                         output ;
+     *                      end ;
+     *                          startc= "other";
+     *                          label = "DATE9.";
+     *                          hlo='OF';
+     *                          output;
+     *             run ;
+     *
+     *             %makefmt (      filename= sastxt,
+     *                             data    = dashtime,
+     *                             fmtname = dashtime,
+     *                             start   = startc,
+     *                             replace = yes
+     *                       );
+     *
+     *             %inc sastxt;
+     *
+     *             data _null_ ;
+     *                     do startn = "01jan96:00:00:00"d to
+"01mar97:00:00:00";
+     *                             put startn dashtime.;
+     *                     end;
+     *             run;
+     *
+
+
+****************************************************************************
+**/
+
+
+     %macro makefmt( data    =_last_,
+                     cond    =,
+                     filename=,
+                     fmtname =&start,
+                     label   =label,
+                     start   =start,
+                     end     =&start,
+                     type    =type,
+                     sexcl   =sexcl,
+                     eexcl   =eexcl,
+                     hlo     =hlo,
+                     replace =
+                     );
+
+     data _null_;
+     length __valuex 3 __rangop $ 3;
+
+
+     set &data nobs = __nobs;
+     &cond;
+
+
+
+     file &filename;
+     if _n_= 1 then do ;
+
+
+             %if %upcase(%left(&replace)) ne YES %then %do;
+                     put     "proc format noreplace;";
+             %end;
+
+             %else %if %upcase(%left(&replace))=YES %then %do;
+                     put     "proc format ;";
+             %end;
+
+
+             put     "/*" /
+                     " * format made from the dataset:      &data" /
+                     " * &cond" / /
+                     " * label is composed by the variable: &label"/
+                     " * value is composed by the variable: &start" /
+                     " *" /
+                     " */" /;
+                  if upcase(left(&type)) =  'N' then put "value &fmtname";
+             else if upcase(left(&type)) =  'C' then put "value $&fmtname";
+             else if upcase(left(&type)) =  'I' then put "invalue &fmtname";
+             else if upcase(left(&type)) =  'J' then put "invalue
+$&fmtname";
+     end;
+
+
+     /*
+      *
+      *  If the format is numeric (N)
+      *  or the informat is numeric (I)
+      *  __start and __end are set to the values of
+      *  &start and &end.
+      *  If type is N then quotes are placed around
+      *  the values of the variable &label and assigned to __label
+      */
+     if upcase(left(&type)) in ('N', 'I') then do;
+             __start=&start;
+             __end = &end;
+             if upcase(left(&type)) = 'N' then __label=
+'"'||trim(left(&label))||'"';
+             else __label= trim(left(&label));
+
+     end;
+
+     /*
+      *
+      *  If the type of the format is character (C)
+      *  or the informat is character (J)
+      *  __start, __end, and __label are set to the values of
+      *  &start, &end, &label and enclosed in quotes
+      *
+      */
+     else if upcase(left(&type)) in ('C', 'J') then do;
+             __start= '"'|| trim(left(&start)) || '"';
+             if &end > ' ' then __end  = '"'|| trim(left(&end ))  || '"';
+             __label= '"'||trim(left(&label))||'"';
+     end;
+
+     /*
+      *  Defines the range operator
+      *
+      *  If either the start or end values are not included
+      *  in the range, the appropriate operator is assigned.
+      *  If the value for end is missing then the range operator
+      *  is set to missing.
+      *
+      *  I have not included error checking.  However, if SEXCL
+      *  or EEXCL are set to Y (yes) then END must have a value
+      *  greater than missing.
+      *
+      */
+          if upcase(left(&sexcl)) ne 'Y' and upcase(left(&eexcl))
+          ne 'Y' then __rangop = '-';
+     else if upcase(left(&sexcl)) = 'Y' and upcase(left(&eexcl))
+           = 'Y' then __rangop = '<-<';
+     else if upcase(left(&sexcl)) = 'Y' then __rangop = '<-';
+     else if upcase(left(&eexcl)) = 'Y' then __rangop = '-<';
+          if &end <= ' ' then __rangop = ' ';
+
+
+     /*
+      *
+      *  Since most records  do not have a value for the
+      *  variable hlo  the following do loop sets
+      *  __value   to the most commonly used
+      *
+      */
+     if &hlo <= ' ' then __value = __start||__rangop||__end;
+
+     /*
+      *
+      * If hlo has a value the exceptions for __value
+      * are assigned in the next do loop
+      * which is composed of several sub do loops.
+      */
+     else if &hlo > ' ' then do;
+
+             /*
+              * Places each letter contained in hlo into a
+              * different array element.
+              */
+             array _hlo {10} $ 1 _temporary_;
+             do i = 1 to length (&hlo);
+                     _hlo{i} = upcase(substr(compress(&hlo),i,1));
+             end;
+
+
+             do i = 1 to length (&hlo);
+                          if upcase(_hlo{i}) in ('O', 'H', 'L') then
+__valuex =1;
+
+                         /*
+                          *
+                          * If hlo has  the value of I, then the quotes
+which were
+                          * applied to __start and __end earlier, are
+removed.
+                          * For the specific case, this method is processor
+intensive,
+                          * but it is thought that overall this would be
+more effiecient.
+                          *
+                          */
+                          if upcase(_hlo{i}) = 'I' then do;
+                             __start = input (__start, $quote.);
+                             __end   = input (__end,   $quote.);
+                          end;
+
+                     /*
+                      *  Handles most other exceptions to hlo.
+                      */
+                     else if upcase(_hlo{i}) = 'O' then __value='OTHER';
+                     else if upcase(_hlo{i}) = 'F' then
+                __label=compress('['||&label||']');
+                     else if upcase(_hlo{i}) = 'H' then
+                __value=__start||__rangop||'high';
+                     else if upcase(_hlo{i}) = 'L' then
+               __value='low'||__rangop||__end;
+             end;
+
+             /*
+              *  Handles any remaining cases of hlo.
+              */
+             if __valuex ne 1 then __value = __start||__rangop||__end;
+
+             /*
+              * Handles the range High - Low.
+              *
+              */
+             else if __valuex = 1 then do i = 1 to
+               length (&hlo) until (_hlo{i} = 'H');
+                     do i = 1 to length (&hlo) until (_hlo{i} = 'L');
+                             if _hlo{i} = 'L' then
+__value='low'||__rangop||'high';
+                     end;
+             end;
+
+
+
+
+     end;
+     /*
+      * writes the range range operator and label
+      * to the flatfile.
+      */
+     put __value "="  __label;
+
+     /*
+      * writes the closing semicolon and run statement.
+      */
+     if _n_ = __nobs then put ";" /  "run;";
+     run;
+     %mend;
+
+*Example section
+
+     Ian's example now becomes  ;
+
+
+         data fmtdata ( drop = temp ) ;
+            length temp $ 9 startc $7;
+            do start = "01jan97"d to "01feb97"d - 1 ;
+               temp = put ( start , date9. ) ;
+               label = substr(temp,1,2)||'-'||
+                       substr(temp,3,3)||'-'||
+                       substr(temp,6,4) ;
+               startc=start;
+               output ;
+            end ;
+
+         startc='other';
+         hlo ='OF';
+         label = 'date9.';
+        run;
+
+        %makefmt (      data    =fmtdata,
+                        filename=sastxt,
+                        start   =startc,
+                        fmtname =dashdate,
+                        type    = 'N');
+        run;
+
+        %inc sastxt;
+        run;
+
+         data _null_ ;
+                d = '01jan1997'd;
+                put d= dashdate11. ;
+                d = '01jan2000'd ;
+                put d= dashdate11. ;
+        run ;
+
+
+*</PRE>;
+<script type="text/javascript" src="http://hb.lycos.com/hb.js"></script>
+<script type="text/javascript" src="http://ratings.lycos.com/ratings/lycosRating.js.php"></script>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var cm_role = "live";
+var cm_host = "tripod.lycos.com";
+var cm_taxid = "/memberembedded";
+var tripod_member_name = "schick";
+var tripod_member_page = "schick/makefmt_t.sas";
+var tripod_ratings_hash = "1247464049:8c4234aaae76dbee2c298f431be38d5e";
+
+var lycos_ad_category = {"dmoz":"computers\/open_source","ontarget":"&CAT=technology&L2CAT=computing&L3CAT=programming","find_what":"software knowledge base"};
+
+var lycos_ad_remote_addr = "203.125.122.2";
+var lycos_ad_www_server = "www.tripod.lycos.com";
+var lycos_ad_track_small = "http://members.tripod.com/adm/img/common/ot_smallframe.gif?rand=762944";
+var lycos_ad_track_served = "http://members.tripod.com/adm/img/common/ot_adserved.gif?rand=762944";
+//--><!]]></script>
+<script type="text/javascript" src="http://scripts.lycos.com/catman/init.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-start.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-middle.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-end.js"></script>
+<noscript>
+ <img src="http://members.tripod.com/adm/img/common/ot_noscript.gif?rand=762944" alt="" width="1" height="1" />
+ <!-- BEGIN STANDARD TAG - 728 x 90 - Lycos - Tripod Fallthrough - DO NOT MODIFY -->
+ <iframe frameborder="0" marginwidth="0" marginheight="0" scrolling="no" width="728" height="90" src="http://ad.yieldmanager.com/st?ad_type=iframe&ad_size=728x90&section=209094"></iframe>
+ <!-- END TAG -->
+</noscript>

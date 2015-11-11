@@ -1,0 +1,1760 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="writing bash shell scripts">
+   <meta name="Description" content="Writing bash shell scripts">
+   <title>Writing bash shell scripts</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Writing bash Shell Scripts</h1></center>
+
+<h2>
+Introduction</h2>
+This document starts where the document “<a href="unixcom.html">Common
+Unix Commands</a>” stopped. It extends your knowledge of Unix so that you
+can write what are known as “shell scripts”. You must have fully understood
+and be able to put into practise what was in that first document before
+you can benefit from reading this document. If you try to learn shell scripting
+without a fairly thorough knowledge of Unix commands then you are setting
+yourself up for a failure. If you arrived at this page from a search engine
+then I strongly recommend clicking on the link above to check if your knowledge
+of Unix commands is up to the task of writing shell scripts.
+<p>New commands will be introduced here. Some will be very fully explained
+but for others you are expected to do your own research using the “man
+pages". “man pages" are the definitive source of information on any command.
+<h2>
+What is a “shell script”?</h2>
+There are two words in there to understand – “shell” and “script”. A “shell”
+is like a layer around the internal workings of the Unix computer. You
+communicate your requests to this shell, because doing so directly to the
+hardware devices of your computer would be too difficult. There are different
+shells for Unix that you can use and they have their own syntax differences.
+They are executable programs and usually live in the /bin directory (but
+the /bin directory could be a symbolic link to another directory such as
+/usr/bin). They nearly all have the string “sh” at the end of their name.
+To list them out and to show you which ones are executables, then type
+in the following command:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>file /bin/*sh</tt></td>
+</tr>
+</table>
+
+<p>We could use any of these shells that we wanted to, but the shell we
+are going to use for writing shell scripts is the “<b>bash</b>” shell –
+a shell that is very similar to the Korn shell, except it is provided for
+free. This is rapidly becoming the dominant shell of choice at the time
+of writing. This may not be the same shell that you use interactively on
+Unix. Your interactive shell is defined to a system environment variable
+named “SHELL”. You can find out the shell you use when you first log onto
+Unix by typing in the following command:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>echo $SHELL</tt></td>
+</tr>
+</table>
+
+<p>If you see “/bin/bash” then you are using the bash shell, if “/bin/sh”
+then the Bourne shell, if “/bin/ksh” then the Korn shell, if “/bin/ksh93”
+then the extended Korn shell (even more similar to bash), if “/bin/csh”
+then the C shell and if “/bin/tcsh” then the tc shell. There are others.
+<p>Now we know what a “shell” is, then we are left with the meaning of
+the word “script”. A “script” is just written text. In the case of a shell
+script, the text will be Unix commands and other things that the shell
+understands. A “script” could be a list of commands that you commonly use
+put together in one file so you don’t have to type it all each time. Usually
+it will be a list of commands that accept parameters such as file names
+and perhaps a choice of options. If you think of the “print” utility, you
+choose options such as the layout and the printer and lastly you put the
+filename you want to print. What you are doing is calling a “shell script”.
+This is what you are going to learn how to write, using this document to
+help you.
+<p>(If you do not have the bash shell but have the Korn shell then you
+can still learn to write shell scripts using this document. Differences
+between the Korn and bash syntax are described at the end of this document).
+<h2>
+Why you should learn to write them</h2>
+Shell scripts are a way of combining a complex series of commands into
+something that is easy to call. Sometimes they contain a lot of calls to
+commands and sometimes very few, when the syntax of those few commands
+might be very hard to remember. The aim of having them is to make life
+easier for you and so help you to work more efficiently and effectively.
+But they can go further than that. If well designed and the way to use
+them is well understood, then they can transform the way you approach your
+work. If you have a good set of shell scripts and also you know how to
+write them, then at some stage you will get a feel for what you “can have”
+rather than only what you have. And then you will be able to make the “can
+have” a reality, because you will also be able to write scripts to do this
+yourself. You will be able to visualise a better way of working and make
+it a reality.
+<p>You may think that shell scripts have got nothing to do with running
+SAS&reg; software. However you will see that a number of the shell scripts
+available to you do call SAS software. The coding of these scripts that
+call SAS software is much more difficult than the others but there is a
+shell script called “sasunixskeleton” that can create a template shell
+script for you to make life easier. Using it, you then only have to fill
+in with the SAS software code you need, plus make some other very minor
+changes at the indicated places.
+<h2>
+Keeping it simple</h2>
+If you look at the code inside a shell script without learning about them
+first, then they can look very complicated. Certainly, the syntax is strange.
+But you will learn that they are very easy to write and much simpler than
+the programs using SAS software that you are used to writing. Scripts are
+supposed to be simple utilities producing simple output. And if they do
+become complex, as some do, then they should be redesigned and split into
+simple, stand-alone modules that then get called inside another script
+like you would call a common Unix command.
+<p>Coding shell scripts is an exercise in keeping things simple. A script
+should do what its name suggests and do no more. No formatting of output.
+No titles or explanations with the output. No writing to files. No use
+of “more” to give you a page at a time. If the end user doesn’t like the
+look of the output then as a script writer, you don’t care, so long as
+the correct information is there in a simple format such as one item per
+line. If the end user wants the output to go to a file then they can redirect
+the output to a file themselves. You do not do it for them in your script.
+If they do not know how to redirect output then they can read the “Common
+Unix Commands” document or other manuals. The only “end user” you should
+care about is another script that hasn’t been written yet that might read
+in the output from your utility. You keep things as simple as possible
+for that script, not yet written, to pick up the output. The approach is
+almost the opposite of what you do when you write programs that use SAS
+software, so never be concerned that writing shell scripts is something
+complicated. If it ever becomes complicated then you know you are doing
+it wrong.
+<h2>
+The basic script header</h2>
+We’ll begin with the very first line in the shell script and you will learn
+that this first line is quite special. Since there are numerous shells
+available for you to use, the first line tells Unix what shell you want
+to use. Just as you have a utility called <a href="scripts/hdr" target="_blank">hdr</a>
+to create a program header for you, you have a utility called <a href="scripts/shdr" target="_blank">shdr</a>
+to create a shell script header (for scripts that do not use options).
+This will also set the permissions of the script so that it is an “executable”
+file. Like the “hdr” utility, you tell it the purpose and it puts this
+in the header. Here is the generated header for the shell script “testing”
+with the purpose “testing testing”. Note that you get a little more than
+just a header.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#!/bin/bash</tt>
+<br><tt># Script&nbsp;&nbsp;&nbsp;&nbsp; : testing</tt>
+<br><tt># Version&nbsp;&nbsp;&nbsp; : 1.0</tt>
+<br><tt># Author&nbsp;&nbsp;&nbsp;&nbsp; : Roland Rashleigh-Berry</tt>
+<br><tt># Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 02-Feb-2004</tt>
+<br><tt># Purpose&nbsp;&nbsp;&nbsp; : testing testing</tt>
+<br><tt># SubScripts : none</tt>
+<br><tt># Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : none</tt>
+<br><tt># Usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : testing xxxxxxxx</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+testing</tt>
+<br><tt>#================================================================================</tt>
+<br><tt># PARAMETERS:</tt>
+<br><tt>#-pos- -------------------------------description--------------------------------</tt>
+<br><tt>#&nbsp; 1</tt>
+<br><tt>#================================================================================</tt>
+<br><tt># AMENDMENT HISTORY:</tt>
+<br><tt># init --date-- mod-id ----------------------description-------------------------</tt>
+<br><tt>#</tt>
+<br><tt>#================================================================================</tt>
+<p><tt># Edit the test below for the number of expected parameters and
+put out</tt>
+<br><tt># a usage note if an incorrect number supplied. Remove if not required.</tt>
+<br><tt>if [ $# -lt 1 ] ; then</tt>
+<br><tt>&nbsp; echo "Usage: testing xxxxxx" 1>&amp;2</tt>
+<br><tt>&nbsp; exit 1</tt>
+<br><tt>fi</tt></td>
+</tr>
+</table>
+
+<p>Everything following a “#” in any position on a line is comment but
+the first such line is treated differently. The “!/bin/bash” in the first
+line tells it what shell to use. In this case it is the “bash” shell in
+the “/bin” directory. This is the shell that gets invoked to run the script.
+If you did not specify the shell then the current shell would be used but
+you should always specify the shell in this way.
+<p>Looking down the header, we come to the parameters. Script parameters
+do not have names. They have numbers. When you invoke a script that requires
+parameters, you list them after the script name, separated by spaces. The
+first string will be parameter 1 that you resolve in your script as $1
+(note that if your parameter value contains a space then you should enclose
+it in quotes). The second will be parameter 2 that you resolve as $2. You
+can do this up to parameter 9 which used to be the limit for the original
+Bourne shell upon which the bash shell is based. The bash shell places
+no limit on referencing parameters, but beyond 9 you have to refer to the
+parameters using curly brace notation such as ${10}. It is worth mentioning
+at this point that $0 will resolve to the name of the script as invoked
+(with the path in front). Since it is possible that a symbolic link was
+used to access the script by perhaps a different file name, then it becomes
+useful to know the name of the script as originally invoked and have it
+stored in $0 for any error messages that might get put out mentioning the
+script name. For example, a call to “awk” is sometimes a symbolic link
+to “gawk” so if called as “awk” then any error messages should mention
+“awk” instead of “gawk”. This is made possible using $0 though we have
+to strip the path name from the front (which is easy to do using “basename”).
+<p>Just as you can refer to the single parameters with their number, such
+as $1 and $2, there are other ways to refer to the entire collection of
+parameters and the number of them. To refer to all of them you can use
+$* or better still $@ since if one or more of these parameters contained
+a space then "$@" would protect them by putting every parameter value in
+double quotes.&nbsp; Another important value is $# which is the number
+of parameters supplied. It is common practise to place a test for the expected
+number of parameters at the top of the script code and to exit with a non-zero
+return code if it is incorrect after putting out a usage message. Because
+testing for the number of parameters is so common, it is generated after
+the header to save you some editing work. See the “man” pages for “test”
+for an extensive description of various types of comparisons and also file
+properties testing.
+<h2>
+Why have options?</h2>
+You have encountered Unix command options already. For example, to get
+out a long-form listing from the “ls” command you specify “ls –l”. To get
+it to show hidden files as well then you would use “ls –lA”. “l” and “A”
+are options that have been set and what distinguishes them from parameters
+is that they have a “-“ in front of them and they must be declared before
+the parameters are declared. Actually, these options start off as parameters.
+If you used the call “ls –lA”, then $1 would equate to “-lA”. And if you
+used the equivalent call “ls –A –l”, then $1 would equate to “-A” and $2
+would equate to “-l”.&nbsp; Putting a “-“ in front of them does not create
+options rather than parameters. The command itself has to interpret them
+as options rather than parameters and once it has gathered this information
+it “shift”s them to the left so that they are no longer there so that the
+“real” parameters are ready for processing. Scripts can have options as
+well and how will be explained in some detail here. But firstly you need
+to appreciate the reason for having both “options” and “parameters” and
+how you would make use of them. Here is an imaginary scenario with a “print”
+script.
+<p>Suppose you had a script named “print”. You could specify what file
+or files to print and the printer. You could also specify the page orientation
+and adjust the lines per page as well. If you were to implement this using
+only parameters, then things would get messy. The files would have to go
+at the end, since there may be more than one, so the other parameters would
+precede it. Your call might look something like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>print printer1 landscape 40 file1 file2</tt></td>
+</tr>
+</table>
+
+<p>Now suppose the script got enhanced so that you could additionally specify
+left, right, top and bottom margins. If you were using parameters only
+then it might become:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>print printer1 landscape 40 0.5in 0.6in 1in 1.1in file1 file2</tt></td>
+</tr>
+</table>
+
+<p>Not only is it getting messy but we will have a problem with existing
+scripts that call the “print” script and pass parameters. Now the files
+you want to print are in the wrong positions. If you run an old script
+again then it will think that the first file to print is the left margin
+size. And it has become almost impossible for people to remember what parameter
+does what. Also you can not leave off the parameter values and allow then
+to default because that will change the parameter positions. The answer
+to this problem is to use options for all but the files you want to print.
+You could leave the printer identity as the first parameter if you wanted
+to but with so many of the others becoming options then the printer identity
+may as well be an option also. At least, that way, you could allow its
+value to default.
+<h2>
+A reminder about the command parser</h2>
+Before you write your first script, I will remind you about the “command
+parser” that was introduced in the “Common Unix Commands” document. If
+you typed in the following command, how many parameters would get passed
+to “grep”?
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>grep string *.sas</tt></td>
+</tr>
+</table>
+
+<p>If the answer you thought of was “2”, then you got it wrong. Before
+“grep” even gets invoked, the command parser does its work. It can recognise
+that “*.sas” is a file pattern and it will convert that pattern into a
+list of all files that match that pattern before invoking “grep”. By the
+time “grep” sees these parameters, there might be any number of files that
+end in “.sas” after “string”. You should always keep in mind what the command
+parser will do when you write a script.
+<h2>
+Types of options</h2>
+There are two types of options, those that are just “switches” and those
+that require an argument. For example, if you had a “p” option for a printer,
+then it would require the printer name as an argument. But if you specify
+the “l” option for the “ls” command, for example, it is just a switch that
+tells the command you want the “long” form of the output. If a script has
+options, then we will have to handle these two types of options differently.
+Option identifiers are usually only one character long and can be a letter
+or a numeric digit. It is true that there are Unix commands such as “find”
+that have long-named options such as “type” and “name”, but that way of
+handling options will not be explained here. You will only be taught how
+to handle options one character long and it is recommended that you stick
+to that convention. At least with single character options, you can group
+them together just like you can group them with most Unix commands such
+as “ps –efl”. Another thing to keep in mind is that everything in Unix
+is case-sensitive. “ls –a” will give you a different result from “ls –A”,
+for example. You should stick to lower case for your options. If, at some
+time in the future, you need to write a script that has long-name options
+or you need to do some maintenance work on one, then by the time you finish
+this section you will be able to understand what is required and be able
+to tackle it. It is just a case of reading parameter values and shifting
+them away until you are left with the “real” parameters. Then you carry
+on as normal.
+<h2>
+Script header with options</h2>
+There is another utility that creates shell script headers for you, but
+with options added, called <a href="scripts/sohdr" target="_blank">sohdr</a>
+instead of “shdr”. And just like “shdr” gives you a bit of code after the
+header, so does “sohdr” - except that it gives you quite a lot of code.
+When you invoke it, it first checks that you really do want to use options
+as well as parameters and then it explains how you should enter the option
+list, stressing that options that take an argument (i.e. they are not just
+“switches”) must be followed by a colon. It will then prompt you for the
+purpose of each option and default values and other allowed discrete values
+for those options that require an argument and write it not only to the
+header but in the code as well. It creates variables in the code to match
+your options. It is just to get you started. You may well want to change
+the variable names to something more meaningful. Here is a header and the
+start code generated by this utility to show you what the generated header
+and code looks like. Remember, this all gets generated for you. You don’t
+have to remember anything.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#!/bin/bash</tt>
+<br><tt># Script&nbsp;&nbsp;&nbsp;&nbsp; : ssss</tt>
+<br><tt># Version&nbsp;&nbsp;&nbsp; : 1.0</tt>
+<br><tt># Author&nbsp;&nbsp;&nbsp;&nbsp; : Roland Rashleigh-Berry</tt>
+<br><tt># Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 11-Feb-2004</tt>
+<br><tt># Purpose&nbsp;&nbsp;&nbsp; : To test "sohdr" utility</tt>
+<br><tt># SubScripts : none</tt>
+<br><tt># Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : none</tt>
+<br><tt># Usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : ssss xxxxxxxx</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ssss</tt>
+<br><tt>#================================================================================</tt>
+<br><tt># OPTIONS:</tt>
+<br><tt>#-opt- -------------------------------description--------------------------------</tt>
+<br><tt>#&nbsp; a&nbsp;&nbsp; (switch) apples</tt>
+<br><tt>#&nbsp; b&nbsp;&nbsp; (value)&nbsp; name of bear: bruno, pooh</tt>
+<br><tt>#&nbsp; c&nbsp;&nbsp; (switch) cats</tt>
+<br><tt>#&nbsp; d&nbsp;&nbsp; (value)&nbsp; diameter</tt>
+<br><tt>#================================================================================</tt>
+<br><tt># PARAMETERS:</tt>
+<br><tt>#-pos- -------------------------------description--------------------------------</tt>
+<br><tt>#&nbsp; 1</tt>
+<br><tt>#================================================================================</tt>
+<br><tt># AMENDMENT HISTORY:</tt>
+<br><tt># init --date-- mod-id ----------------------description-------------------------</tt>
+<br><tt>#</tt>
+<br><tt>#================================================================================</tt>
+<p><tt># Define give-usage-message-then-exit function. Edit to add any
+useful option</tt>
+<br><tt># information, to change valid values of options and to add parameter
+values</tt>
+<br><tt># ("xxxxxx" and onwards) if used. Split into multiple lines if
+required but</tt>
+<br><tt># be sure to route each line echoed to error output using 1>&amp;2.</tt>
+<br><tt>usage () {</tt>
+<br><tt>&nbsp; echo "Usage: ssss -a -b &lt;name of bear: bruno, pooh> -c
+-d &lt;diameter> xxxxxx" 1>&amp;2</tt>
+<br><tt>&nbsp; exit 1</tt>
+<br><tt>}</tt>
+<br>&nbsp;
+<p><tt># The following variable names and defaults have been generated
+for you</tt>
+<br><tt># to help you start. You can rename the variables to something
+more</tt>
+<br><tt># meaningful but be sure to change all occurrences of that name
+in the code.</tt>
+<br><tt>switcha=0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+# Default switch=off for apples</tt>
+<br><tt>valueb=bruno&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+# Default value for name of bear</tt>
+<br><tt>switchc=0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+# Default switch=off for cats</tt>
+<br><tt>valued=10.5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+# Default value for diameter</tt>
+<br>&nbsp;
+<p><tt># "case" statement for action to take on selected options</tt>
+<br><tt>while getopts "ab:cd:" param ; do</tt>
+<br><tt>&nbsp; case $param in</tt>
+<br><tt>&nbsp;&nbsp; "?") # bad option supplied</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; usage</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;;</tt>
+<br><tt>&nbsp;&nbsp; "a") # (switch) apples</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; switcha=1</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;;</tt>
+<br><tt>&nbsp;&nbsp; "b") # (value) name of bear</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # Check that a valid
+value was entered</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OK=0</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; case $OPTARG in</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "bruno")</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+valueb=$OPTARG</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+OK=1</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+;;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "pooh")</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+valueb=$OPTARG</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+OK=1</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+;;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; esac</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if [ $OK -eq 0 ] ; then</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; echo "Error:
+Invalid value supplied to option -b" 1>&amp;2</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; usage</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fi</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;;</tt>
+<br><tt>&nbsp;&nbsp; "c") # (switch) cats</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; switchc=1</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;;</tt>
+<br><tt>&nbsp;&nbsp; "d") # (value) diameter</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; valued=$OPTARG</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;;</tt>
+<br><tt>&nbsp; esac</tt>
+<br><tt>done</tt>
+<br>&nbsp;
+<p><tt># shift to bring first parameter to position 1</tt>
+<br><tt>shift $(($OPTIND - 1))</tt>
+<br>&nbsp;
+<p><tt># USE THIS CODE FOR DEBUGGING AND THEN REMOVE</tt>
+<br><tt>echo "DEBUGGING option values: "</tt>
+<br><tt>echo switcha=$switcha</tt>
+<br><tt>echo valueb=$valueb</tt>
+<br><tt>echo switchc=$switchc</tt>
+<br><tt>echo valued=$valued</tt>
+<br><tt>echo "The first real parameter after the options is now: $1"</tt>
+<br><tt>echo</tt>
+<br>&nbsp;
+<p><tt># Edit the test below for the number of expected parameters and
+call</tt>
+<br><tt># the give-usage-message-then-exit function if an incorrect number</tt>
+<br><tt># supplied. Remove if parameters are optional.</tt>
+<br><tt>if [ $# -lt 1 ] ; then</tt>
+<br><tt>&nbsp; echo "Error: no parameters supplied"</tt>
+<br><tt>&nbsp; usage</tt>
+<br><tt>fi</tt></td>
+</tr>
+</table>
+
+<p>Note that in this case the usage message is a function. It is effectively
+a sub-routine. Implementing it as a function, allows it to be called at
+multiple points in the code. This function does not need any parameters.
+If you write a function that does then it too uses numbered parameters
+like $1, $2 etc. and you pass it parameter values in the same way you pass
+parameters to a script or command. They are positional. You do not put
+function arguments enclosed in brackets like you do with SAS software functions.
+<p>Next in the code you see a group of variables that are related to the
+options. These are only suggested names and you are free to change the
+names to something else but you must remember to change them in all other
+places in the code if you do. Options that require a value have variable
+names that start “value” and those that are “switches” start with “switch”.
+Switch values default to 0 and are set to 1 if selected. Options that require
+an argument have a default assigned. You are asked what you want the default
+to be when you run the “sohdr” script.
+<p>Next in the code comes the hard part. It is the standard code to handle
+the options. The inbuilt “getopts” utility is used to read in the options
+and action is taken for each one. A “case” statement is used for this.
+“getopts” uses a variable named OPTARG in which to place the supplied argument
+of an option requiring an argument. You assign the contents of this to
+your variable.
+<p>“getopts” also uses a variable named OPTIND. Options like “-p” are just
+ordinary parameters to a script. If&nbsp; “-p”&nbsp; directly followed
+a script name than that would be “$1”. There is nothing special about options
+that make them different to parameters. They are just handled differently.
+So after “getopts” has handled all the options then it points to the first
+parameter that is beyond these options. What you then do is “shift” the
+parameters out the way by the number in OPTIND – 1 and then the first parameter
+($1) will be the first “true” parameter. This is what the code does in
+the next section.
+<p>Next comes some code for debugging the script. When this code gets generated
+then it will actually work immediately and display the variable values
+that get set depending on what options you select and what values and parameters
+you supply.
+<p>Lastly you will see code familiar as output by the “shdr” utility. It
+is a piece of code to test for the correct number of parameters.
+<h2>
+Calculations</h2>
+You can use $(( )) for doing calculations on integers. This is not to be
+confused with $( ) which is for executing the code inside. Try this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>echo $((2 + 3 * 4))</tt></td>
+</tr>
+</table>
+
+<p>…and afterwards try this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>echo $(2 + 3 * 4)</tt></td>
+</tr>
+</table>
+
+<p>In the last case it will try to run the command or script “2” and it
+will fail.
+<p>In your current session, set up three variables var2, var3 and var4
+with the values “2”, “3” and “4” respectively and then set the variable
+“tot” to:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>tot=$(($var2 + $var3 * $var4))</tt></td>
+</tr>
+</table>
+
+<p>Echo “tot” and you will see it has the value 14 in it. This is not a
+very intuitive way of doing arithmetic. Here is a way that is simpler to
+remember:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>let tot=var2+var3*var</tt></td>
+</tr>
+</table>
+
+<p>This gives you the same result. Note that there are no spaces in the
+expression.
+<p>If you want to do floating point arithmetic within your script then
+you should use the “bc” utility (see “man bc”) and you will probably need
+the “-l” option. Try these commands:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>x=3.5</tt>
+<br><tt>y=10.5</tt>
+<br><tt>z=$(echo “$x * $y” | bc –l)</tt>
+<br><tt>echo $z</tt></td>
+</tr>
+</table>
+
+<h2>
+“substr”, “length” and arrays</h2>
+In your programs that call SAS software, I am sure you have used the “substr”
+and “length” functions from time to time to test and manipulate strings.
+Sometimes you will need to do something similar in a bash shell script.
+Both these things exist in bash but are done a different way. If you remember
+from the “Common Unix Commands” document, a variable can be resolved in
+the form ${var} as well as the form $var, so that any following characters
+would not get confused with the variable name. But you can do more with
+this ${} structure. You can use it to substr and return the length of the
+contents of a variable. The only difference for substr that you have to
+remember is that the first character in a bash string has position 0. Try
+out the following commands. You need not type in the comments:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>var=abcdefgh</tt>
+<br><tt>echo $var</tt>
+<br><tt>echo ${var}</tt>
+<br><tt>echo ${#var} # this returns the length of the string</tt>
+<br><tt>echo ${var:0:1} # the first character in the string</tt>
+<br><tt>echo ${var:1:3} # three characters starting with the second character</tt>
+<br><tt>echo ${var:2} # all characters starting with the third character</tt></td>
+</tr>
+</table>
+
+<p>Arrays can be “declared” in a bash shell script. Without going into
+lengthy explanations, here is a shell script you can copy and play around
+with. Don’t forget to make it executable.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#!/bin/bash</tt>
+<br><tt>nums=137</tt>
+<br><tt>declare -a names&nbsp;&nbsp; # declare "names" as an array</tt>
+<br><tt>i=0</tt>
+<br><tt>while [ $i -lt ${#nums} ] ; do</tt>
+<br><tt>&nbsp; echo -n "How do you spell the number \"${nums:$i:1}\"? "</tt>
+<br><tt>&nbsp; read names[$i]</tt>
+<br><tt>&nbsp; let i=i+1</tt>
+<br><tt>done</tt>
+<p><tt>echo</tt>
+<br><tt>echo You entered ${#names[@]} spellings into an array called \"names\".</tt>
+<br><tt>echo Here they are again, one per line.</tt>
+<br><tt>i=0</tt>
+<br><tt>while [ $i -lt ${#names[@]} ] ; do</tt>
+<br><tt>&nbsp; echo ${names[$i]}</tt>
+<br><tt>&nbsp; let i=i+1</tt>
+<br><tt>done</tt>
+<p><tt>echo</tt>
+<br><tt>echo Here they are again but all on one line</tt>
+<br><tt>echo ${names[@]}</tt></td>
+</tr>
+</table>
+
+<p>Script parameters are not in an array but they have numbered elements
+just like arrays elements. Sometimes you will want to refer to them like
+they were an array. Suppose you wanted to refer to the last parameter value
+supplied, not knowing in advance how many parameters were supplied, then
+you would need to know how to do it. It can again be done using curly brackets,
+this time with the “!” character in front to resolve the value of a variable.
+Here is simple script to tell you how many parameters you entered and what
+they are.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#!/bin/bash</tt>
+<br><tt>echo Parameters supplied was $# and the last parameter value was:
+${!#}</tt>
+<br><tt>param=0</tt>
+<br><tt>until [ $param -gt $# ] ; do</tt>
+<br><tt>&nbsp; echo "parameter $param value is: " ${!param}</tt>
+<br><tt>&nbsp; let param=param+1</tt>
+<br><tt>done</tt></td>
+</tr>
+</table>
+
+<h2>
+Testing a string for the presence of a character (or string)</h2>
+There is a hard way to do this or an easy way depending on whether you
+want to know the position of a character in a string. If you need to know
+the position of this character, then you can do it one way using “expr”.
+Here it is looking for the position of the first comma in a string. Note
+that it is using a regular expression “[^,]*,”. What the “[^,]*” means
+is “zero or more characters that are not commas” so “[^,]*,” means “zero
+or more characters that are not commas followed by a comma”. “expr” used
+with the “:” comparison character will return the matching length and so
+the following expression will give you the first position of a comma in
+the string or zero if there is none. It is a bit like the index() function
+in SAS software but a lot more complicated.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#!/bin/bash</tt>
+<br><tt>ix=$(expr "$1" : '[^,]*,')</tt>
+<br><tt>if [ $ix -gt 0 ] ; then</tt>
+<br><tt>&nbsp; echo "parameter 1 contains a comma at position $ix"</tt>
+<br><tt>fi</tt></td>
+</tr>
+</table>
+
+<p>The above method is not good for a target string. It only works for
+single characters. The following will return the result 7 because not only
+does it pick up the last occurrence of the string, but it adds the target
+string as well to the length. The “7” says that the second pattern is matched
+by the first 7 characters in the first string. Indeed it is, but that is
+not what you want to know.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>expr "abcdxcde" : '.*cd'</tt></td>
+</tr>
+</table>
+
+<p>If you need to know the first position of a target string then this
+will give you the correct result, but partly by chance, as will be explained:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#!/bin/bash</tt>
+<br><tt>echo "$1" | grep "$2" | sed "s/$2.*//" | wc –m</tt></td>
+</tr>
+</table>
+
+<p>What the above does is first use “grep” to make sure the string ($1)
+contains the target string ($2). In the following “sed” step that target
+string and all that follows is replaced with nothing. Then it is passed
+to “wc” to count the number of characters. But if the target string is
+the first character of the string then the “sed” step should replace the
+whole thing with nothing. But if something gets that far then it will also
+be followed with a line feed generated by the first “echo” command which
+“wc” counts as one extra character. So if a match on the first character
+is obtained then you get the result “1” which is what you wanted. And if
+there is not match then nothing gets passed to “wc” (not even a line feed
+character) and so you get the result “0”.
+<p>Because the above methods are so complicated, an in-house script named
+“index” has been written that works very much like the index() function
+in SAS software code. It uses the index() function of “awk”. The code of
+the macro is essentially the following:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#!/bin/bash</tt>
+<br><tt>echo "$1" | awk '{print index($0,"'"$2"'")}'</tt></td>
+</tr>
+</table>
+
+<p>Here is an example of using the script “index” to loop through a comma-delimited
+list and print each element in turn. Note that “index” regards the first
+position in a string as “1” whereas bash regards it as “0” so the expression
+${str:$(index "$str" ',')} conveniently places us at the next position
+in the string after each comma. If we had to add a “1” to it then it would
+take the form ${str:$(index "$str" ',')+1}.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#!/bin/bash</tt>
+<br><tt># commaloop: will list out each element delimited by a comma</tt>
+<br><tt>str="$1"</tt>
+<br><tt>while [[ "$str" == *,* ]] ; do</tt>
+<br><tt>&nbsp; echo "$str" | cut -d, -f1</tt>
+<br><tt>&nbsp; str=${str:$(index "$str" ',')}</tt>
+<br><tt>done</tt>
+<br><tt>echo $str</tt></td>
+</tr>
+</table>
+
+<p>If you do not need to know the position of a character in a string –
+just whether there is one or not, then it is a lot simpler. You can test
+a string for the presence of a character using this method. In this case
+it is testing the first parameter for the presence of a comma with any
+number of characters either side of it. Because it is using bash’s inbuilt
+functionality then it is preferred to methods that call other commands.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#!/bin/bash</tt>
+<br><tt>if [[ "$1" == *,* ]] ; then</tt>
+<br><tt>&nbsp; echo "string contains a comma"</tt>
+<br><tt>fi</tt></td>
+</tr>
+</table>
+
+<h2>
+“grep” vs. “grep” ?</h2>
+I am going to show you a test for a comma in a string again, but this time
+we will use “grep” and we will learn something important. The code in the
+previous section that tested parameter one for a comma can also be achieved
+using the following:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#!/bin/bash</tt>
+<br><tt>if echo "$1" | /usr/xpg4/bin/grep -q ',' ; then</tt>
+<br><tt>&nbsp; echo "grep detected that parameter 1 contained a comma"</tt>
+<br><tt>fi</tt></td>
+</tr>
+</table>
+
+<p>Note that “grep” is being called from a specific library. This is because
+we need to use the “q” (“quiet”) option with “grep” but this option only
+exists in some implementations of “grep”. When used with the “q” option,
+“grep” works in “quiet” mode and does not produce any output. What it does
+produce is a return code of 0 if something was selected. “0” means “true”
+in bash programming (the opposite of how it works in SAS software code)
+so if something is selected then the “0” gets returned to the “if” statement,
+making it “true”, and so the message that “grep” found a comma is displayed.
+These differences between utilities of identical names in different directories,
+leads to a style of writing shell scripts. It is considered “good practise”
+to declare exactly what utilities you will use at the top of your code
+by setting up variables and then referencing these variables. So the same
+code as above, if following “good practise”, would become:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#!/bin/bash</tt>
+<br><tt>GREP=/usr/xpg4/bin/grep</tt>
+<br><tt>if echo "$1" | $GREP -q ',' ; then</tt>
+<br><tt>&nbsp; echo "$GREP detected that parameter 1 contained a comma"</tt>
+<br><tt>fi</tt></td>
+</tr>
+</table>
+
+<p>These “xpg4” utilities generally have more options than those in other
+directories. When you read the “man” pages on a command you will often
+see the “xpg4” versions listed at the top. If you use a command and you
+wished it had an extra option, then it is well worth checking the “man”
+pages for the command to see if there is an “xpg4” version that gives you
+what you want.
+<h2>
+Testing for yes/no responses</h2>
+You can prompt the user of a script with a yes/no question and read the
+response but did they enter “yes”, “Yes”, “YES”, “no”, “No” or “NO”? What
+you can do is to upper-case the first letter of the response to see if
+it is a “Y” and to assume the response was negative if not. The syntax
+for doing this is very different from SAS software syntax. The “tr” utility
+is used to translate lower case to upper case as there is no inbuilt bash
+function to do this.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>echo -n "Do you want to continue? (y/n): "</tt>
+<br><tt>read ans</tt>
+<br><tt>if [ "$(echo ${ans:0:1} | tr [a-z] [A-Z])" != "Y" ] ; then</tt>
+<br><tt>&nbsp; echo "QUITTING"</tt>
+<br><tt>&nbsp; exit 1</tt>
+<br><tt>else</tt>
+<br><tt>&nbsp; echo "CONTINUING"</tt>
+<br><tt>fi</tt></td>
+</tr>
+</table>
+
+<p>You could always write your own “upcase” function and call it in your
+script but keep in mind that functions in bash work like commands and scripts
+in the sense of having positional parameters. You do not put the argument
+to a function in brackets like you do with SAS software functions. Here
+is the above code again but with “upcase” as a function. Note the way the
+“upcase” function is called.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>upcase () {</tt>
+<br><tt>echo "$@" | tr [a-z] [A-Z]</tt>
+<br><tt>}</tt>
+<p><tt>echo -n "Do you want to continue? (y/n): "</tt>
+<br><tt>read ans</tt>
+<p><tt>if [ "$(upcase ${ans:0:1})" != "Y" ] ; then</tt>
+<br><tt>&nbsp; echo "QUITTING"</tt>
+<br><tt>&nbsp; exit 1</tt>
+<br><tt>else</tt>
+<br><tt>&nbsp; echo "CONTINUING"</tt>
+<br><tt>fi</tt></td>
+</tr>
+</table>
+
+<p>Another way to test for a yes/no response is to use the “case” statement.
+If you write scripts that use options then you will get to know the syntax
+of the “case” statement. What you have is a list of values that it can
+match, and if none of the values match then it will match with “*”. Doing
+a simple test and exiting if the characters are not found can be very simple
+in form as the following shows.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>echo -n "Do you want to continue? (y/n): "</tt>
+<br><tt>read ans</tt>
+<p><tt>case “${ans:0:1}” in [yY]) ;; *) exit 1 ;; esac</tt></td>
+</tr>
+</table>
+
+<p>…and the case statement can be made even simpler using pattern matching
+like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>case “$ans” in [yY]*) ;; *) exit 1 ;; esac</tt></td>
+</tr>
+</table>
+
+<p>The “case” statement above is using pattern matching. The “[yY]” at
+the beginning is testing for the first character being either a “y” or
+“Y” and the following “*” signifies any string of any length including
+the null string (do not get pattern matching confused with regular expressions).
+We could test for the same using an “if” statement, but the test has to
+be enclosed in double square brackets. Single square brackets belong to
+the “test” feature of the bash shell that was inherited from the Bourne
+shell (see “man test”) whereas double square brackets belong to bash itself
+(see “man bash”). You can use the features of “test” in double square brackets
+since the bash shell emulates “test” itself, but you can not use the pattern
+matching features of the bash shell in single square brackets. Here is
+the “if” test: Note that “!=” means “not equal” (“==” means equal) and
+the pattern must not be enclosed in quotes or it will be treated as a literal
+string.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>if [[ "$resp" != [yY]* ]] ; then exit 1; fi</tt></td>
+</tr>
+</table>
+
+<h2>
+Testing for numeric</h2>
+Sometimes you will need to check that a supplied parameter is numeric.
+There are various ways of doing this. If you want to check for there being
+only digits and a “.” in a string then you can do it like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#!/bin/bash</tt>
+<br><tt>echo -n "Enter string for numeric test: " ; read str</tt>
+<br><tt>if [ -z "${str//[0-9.]/}" ] &amp;&amp; [ -n "$str" ] ; then</tt>
+<br><tt>&nbsp; echo "numeric"</tt>
+<br><tt>else</tt>
+<br><tt>&nbsp; echo "non-numeric"</tt>
+<br><tt>fi</tt></td>
+</tr>
+</table>
+
+<p>The way the previous example works is that the brace expression of the
+form ${var//pattern/string} replaces all occurrences of the pattern, which
+in this case is the range 0-9 plus a “.”, with the string, which in this
+case is null. So all numeric digits and “.” get removed. The “-z” test
+tests for zero length of a string and the –n test makes sure a null string
+was not entered. This method is not entirely accurate as the string “12.34.56”
+would pass the test for numeric.
+<p>For more information on brace expressions, consult the “man” pages for
+“bash” and for more information on condition testing, consult the “man”
+pages for “test”.
+<p>Lastly, there is an in-house written script called <a href="scripts/numtest" target="_blank">numtest</a>
+for testing if a string is a valid number. It will accept negative numbers
+as well. What you do is to call it and give it the string as a parameter
+and test the return code $? after you call it (NB: testing return codes
+is an important part of learning to write scripts). Try this out yourself
+on the command line and try setting “str” to different values.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>str=1234f.12345 ; numtest $str ; echo $?</tt></td>
+</tr>
+</table>
+
+<p>“numtest” will return the value “0” (“true”) if it detects that a string
+is numeric, so you can use it like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#!/bin/bash</tt>
+<br><tt>if numtest "$1" ; then</tt>
+<br><tt>&nbsp; echo "parameter 1 is numeric"</tt>
+<br><tt>else</tt>
+<br><tt>&nbsp; echo "parameter 1 is non-numeric"</tt>
+<br><tt>fi</tt></td>
+</tr>
+</table>
+
+<p>You could also test for “not true” using “!” like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#!/bin/bash</tt>
+<br><tt>if ! numtest "$1" ; then</tt>
+<br><tt>&nbsp; echo "parameter 1 is not numeric"</tt>
+<br><tt>else</tt>
+<br><tt>&nbsp; echo "parameter 1 is numeric"</tt>
+<br><tt>fi</tt></td>
+</tr>
+</table>
+
+<h2>
+Looping through input parameters</h2>
+Remember that the command parser will first expand a file pattern into
+a list of matching files before passing it to a command or script. Suppose
+you used “grep” like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>grep 'pattern' *.sas</tt></td>
+</tr>
+</table>
+
+<p>…then although you think you might have entered only 2 parameter values
+to “grep”, what grep sees is the pattern value followed my multiple file
+names, each of which is a parameter. The same situation applies to any
+script you write. Suppose you wrote a script called “search” that did the
+same thing as above. You would want to store the pattern in a variable
+and then loop through each file name searching for the pattern. This is
+how you would do it:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#!/bin/bash</tt>
+<br><tt>pattern=$1</tt>
+<br><tt>shift</tt>
+<br><tt>while [ $# -gt 0 ] ; do</tt>
+<br><tt>grep “$pattern” “$1”</tt>
+<br><tt>shift</tt>
+<br><tt>done</tt></td>
+</tr>
+</table>
+
+<p>Note that for the above the parameters are “shifted” each time such
+that the file you are working on is always parameter 1, hence it is referred
+to as $1 to the “grep” command. And because it is possible that what is
+defined to $1 might contain a space then $1 is enclosed in double quotes.
+It makes sense to always enclose references to parameters or variables
+in double quotes, unless you know that it is not possible for them to contain
+them, to avoid problems from enclosed spaces.
+<p>There is another way to loop through parameters that is just as good
+and is maybe more descriptive. Here it is again:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#!/bin/bash</tt>
+<br><tt>pattern=$1</tt>
+<br><tt>shift</tt>
+<br><tt>for file in “$@” ; do</tt>
+<br><tt>grep “$pattern” “$file”</tt>
+<br><tt>done</tt></td>
+</tr>
+</table>
+
+<p>In this last case, “$@” represents the entire list, but because it is
+enclosed in double quotes it has a special meaning in that each element
+in the list is enclosed in quotes. It is not generally true that when you
+enclose a resolved variable in double quotes it quotes all elements. It
+only works for “$@”). This protects parameter values that may have one
+or more spaces in it from being interpreted as multiple entries. So if
+you use this second method, then make sure you use “$@” enclosed in double
+quotes. Also, since a parameter value might contain one or more spaces
+then the individual element (in this case $file) should be enclosed in
+double quotes.
+<h2>
+“fixing” file names</h2>
+Suppose, in the example in the previous section, you had written a utility
+to search log files that you knew would end in the extension “.log”. When
+the user calls the script they might give a list of file names without
+the “.log” extension or maybe might even spell “log” wrong. What you can
+do is fix the file names in your script so that you always had an extension
+of “.log” for each file name, no matter what the user entered. This is
+another form of ${var} which you can read about in the “man bash” pages
+in the section on “Parameter Expansion”. We can use a form of parameter
+expansion to drop any file extension and then add our own. When you read
+these pages, note that “#” used after the variable name is for dropping
+the shortest matching pattern from the front, “##” the longest matching
+pattern from the front, “%” for dropping the shortest matching pattern
+from the end and “%%” for dropping the longest matching pattern from the
+end. So to fix any bad file names and make sure they all end with a “.log”
+extension, the last loop in the previous section could take this form:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#!/bin/bash</tt>
+<br><tt>pattern=$1</tt>
+<br><tt>shift</tt>
+<br><tt>for file in “$@” ; do</tt>
+<br><tt>grep “$pattern” “${file%.*}.log”</tt>
+<br><tt>done</tt></td>
+</tr>
+</table>
+
+<p>Before leaving this section, it is worth pointing out that the “##”
+notation is very good for dropping a leading path name. Compare the outputs
+from these two commands:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>echo $PWD</tt>
+<p><tt>echo ${PWD##*/}</tt></td>
+</tr>
+</table>
+
+<h2>
+Temporary files</h2>
+You will sometimes need to write to temporary files. Indeed, some utilities
+like “join” only work on files. So you need a place to write the files
+to. It would be wrong to clutter up important directories with temporary
+files. You may only have read access to some of them anyway. So I would
+suggest that temporary files be written to the users HOME directory, where
+they will always have update access, and be given the extension “.tmp”
+so as not to confuse them with files the user wants to keep. It would also
+be useful if, in the case of single temporary files, the name of the file
+reflected the script being called. And of course, at the end of the script,
+the temporary files should be deleted using the “rm –f” command. You will
+see an example of this in the section on the “join” command.
+<p>Note that if there is any possibility that a user will be running the
+same script simultaneously (and it migth be hard to know if this is the
+case if it is used as a subscript) then you have to avoid a name clash
+with these temporary files. If you suffix your file name with "<b>$$</b>"
+like this "$HOME/tempfile_$$.tmp" then the "$$" will resolve to your pid
+number and so your file name will be unique. The only trouble you might
+get with this technique is that if users continually interrupt the script
+they will get files left over in their home directory with this "$$" suffix
+whereas if a straight name is used without the "$$" then even if a file
+gets left over, it will get overwritten next time the script is run, so
+this will not fill up a person's home directory.
+<h2>
+The “join” command</h2>
+If you want to compare lists of things and report on matches or mismatches,
+then you will need to use the “join” command. And since you will mostly
+compare sorted lists of things then you will also need to use the “sort”
+command, sometimes with the “-u” option (“unique”) to get rid of duplicates.
+The “join” command only works on file as input so you would normally store
+the results of two searches or selections in different files, sort them
+and then use “join” to display matches or mismatches. For more information
+on the “join” utility refer to the “man join” pages.
+<p>Here is a script that lists all files with a “.log” and “.lst” extension
+where no corresponding file with a “.sas” extension exists.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#!/bin/bash</tt>
+<br><tt>ls *.sas | sed 's/\.sas$//' | sort > $HOME/saslist.tmp</tt>
+<br><tt>ls *.log | sed 's/\.log$//' | sort > $HOME/loglist.tmp</tt>
+<br><tt>ls *.lst | sed 's/\.lst$//' | sort > $HOME/lstlist.tmp</tt>
+<p><tt>join -v 2 $HOME/saslist.tmp $HOME/loglist.tmp | awk '{print $0 ".log"}'
+> $HOME/bad.tmp</tt>
+<br><tt>join -v 2 $HOME/saslist.tmp $HOME/lstlist.tmp | awk '{print $0
+".lst"}' >> $HOME/bad.tmp</tt>
+<p><tt>sort $HOME/bad.tmp</tt>
+<p><tt>rm -f $HOME/saslist.tmp $HOME/loglist.tmp $HOME/lstlst.tmp $HOME/bad.tmp</tt></td>
+</tr>
+</table>
+
+<h2>
+Redirection using “exec”</h2>
+You will already be aware that you can redirect standard output using “>”
+or “1>” and that you can redirect error output using “2>”. This only works
+line by line, however. If you wanted to redirect a large amount of lines
+then this is not convenient. Fortunately there is a way you can do it using
+“exec”. But first, an explanation.
+<p>The numbers “1” for standard output and “2” for standard error are file
+descriptor numbers. There is also a “0” for standard input. These three
+files get opened automatically. But you can open files up to a number that
+is currently set to the limit (that might be 256 - find out by using the
+command “ulimit –n” or “ls /dev/fd” to see how many are listed). You can
+use the “ls” command to get more information on these file descriptors.
+The command:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>ls –l /dev/std*</tt></td>
+</tr>
+</table>
+
+<p>…will show you that “stdin” (standard input), “stdout” (standard output)
+and “stderr” (standard error) are symbolic links to file descriptor locations.
+And to list these out you can use:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>ls -l /proc/self/fd/[0-2]</tt></td>
+</tr>
+</table>
+
+<p>…and you will see that these files are “character special” files (see
+“man ls”) and that the “group” column has “tty” in it, which is short for
+your current terminal.
+<p>Here is something for you to try out in your terminal window. First
+open up file 7 by entering this command:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>exec 7>$HOME/seven.tmp</tt></td>
+</tr>
+</table>
+
+<p>Next write a couple of lines to file 7 like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>echo hello 1>&amp;7</tt>
+<br><tt>echo world 1>&amp;7</tt></td>
+</tr>
+</table>
+
+<p>Now play the lines back like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>cat $HOME/seven.tmp</tt></td>
+</tr>
+</table>
+
+<p>Next close file 7 like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>exec 7>&amp;-</tt></td>
+</tr>
+</table>
+
+<p>Now try writing to it again and you will get an error message:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>$ echo hello world 1>&amp;7</tt>
+<br><tt>bash: 7: Bad file number</tt></td>
+</tr>
+</table>
+
+<p>So you see you have extra files that you can open and close and write
+results to. A file can be opened to write to the same location as an existing
+file. This is how you would open file 3 as having the same output as file
+1. Then, in a sense, you will have stored the location of file 1 (standard
+output).
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>exec 3>&amp;1</tt></td>
+</tr>
+</table>
+
+<p>You could then redirect standard output to a file like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>exec 1>$HOME/output.tmp</tt></td>
+</tr>
+</table>
+
+<p>…and after that, all your standard output would go to this file. When
+you had finished writing to the file you could restore standard output
+to its location stored in the file 3 descriptor like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>exec 1>&amp;3</tt></td>
+</tr>
+</table>
+
+<p>…and then close file 3 like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>exec 3>&amp;-</tt></td>
+</tr>
+</table>
+
+<p>To save some typing, the above 4 “exec” statements could be combined
+into 2 (but note that the order is important) like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>exec 3>&amp;1 1>$HOME/output.tmp</tt>
+<p><tt>exec 1>&amp;3 3>&amp;-</tt></td>
+</tr>
+</table>
+
+<h2>
+printf</h2>
+“printf” is short for “print formatted”. You provide a format for values
+in a string and follow it by the values you want to put in the string.
+It is very useful for keeping overall lengths the same. If you wrote a
+script that created a header, say, and the header had a right boundary
+marker (not a very good idea) and you wanted to include some values such
+as the author name in it, then using “printf” would allow you to keep the
+right boundary marker in the correct position no matter what length the
+author name was.
+<p>A format in a “printf” string is indicated by a “%” sign. What follows
+it is optionally a number for a minimum length and it ends in an “s” (for
+“string”) or a “d” (for “decimal”). If it is preceded by a “-“, then the
+value will be left-aligned. A new line must be written in the string (usually
+at the end) as “\n”. This last thing is something that you will often forget
+to do. Note also that the lengths are the minimum lengths. If your number
+or string is longer then it will not be truncated. This mean if you were
+using “printf” to try to maintain alignment of a rightmost character then
+you would have to ensure the format length was long enough for any possible
+value you might encounter.
+<p>Try entering this command as see what happens when you change the length
+of the formats, omit the length and the effects of removing the preceding
+“-“ sign.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>printf "Hello %-10s to %-8d you \n" abc 3</tt></td>
+</tr>
+</table>
+
+<p>It is not possible to “pipe” into “printf” and yet sometimes you will
+need to do so. But you can achieve it using the “printf” command within
+a call to “awk” (or “nawk” or “gawk”). Here is an example of a call to
+“printf” within “awk”. $1 is the first script parameter and is enclosed
+in double and single quotes but $0, not enclosed in any quotes, has a special
+meaning to “awk” as “the entire input line” ($1, not enclosed in quotes,
+would be the first field of the input line). What it is doing in this case
+is printing a file name in the first 30 positions (left-aligned) and following
+that with a line from the file.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>{printf "%-30s %s\n","'$1'",$0}</tt></td>
+</tr>
+</table>
+
+<h2>
+An interactive script</h2>
+In this script we will have two sources of input – one from a pipe into
+the script and the other from the user after being prompted with a question.
+This method of using “while read” is very useful when you know you have
+one item per line. If there are embedded spaces in any item then using
+this method avoids any problems.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#!/bin/bash</tt>
+<p><tt>#-- open up an extra input file --</tt>
+<br><tt>exec 7&lt;/dev/tty</tt>
+<p><tt>#-- read each file from standard input, prompting for file</tt>
+<br><tt>#-- deletion and reading response from extra input</tt>
+<br><tt>while read file</tt>
+<br><tt>do</tt>
+<br><tt>&nbsp; echo -n "Do you want to delete file $file (y/n)? "</tt>
+<br><tt>&nbsp; read resp &lt;&amp;7</tt>
+<br><tt>&nbsp; case “$resp” in [yY]*) rm -f "$file" ;; *) ;; esac</tt>
+<br><tt>done</tt>
+<p><tt>#-- close the extra input file --</tt>
+<br><tt>exec 7&lt;&amp;-</tt></td>
+</tr>
+</table>
+
+<h2>
+More on “while read”</h2>
+You should always assume that a file name or a string might contain a space
+unless you know it is impossible for that to happen. Files get transferred
+from Windows platforms to Unix/Linux and it is common on Windows platforms
+to have file names with spaces in so you should assume this will happen
+on Unix as well. Having spaces in file names is very bad practise, but
+you should assume that this will happen. Because of this, some methods
+that are traditionally used in scripts are no longer a good idea. Here
+is an exercise for you to do:
+<p>Go to a directory where you know there are log files (ending in the
+“.log” extension) and list these files and redirect to a file in your home
+are like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>ls *.log > $HOME/loglist.tmp</tt></td>
+</tr>
+</table>
+
+<p>Next edit the file you created in your home area and add spaces in the
+middle of some of the file names. Then type in this command to list them:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>for file in $(cat $HOME/loglist.tmp); do echo "$file"; done</tt></td>
+</tr>
+</table>
+
+<p>You will discover that if you do this then the file names with spaces
+in are treated as multiple files. So this method does not work with these
+files and yet this is a very common technique used by people who write
+shell scripts because they assume there will never be spaces in a file
+name. It is best if you do not use this method where file names are concerned
+and instead use a “while read” loop like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>while read file; do echo "$file"; done &lt; $HOME/loglist.tmp</tt></td>
+</tr>
+</table>
+
+<p>If you use the “while read” method then you will not have a problem
+as “read” waits for a line feed (new line) and so it reads the file name
+including the spaces in it.
+<h2>
+Displaying the Date and Time</h2>
+It is possible to extract the current date and time using the “date” command
+and to display it in almost any way you can think of using a special format.
+First just enter the command “date” to see what you get. You will see,
+from the left, a short day name, a short month name, the day of the month,
+the time in hh:mm:ss form, the time zone and lastly the year. There is
+a default format being used. You will get exactly the same if you entered:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>date '+%a %b %e %T %Z %Y'</tt></td>
+</tr>
+</table>
+
+<p>The “+” indicates to date that it should use the string as a format.
+“%a” is the short day, “%b” is the short month name, etc.. To use long
+day names and a long month name and leave off the time information then
+use:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>date '+%A %B %e %Y'</tt></td>
+</tr>
+</table>
+
+<p>You can put any characters you like within the format string. For example,
+“date '+%e-%b-%Y'” will display the date in the form “26-Feb-2004”. Refer
+to “man date” for more information.
+<p>Putting out the date and time can be very useful sometimes. Suppose
+you had written a script that ran a suite of programs. When it runs then
+you would probably want to keep a log of messages and errors by redirecting
+standard output and standard error like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>runsuite 1>runsuite.msg 2>runsuite.err</tt></td>
+</tr>
+</table>
+
+<p>It would be useful if the messages started off saying who ran the script
+and when and maybe also when the script ended. You could put out a start
+message like this. Try it out to see what you get.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>echo "Started by $USER at $(date '+%T on %A, %e %B, %Y')"</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="heredoc"></a>“here” documents</h2>
+Suppose you want to write lines to a text file within your script. You
+could use a redirect on every line you write to append it to a file. You
+could do it more easily using “exec” to redirect standard output so that
+every line you “echo” and “printf” goes to that file. But there is an easier
+way still for writing lines to a file that are static. That is using a
+“here” document. The way this works is to use “cat” to write all following
+lines to a file until a termination string is encountered. Here is an example
+from a script that generates a header for a program.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt># cat the following to a file until "FINISH" is encountered</tt>
+<br><tt>cat > $HOME/hdr.tmp &lt;&lt; FINISH</tt>
+<br><tt>/*</tt>
+<br><tt>/ Program&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : $progname</tt>
+<br><tt>/ Author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : $author</tt>
+<br><tt>/ Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : $date</tt>
+<br><tt>/ Drug&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : $drug</tt>
+<br><tt>/ Protocol/Inc : $prot / $inc</tt>
+<br><tt>/ Purpose&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : $purpose</tt>
+<br><tt>/ Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</tt>
+<br><tt>/================================================================================</tt>
+<br><tt>/ AMENDMENT HISTORY:</tt>
+<br><tt>/ init --date-- mod-id ----------------------description-------------------------</tt>
+<br><tt>/</tt>
+<br><tt>/===============================================================================*/</tt>
+<p><tt>FINISH</tt></td>
+</tr>
+</table>
+
+<p>The string that stops the lines being written to $HOME/hdr.tmp is “FINISH”.
+You could choose any name you wanted but this would have to be put in the
+first column for it to work.
+<h2>
+Comparing floating point numbers</h2>
+You would have thought that comparing floating point numbers would be easy,
+but it is not. The bash shell works with integers. “bc” will handle floating
+point number arithmetic but comparisons are not straightforward. You have
+to test for a minus sign. Try this command:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>var1=13.41;var2=13.4677777; echo "$var1 - $var2" | bc –l</tt></td>
+</tr>
+</table>
+
+<p>You will see a minus sign at the start. To test for it you could do
+it like this, using the minus sign as the start of a pattern:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>if [[ "$(echo $var1 - $var2 | bc -l)" == -* ]] ; then echo "less
+than" ; fi</tt></td>
+</tr>
+</table>
+
+<p>Although this works, it is not very intuitive. An in-house utility named
+<a href="scripts/compfl" target="_blank">compfl</a>
+has been written to make the comparison of floating point numbers easier.
+<h2>
+Writing scripts that write scripts</h2>
+You will sometimes want to write a script that writes a script. This is
+more common that you might think. For example, you could write a script
+that find and sorts the list of all the programs in a directory and writes
+a script to run them. You could create the lines of a script using “echo”
+or “printf” having redirected standard output with an “exec” statement.
+What you have got to remember when you do this is that often you may want
+the generated script to have “$” signs and “\” escape slashes. In order
+for this to come out right then you will need to escape these “$” and “\”
+characters with an extra escape “\” character in front. You should check
+the output from these scripts to ensure that a “$” is being displayed where
+you want it displayed and also a “\”.
+<h2>
+Other shells</h2>
+This document only deals with writing bash shell scripts. It could be that
+a site you are providing a script for does not have the bash shell. This
+is most easily tested by asking a user to type in the command “bash”. If
+it comes back with the response “command not found” then chances are it
+is not installed on that server (if it accepts the command then tell the
+user to type in the command “exit” to leave the shell). If it is the case
+that a user does not have bash, then you will have to alter your script
+code to use a different shell. The closest shell to bash, syntax wise,
+is the Korn shell which has the file name “ksh”. If a site does not have
+bash then they are almost certain to have the Korn shell. There are a few
+syntax differences. To gain a greater awareness of why there are so many
+shells, there is a useful Internet page that explains it.
+<p><a href="http://www.faqs.org/faqs/unix-faq/shell/shell-differences/" target="_blank">http://www.faqs.org/faqs/unix-faq/shell/shell-differences/</a>
+<h2>
+Searching for the bash and Korn shells</h2>
+Suppose you need to give some of your scripts to a user at a site that
+does not have the bash shell. Firstly you should confirm that the bash
+shell is not installed at the site. It is best that the user does a search
+of the site, even though it may take a long time. To search for “bash”
+then make the root directory the current directory like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>cd /</tt></td>
+</tr>
+</table>
+
+<p>…and then do a full search for bash like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>find . –name bash 2>/dev/null</tt></td>
+</tr>
+</table>
+
+<p>If it did come back with something and the bash file was in a “bin”
+directory then it would mean they have bash installed. If the search comes
+back with nothing and you are sure the search was done from the root directory
+then the next thing to do is to ensure that the Korn shell exists somewhere
+by again doing a search from the root directory downwards like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>find . –name ksh 2>/dev/null</tt></td>
+</tr>
+</table>
+
+<p>It is extremely likely that they have the Korn shell somewhere. It needs
+to be in a “bin” directory, otherwise we would have to wonder whether it
+was another type of file with the same name. What we want is for it to
+be located at /bin/ksh. If it is located in another “bin” directroy, according
+to the list returned, then ask the user to try to invoke the Korn shell
+like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>/bin/ksh</tt></td>
+</tr>
+</table>
+
+<p>If the above returns a “no such file or directory” message, then we
+know not to use that location. If no message was returned then we know
+the location is good. Tell the user to enter the command “exit” to leave
+the Korn subshell. If /bin/ksh did not work, then of the other locations
+returned by the “find” utility, choose the one with the shortest file name.
+In other words, use “/usr/bin/ksh” instead of “/usr/local/bin/ksh” if both
+were returned. This is the location that we will put in the first line
+of our Korn scripts, assuming /bin/ksh did not work. It should definitely
+be in a “bin” directory otherwise we would have to wonder if it was a different
+type of file that happened to have the same name.
+<h2>
+Converting a bash script to Korn</h2>
+Let us say that you have established that a site you need to send a script
+to does not have the bash shell but has the Korn shell and you have worked
+out where the Korn shell is located. To convert your bash shell script
+to a Korn shell script, do the following: Make a copy of the script in
+the same directory as the original script and give it the extension “.ksh”
+to distinguish it from the original. Change the first line of the script
+to reference the location of the Korn shell at your own site. Then run
+it by invoking by name plus its extension. Most likely it will work identically.
+If there is a difference then there will be a big difference, not a small
+difference since Korn syntax and bash syntax are almost identical. The
+script will most likely fail, if there is a real problem, rather than give
+slightly different results. If it looks right then carefully change the
+location of the Korn shell in the first line to match its location at the
+user’s site and send the code out to the user.
+<h3>
+echo -n</h3>
+You might encounter problems with the lowly “echo” command, when you convert
+a bash shell script to Korn. With the bash shell, you can stop a new line
+being written using the “-n” option with “echo” like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>echo -n "Enter script name: "</tt>
+<br><tt>read scripname</tt></td>
+</tr>
+</table>
+
+<p>That way the input starts on the same line as the message. But the Korn
+shell does not support this. It will not complain, but it will display
+the “-n” and then the message and then start a new line. To hold the input
+line where it is you need to use “printf” like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>printf "Enter script name: "</tt>
+<br><tt>read scripname</tt></td>
+</tr>
+</table>
+
+<p>“print” on its own would start a new line but “printf” holds on the
+current line unless you specifically cause a line feed by putting “\n”
+at the end. This is a little annoying, as “printf” means “print formatted”.
+Yet for the Korn shell, it is used for printing ordinary messages and holding
+on the same line. If you have an interactive script then you will have
+to convert any “echo –n”s to “printf”s. A search and replace will do this
+quickly.
+<h3>
+arrays</h3>
+Declaring arrays has a different syntax for Korn. It will not recognise
+the bash way of declaring arrays, namely “declare –a”. Instead you must
+use “set –A”. The Korn shell will crash when it encounters the word “declare”
+used as a command, so you will soon spot it. Also, in the Korn script,
+you must declare each array separately on its own line using “set –A”.
+You must not group them together like you can with the bash shell.
+<h3>
+${var:pos:len}</h3>
+The bash shell has a much richer set of uses for the ${} way of referencing
+a variable’s value. In bash you can substring a value like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>var2=${var1:0:1}</tt></td>
+</tr>
+</table>
+
+<p>The above will give var2 the first character held in var1. Korn does
+not accept this. It will say “bad substitution” when it encounters this.
+But guess what? There is more than one Korn shell. There is an “enhanced”
+Korn shell, “ksh93”, that does accept this syntax. You can read about this
+“enhanced” Korn shell in the link below.
+<p><a href="http://publib16.boulder.ibm.com/pseries/en_US/aixuser/usrosdev/ksh93.htm" target="_blank">http://publib16.boulder.ibm.com/pseries/en_US/aixuser/usrosdev/ksh93.htm</a>
+<p>Chances are you do not have ksh93 so you need to implement bash substring
+in a different way. And you may be unlucky in that the substring operation
+depends on the value of another variable like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>var2=${var1:$pos:1}</tt></td>
+</tr>
+</table>
+
+<p>You can achieve this in the Korn shell by using the “cut” command. You
+have got to remember, however, that arrays in bash start with element 0
+but the “cut” command considers the first character to be character 1.
+The best solution would be to create a function in the Korn script called
+“substr” and use that. Remember that parameters to a shell function are
+positional.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>substr ()</tt>
+<br><tt>{</tt>
+<br><tt>if [ -n "$3" ] ; then</tt>
+<br><tt>&nbsp; echo $1 | cut -c $(($2+1))-$(($2+$3))</tt>
+<br><tt>else</tt>
+<br><tt>&nbsp; echo $1 | cut -c $(($2+1))-</tt>
+<br><tt>fi</tt>
+<br><tt>}</tt></td>
+</tr>
+</table>
+
+<p>Using this function in a script then “var2=${var1:$pos:1}” in the bash
+shell script turns into this, instead, in the Korn shell script:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>var2=${var1:$pos:1} # was this in the bash shell script</tt>
+<br><tt>var2=$(substr $var1 $pos 1) # becomes this in the Korn shell script</tt></td>
+</tr>
+</table>
+
+<p>This is a nuisance but not a major problem. To recap, if you get the
+“bad substitution” message and it is clear that the bash shell script is
+using the ${var:pos:len} substring form, then add a function named “substr”,
+as shown above, at the start of the Korn script, and call that instead.
+<p>There are other differences between the shells, but you are unlikely
+to encounter them. There is a very condensed summary of the differences
+between the shells on the following Internet page:
+<p><a href="http://www.unixguide.net/unix/bash/C2.shtml" target="_blank">http://www.unixguide.net/unix/bash/C2.shtml</a>
+<h2>
+Converting a Korn script to bash</h2>
+This is the other-way-round to the previous section. This is about turning
+a Korn script into a bash script. Apart from just doing the opposite of
+what was in the previous section, there is an extra thing to look out for.
+In a Korn shell script, the last action in a list of piped actions is done
+in the parent shell and not a spawned sub-shell process, as is done in
+the bash script. The author of the Korn script could be using this feature
+to write the results of a piped action to a variable. A very sensible and
+logical thing to do in a Korn script, but unfortunately it does not work
+in a bash script. Consider this simple piece of code:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>echo hello world | read x&nbsp; # works in the Korn shell</tt>
+<br><tt>echo $x</tt></td>
+</tr>
+</table>
+
+<p>This works fine in the Korn shell. When you echo $x you will see the
+text “hello world”. But if you do that with the bash shell then you see
+nothing. This is because “read x” was done in a sub-process and when it
+has ended then the “x” variable contents are destroyed. To have the same
+effect in the bash shell you would have to change it to this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>x=$(echo hello world)</tt>
+<br><tt>echo $x</tt></td>
+</tr>
+</table>
+
+<p>So if you are converting a Korn shell script to bash then check all
+the piped actions to see if the results are being read into a variable
+at the end and make the appropriate change as shown above. You will find
+this common in Korn shell scripts. It is a pity it does not work in the
+bash shell, since piped actions are supposed to work like that. Many people
+consider this to be a fault with bash and it is one of the reasons why
+some people prefer the Korn 93 shell.
+<p>There are other differences between the Korn and bash shells. Pattern
+matching operators are different and there are the double operators “&amp;&amp;”
+and “||”.&nbsp; You can read more about it here:
+<br><a href="http://www.llywelyn.net/docs/ref/korn.html#reg" target="_blank">http://www.llywelyn.net/docs/ref/korn.html#reg</a>
+<h2>
+The battle of the shells</h2>
+You may hold back from thoroughly studying bash shell script programming
+if, at the back of your mind, there is a nagging doubt that the bash shell
+will become the dominant shell of the future. You may feel that you will
+have wasted your efforts if the bash shell gets superseded by another shell.
+A lot of good things have been said about the Korn shell, but this talk
+refers to the ksh93 shell which has more functionality that the previous
+Korn shell and is a good interactive shell as well. It is arguably better
+than bash, but ksh93 is not readily available on current Unix platforms.
+But if it ever overtakes the bash shell, you have seen that it is easy
+to convert a bash shell to a Korn shell. Another point to consider is that
+bash is free and is readily available on Windows platforms. People can
+download it and run it on their PCs so it gets a much broader exposure
+than other shells. And people who end up writing shell scripts will be
+the sort who will download bash and try it out.
+<p>Bash is a very good interactive shell as well as being very good for
+programming. It makes more sense to use a shell that is good for both so
+that a user can “progress” from being an interactive user to writing shell
+scripts without having to relearn some syntax. In the “battle of the shells”,
+the race has already been run, although we will probably have to wait a
+while for the winner to be announced.
+<h2>
+Conclusion</h2>
+The real power of shell scripts comes from the Unix commands within them.
+A shell script is just a way of “packaging” those commands and to put them
+in a more usable form for yourself and other users. It is no substitute
+for knowing those Unix commands well and being able to combine them to
+give you what you want. Learning shell scripting is difficult, and when
+you have learned how to write them, there is still more to learn. But if
+you have read this far and understood everything (and hopefully tried out
+all the suggested actions), then you will be in a position where you can
+learn more by yourself.
+<p>There is a further topic that might interest you if you deal with large
+text files (and perhaps also postscript printing) and that is to do with
+the powerful stream editor “gawk”. There is a another document you might
+want to read, written by the same author of this document, called “<a href="gawk.html">Writing
+gawk programs</a>”.
+<br><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+</body>
+</html>

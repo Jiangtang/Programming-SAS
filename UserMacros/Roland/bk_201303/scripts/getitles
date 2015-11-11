@@ -1,0 +1,292 @@
+#!/bin/bash
+#<pre><b>
+# Script     : getitles
+# Version    : 2.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 17-Mar-2004
+# Purpose    : Production script to extract the titles from an output listing
+# SubScripts : none
+# Notes      : Detection of a title is triggered by spaces in front of the word
+#              "table", "listing" or "appendix" (any case) followed by a space.
+#              The start title is expected either roughly in the middle of the
+#              page or right-aligned with possibly some population information
+#              directly underneath.
+#
+#              The collected title is written to standard output.
+#
+#              This utility will only read the first 10 lines of a file. It will
+#              assume it has got all the title information when it encounters a
+#              second blank line after capturing the first title (the one with
+#              "table" etc. in it) or any blank line past line 6.
+#
+#              Use the -b option to enclose the title text in round brackets
+#              (suitable for postscript) and to escape round brackets in the
+#              text of the title.
+#
+#              Use the -7 option for PostScript Clean7Bit format so that 
+#              characters outside that range are expressed in octal form.
+#
+# Usage      : getitles file.ext
+#              getitles -b file.ext     # enclose in brackets
+#              getitles -1 file.ext     # one title only
+#===============================================================================
+# OPTIONS:
+#-opt- -------------------------------description-------------------------------
+#  b   (switch) enclose in round brackets  
+#  7   (switch) Clean7Bit format
+#  1   (switch) one title only
+#  r   (switch) reference number only (i.e. no words "Appendix" or "TABLE")
+#  e   (switch) echo file name
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   file name (only one allowed)
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  27Oct04         added option to fetch one title only (version 1.1)
+# rrb  16aug05         logic extensively changed (version 2.0)
+# rrb  21Nov05  rrb001 Drop multiple spaces and beyond in first title line
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Define give-usage-message-then-exit function.
+usage () {
+  echo "Usage: getitles -b -7 -1 filename" 1>&2
+  exit 1
+}
+
+# --------- set default options
+brackets=no                         # Default for put brackets around the titles                    
+clean7bit=no                        # Default for Clean7Bit format
+onetitle=no                         # Default for one title only
+echo=no
+refonly=no
+
+
+# "case" statement for action to take on selected options
+while getopts "b71er" param ; do
+  case $param in
+   "?") # bad option supplied
+        usage
+        ;;
+   "b") # (switch) put brackets around the titles
+        brackets=yes
+        ;;
+   "7") # (switch) Clean7Bit format
+        clean7bit=yes
+        ;;
+   "1") # (switch) one title only
+        onetitle=yes
+        ;;
+   "e") # (switch) echo file name
+        echo=yes
+        ;;
+   "r") # (switch) reference number only
+        refonly=yes
+        ;;
+  esac
+done
+
+
+# shift to bring first parameter to position 1
+shift $(($OPTIND - 1))
+
+
+# make sure one file has been specified
+if [ $# -ne 1 ] ; then
+  usage
+fi
+
+
+# echo file name if option set
+if [ "$echo" == "yes" ] ; then
+  echo -n "$1 "
+fi
+
+
+                #========================================#
+                #        gawk program starts here        #
+                #========================================#
+
+gawk '
+# ==================== FUNCTION DEFINITIONS =====================
+
+
+# Function to initialise the _ord_ array equating characters
+# with decimal numbers
+function _ord_init (    i,t)
+{
+for (i=0; i<=255; i++) 
+  {
+  t = sprintf("%c", i)
+  _ord_[t]=i
+  }
+}
+
+# Function to equate a character with the decimal number.
+function ord (char)
+{
+return _ord_[char]
+}
+
+
+# Function to change non-Clean7Bit characters to octal
+function Clean7Bit (str,   i,newstr1,newstr2,bite,num)
+{
+newstr2=""
+newstr1=str
+for (i=1; i<=length(newstr1); i++)
+  {
+  bite=substr(newstr1,i,1)
+  num=ord(bite)+0
+  if ((num>=27 && num<=126) || num==9 || num==10 || num==13)
+    newstr2=newstr2 bite
+  else 
+    newstr2=newstr2 sprintf("\\%o",num)
+  }
+  return newstr2
+}
+
+
+# ===================== BEGIN BLOCK ======================
+BEGIN {
+
+# initialise line cont and title count
+linecount=0
+titlecount=0
+title=""
+title1=""
+blanklines=0;
+
+# assume first title line is centred
+style="centre"
+
+# Special title entry for population description 
+# directly under right-aligned title.
+title9=""
+
+
+# We can not test for the clean7 setting in the BEGIN block
+# so we test the shell variable instead to decide whether 
+# we need the array initialising.
+if ("'"$clean7bit"'"=="yes")
+_ord_init()
+
+}
+
+
+
+# ==================== MAIN CODE BLOCK ====================
+{
+linecount++
+
+# There are only 10 possible title lines so exit
+# if we have gone past that.
+if (linecount>10) exit
+
+if (length($0)>maxlen)
+  maxlen=length($0)
+  
+# exit if a blank line is found
+if ($0 ~ /^ *$/ && length(title1) > 0 )
+  {
+  blanklines++
+  if (blanklines>1 || linecount>6)
+    exit
+  }
+  
+
+# exit for lines of dashes or underscores as we have gone past the titles
+if ($0 ~ /^ *-------/ || $0 ~ /^ *______/) exit
+
+
+# Extract the title or listing identity if encountered first time
+if (tolower($0) ~ /  listing | table |  appendix |  attachment / && length(title1)==0 )
+  {
+  pos=match(tolower($0),/  listing |  table |  appendix | attachment /)
+  if (pos>(maxlen/2))
+    style="right"
+  newline=substr($0,pos)
+  where=match(newline,/[^ ].*[^ ]/)
+  title1=substr(newline,RSTART,RLENGTH)
+  # ( rrb001 ) this line added to drop multiple spaces and beyond in first title line
+  where=match(title1,/   /)
+  if (RSTART>1)
+    title1=substr(title1,1,RSTART-1)
+  title=title1
+  # if one-title-only option in effect then exit after we have it
+  if (onetitle=="yes" && length(title1)) exit
+  justfoundt1=1
+  }
+else
+  {
+  # Look for the patient population description directly underneath 
+  # the right-aligned first title.
+  if (justfoundt1==1 && style=="right")
+    {
+    justfoundt1=0
+    title9=""
+    pos=index($0,"   ")
+    if (pos>0 && (length($0)+2)>maxlen)
+      {
+      newline=substr($0,pos)
+      where=match(newline,/[^ ].*[^ ]/)
+      if (RSTART>0)
+        title9=substr(newline,RSTART,RLENGTH)
+      }
+    }
+  else
+    {
+    if (length(title1)>0)
+      {
+      where=match($0,/[^ ].*[^ ]/)
+      newbit=substr($0,RSTART,RLENGTH)
+      if (length(newbit)>=3 && index(newbit,"   ")==0)
+        {
+         title=title " " newbit
+        }
+      }
+    }
+  }
+
+
+}
+
+
+
+# ================ END BLOCK ====================== 
+END {
+
+# if only the table(appendix refence needed then drop the first word
+if (refonly=="yes")
+  gsub(/^[^ ]*  */,"",title)
+
+# see if the special population title has something in it and add it if it has
+if (length(title9)>0)
+  title=title " " title9
+
+# get rid of the footnote (x) references in the title if there are any
+gsub(/\(.\)/,"",title)
+
+
+# If clean7bit option set then convert titles to Clean7Bit format
+if (clean7=="yes")
+  title=Clean7Bit(title)
+
+
+# If brackets requested then escape round brackets
+# in the titles and enclose all in round brackets
+if (brackets=="yes")
+  {
+  # escape round brackets
+  gsub(/[()]/,"\\\\&",title)
+  title="(" title ")"
+  }
+
+# print the title
+print title
+
+}' brackets=$brackets clean7=$clean7bit onetitle=$onetitle refonly=$refonly "$1"

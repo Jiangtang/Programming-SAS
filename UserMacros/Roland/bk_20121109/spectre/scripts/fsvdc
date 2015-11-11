@@ -1,0 +1,62 @@
+#!/bin/bash
+#<pre><b>
+# Script     : fsvdc
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 04-Aug-2003
+# Purpose    : To launch fsview to browse a SAS dataset in the current directory
+#              with user-formatted variables decoded into a __D field (Uses SAS)
+# SubScripts : none
+# Notes      : Make the data directory the current directory. When fsview is
+#              invoked it will go into command line mode. This task is run in
+#              background so you can continue to use your xterm window for other
+#              tasks.
+#
+#              The dataset viewed will be in your work library. This is because
+#              the dataset is temporary. Decode variables will follow the
+#              matching coded variable.
+#
+#              If you give a SAS dataset file extension, the extension will be
+#              ignored.
+#
+#              The toolbox window is closed on startup. If you wish to use it 
+#              then issue the command "toolopen" on the fsview command line.
+#
+# Usage      : fsvdc demog
+#              fsvdc demog.sas7bdat
+#
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   Name of SAS dataset
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+#
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+if [ $# -lt 1 ] ; then
+  echo "Usage: fsvdc SAS-dataset" 1>&2
+  exit 1
+fi
+
+dset=$(echo $1 | cut -d. -f1)
+
+sas -nofmterr -sasuser work -initstmt "
+%alloc
+libname here './'; 
+options sasautos=('/data/sas/rpt/prg/test2/reporting/test1/dev/sasmacros');
+%macro fmtlookup;
+  %if %sysfunc(cexist(stat.formats)) %then %do;
+    options fmtsearch=(stat);
+  %end;
+  %else %if %sysfunc(cexist(der.formats)) %then %do;
+    options fmtsearch=(der);
+  %end;
+%mend fmtlookup;
+%fmtlookup;
+%adddecodevars(dsin=here.$dset,dsout=$dset);
+" -initcmd "fsview $dset;toolclose;command" &

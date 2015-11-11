@@ -1,0 +1,38 @@
+#!/bin/bash
+#<pre><b>
+# Script     : whosgot
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 27-Jul-2003
+# Purpose    : To list users who have locks on files
+# SubScripts : none
+# Notes      : This will show userids holding locks on files. You can then use
+#              the "getname" script to match user-ids to names of people.
+#              The file list (and any users holding locks) is written to
+#              standard output. Other messages are written to standard error.
+# Usage      : whosgot demog.sas7bdat
+#              whosgot *.sas*
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   File(s) to check for locks held
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+#
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+if [ $# -lt 1 ] ; then
+  echo "Usage: whosgot *.sas*" 1>&2
+  exit 1
+fi
+
+for filename in "$@" ; do
+  /usr/sbin/fuser -u $filename 2>&1
+done
+
+echo "Use \"getname userid\" to identify the names of any listed userids holding locks" 1>&2
+

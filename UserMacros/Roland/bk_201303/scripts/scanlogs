@@ -1,0 +1,67 @@
+#!/bin/bash
+#<pre><b>
+# Script     : scanlogs
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 17-Feb-2007
+# Purpose    : Production script to scan SAS logs for errors, warnings and other
+#              important messages.
+# SubScripts : none
+# Notes      : If no parameter is specified then it will look for the log of the
+#              program defined to the system environment variable "prog" and
+#              will echo a message saying what file is being scanned.
+# Usage      : scanlogs *.log
+#              scanlogs myprog
+#              scanlogs myprog.log
+#              scanlogs
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   filename or pattern of logs to scan
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  17Feb07         Renamed "scanlogs" from "sc" due to Cygwin conflict
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# define call to awk as a function taking one parameter
+scan () {
+  awk '{if ((index($0,"ERROR") == 1 \
+  || index($0,"WARNING") == 1 \
+  || index($0,"DATAWARNING") == 1 \
+  || index($0,"DATANOTE") == 1 \
+  || index($0,"MERGE statement has more ") > 0  \
+  || index($0,"W.D format") > 0  \
+  || index($0," truncated ") > 0  \
+  || index($0," has 0 observations ") > 0  \
+  || index($0," outside the axis range") > 0  \
+  || index($0," Invalid") > 0 \
+  || index($0,"NOTE: (pvalue) Treatment value to exclude") == 1 \
+  || index($0," uninitialized") > 0) \
+  && index($0,"BY-line has been truncated") == 0 \
+  && index($0,"The length of data column ") == 0 \
+  && index($0,"Errors printed on") == 0 \
+  && index($0,"scheduled to expire on") == 0 \
+  && index($0,"product with which") == 0 \
+  && index($0,"representative to have") == 0 )
+  {printf "%-37s %s\n","'"$1"'",$0}}' "$1"
+}
+
+
+if [ $# -lt 1 ] ; then
+  if [ -z "$prog" ] ; then
+    echo "Usage: scanlogs *.log" 1>&2
+    exit 1
+  else
+    echo "Scanning \"${prog%.*}.log\" for problems" 1>&2
+    scan "${prog%.*}.log"
+  fi
+else
+  for file in "$@" ; do
+    file=${file%.*}.log
+    scan "$file"
+  done
+fi

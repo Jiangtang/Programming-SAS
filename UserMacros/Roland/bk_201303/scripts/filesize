@@ -1,0 +1,31 @@
+#!/bin/bash
+#<pre><b>
+# Script     : filesize
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 03-Aug-2005
+# Purpose    : Production script to show file size
+# SubScripts : none
+# Notes      : none
+# Usage      : filesize file.ext
+#              
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   File name
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# One file only
+if [ $# -ne 1 ] ; then
+  echo "Usage: filesize file.ext" 1>&2
+  exit 1
+fi
+
+ls -ld "$1" | gawk '{print $5}'

@@ -1,0 +1,60 @@
+#!/bin/bash
+#<pre><b>
+# Script     : opsortkey
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 27-Oct-2004
+# Purpose    : To create an output sort key from the table/appendix reference
+#              number.
+# SubScripts : none
+# Notes      : It starts with the string 000-000-000-000-000-000 and fills in
+#              each of the 6 parts depending on what it finds. YOU MUST PIPE
+#              INTO THIS UTILITY.
+# Usage      : sortkey=$(echo 7.12 | opsortkey)
+#              
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  You must pipe into this utility
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+gawk -F. '
+{
+for (i = 1; i <= NF; i++)
+  {
+  bit=$i
+  len=length(bit)
+  if (len < 3)
+    {
+    if (len == 2)
+      bit="0" bit
+    else
+      bit="00" bit
+    }
+  str=str bit
+  if (i < 6)
+    str=str "-"
+  }
+
+if (NF < 6)
+  {
+  for (i = NF+1; i <= 6; i++)
+    {
+    str=str "000"
+    if (i < 6)
+      str=str "-"
+    }
+  }
+
+}
+
+END { print str }
+
+'

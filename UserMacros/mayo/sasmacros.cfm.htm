@@ -1,0 +1,440 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" lang="en"><head>  <!-- Content Copyright Mayo Foundation -->
+<!-- Page generated 2009-07-10 12:49:02 by CommonSpot CommonSpot v4.6.3.47 (2007-01-23 14:26:09) -->
+<!-- JavaScript & DHTML Code Copyright 1998-2005 PaperThin, Inc.  All rights reserved -->  <title>SAS Macros</title> <meta name="Description" id="Description" content="SAS Macros">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta name="Keywords" id="Keywords" content="mayo, mayo clinic, mayoresearch.mayo.edu, biomedical, medical, research, mayo clinic website, mayo.edu, ">
+<meta name="Generator" id="Generator" content="CommonSpot Content Server CommonSpot v4.6.3.47">
+<link rel="stylesheet" href="sasmacros.cfm_files/rweb.css" type="text/css"><style type="text/css">
+	.mw { color:#000000;font-family:Verdana,Arial,Helvetica;font-weight:bold;font-size:xx-small;text-decoration:none; }
+	a.mw:link	{color:#000000;font-family:Verdana,Arial,Helvetica;font-weight:bold;font-size:xx-small;text-decoration:none;}
+	a.mw:visited	{color:#000000;font-family:Verdana,Arial,Helvetica;font-weight:bold;font-size:xx-small;text-decoration:none;}
+	a.mw:hover	{color:#0000FF;font-family:Verdana,Arial,Helvetica;font-weight:bold;font-size:xx-small;text-decoration:none;}
+</style> 
+<script type="text/javascript">
+<!--
+	var gMenuControlID=0;
+	var menus_included = 0;
+	var jsPageAuthorMode = 0;
+	var jsSessionPreviewON = 1;
+	var jsDlgLoader = '/mayo/research/biostat/loader.cfm';
+	var jsSiteID = 2;
+	var jsSubSiteID = 77;
+	var kurrentPageID = 70500;
+// -->
+</script>
+<script type="text/javascript">
+<!--
+	function newWindow (name,url)
+	{
+		var externalLinkRegEx = /^https?:[\/\\]{2}/i;
+		var blnPopUpsOffScreen=0;
+		var intTop=200;
+		var intLeft=200;
+		var intHeight=290;
+		var intWidth=480;
+			var cookieStr = document.cookie;
+			var cookieWinRegEx = /CSOFFSCREENPOPUPSALLOWED=\d/i;
+			var rxVal = /\d+/;
+			try
+			{
+				if (cookieStr && cookieStr.match(cookieWinRegEx))
+				{
+					var strVal=cookieStr.match(cookieWinRegEx);
+					if (strVal)
+						blnPopUpsOffScreen=strVal.toString().match(rxVal);
+					else
+						blnPopUpsOffScreen = 0;
+				}
+				else
+					blnPopUpsOffScreen=0;
+			}
+			catch (oErr)
+			{
+				blnPopUpsOffScreen=0;
+			}
+			if(blnPopUpsOffScreen==1)
+			{
+				intTop=window.screen.height - 9;
+				intLeft=window.screen.width - 9;
+				intHeight=1;
+				intWidth=1;
+			}
+			else
+			{
+				intTop=(window.screen.height / 2) - 109;
+				intLeft=(window.screen.width / 2) - 210;
+				intHeight=218;
+				intWidth=421;
+			}
+			if(!url.match(externalLinkRegEx) && url.indexOf('kurrentPageID') == -1)
+			{
+				try
+				{
+					if( url.indexOf ('?') == -1 )
+						url = url + '?kurrentPageID=' + kurrentPageID;
+					else
+						url = url + '&kurrentPageID=' + kurrentPageID;
+				}
+				catch (oErr)
+				{ /* Do Nothing */ }
+			}
+		var re = new RegExp();
+		re = /&amp;/gi;
+		url = url.replace(re,"&");
+		if(url.search(/[\/\\]/g) >= 0 && blnPopUpsOffScreen==0)
+		{
+			if(document.CS_StaticURL && window.location.href.indexOf(document.CS_StaticURL) == -1)
+				url = '/commonspot/utilities/longproc.cfm?onlyurlvars=1&url=' + escape(url);
+		}
+		var strWinOptions = 'toolbar=no,resizable=yes,scrollbars=yes,menubar=no,location=no';
+		if(arguments.length >= 2 && arguments[2])
+		{
+			var strOptions=arguments[2];
+			var strTopPos=strOptions.match(/top=\s*(\d+)/i);
+			if(strTopPos && strTopPos[1] >=0)
+			{
+				intTop=strTopPos[1];
+				strOptions=strOptions.replace(/top=\s*\d+\s*,?/i,'')
+			}
+			var strLeftPos=strOptions.match(/left=\s*(\d+)/i);
+			if(strLeftPos && strLeftPos[1] >=0)
+			{
+				intLeft=strLeftPos[1];
+				strOptions=strOptions.replace(/left=\s*\d+\s*,?/i,'')
+			}
+			var strHeight=strOptions.match(/height=\s*(\d+)/i);
+			if(strHeight && strHeight[1] >=0)
+			{
+				intHeight=strHeight[1];
+				strOptions=strOptions.replace(/height=\s*\d+\s*,?/i,'')
+			}
+			var strWidth=strOptions.match(/width=\s*(\d+)/i);
+			if(strWidth && strWidth[1] >=0)
+			{
+				intWidth=strWidth[1];
+				strOptions=strOptions.replace(/width=\s*\d+\s*,?/i,'')
+			}
+			var strWinOptions = strOptions;
+		}
+		strWinOptions = strWinOptions + ',top='+ intTop + ',left=' + intLeft + ',height=' + intHeight + ',width=' + intWidth;
+			var winWindow=window.open(url,name,strWinOptions);
+		if (!winWindow)
+			alert('Unable to open window - please make sure the pop-up blocker is disabled for this site');
+		if(arguments.length==4 && arguments[3]==1 && winWindow)
+			return winWindow;
+	}
+// -->
+</script>
+<!-- --> <script src="sasmacros.cfm_files/__utm.htm" type="text/javascript"></script><link rel="stylesheet" href="sasmacros.cfm_files/commonspot.css" type="text/css"> 
+
+<script type="text/javascript">
+<!--
+
+var gShowKeywords = 0;
+var gHaveKeywords = 0;
+
+var js_userID=0;
+
+// -->
+</script>
+<!-- --> </head><body onload="onLoadFinished();" class="CS_Document" lang="en"><script type="text/javascript">
+<!--
+document.CS_StaticURL = "http://resweb01/mayo/";
+document.CS_DynamicURL = "http://resweb01/mayo/";
+// -->
+</script><a name="__topdoc__"></a><!-- --><script src="sasmacros.cfm_files/always-include-common.js" type="text/javascript"></script><script src="sasmacros.cfm_files/always-include-moz.js" type="text/javascript"></script>
+<script type="text/javascript">
+<!--
+	function glblLinkHandler(lobj, attr, val)
+	{
+	
+		lobj.style[attr] = val;
+	
+	}
+	function onLoadFinished()
+	{
+		onLoadComplete();
+	
+	}
+	var js_gvPageID = 70500;
+	function gotoDiffLang(url)
+	{
+		window.location = url + '&amp;pageid=70500';
+	}
+// -->
+	</script><!-- showPageModeUI not set -->
+<script type="text/javascript">
+<!--
+bName = navigator.appName;
+bVer = parseInt(navigator.appVersion);
+
+var bCanRollover=0
+if (bName == "Netscape")
+{
+	if(bVer >= 3)
+		bCanRollover=1;
+}
+else if (bName == "Microsoft Internet Explorer")
+{
+	if(bVer >= 4)
+		bCanRollover=1;
+}
+
+function ImageSet(imgID,newTarget)
+{
+	if (bCanRollover)
+		document[imgID].src=newTarget;
+}
+
+// -->
+</script><!-- -->
+<div class="templateborder">
+<!-- Start main table -->
+<script src="sasmacros.cfm_files/commonfunctions.js" language="JavaScript" type="text/JavaScript"></script>
+
+<div id="dhtmltooltip"></div>
+<script language="JavaScript" src="sasmacros.cfm_files/tooltip.js"></script>
+<link rel="stylesheet" type="text/css" media="screen" href="sasmacros.cfm_files/framework.css">
+<link rel="stylesheet" type="text/css" media="screen, print" href="sasmacros.cfm_files/researchstyles.css"> 
+<link rel="stylesheet" type="text/css" media="print" href="sasmacros.cfm_files/research-print.css">
+<script type="text/javascript" src="sasmacros.cfm_files/swf_fix.js"></script>
+<a name="backtotop"></a>
+<!--
+<div id="toplinks">
+		<ul id="linkstabs">
+			
+			<li><a href="http://www.mayoclinic.org/" class="linksback">Medical Services</a></li>
+			<li><a href="http://www.mayoclinic.com" class="linksback">Health Information</a></li>
+			<li><a href="http://www.mayoclinic.org/patientinfo/appointments.html" class="linksback">Appointments</a></li>
+			<li><a href="http://www.mayo.edu" class="linksback">Education & Research</a></li>
+			<li><a href="http://www.mayoclinic.org/jobs/" class="linksback">Jobs</a></li>
+			<li><a href="http://www.mayoclinic.org/about-web">About</a></li>
+			
+		</ul>
+</div>
+-->
+<div id="uni-banner"> <a href="http://www.mayoclinic.org/patientinfo/appointments.html" id="first-link">Appointments</a> <a href="http://www.mayoclinic.org/jobs/">Jobs</a> <a href="http://www.mayoclinic.org/about-web">About</a> <a href="http://mayosearch1.mayo.edu/search?&amp;site=research-and-education&amp;client=research-and-education&amp;proxystylesheet=research-and-education&amp;output=xml_no_dtd">Search</a> <span> <a href="http://www.mayo.edu/" id="highlight">Education &amp; Research</a> <a href="http://clinicaltrials.mayo.edu/" class="other-one">Clinical Trials</a> <a href="http://www.mayoclinic.com/" class="other-one">Health Information</a> <a href="http://www.mayoclinic.org/" class="other-two">Medical Services</a> </span> </div>
+<div id="branding">
+  <div class="mc-bw-logo"><a href="http://www.mayo.edu/"><img src="sasmacros.cfm_files/mc-logo-bw.gif" alt="Logo: Mayo Clinic" border="0"></a></div>
+  <div class="research-word"><a href="http://mayoresearch.mayo.edu/mayo/research/"><img src="sasmacros.cfm_files/bw-research-word.gif" alt="" border="0"></a></div>
+  <ul class="page-navigation">
+    <li><a href="http://www.mayo.edu/">Home</a></li>
+    <li><a href="http://mayoresearch.mayo.edu/mayo/research/index.cfm">Dept/Centers</a></li>
+    <li><a href="http://mayoresearch.mayo.edu/mayo/research/labs.cfm">Areas of Research</a></li>
+    <li><a href="http://mayoresearch.mayo.edu/mayo/research/researchers/directory.cfm">Faculty</a></li>
+    <li><a href="http://mayoresearch.mayo.edu/mayo/research/pubs.cfm">Publications</a></li>
+    <li><a href="http://mayoresearch.mayo.edu/mayo/research/postdoc">Postdocs</a></li>
+    <li><a href="http://mayoresearch.mayo.edu/mayo/research/traininggrants/">Grants</a></li>
+    <li><a href="http://mayosearch1.mayo.edu/search?&amp;site=research-and-education&amp;client=research-and-education&amp;proxystylesheet=research-and-education&amp;output=xml_no_dtd">Search</a></li>
+  </ul>
+</div>
+<!-- PAGE TITLE GREY -->
+<div class="templateheaderlink">
+<a href="http://mayoresearch.mayo.edu/biostat/index.cfm">
+Division of Biomedical Statistics and Informatics
+</a>
+</div>
+<!-- PAGE TITLE GREY ENDS-->
+<!-- LEFT NAVIGATION -->
+<div class="templatecontent">
+<div class="templateleftcol">
+<ul class="homecontainer">
+<li>
+<a href="http://mayoresearch.mayo.edu/biostat/index.cfm">
+Home
+</a>
+</li>
+</ul>
+<table border="0" cellpadding="0" cellspacing="0" height="100%">
+<tbody><tr><td valign="top"> <div class="CS_Element_Layout"> <table id="idLayout1470" class="CS_Layout_Table" summary="" cellpadding="0" cellspacing="0" width="100%" height="100%"> <tbody><tr class="CS_Layout_TR"><td id="idCell1470x1x1" class="leftnavlabheader"> <div class="CS_Element_Label">    
+<h3 class="h3white">personnel directory</h3>
+</div> </td> </tr><tr class="CS_Layout_TR"><td id="idCell1470x2x1" class="CS_Layout_TD"> <div class="CS_Element_LinkBar"> 
+	<ul class="leftnavcontainer">
+	
+		<li><a href="http://mayoresearch.mayo.edu/biostat/faculty.cfm">Faculty</a></li>
+	
+	</ul>
+</div> </td> </tr><tr class="CS_Layout_TR"><td id="idCell1470x3x1" class="leftnavlabheader"> <div class="CS_Element_Label">    
+<h3 class="h3white">more pages</h3>
+</div> </td> </tr><tr class="CS_Layout_TR"><td id="idCell1470x4x1" class="CS_Layout_TD"> <div class="CS_Element_PageIndex"> 
+
+
+<script type="text/javascript">
+<!--
+
+function doCPOpenInOpener (url)
+{
+	if (window.opener)
+		window.opener.location = url;
+}
+
+// -->
+</script><!-- -->
+
+	
+
+	<ul class="leftnavcontainer">
+
+	
+	       <li><a href="http://mayoresearch.mayo.edu/biostat/software.cfm">Software</a></li>
+	    
+	       <li><a href="http://mayoresearch.mayo.edu/biostat/techreports.cfm">Technical Reports</a></li>
+	    
+	       <li><a href="http://mayoresearch.mayo.edu/biostat/overview.cfm">Division Overview</a></li>
+	    
+	       <li><a href="http://mayoresearch.mayo.edu/biostat/professional_opportunities.cfm">Professional Opportunities</a></li>
+	    
+	       <li><a href="http://mayoresearch.mayo.edu/biostat/contact.cfm">Contact Information</a></li>
+	    
+	</ul>
+<!-- --> </div> </td> </tr>
+	</tbody></table>	</div> </td></tr>
+<tr>
+<td>
+<div class="subbanner" id="campaign-01">
+<div><a href="http://www.mayoclinic.org/campaign/">Give. Touch.<br>Transform. <strong>Support Mayo Now</strong></a></div>
+</div>
+</td>
+</tr>
+</tbody></table>
+</div>
+<!-- LEFT NAVIGATION ENDS-->
+<!-- DEPARTMENT MAIN PAGE -->
+<!-- DEPARTMENT MAIN PAGE ENDS-->
+<!-- DEPARTMENT SUB PAGE -->
+<div class="templateonecentercol">
+<div class="CS_Element_Layout"> <table id="idLayout2" class="CS_Layout_Table" summary="" cellpadding="0" cellspacing="0" width="100%"> <tbody><tr class="CS_Layout_TR"><td id="idCell2x1x1" class="maincontent"> <div class="CS_Element_Textblock"> <div class="CS_Textblock_Text"><h2 class="uppercasetext">Locally Written SAS Macros</h2> <p>These
+SAS macros were written locally and are maintained by Mayo Clinic
+staff. They contain the SAS source code, a brief description of the
+macro's function and an example of the macro call.</p> <p>Copyright
+2005 Mayo Foundations for Medical Education and Research. This software
+is free software; you can redistribute it and/or modify it under the
+terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your
+option) any later version.</p> <p>These macros are distributed in the
+hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
+implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE. See the GNU General Public License for more details.</p> <p>Credit where credit is due. If you use functions from Mayo Clinic, please acknowledge the original contributor of the material.</p> <ul class="researchlist"> <li><a href="#general">General</a></li> <li><a href="#survival">Survival Analysis</a></li> </ul> <h3 class="uppercasetext">General</h3> <table border="0" cellpadding="0" cellspacing="0"> <tbody> <tr> <td valign="top"> <p><a href="http://mayoresearch.mayo.edu/biostat/upload/bnmlci.sas">bnmlci</a></p> </td> <td>&nbsp;&nbsp;</td> <td> <p>Exact
+confidence intervals for a proportion. This macro calculates exact
+binomial confidence intervals for the binomial parameter P, after
+having observed X successes in N trials. Output includes normal and
+poisson approximation to the binomial. Erik Bergstralh [28/AUG/2008]</p> </td> </tr> <tr> <td valign="top"> <p><a href="http://mayoresearch.mayo.edu/biostat/upload/boot.sas">boot</a></p> </td> <td>&nbsp;&nbsp;</td> <td> <p>Macro for selecting bootstrap samples. Erik Bergstralh [28/AUG/2008]</p> </td> </tr> <tr> <td valign="top"> <p><a href="http://mayoresearch.mayo.edu/biostat/upload/comprisk.sas">comprisk</a></p> </td> <td>&nbsp;&nbsp;</td> <td> <p>Performs Cumulative Incidence in presence of competing risks. E. Bergstralh [29/AUG/2008]</p> </td> </tr> <tr> <td valign="top"> <p><a href="http://mayoresearch.mayo.edu/biostat/upload/cutpoint.sas">cutpoint</a></p> </td> <td>&nbsp;&nbsp;</td> <td> <p>This macro is designed to find a best cutpoint of a continous variable based on chi-square statistics for a binary outcome.</p> </td> </tr> <tr> <td valign="top"> <p><a href="http://mayoresearch.mayo.edu/biostat/upload/dist.sas">dist</a></p> </td> <td>&nbsp;&nbsp;</td> <td> <p>Estimates
+the distance matrix between two groups (e.g. cases and potential
+controls) on the basis of a set of X's. The macro has an optional call
+to the VMATCH macro which allows one to perform variable optimal
+matching. Requires VMATCH if you wish to use the optimal matching
+option. This macro is designed to find a best cutpoint of a continuous
+variable based on chi-square statistics for a binary outcome. This
+macro also requires that you download <a href="http://mayoresearch.mayo.edu/biostat/upload/nobs.sas">nobs</a>. Erik Bergstralh &amp; Jon Kosanke [27/Nov/2003]</p> </td> </tr> <tr> <td valign="top"> <p><a href="http://mayoresearch.mayo.edu/biostat/upload/findcut.sas">findcut</a></p> </td> <td>&nbsp;&nbsp;</td> <td> <p>Finds
+the best cutpoint of a continuous variable based on the log-rank
+statistic. Jay &amp; Sumithra Mandrekar, Steve Cha [21/APR/2003]</p> </td> </tr> <tr> <td valign="top"> <p><a href="http://mayoresearch.mayo.edu/biostat/upload/gmatch.sas">gmatch</a></p> </td> <td>&nbsp;&nbsp;</td> <td> <p>Computerized
+matching of cases to controls using the greedy matching algorithm with
+a fixed number of controls per case. Controls may be matched to cases
+using one or more factors (X's). Erik Bergstralh &amp; Jon Kosanke
+[31/Oct/2003]</p> </td> </tr> <tr> <td valign="top"> <p><a href="http://mayoresearch.mayo.edu/biostat/upload/jitplot.sas">jitplot</a></p> </td> <td>&nbsp;&nbsp;</td> <td> <p>Produce
+Gplot of continuous variable(y-axis) vs a group variable(x-axis) in
+such a way that no points are hidden. This type of plot is most
+effective when N is not large and you wish to display all of the data
+points. Erik Bergstralh [29/AUG/2008]</p> </td> </tr> <tr> <td valign="top"> <p><a href="http://mayoresearch.mayo.edu/biostat/upload/match.sas">match</a></p> </td> <td>&nbsp;&nbsp;</td> <td> <p>Computerized
+matching of cases to potential controls. The purpose of this macro is
+to match 1 or more controls (from a total of M) for each of N cases.
+The controls may be matched to the cases by one or more factors(X's). (
+Replaced July 2003 by GMATCH, VMATCH, and DIST macros.) Jon Kosanke
+&amp; Erik Bergstralh [28/OCT/1999]</p> </td> </tr> <tr> <td valign="top"> <p><a href="http://mayoresearch.mayo.edu/biostat/upload/mccc.sas">mccc</a></p> </td> <td>&nbsp;&nbsp;</td> <td> <p>Computes Lin's concordance correlation coefficient (CCC) for any number of raters. Ross Dierkhising [18/Jul/2006]</p> </td> </tr> <tr> <td valign="top"> <p><a href="http://mayoresearch.mayo.edu/biostat/upload/mcstrat.sas">mcstrat</a></p> </td> <td>&nbsp;&nbsp;</td> <td> <p>This
+macro analyzes case-control studies where cases and controls are
+matched. It is a replacement for the SAS Version 5 procedure PROC
+MCSTRAT. Rob Vierkant &amp; Jon Kosanke [21/FEB/2000]</p> </td> </tr> <tr> <td valign="top"> <p><a href="http://mayoresearch.mayo.edu/biostat/upload/plotcorr.sas">plotcorr</a></p> </td> <td>&nbsp;&nbsp;</td> <td> <p>Proc
+Plot with correlation/regression statistics appended. This macro will
+produce a Y*X scatter plot with correlation and regression data
+appended at the bottom of the page. The macro can use either plot of
+Gplot. For Gplot the graph can optionally include the regression line
+of Y on X along with confidence limits for either mean Y or individual
+predicted Y's. Erik Bergstralh [28/AUG/2008]</p> </td> </tr> <tr> <td valign="top"> <p><a href="http://mayoresearch.mayo.edu/biostat/upload/plotmat.sas">plotmat</a></p> </td> <td>&nbsp;&nbsp;</td> <td> <p>Create
+a scatterplot matrix graphically displaying the bivariate relationships
+between a number of variables. Rob Vierkant [9/APR/2003]</p> </td> </tr> <tr> <td valign="top"> <p><a href="http://mayoresearch.mayo.edu/biostat/upload/regress.sas">regress</a></p> </td> <td>&nbsp;&nbsp;</td> <td> <p>Summary
+of association between X and Y. This macro performs ploynomial
+regression analysis on Xvar with the option of first eliminating
+outliers. It provides descriptive statistics on Xvar and Yvar and
+performs tests of modeling assumptions. C. D. STERTZ &amp; Susanne L.
+Daood [11/MAR/1994]</p> </td> </tr> <tr> <td valign="top"> <p><a href="http://mayoresearch.mayo.edu/biostat/upload/senspe.sas">senspe</a></p> </td> <td>&nbsp;&nbsp;</td> <td> <p>Calculate
+sensitivity, specificity, PPV, and NPV with appropriate confidence
+intervals. Stephen Cha and Stephanie Bagniewski [18/AUG/2005]</p> </td> </tr> <tr> <td valign="top"> <p><a href="http://mayoresearch.mayo.edu/biostat/upload/vmatch.sas">vmatch</a></p> </td> <td>&nbsp;&nbsp;</td> <td> <p>Computerized
+matching of cases to controls using variable optimal matching. The
+number of controls per case is allowed to vary with only the total
+fixed. Controls may be matched to cases using one or more factors
+(X's). VMATCH uses the case/controls distance matrix as input. This
+distance matrix can be calculated using the DIST macro, which includes
+an optional call to VMATCH. Erik Bergstralh &amp; Jon Kosanke
+[28/OCT/2003]</p> </td> </tr> </tbody> </table> <a id="survival" name="survival"></a>  <h3 class="uppercasetext">Survival Analysis</h3> <table border="0" cellpadding="0" cellspacing="0"> <tbody> <tr> <td valign="top"> <p><a href="http://mayoresearch.mayo.edu/biostat/upload/criskcox.sas">criskcox</a></p> </td> <td>&nbsp;&nbsp;</td> <td> <p>Competing risk survival analysis with covariates. Walter Kremers, Erik Bergstralh &amp; Terry Therneau [9/Mar/2009]</p> </td> </tr> <tr> <td valign="top"> <p><a href="http://mayoresearch.mayo.edu/biostat/upload/daspline.sas">daspline</a></p> </td> <td>&nbsp;&nbsp;</td> <td> <p>For
+a given list of variables, generates formulas for dummy variables that
+allow fitting of Stone and Koo's additive splines constrained to be
+linear in the tails. Called by macro schoen. Frank E. Harrell, Jr.
+[10/MAY/1991]</p> </td> </tr> <tr> <td valign="top"> <p><a href="http://mayoresearch.mayo.edu/biostat/upload/phlev.sas">phlev</a></p> </td> <td>&nbsp;&nbsp;</td> <td> <p>Leverage
+residuals for proportional hazards model. This macro returns the
+leverage residuals matrix L for a proportional hazards model. The
+returned residuals data set is n by p, where n is the number of
+(non-missing) subjects used in the PHREG fit, and p is the number of
+fitted covariates. The leverage residuals are an approximation to the
+jackknife; the i-th observation of the data set contains the
+approximate change in beta if observation i were dropped from the
+model. These residuals will normally be plotted as an aid to finding
+influential or "high leverage" observations.The procedure can also
+estimate the robust covariance estimate L'L. Terry Therneau, Erik
+Bergstralh &amp; Jon Kosanke [11/JAN/2002]<br> <strong>In SAS version
+8.1 the %phlev macro is no longer necessary. Robust variance estimates
+are available directly from phreg using the covsandwich option.</strong></p> </td> </tr> <tr> <td valign="top"> <p><a href="http://mayoresearch.mayo.edu/biostat/upload/schoen.sas">schoen</a></p> </td> <td>&nbsp;&nbsp;</td> <td> <p>Schoenfeld
+residuals for proportional hazards model. This macro returns Schoenfeld
+residuals and scaled Schoenfeld residuals from the Cox model. The
+Schoenfeld residuals(r) are defined only at event times. Erik
+Bergstralh, Terry Therneau &amp; Ryan Lennon [20/Mar/2009].</p> </td> </tr> <tr> <td valign="top"> <p><a href="http://mayoresearch.mayo.edu/biostat/upload/surv.sas">surv</a></p> </td> <td>&nbsp;&nbsp;</td> <td> <p>Complete
+Kaplan-Meier survival analysis with printing options and logrank
+statistic. This macro will calculate the general survival statistics
+(p(t), standard error, confidience limits, and median survival time. It
+will also do the k-sample logrank and plotting upon request. Terry
+Therneau &amp; Jan Offord [21/DEC/1999]</p> </td> </tr> <tr> <td valign="top"> <p><a href="http://mayoresearch.mayo.edu/biostat/upload/survcstd.sas">survcstd</a></p> </td> <td>&nbsp;&nbsp;</td> <td> <p>Calculates
+the c-statistic (concordance, discrimination index) for survived data
+with time dependant covariates and corresponding SE and 100(1-alpha)%
+CI. Walter Kremers [18/SEPT/2008]</p> </td> </tr> <tr> <td valign="top"> <p><a href="http://mayoresearch.mayo.edu/biostat/upload/survlrk.sas">survlrk</a></p> </td> <td>&nbsp;&nbsp;</td> <td> <p>Calculates
+logrank statatistics for the surv macro. Returns an output dataset.
+David J. Camp, modifications by Erik Bergstralh &amp; Jan Offord
+[23/SEP/1993]</p> </td> </tr> <tr> <td valign="top"> <p><a href="http://mayoresearch.mayo.edu/biostat/upload/survtd.sas">survtd</a></p> </td> <td>&nbsp;&nbsp;</td> <td> <p>General
+survival statistics p(t), standard error, confidience limits, and
+median survival time, for the following special cases: 1)
+Left-truncated survival 2) Time dependant calculations where a person
+can change state (CLASS) after time zero. This macro does not do any
+testing or support multiple event data. Terry Therneau &amp; Jan Offord
+[27/AUG/1997]</p> </td> </tr> </tbody> </table></div> </div> </td> </tr>
+	</tbody></table>	</div> 
+</div>
+<!-- DEPARTMENT SUB PAGE ENDS-->
+<br style="clear: both;">
+<br style="clear: both;">
+	<div class="bottomnav">
+<a href="http://www.mayoclinic.org/patientinfo/appointments.html" class="bottomnavborder">Appointments</a>
+<a href="https://forms.mayoforms.org/forms/up/mc506400.cfm" class="bottomnavborder" target="_blank">Contact Us</a>
+<a href="http://www.mayoclinic.org/development/" class="bottomnavborder">Make A Gift</a> 
+<a href="http://mayosearch1.mayo.edu/search?&amp;site=research-and-education&amp;client=research-and-education&amp;proxystylesheet=research-and-education&amp;output=xml_no_dtd">Search</a>
+	</div>
+	<div class="legal">
+		<p>
+			<a class="disclaimer" href="http://mayoresearch.mayo.edu/mayo/research/legal/">
+				Legal restrictions and terms of use applicable to this site</a>
+		</p>
+		<p>
+			Use of this site signifies your agreement to the terms of use 
+			<br>
+			Copyright © 2009 Mayo Foundation for Medical Education and Research.
+		</p>
+	</div>
+<script src="sasmacros.cfm_files/urchin.js" type="text/javascript">
+</script> <script type="text/javascript">
+_uacct = "UA-300953-10";
+urchinTracker();
+</script> 
+<!--
+<script type="text/javascript" src="http://cetrk.com/pages/scripts/0005/1347.js"></script>
+-->
+<div class="CS_Element_Textblock"> </div> 
+</div>
+<!-- --><div style="padding: 0px; display: block; clear: left; font-family: Verdana,Arial; font-size: 10px; color: gray;"></div></div></body></html>

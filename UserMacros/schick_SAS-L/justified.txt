@@ -1,0 +1,39 @@
+Charlie Schwartz wrote:
+> 
+> Is there any way to left justify titles on regular printed output? I
+> can't seem to find anything in the documentation.
+> 
+> Thanks.
+> __________________________________________________________
+> Charlie Schwartz
+> demomet@directnet.com
+
+This oughta be in the FAQ (if we had an FAQ).
+
+
+It is very easy to left, center, or right justify titles in ordinary SAS
+output. You just have to blank fill the title to the same width as the 
+current linesize.
+
+For the sake of demonstration, I will set the linesize to 32 columns, 
+generally it is set between 78 and 132 columns:
+
+
+      OPTIONS LINESIZE=32;
+      TITLE1 '12345678901234567890123456789012';
+      TITLE2 'LEFT JUSTIFIED                  ';
+      TITLE3 '                 RIGHT JUSTIFIED';
+      TITLE4 'LEFT SIDE             RIGHT SIDE';
+      TITLE5 'CENTERED';
+
+
+It works for footnotes too.
+
+Do note that the SAS date and Page number that appears on the
+upper right side of the page will try to fit itself on the second
+title if it won't fit on the first.
+-- 
+Andrew J. L. Cary                     | I Reckon that the Opinions
+Senior Curmudgeon                     | expressed here DO represent  
+Cary Consulting Services, Newark, CA  | those of the management of
+ajlcary@ix.netcom.com                 | Cary Consulting Services

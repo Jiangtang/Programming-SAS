@@ -1,0 +1,133 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="macro validation plan">
+   <meta name="KeyWords" content="sas macro validation spectre clinical">
+   <title>Macro Validation Plan</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Macro Validation Plan</h1></center>
+
+<h2>
+Introduction</h2>
+My aim is to "validate" <b>all</b> of my macros. This is made difficult
+because nobody can be bothered to put in the considerable work required,
+except for me, and being the sole author of all the macros then I am not
+"allowed" to validate them. That's a pretty daunting obstacle to achieving
+the full validation of the macros, I am sure you will agree, but I have
+a plan!
+<h2>
+The "old way" of validating the macros</h2>
+The "old way" of validating the macros was to validate only those macros
+used in the process of creating submission reports being used by Spectre
+(Clinical). When these macros were identified, the word "Production macro"
+was put into the start of the purpose of the macro so that people could
+identify and concentrate on just those macros. A problem was that when
+I enhanced a macro or debugged it then I often had need to copy a macro
+across from the old macro library and so make it a "production" macro,
+so the situation was fluid and therefore hard to plan and to resource.
+Also, there was the question of how to do it. This was not clear.&nbsp;
+If you had specified the macro then you could validate it against your
+specifications but how do you validate macros that you have not even asked
+a person to write? Even discussing this could use up a lot of resources
+and stretch out the time. This "old way" of validating macros was inapplicable
+to the situation.
+<h2>
+The "who cares?" approach</h2>
+Most of my macros are over ten years old. I very rarely encounter problems
+with them. Used in the way I will use them, I know they will all work for
+me just as they have always worked. Nearly everbody who has downloaded
+and used my macros uses them for non-critical applications or just educational
+purposes but when used in critical applications then I guess (and hope)
+that what they produce as a final product is independently programmed.
+It is far easier to do this than validate all the macros. The vast majority
+of the users of the macros do not care if they are validated or not. It
+makes no difference to them. The people who care about them being validated
+are people who use the macros in the clinical reporting field where they
+have a legal obligation to make sure that whatever it produces, for submission
+purposes, has gone through their validation process and they have documented
+evidence for this.
+<h2>
+The "current way" of validating the macros</h2>
+The "new way" and now the "current way" of validating the macros involves
+validating <b>all</b> the macros and not just the ones used in producing
+submission reports. This gets around the fluidity problem where I sometimes
+change the dependencies of the macros on other macros when I am doing updates.
+With them <b>all</b> being validated then I do not have to worry about
+what macros I call. Validating <b>all</b> the macros and webbing the evidence
+that this has been done on this web site will hopefully mean that once
+the validation is done, then it is done for all users. This will avoid
+duplication of work. It is still a great deal of work so I have thought
+of a way of defining, guiding and streamlining this process. I will give
+full details of this. All the user then has to do is agree with my approach
+for validating the macros and they will find nearly all the work done.
+They will then just have to review the documentation, perhaps making minimal
+tests themselves and then "sign off" the results. The big difficulty will
+be in the end user <b><i>agreeing </i></b>with my approach for validation.
+SOPs might have to be changed to accomodate the approach I am recommending
+so I will have to make a very convincing argument for my case. I believe
+I have done that and will explain it in the following "testpack" section.
+<h2>
+The "triple testpack" approach</h2>
+I started writing testpacks for my macros a number of years ago. You can
+link to many of these old test packs on this <a href="../sasautos.html" target="_blank">page</a>.
+They were of limited use, however. I have now developed this idea further
+into what I call a "triple testpack" approach. With this system, the macro
+programmer (me) supplies a testpack to demonstrate that the macro works
+in the way intended as an integral part of developing the macro. In the
+testpack, the macro programmer (me) says what version of what macro is
+being tested and for each test, gives the expected result of the test and
+compares that to the actual result and writes a clear message in the log
+if the test results were equal or not equal to the expected results. This
+should be done to cover the full functionality of the macro (this will
+be aimed at the low-level macros and not the major reporting macros %npcttab
+and %unistats) although where there might be a set of parameters that have
+the same function, then only two of these parameters need be tested (for
+example the target1-target30 parameters in the macro <a href="macros/remove.sas" target="_blank">%remove</a>).
+The programmer testpack is <b>level one</b> testing and the programmer
+fills in the header of the testpack appropriately. The second level is
+where an independent programmer takes the programmer testpack, reviews
+the programmer results to check that they are in agreement with it and
+adds their own tests (a minimum of one) to ensure it is working in the
+way they feel it should. They then update the header of the testpack appropriately
+and <b>level two</b> testing is complete. Level three testing is done at
+the user end. The user has to review the testing done. The user might agree
+with what has been done and see no need for further testing or they might
+add tests of their own. Once they have updated the header then that is
+<b>level
+three</b> testing complete and you have a fully-validated macro.
+<p>Note that for later versions of macros then the added/altered functionality
+(a version number increase <b><i>means</i></b> some functionality has been
+amended or added) will have to be tested and the macro testpack will have
+to go through the same procedure.
+<h2>
+Conclusion</h2>
+In this document I have set out a plan for validating all of my macros
+in a way that I hope will be acceptable to an end user that will minimise
+the end user's efforts in the macro validation process.
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+</html>

@@ -1,0 +1,33 @@
+#!/bin/bash
+# Script     : cmprc
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 15-Jan-2007
+# Purpose    : To run "cmp" and echo the return code
+# SubScripts : none
+# Notes      : Echoing the return code provides evidence that the check was done
+#              and the files matched, for when the return code is 0. The return
+#              code is echoed to standard error, the same destination as all
+#              "cmp" messages will be routed. The command to be run is echoed to
+#              standard error before it is run. The script arguments (including
+#              any options) are passed as-is to "cmp" for error detection. The
+#              return code of this script is set to the return code of the "cmp"
+#              call.
+# Usage      : cmprc file1 file2
+#              cmprc -s file1 file2 
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   First file for comparison
+#  2   Second file for comparison
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+
+echo cmp "$@" 1>&2
+cmp "$@" 1>&2
+rc=$?
+echo rc=$rc 1>&2
+exit $rc

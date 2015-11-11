@@ -1,0 +1,59 @@
+#!/bin/bash
+#<pre><b>
+# Script     : intitlabels
+# Version    : 2.1
+# Author     : Roland Rashleigh-Berry
+# Date       : 02-Mar-2007
+# Purpose    : Production script to list all the programs in the titles dataset
+#              with output labels (uses SAS).
+# SubScripts : intitlabels_win
+# SubMacros  : %allocr
+# Notes      : There will be no .sas extension. There is one line per label
+#              in the form:
+#              progname label
+# Usage      : intitlabels
+#
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not supply any parameters
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  24Nov05         -stdio used for sas invocation
+# rrb  11Feb07         Call intitlabels_win for Windows configurations
+# rrb  20Feb07         Call %allocr macro
+# rrb  02Mar07         Use "&_ptlibref_.." instead of "der."
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# No parameters required
+if [ $# -gt 0 ] ; then
+  echo "Error: (intitlabels) Do not supply any parameters" 1>&2
+  exit 2
+fi
+
+
+# if a Windows config then call intitlabels_win and exit on return
+if [ -n "$CYGWIN" ] ; then
+  intitlabels_win
+  exit $?
+fi
+
+
+# Feed SAS code into standard input
+sas -stdio -sasuser work 2>/dev/null << -----FINISH-----
+%allocr
+options validvarname=v7 nofmterr noovp nodate nonumber;
+proc sort nodupkey data=&_ptlibref_..titles(where=(type='T' and number=1))
+                    out=_titles(keep=program label);
+  by program label;
+run;
+data _null_;
+  file stdout;
+  set _titles;
+  put @1 program label;
+run;
+-----FINISH-----

@@ -1,0 +1,159 @@
+#!/bin/bash
+#<pre><b>
+# Script     : printall
+# Version    : 2.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 11-Feb-2007
+# Purpose    : To print all observations in datasets in the current directory
+#              that satisfy a condition (uses SAS).
+# SubScripts : printall_win
+# Notes      : This script will attempt to correct type mismatches. If you use
+#              ">" or "<" for GT or LT then exclose in quotes otherwise Unix
+#              will interpret it as redirection. Note that two sets of quotes
+#              must be used for numeric dates.
+#
+#              Note that if you use the -i option (include datasets) then only
+#              those datasets are used. They will override anything you define
+#              to the -e options (exclude datasets).
+#
+# Usage      : printall patno="1234"
+#              printall patient=1234 > pat1234.txt
+#              printall -e labs patient=1234 > save.txt
+#              printall -i 'demog vit' patient=1234
+#              printall -e vit 'visitcd>9083'
+#              printall diagdt="'23sep2003'"d
+#===============================================================================
+# OPTIONS:
+#-opt- -------------------------------description-------------------------------
+#  i   (value)  "include" datasets                                   
+#  e   (value)  "exclude" datasets                                 
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   variable and condition
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  11Feb07         Call printall_win for Windows configurations
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# if a Windows config then call printall_win and exit on return
+if [ -n "$CYGWIN" ] ; then
+  printall_win "$@"
+  exit $?
+fi
+
+
+# Define give-usage-message-then-exit function
+usage () {
+  echo "Usage: printall -i <"include" datasets> -e <"exclude" datasets> varnum=1234" 1>&2  
+  exit 1
+}
+
+
+# Defaults
+valuei=                             # Default value for "include" datasets                                   
+valuee=                             # Default value for "exclude" datasets                                 
+
+
+# "case" statement for action to take on selected options
+while getopts "i:e:" param ; do
+  case $param in
+   "?") # bad option supplied
+        usage
+        ;;
+   "i") # (value) "include" datasets
+        valuei=$OPTARG
+        ;;
+   "e") # (value) "exclude" datasets
+        valuee=$OPTARG
+        ;;
+  esac
+done
+
+
+# shift to bring first parameter to position 1
+shift $(($OPTIND - 1))
+
+
+# Edit the test below for the number of expected parameters and call
+# the give-usage-message-then-exit function if an incorrect number 
+# supplied. Remove if parameters are optional.
+if [ $# -lt 1 ] ; then
+  echo "Error: (printall) no parameters supplied" 1>&2
+  usage
+fi
+
+# Feed sas code to standard input
+sas -stdio -noautoexec -sasuser work 2>/dev/null << -----FINISH-----
+options validvarname=v7 nofmterr formdlim='-' linesize=143 
+        macrogen spool noovp nodate nonumber center symbolgen;
+
+%macro quotelst(str,quote=%str(%"),delim=%str( ));
+%local i quotelst;
+%let i=1;
+%do %while(%length(%scan(&str,&i,%str( ))) GT 0);
+  %if %length(&quotelst) EQ 0 %then %let quotelst=&quote.%scan(&str,&i,%str( ))&quote;
+  %else %let quotelst=&quotelst.&quote.%scan(&str,&i,%str( ))&quote;
+  %let i=%eval(&i + 1);
+  %if %length(%scan(&str,&i,%str( ))) GT 0 %then %let quotelst=&quotelst.&delim;
+%end;
+%unquote(&quotelst)
+%mend;
+
+libname here './' access=readonly;
+
+%let include=$valuei;
+%let exclude=$valuee;
+%let variable=%scan($1,1,^=<>);
+%put >>>>>> variable=&variable;
+%let value=%scan($1,2,^=<>:);
+%put >>>>>> value=&value;
+%let op=%substr($1,%sysfunc(indexc(%quote($1),^=<>)),%eval(%length($1)-%length(&variable)-%length(&value)));
+%put >>>>>> op=&op;
+
+%macro rep;
+%if %length(&include) %then %let include=%quotelst(%upcase(&include));
+%if %length(&exclude) %then %let exclude=%quotelst(%upcase(&exclude));
+
+proc sort nodupkey data=sashelp.vcolumn(keep=libname memtype name type memname
+                           where=(libname="HERE" and memtype="DATA" 
+                                %if %length(&include) %then %do;
+                                  and memname in (&include)
+                                %end;
+                                %else %if %length(&exclude) %then %do;
+                                  and memname not in (&exclude)
+                                %end;
+                                  and upcase(name)=upcase("&variable")))
+                    out=vartype(drop=libname memtype memname);
+  by name type;
+run;
+
+data _null_;
+  set vartype;
+  if _n_=1 then do;
+    if type="char" then call symput('value',"'"||"%trim(&value)"||"'");
+    stop;
+  end;
+run;
+
+%put >>>>>> value=&value;
+
+data _null_;
+  set sashelp.vcolumn(where=(libname="HERE" and memtype="DATA" 
+                                %if %length(&include) %then %do;
+                                  and memname in (&include)
+                                %end;
+                                %else %if %length(&exclude) %then %do;
+                                  and memname not in (&exclude)
+                                %end;
+                            and upcase(name)=upcase("&variable")));
+  call execute('proc print data='||trim(libname)||'.'||trim(memname)||"(where=(&variable.&op.&value));");
+  call execute('title1 "&variable.&op.&value - ALL DATA FOR DATASET '||trim(memname)||'";run;');
+run;
+%mend rep;
+%rep;
+-----FINISH-----

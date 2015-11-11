@@ -1,0 +1,288 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="Key Components of Spectre">
+   <meta name="KeyWords" content="key components Spectre">
+   <title>The Key Components of Spectre (Clinical)</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+The Key Components of Spectre (Clinical)</h1></center>
+
+<h2>
+Introduction</h2>
+The purpose of this document is to explain to you what the "key components"
+of Spectre are. Once you know what these key components are, then you know
+how the system hangs together and what you are free to change and what
+not to change. The "key components" are what you must not change. This
+will not be complicated. In a broad sense, you <b>must not change any of
+the macros</b> but you are free to change some of the production scripts
+or not use them at all, as will be explained.
+<h2>
+The autocall library</h2>
+The autocall library, which is the collection of sas macros held <a href="macros/maclist2.html" target="_blank">here</a>,
+is the <b>foundation</b> of Spectre. You <b>must not change these macros</b>
+under any circumstances. You can add to the collection if you like, but
+the macros you add should come from the larger collection of macros that
+are webbed on my old web site <a href="http://www.datasavantconsulting.com/roland/maclist2.html" target="_blank">here</a>.
+It is <b>I</b> who maintain these macros. They are like a family of macros
+that work together, which is why they must not be changed by anybody except
+me, as it is only me who knows how they hang together. They are the <b>infrastructure</b>
+of any sas batch application that I write. If new macros are written for
+study reporting purposes, then they should go in a separate library or
+be held at the study level or drug level. If a new utility macro is conceived
+of that you think should go in this autocall library, then first check
+the larger library for a macro that already does what you want or contact
+me about it and tell me about your proposed new utility macro. I will be
+able to tell you a way of achieving the same thing using the existing macros
+or through a different method or, if not, and the macro seems like a good
+thing to add to the library as a general purpose macro, then I will write
+it for you for free and add it to the collection so that you can use it
+and so can anybody else.
+<h2>
+The reporting macros %unistats and %npcttab</h2>
+The two reporting macros <b>%unistats</b> and <b>%npcttab</b> are given
+a lot of space on this web site in terms of describing how to use them.
+A lot of people could be forgiven for thinking Spectre <b>was</b> %unistats
+and %npcttab. However, the surprise is that <b>these two macros are not
+part of Spectre</b>. They are part of a family of reporting macros that
+includes <b>%popfmt</b>, %unistats and %npcttab plus their supporting macros
+<b>%unimap</b>,
+<b>%unicatrep</b>,
+<b>%unipvals</b>
+and <b>%npctpvals</b>. They rely on a number of autocall macros and are
+themselves members of that library. The reason they appear to be part of
+Spectre is because the documentation on how to use them is on this web
+site because it is the most appropriate place to put it for the time being.
+Strictly speaking, they should have their own web site as they are independent
+of Spectre and the %unistats macro gets used for non-clinical reporting
+purposes in any case. If you check the demonstrations that are on this
+web site, then once you know what macros
+<b>are</b> a part of Spectre,
+you will see that all the demonstrations were done not calling any of the
+Spectre macros. Having explained that these macros are not part of Spectre
+then it does not mean you can amend them. Actually, you can amend <b>%unimap</b>
+if you need to. That is the macro that maps a statistics label to a "proc
+univariate" keyword. You may need a mapping that is not there in which
+case you have to add it yourself. If you do amend it, make it clear from
+the "macro called" message that it puts out that this is a user-modified
+version. Start again at version 1.0 if you modify it in-house and use a
+"%put" message like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%put MACRO CALLED: unimap v1.0 (user modified);</tt></td>
+</tr>
+</table>
+
+<p>You must not amend any of the other macros.
+<h2>
+The derived datasets build</h2>
+The scripts that help you to run the programs to create the derived datasets
+are not a part of Spectre. It is up to you to build the derived datasets
+and you should do it in the way that best suits your needs. Spectre makes
+no demands on the derived dataset content or structure. You can change
+the scripts. You can ignore the scripts entirely if you wish. You might
+even get these datasets prepared by a CRO and the form it takes does not
+matter so long as they get built correctly according to your own needs.
+<h2>
+So what is Spectre?</h2>
+I have told you a few things about what Spectre is <b>not</b>. It would
+be helpful at this point for me to define what Spectre <b>is</b>. Before
+I define what Spectre <b>is</b>, I will tell you that I am going to discount
+all the scripts that I supply with Spectre. There are some scripts for
+handling PDFs that are complicated but most of the scripts in Spectre that
+do stuff like run suites of programs are trivial. Scripts are simplicity
+itself once you get used to them. The clever stuff is not in the scripts.
+The real processing in Spectre and all the clever stuff is in the sas macros.
+<p>It's "<b><i>definition time</i></b>" for Spectre so here goes.........
+<p><b>Spectre is an extended titles and footnotes system, "extended" in
+the sense that it incorporates protocol information which allows it to
+satisfy multiple client layout requirements, is structured in a way that
+it can act as a "push button" reporting system and has the capacity to
+add "Page x of Y" labels to the final output in varying styles.</b>
+<p>At its most essential level, the above statement completely defines
+Spectre. Hopefully, things should start to make sense from now on, once
+you know this.
+<p>As I previously stated in this section - <b>it is the sas macros that
+define Spectre</b>. The defining macros for Spectre do not exist on my
+old web site <a href="http://www.datasavantconsulting.com/roland/maclist2.html" target="_blank">here</a>
+but they exist in the Spectre macro library <a href="macros/maclist2.html" target="_blank">here</a>.
+A simple bit of detective work can reveal what makes Spectre function.
+I have a script called "compdirs" that compares directories which can tell
+me which member are in one library but not in another. I have used this
+command below to list macros in the spectre macros directory that are not
+in the "Roland's SAS Macros" directory, as you can see in the box that
+follows. The macros listed are the macros that
+<b>make</b> Spectre. The
+first two macros <b>%allocr</b> and <b>%allocw</b> are obviously doing
+allocations,
+<b>autoexec.sas</b> (actually not a macro) is the start-up
+member that makes sure the correct macro libraries get assigned in the
+correct order and the rest are all to do with the protocol, titles, footnotes
+and the layout requirements plus <b>%openrep</b> and <b>%closerep</b> that
+reroute output to a temporary file to allow "Page x of Y" page labels to
+be added. They are short simple macros apart from %xytitles, the example
+client titles macro. Hopefully, Spectre looks less complicated now.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/spectre/macros</tt>
+<br><tt>$ compdirs . $roland | grep "^+.*\.sas$"</tt>
+<br><tt>+allocr.sas</tt>
+<br><tt>+allocw.sas</tt>
+<br><tt>+autoexec.sas</tt>
+<br><tt>+closerep.sas</tt>
+<br><tt>+crprotds.sas</tt>
+<br><tt>+crtitlesds.sas</tt>
+<br><tt>+layout2lsps.sas</tt>
+<br><tt>+openrep.sas</tt>
+<br><tt>+proginfo.sas</tt>
+<br><tt>+protinfo.sas</tt>
+<br><tt>+titles.sas</tt>
+<br><tt>+xytitles.sas</tt></td>
+</tr>
+</table>
+
+<h2>
+Titles macros and scripts</h2>
+<b>At last we come to Spectre proper!</b> The "titles" macros and scripts
+are most definitely a part of Spectre and <b>form the bulk of its key components</b>.
+This "titles" handling also includes footnotes and protocol information
+plus layout and population and a few other things. They combine to create
+the <b>titles</b> and <b>protocol</b> dataset and when a program runs the
+information in the protocol dataset will get read in as well as the corresponding
+entries in the titles dataset for that program.
+<p>The structure and contents of the <b>titles</b> and <b>protocol </b>datasets
+are key to Spectre functioning and can not be changed. So long as these
+datasets get built correctly, you could do it by any means you like. Instead
+of using a <b>protocol.txt</b> member and <b>.titles</b> members, you could
+have this information stored in a spreadsheet and somehow extract it and
+build these datasets, but the key thing is that these two datasets get
+built correctly.
+<p>Remembering that so long as the titles and protocol datasets are built
+correctly then it can be done any way you like, then the following scripts
+and macros are supplied with Spectre to help you build these datasets and
+their functions will be listed. Macro names will be prefixed by a "%" and
+script names not. These scripts might call other scripts and macros and
+the macros might call other macros but this will not be expanded upon here.
+<ul>
+<li>
+crprttmpl - this script creates the protocol template which must be copied
+across and <b>protocol.txt</b> and the protocol information filled in as
+detailed in the header.</li>
+
+<li>
+crtitlestmpl - this script creates the titles template that will be copied
+across as a "<b>.titles</b>" member and each programmer will fill this
+in with titles, footnotes and other information as detailed in the header.</li>
+
+<li>
+crtitlesds - this script reads the protocol information in <b>protocol.txt</b>
+and all the information in the "<b>.titles</b>" members and builds the
+protocol and titles datasets.</li>
+</ul>
+Once the <b>protocol</b> and <b>titles</b> datasets are built correctly
+then the information in these datasets is ready to be read in by a reporting
+program. It is read in using a call to the <b>%titles</b> macro which in
+turn calls other macros which includes those listed below.
+<ul>
+<li>
+%protinfo - reads protocol information from the <b>protocol</b> dataset</li>
+
+<li>
+%proginfo - reads in program information from the <b>titles</b> dataset</li>
+
+<li>
+the client titles macro - reads information from the titles dataset and
+sets up titles and footnotes in accordance with the client's preferences</li>
+</ul>
+
+<h2>
+%openrep and %closerep</h2>
+The two macros <b>%openrep</b> and <b>%closerep </b>are definitely part
+of Spectre. They "open" a report ready for a "proc report" step or a call
+to a reporting macro or whatever is creating the report output and "close"
+the report afterwards. What %openrep is essentially doing is calling "proc
+printto" to redirect print output to a temporary file and %closerep is
+reading in that temporary file, calling a macro to add "page x of Y" labels
+and copying the file to the non-temporary ".lis" file. For "production
+runs", both %openrep and %closerep read information from two system environment
+variables named OUTDIR and DONELIST so they know what directory to put
+the outputs in and what the name of the "donelist" file is to write entries
+to to record what reports have been produced.
+<h2>
+makerun and makexrun</h2>
+How you choose to run the programs that create the derived datasets and
+how you run the programs that create output, and what programs you run,
+is entirely up to you. It doesn't matter, so long as it gets done correctly.
+The script <b>makerun</b> "makes" separate scripts to run the derived dataset
+build and to run the reports while <b>makexrun</b> "makes" a script to
+run "extra" reports, assuming these are programs that start with an "x"
+and have entries in the titles dataset. They are clever scripts but do
+not assume you have to use them or conform to the structure they are expecting.
+They are just there to give you an idea of the way it can be done. You
+are free to make copies of them and change them as you see fit. If you
+want to direct the output to a folder and you want %closerep to write entries
+to some sort of "donelist" file then you will have to set up the two system
+environment variables OUTDIR and DONELIST and give them appropriate values,
+otherwise, do not bother.
+<h2>
+bigps and bigxps</h2>
+The two scripts <b>bigps</b> and <b>bigxps</b> read in the donelist file
+to find what reports have been created and gathers their outputs together
+to form a big PostScript file. They are clever scripts, just as makerun
+and makexrun are, but again you don't have to use them. All that matters
+is that you have a list of outputs. This list doesn't have to be in a file
+-- it could be a list gotten from a Unix command. There are others ways
+of making a large PostScript file from a list of outputs and utilities
+on this web site to help you. It is quite well explained in the "Ad-hoc
+reporting and PDFs" document you can link to from the main page.
+<h2>
+The "key" key components of Spectre</h2>
+The "key" key components of Spectre -- the absolutely essential ones whose
+use can not be avoided are:
+<ul>
+<li>
+the <b>protocol</b> dataset, created any way you like, so long as it is
+correct</li>
+
+<li>
+the <b>titles</b> dataset, created any way you like, so long as it is correct</li>
+
+<li>
+<b>%titles</b> and all its submacros</li>
+
+<li>
+<b>%openrep</b> and <b>%closerep</b></li>
+</ul>
+
+<h2>
+Conclusion</h2>
+The key components of the Spectre (Clinical) reporting system have been
+explained in this document. You will have seen that these key components
+are very few in number and so long as these components are not altered,
+this leaves huge scope for tailoring Spectre to fit your requirements.
+<br>&nbsp;
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+</html>

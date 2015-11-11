@@ -1,0 +1,36 @@
+#!/bin/bash
+#<pre><b>
+# Script     : reflist2lis
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 29-Aug-2005
+# Purpose    : To turn a list of table/appendix reference numbers into their 
+#              output file names, assuming output files end with ".lis" .
+# SubScripts : none
+# Notes      : It looks in the .titles members and adds the extension .lis to
+#              the end which WILL NOT BE CORRECT if labels are being used.
+# Usage      : reflist2lis reflist.txt
+#              reflist2lis reflist.txt > newlist.txt
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   File containing the list of table/appendix reference numbers
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# One list file must be specified
+if [ $# -ne 1 ] ; then
+  echo "Usage: reflist2lis reflist.txt" 1>&2
+  exit 1
+fi
+
+for ref in $(cat "$1") ; do
+  tfile=$(grep "${ref} *$" *.titles | sed 's%\.titles.*$%%').lis
+  echo "$ref    $tfile"
+done

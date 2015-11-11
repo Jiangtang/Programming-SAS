@@ -1,0 +1,585 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="Spectre updates">
+   <meta name="Description" content="Spectre updates">
+   <title>Spectre Updates</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Spectre (Clinical) Updates</h1></center>
+
+<center><b>(shown in descending datetime order)</b></center>
+
+<p><b>NOTE: Do not download macros from a browser window</b> because the
+browser might change some of the text where it encounters ampersands (very
+common in the macro code). Either download from the browser "Source" window
+or use the <a href="download.html" target="_blank">download page</a> to
+download the zips.
+<p>Spectre <a href="bugs.html#log" target="_blank">bugs</a> log (this is
+kept <b>strictly</b> up to date - what you see below might be up to two
+days old)
+<p>Alphabetical list of <b>all macros</b> and their <a href="maclist2.html">purposes</a>
+<br>Alphabetical list of <b>all shell scripts</b> and their <a href="scrlist2.html">purposes</a>
+<p>Shortcut to&nbsp;<span style="font-weight: bold;">html</span> <a href="#html">updates</a>
+<br>Shortcut to <b>script</b> <a href="#sc">updates</a>
+<br><tt>===========EDIT OUT THE FOLLOWING INSTRUCTIONS FROM updates2.html===========</tt>
+<br><tt>(create a list of clinical macros by using this command in the
+TOP directory)</tt>
+<br><tt>ls -lt ./clinmacros/*.sas | gawk '{print substr($0,33)}' > clinlist.txt</tt>
+<p><tt>(create a list of utility macros by using this command in the TOP
+directory)</tt>
+<br><tt>ls -lt ./utilmacros/*.sas | gawk '{print substr($0,33)}' > utillist.txt</tt>
+<p><tt>(create a list of system macros by using this command in the TOP
+directory)</tt>
+<br><tt>ls -lt ./sysmacros/*.sas | gawk '{print substr($0,33)}' > syslist.txt</tt>
+<p><tt>(create a list of scripts by using this command in the SCRIPT directory)</tt>
+<br><tt>ls -lt * | fgrep -v '.' | fgrep -v '~' | gawk '{print substr($0,34)}'
+> scrlist.txt</tt>
+<p><tt>(create a list of html pages by using this command in the TOP directory)</tt>
+<br><tt>ls -lt *.html | gawk '{print substr($0,34)}' > htmlist.txt</tt>
+<p><tt>(include these lists and convert updates.html to updates2.html by
+using this command)</tt>
+<br><tt>sed -e 's%\([0-9][0-9] \)\(\./[a-z]*/\)\([a-z][a-z,0-9,_]*\.sas\)%\1&lt;a
+href="\2\3" target="_blank">\3&lt;/a>%' \</tt>
+<br><tt>-e 's%\([0-9][0-9] \)\([a-z][a-z,0-9,_]*\.html\)%\1&lt;a href="\2"
+target="_blank">\2&lt;/a>%' \</tt>
+<br><tt>-e 's%\([0-9][0-9] \)\([a-z][a-z,0-9,_]*\)\(&lt;/tt>\)%\1&lt;a
+href="scripts/\2" target="_blank">\2&lt;/a>\3%' \</tt>
+<br><tt>updates.html > updates2.html</tt>
+<h2>
+<a NAME="ma"></a>Macro updates</h2>
+
+<h3>
+Clinical Macros</h3>
+
+<table BORDER CELLSPACING=2 CELLPADDING=2 BGCOLOR="#FFFFFF" style="text-align: left; width: 50%; background-color: white;" >
+<tr>
+<td style="vertical-align: top;"><tt>Jan 20 07:50 ./clinmacros/unistats.sas</tt>
+<br><tt>Jan 10 19:39 ./clinmacros/unimap.sas</tt>
+<br><tt>Jan&nbsp; 4 23:03 ./clinmacros/popfmt.sas</tt>
+<br><tt>Dec 30 18:00 ./clinmacros/aetab.sas</tt>
+<br><tt>Dec 30 17:56 ./clinmacros/npcttab.sas</tt>
+<br><tt>Dec 26 12:42 ./clinmacros/comblvls.sas</tt>
+<br><tt>Dec 12 03:52 ./clinmacros/unicatrep.sas</tt>
+<br><tt>Dec&nbsp; 5 18:22 ./clinmacros/labncfb.sas</tt>
+<br><tt>Nov 16 07:32 ./clinmacros/npctpvals.sas</tt>
+<br><tt>Nov&nbsp; 5 11:29 ./clinmacros/unipvals.sas</tt>
+<br><tt>Nov&nbsp; 2 19:07 ./clinmacros/prntlvls.sas</tt>
+<br><tt>Oct 31 15:32 ./clinmacros/freqlvls.sas</tt>
+<br><tt>Oct 28 17:44 ./clinmacros/trnslvls.sas</tt>
+<br><tt>Aug 28 22:33 ./clinmacros/unistatlabel.sas</tt>
+<br><tt>May 19&nbsp; 2011 ./clinmacros/unicat2word.sas</tt>
+<br><tt>May 19&nbsp; 2011 ./clinmacros/rgpp.sas</tt>
+<br><tt>May&nbsp; 8&nbsp; 2011 ./clinmacros/dosemerge.sas</tt>
+<br><tt>May&nbsp; 8&nbsp; 2011 ./clinmacros/locf.sas</tt>
+<br><tt>Mar 26&nbsp; 2008 ./clinmacros/nodata.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 ./clinmacros/allocw.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 ./clinmacros/allocr.sas</tt></td>
+</tr>
+</table>
+<span style="font-weight: bold;"></span>
+<h3>
+Utility Macros</h3>
+
+<table BORDER CELLSPACING=2 CELLPADDING=2 BGCOLOR="#FFFFFF" style="text-align: left; width: 50%; background-color: white;" >
+<tr>
+<td style="vertical-align: top;"><tt>Jan 19 17:37 ./utilmacros/lstlbls.sas</tt>
+<br><tt>Jan 19 17:31 ./utilmacros/missvars.sas</tt>
+<br><tt>Jan 14 16:17 ./utilmacros/splitvar.sas</tt>
+<br><tt>Jan&nbsp; 2 18:40 ./utilmacros/mkformat.sas</tt>
+<br><tt>Jan&nbsp; 2 18:40 ./utilmacros/adjfmt.sas</tt>
+<br><tt>Nov 16 17:11 ./utilmacros/qdequote.sas</tt>
+<br><tt>Nov 15 22:41 ./utilmacros/dosfdasize.sas</tt>
+<br><tt>Nov 15 22:40 ./utilmacros/dosfilesize.sas</tt>
+<br><tt>Nov&nbsp; 8 00:28 ./utilmacros/compvars.sas</tt>
+<br><tt>Nov&nbsp; 2 18:49 ./utilmacros/clashlibs.sas</tt>
+<br><tt>Nov&nbsp; 2 18:49 ./utilmacros/clashvars.sas</tt>
+<br><tt>Oct 26 21:33 ./utilmacros/mkordinfmt.sas</tt>
+<br><tt>Oct 15 07:35 ./utilmacros/sas2tabdlm.sas</tt>
+<br><tt>Sep 24 07:22 ./utilmacros/xlblocks.sas</tt>
+<br><tt>Sep 23 02:49 ./utilmacros/qreadpipe.sas</tt>
+<br><tt>Sep 23 02:46 ./utilmacros/qcompress.sas</tt>
+<br><tt>Sep 19 19:25 ./utilmacros/scanfile.sas</tt>
+<br><tt>Sep 19 19:23 ./utilmacros/gettitles.sas</tt>
+<br><tt>Sep&nbsp; 9 17:24 ./utilmacros/var2mvar.sas</tt>
+<br><tt>Sep&nbsp; 1 19:22 ./utilmacros/lstattrib.sas</tt>
+<br><tt>Aug 19 00:25 ./utilmacros/scanlog.sas</tt>
+<br><tt>Aug 12 19:02 ./utilmacros/md5sum.sas</tt>
+<br><tt>Aug 12 18:57 ./utilmacros/rcmd2log.sas</tt>
+<br><tt>Aug 12 18:56 ./utilmacros/rcmd2ds.sas</tt>
+<br><tt>Aug 12 18:52 ./utilmacros/rcmd2mvar.sas</tt>
+<br><tt>Jul 26 18:24 ./utilmacros/killsas.sas</tt>
+<br><tt>Jul 26 18:19 ./utilmacros/killsess.sas</tt>
+<br><tt>Jul 25 21:00 ./utilmacros/env2dsw7.sas</tt>
+<br><tt>Jul 25 20:59 ./utilmacros/env2ds.sas</tt>
+<br><tt>Jul&nbsp; 2&nbsp; 2011 ./utilmacros/hexchars.sas</tt>
+<br><tt>Jul&nbsp; 2&nbsp; 2011 ./utilmacros/dlm2sas.sas</tt>
+<br><tt>Jun 26&nbsp; 2011 ./utilmacros/xl2sas.sas</tt>
+<br><tt>Jun 26&nbsp; 2011 ./utilmacros/xlsheets.sas</tt>
+<br><tt>Jun 26&nbsp; 2011 ./utilmacros/lsfpq.sas</tt>
+<br><tt>Jun 26&nbsp; 2011 ./utilmacros/dirfpq.sas</tt>
+<br><tt>Jun 26&nbsp; 2011 ./utilmacros/dir.sas</tt>
+<br><tt>Jun 26&nbsp; 2011 ./utilmacros/ls.sas</tt>
+<br><tt>Jun 14&nbsp; 2011 ./utilmacros/savopts.sas</tt>
+<br><tt>Jun 12&nbsp; 2011 ./utilmacros/rinclude.sas</tt>
+<br><tt>Jun 12&nbsp; 2011 ./utilmacros/prefix.sas</tt>
+<br><tt>Jun 12&nbsp; 2011 ./utilmacros/suffix.sas</tt>
+<br><tt>Jun&nbsp; 9&nbsp; 2011 ./utilmacros/doallitem.sas</tt>
+<br><tt>May 13&nbsp; 2011 ./utilmacros/getfmts.sas</tt>
+<br><tt>May 11&nbsp; 2011 ./utilmacros/checkv6.sas</tt>
+<br><tt>May&nbsp; 8&nbsp; 2011 ./utilmacros/fixvars.sas</tt>
+<br><tt>May&nbsp; 8&nbsp; 2011 ./utilmacros/dsattrib.sas</tt>
+<br><tt>May&nbsp; 8&nbsp; 2011 ./utilmacros/complibs.sas</tt>
+<br><tt>May&nbsp; 8&nbsp; 2011 ./utilmacros/v_macros.sas</tt>
+<br><tt>May&nbsp; 8&nbsp; 2011 ./utilmacros/splitmac.sas</tt>
+<br><tt>May&nbsp; 5&nbsp; 2011 ./utilmacros/getvalue.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/nobs.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/dequote.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/fixnames.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/vwlist.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/liblist.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/qdosfileinfo.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/qgetenv.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/words.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/mvarlist.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/mvarvalues.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/globlist.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/agedec.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/age.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/after.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/adddecodevars.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/addautos.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/rannomac.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/nodupkey.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/yrcutoff.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/ltgtm1.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/partialdates.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/mtype.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/quotelst.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/nlobs.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/removew.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/attrc.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/attrv.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/attrn.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/aligndp.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/sysfmtlist.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/now.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/verify.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/varinfmt.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/therest.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/readfile.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/putvars.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/nodup.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/modte.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/left.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/globexist.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/fmts2fda.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/equals.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/duplvars.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/dtscale.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/dslabel.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/crdte.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/compress.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/alluniq.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/windex.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/verifyb.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/vartype.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/varnum.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/varlistn.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/varlen.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/varlist.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/varlistc.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/varlabel.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/varfmt.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/trim.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/substrw.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/sortedby.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/rxmatch.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/remove.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/quotescan.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/quotecnt.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/nvarsn.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/nvarsc.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/nvars.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/noquotes.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/maxtitle.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/latitle.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/lafootnote.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/hasvarsn.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/hasvarsc.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/hasvars.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/eqsuff.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/endwith.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/commas.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/chompw.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/casestrvar.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/casestrmac.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/capvar.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/capmac.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/lcralign.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/numchars.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/bydrop.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/char2num.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/clength.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/delhex.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/delzero.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/dropvars.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/ljustify.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/lrafootnote.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/lratitle.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/optlength.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/printall.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/rafootnote.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/ratitle.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/replhex.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/round.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/vaxis.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/zerogrid.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/titlelen.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/supasort.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/showhex.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/misscnt.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/lookahead.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/hexcnt.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/fmtord.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/flatten.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/dslist.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/dsall.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/chkuniq.sas</tt>
+<br><tt>May&nbsp; 4&nbsp; 2011 ./utilmacros/bytitle.sas</tt>
+<br><tt>May&nbsp; 1&nbsp; 2011 ./utilmacros/match.sas</tt>
+<br><tt>Apr 13&nbsp; 2011 ./utilmacros/fmtpath.sas</tt>
+<br><tt>Apr 13&nbsp; 2011 ./utilmacros/allfmtvals.sas</tt>
+<br><tt>Apr&nbsp; 5&nbsp; 2011 ./utilmacros/delifexist.sas</tt>
+<br><tt>Feb 12&nbsp; 2011 ./utilmacros/rename8.sas</tt>
+<br><tt>Feb&nbsp; 2&nbsp; 2011 ./utilmacros/xpt2sas.sas</tt>
+<br><tt>Feb&nbsp; 2&nbsp; 2011 ./utilmacros/sas2xpt.sas</tt>
+<br><tt>Feb&nbsp; 1&nbsp; 2011 ./utilmacros/prxnames.sas</tt>
+<br><tt>Sep 28&nbsp; 2008 ./utilmacros/datanulldemo.sas</tt></td>
+</tr>
+</table>
+<span style="font-weight: bold;"></span>
+<h3>
+System Macros</h3>
+
+<table BORDER CELLSPACING=2 CELLPADDING=2 BGCOLOR="#FFFFFF" style="text-align: left; width: 50%; background-color: white;" >
+<tr>
+<td style="vertical-align: top;"><tt>May&nbsp; 8 12:50 ./sysmacros/xytitles.sas</tt>
+<br><tt>May&nbsp; 8 12:46 ./sysmacros/titles.sas</tt>
+<br><tt>May&nbsp; 8 12:43 ./sysmacros/titlegen.sas</tt>
+<br><tt>May&nbsp; 8 12:42 ./sysmacros/protinfo.sas</tt>
+<br><tt>May&nbsp; 8 12:36 ./sysmacros/proginfo.sas</tt>
+<br><tt>May&nbsp; 8 12:30 ./sysmacros/pagexofy.sas</tt>
+<br><tt>May&nbsp; 8 12:26 ./sysmacros/closerep.sas</tt>
+<br><tt>May&nbsp; 8 12:25 ./sysmacros/openrep.sas</tt>
+<br><tt>May&nbsp; 8 12:21 ./sysmacros/layout2lsps.sas</tt>
+<br><tt>May&nbsp; 8 12:16 ./sysmacros/jobinfo.sas</tt>
+<br><tt>May&nbsp; 8 12:15 ./sysmacros/ctitlepgmrk.sas</tt>
+<br><tt>May&nbsp; 8 12:14 ./sysmacros/crtitlesds.sas</tt>
+<br><tt>May&nbsp; 8 12:12 ./sysmacros/crprotds.sas</tt>
+<br><tt>May&nbsp; 8 12:02 ./sysmacros/allocw.sas</tt>
+<br><tt>May&nbsp; 8 12:01 ./sysmacros/allocr.sas</tt>
+<br><tt>Oct 12&nbsp; 2009 ./sysmacros/autoexec.sas</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="sc"></a>Script updates</h2>
+
+<table BORDER CELLSPACING=2 CELLPADDING=2 BGCOLOR="#FFFFFF" style="text-align: left; width: 50%; background-color: white;" >
+<tr>
+<td style="vertical-align: top;"><tt>Jun 12&nbsp; 2011 quotelst</tt>
+<br><tt>Jan 13&nbsp; 2008 sasu</tt>
+<br><tt>Jul 29&nbsp; 2007 alltitles</tt>
+<br><tt>Jul 22&nbsp; 2007 prefix</tt>
+<br><tt>Jul 21&nbsp; 2007 lisremap_win</tt>
+<br><tt>Jul 20&nbsp; 2007 crtitlesds_win</tt>
+<br><tt>Jul 20&nbsp; 2007 crtitlesds</tt>
+<br><tt>Jul 20&nbsp; 2007 lisremap</tt>
+<br><tt>Jul 20&nbsp; 2007 crtitlestmpl</tt>
+<br><tt>Jul 19&nbsp; 2007 makexrun</tt>
+<br><tt>Jul 19&nbsp; 2007 makerun</tt>
+<br><tt>Jul 19&nbsp; 2007 makemyrun</tt>
+<br><tt>Jul 19&nbsp; 2007 showtitles</tt>
+<br><tt>Jul 19&nbsp; 2007 showtitles_win</tt>
+<br><tt>Jul 19&nbsp; 2007 intitlis_win</tt>
+<br><tt>Jul 19&nbsp; 2007 intitlis</tt>
+<br><tt>Jul 15&nbsp; 2007 bigxps</tt>
+<br><tt>Jul 15&nbsp; 2007 bigxlis</tt>
+<br><tt>Jun 25&nbsp; 2007 crprottmpl</tt>
+<br><tt>May 16&nbsp; 2007 pagexofy</tt>
+<br><tt>Mar 15&nbsp; 2007 showme</tt>
+<br><tt>Mar 11&nbsp; 2007 titles</tt>
+<br><tt>Mar 11&nbsp; 2007 olis</tt>
+<br><tt>Mar 11&nbsp; 2007 opgm</tt>
+<br><tt>Mar 11&nbsp; 2007 log</tt>
+<br><tt>Mar 11&nbsp; 2007 lst</tt>
+<br><tt>Mar 11&nbsp; 2007 otitles</tt>
+<br><tt>Mar 11&nbsp; 2007 lis</tt>
+<br><tt>Mar 11&nbsp; 2007 myrepchk</tt>
+<br><tt>Mar 11&nbsp; 2007 myderchk</tt>
+<br><tt>Mar 11&nbsp; 2007 pgm</tt>
+<br><tt>Mar&nbsp; 7&nbsp; 2007 showprot_win</tt>
+<br><tt>Mar&nbsp; 7&nbsp; 2007 showprot</tt>
+<br><tt>Mar&nbsp; 4&nbsp; 2007 getfields</tt>
+<br><tt>Mar&nbsp; 4&nbsp; 2007 mybadprot</tt>
+<br><tt>Mar&nbsp; 4&nbsp; 2007 badprot</tt>
+<br><tt>Mar&nbsp; 4&nbsp; 2007 hdr</tt>
+<br><tt>Mar&nbsp; 4&nbsp; 2007 ohdr</tt>
+<br><tt>Mar&nbsp; 4&nbsp; 2007 lmhdr</tt>
+<br><tt>Mar&nbsp; 2&nbsp; 2007 lis2ps</tt>
+<br><tt>Mar&nbsp; 2&nbsp; 2007 intitlesds_win</tt>
+<br><tt>Mar&nbsp; 2&nbsp; 2007 intitlesds</tt>
+<br><tt>Mar&nbsp; 2&nbsp; 2007 intitlabels_win</tt>
+<br><tt>Mar&nbsp; 2&nbsp; 2007 intitlabels</tt>
+<br><tt>Mar&nbsp; 2&nbsp; 2007 getlayout_win</tt>
+<br><tt>Mar&nbsp; 2&nbsp; 2007 getlayout</tt>
+<br><tt>Mar&nbsp; 2&nbsp; 2007 checktitles_win</tt>
+<br><tt>Mar&nbsp; 2&nbsp; 2007 checktitles</tt>
+<br><tt>Feb 27&nbsp; 2007 testemail</tt>
+<br><tt>Feb 23&nbsp; 2007 donepages</tt>
+<br><tt>Feb 23&nbsp; 2007 getlsps</tt>
+<br><tt>Feb 22&nbsp; 2007 showfmt_win</tt>
+<br><tt>Feb 22&nbsp; 2007 showfmt</tt>
+<br><tt>Feb 22&nbsp; 2007 showfmts_win</tt>
+<br><tt>Feb 21&nbsp; 2007 layout2lsps</tt>
+<br><tt>Feb 20&nbsp; 2007 userfmts_win</tt>
+<br><tt>Feb 20&nbsp; 2007 userfmts</tt>
+<br><tt>Feb 20&nbsp; 2007 showfmts</tt>
+<br><tt>Feb 20&nbsp; 2007 missvars_win</tt>
+<br><tt>Feb 20&nbsp; 2007 missvars</tt>
+<br><tt>Feb 20&nbsp; 2007 misscnt_win</tt>
+<br><tt>Feb 20&nbsp; 2007 misscnt</tt>
+<br><tt>Feb 20&nbsp; 2007 linesize_win</tt>
+<br><tt>Feb 20&nbsp; 2007 linesize</tt>
+<br><tt>Feb 20&nbsp; 2007 hexcnt</tt>
+<br><tt>Feb 18&nbsp; 2007 getname</tt>
+<br><tt>Feb 18&nbsp; 2007 mhdr</tt>
+<br><tt>Feb 18&nbsp; 2007 dirtree</tt>
+<br><tt>Feb 17&nbsp; 2007 scanlogs</tt>
+<br><tt>Feb 17&nbsp; 2007 sasb</tt>
+<br><tt>Feb 11&nbsp; 2007 showlfmt_win</tt>
+<br><tt>Feb 11&nbsp; 2007 showlfmts_win</tt>
+<br><tt>Feb 11&nbsp; 2007 showlfmt</tt>
+<br><tt>Feb 11&nbsp; 2007 showlfmts</tt>
+<br><tt>Feb 11&nbsp; 2007 contentsl_win</tt>
+<br><tt>Feb 11&nbsp; 2007 contents_win</tt>
+<br><tt>Feb 11&nbsp; 2007 clash_win</tt>
+<br><tt>Feb 11&nbsp; 2007 summary_win</tt>
+<br><tt>Feb 11&nbsp; 2007 printall_win</tt>
+<br><tt>Feb 11&nbsp; 2007 crindex_win</tt>
+<br><tt>Feb 11&nbsp; 2007 crindex</tt>
+<br><tt>Feb 11&nbsp; 2007 printall</tt>
+<br><tt>Feb 11&nbsp; 2007 nobs_win</tt>
+<br><tt>Feb 11&nbsp; 2007 nobs</tt>
+<br><tt>Feb 11&nbsp; 2007 intnolis</tt>
+<br><tt>Feb 11&nbsp; 2007 clash</tt>
+<br><tt>Feb 11&nbsp; 2007 fsvdc</tt>
+<br><tt>Feb 11&nbsp; 2007 fsvacct</tt>
+<br><tt>Feb 11&nbsp; 2007 fsv</tt>
+<br><tt>Feb&nbsp; 7&nbsp; 2007 summary</tt>
+<br><tt>Feb&nbsp; 7&nbsp; 2007 contentsl</tt>
+<br><tt>Feb&nbsp; 7&nbsp; 2007 contents</tt>
+<br><tt>Jan 15&nbsp; 2007 cmprc</tt>
+<br><tt>Nov 24&nbsp; 2006 ddiff</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 wt</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 whosgot</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 vtitles</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 vop</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 usps2pdf</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 usps</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 uslsps</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 toupper</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 toclis</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 titlesvsbkmarks</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 timestamp</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 suffix</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 splitbiglst</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 sortnpref</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 sohdr</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 slinks</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 shdr</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 sasunixskeleton</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 runproblems</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 ruler</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 rescuedonelist</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 rescue</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 rem</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 reflist2progs</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 reflist2lis</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 pstolp</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 printpdfbookmarks</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 pages</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 owner</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 orphans</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 opsortkey</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 oporder</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 oplist</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 numtest</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 not664</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 nofootline</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 nofile</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 newix</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 myps</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 myorphans</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 myop</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 mynewtitles</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 mynewprogs</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 mynewlis</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 myfiles</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 mydonefiles</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 mybadtitlesprogs</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 mybadprognames</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 mybadinc</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 mybaddrug</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 multilinks</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 macrocalls</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 listempty</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 lis2owner</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 justhdr</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 intnop</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 idiff</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 hexchars</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 greplace</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 grename</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 getitles_sas</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 getitles</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 gethome</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 fullrunsuite</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 fsvraw</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 filesize</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 fext</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 emailme</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 emailaddr</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 donesectchk</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 donefiles</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 digits2x</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 derprogs</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 derorder</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 dashes</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 compfl</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 compdirs</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 colonend</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 catp</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 bigps</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 biglis</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 badtitlesprogs</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 badprognames</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 badlines</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 badinc</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 baddrug</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 badchars</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 antigrep</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 a4ps2pdf</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 a4ps</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 a4lsps</tt>
+<br><tt>Feb 13&nbsp; 2006 pathscr</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="html"></a>html updates</h2>
+
+<table BORDER CELLSPACING=2 CELLPADDING=2 BGCOLOR="#FFFFFF" style="text-align: left; width: 50%; background-color: white;" >
+<tr>
+<td style="vertical-align: top;"><tt>Jan 23 20:55 unilab4.html</tt>
+<br><tt>Jan 20 07:52 updates2.html</tt>
+<br><tt>Jan 20 07:52 bugs.html</tt>
+<br><tt>Jan 19 19:03 updates.html</tt>
+<br><tt>Jan 19 17:53 maclist2.html</tt>
+<br><tt>Jan 19 17:52 maclist.html</tt>
+<br><tt>Jan 12 20:21 index.html</tt>
+<br><tt>Jan 10 20:13 unilab3.html</tt>
+<br><tt>Jan&nbsp; 3 19:44 unilab2.html</tt>
+<br><tt>Dec 29 10:27 nutshell.html</tt>
+<br><tt>Dec 29 10:25 download.html</tt>
+<br><tt>Dec 19 21:23 aetab.html</tt>
+<br><tt>Nov 11 16:50 tuplets.html</tt>
+<br><tt>Nov&nbsp; 6 05:04 unistats.html</tt>
+<br><tt>Oct&nbsp; 1 11:43 freqsept.html</tt>
+<br><tt>Sep 28 20:37 tenfoot.html</tt>
+<br><tt>Sep 28 19:11 npcttab.html</tt>
+<br><tt>Sep 27 06:26 winusers.html</tt>
+<br><tt>Sep 27 06:18 atwork.html</tt>
+<br><tt>Sep 27 06:16 unilab1.html</tt>
+<br><tt>Sep 27 06:03 uniwithby.html</tt>
+<br><tt>Sep 25 13:49 yilike.html</tt>
+<br><tt>Sep 21 18:17 terms.html</tt>
+<br><tt>Sep 15 19:11 macindex.html</tt>
+<br><tt>Aug&nbsp; 8 11:58 mkdsets.html</tt>
+<br><tt>Jun 14&nbsp; 2011 titles.html</tt>
+<br><tt>Jun 14&nbsp; 2011 scrlist2.html</tt>
+<br><tt>Jun 14&nbsp; 2011 scrlist.html</tt>
+<br><tt>May 27&nbsp; 2011 quiz1.html</tt>
+<br><tt>May 18&nbsp; 2011 faq.html</tt>
+<br><tt>Apr 15&nbsp; 2011 unixcom.html</tt>
+<br><tt>Apr&nbsp; 9&nbsp; 2011 xytitles.html</tt>
+<br><tt>Apr&nbsp; 9&nbsp; 2011 popfmt.html</tt>
+<br><tt>Apr&nbsp; 9&nbsp; 2011 openrep.html</tt>
+<br><tt>Apr&nbsp; 4&nbsp; 2011 admin.html</tt>
+<br><tt>Apr&nbsp; 4&nbsp; 2011 scrindex.html</tt>
+<br><tt>Apr&nbsp; 4&nbsp; 2011 scrutil.html</tt>
+<br><tt>Apr&nbsp; 4&nbsp; 2011 scrprod.html</tt>
+<br><tt>Mar 16&nbsp; 2011 download2.html</tt>
+<br><tt>Feb 10&nbsp; 2011 repmacros.html</tt>
+<br><tt>Feb 10&nbsp; 2011 power.html</tt>
+<br><tt>Feb 10&nbsp; 2011 adhoc.html</tt>
+<br><tt>Feb 10&nbsp; 2011 validate.html</tt>
+<br><tt>Feb 10&nbsp; 2011 contact.html</tt>
+<br><tt>Jul&nbsp; 4&nbsp; 2009 unitest1.html</tt>
+<br><tt>Oct&nbsp; 1&nbsp; 2008 bashscr.html</tt>
+<br><tt>Jun&nbsp; 2&nbsp; 2008 testxxx.html</tt>
+<br><tt>May 18&nbsp; 2008 unitest2.html</tt>
+<br><tt>Oct&nbsp; 3&nbsp; 2007 nextrel.html</tt>
+<br><tt>Sep&nbsp; 6&nbsp; 2007 clinvalid.html</tt>
+<br><tt>Aug 13&nbsp; 2007 triptest.html</tt>
+<br><tt>Aug&nbsp; 5&nbsp; 2007 validplan.html</tt>
+<br><tt>Jul 31&nbsp; 2007 release.html</tt>
+<br><tt>Jul 31&nbsp; 2007 keycomp.html</tt>
+<br><tt>Jul 30&nbsp; 2007 amending.html</tt>
+<br><tt>Jul 22&nbsp; 2007 sastech.html</tt>
+<br><tt>Jul 20&nbsp; 2007 infra.html</tt>
+<br><tt>Jul&nbsp; 8&nbsp; 2007 learnunix.html</tt>
+<br><tt>Jun 25&nbsp; 2007 installw.html</tt>
+<br><tt>Jun 25&nbsp; 2007 install.html</tt>
+<br><tt>May 18&nbsp; 2007 cdiscrep.html</tt>
+<br><tt>May&nbsp; 7&nbsp; 2007 conditions.html</tt>
+<br><tt>Apr&nbsp; 9&nbsp; 2007 batch.html</tt>
+<br><tt>Mar 21&nbsp; 2007 genstand.html</tt>
+<br><tt>Mar 21&nbsp; 2007 alloc.html</tt>
+<br><tt>Mar 12&nbsp; 2007 macdep.html</tt>
+<br><tt>Feb 17&nbsp; 2007 linux.html</tt>
+<br><tt>Feb&nbsp; 6&nbsp; 2007 gawk.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 validres.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 unispec.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 t2event.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 scrdep.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 sasscr.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 procflow.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 printing.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 npctspec.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 lowlevtest.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 locf.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 legacy.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 dosemerge.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 derived.html</tt></td>
+</tr>
+</table>
+
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+</html>

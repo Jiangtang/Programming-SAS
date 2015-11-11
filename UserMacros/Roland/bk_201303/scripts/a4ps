@@ -1,0 +1,357 @@
+#!/bin/bash
+#<pre><b>
+# Script     : a4ps
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 22-Mar-2004
+# Purpose    : For paged adhoc reports that are not part of the reporting
+#              system, create an A4 postscript file (and optionally print it).
+# SubScripts : lptops getlsps compfl getitles pages
+# Notes      : YOU SHOULD ALWAYS USE THE SCRIPT "lis2ps" IF POSSIBLE. This
+#              script is for adhoc reports that are not part of the reporting
+#              system.
+#
+#              Default margins are 0.75 inches for the right margin and 1.0
+#              inch for the other margins. This is for portrait format so, for
+#              example, a left margin will become the top margin for a
+#              landscape layout.
+#
+#              It will attempt to fit the lines per page in the available space.
+#              It will use compression to try to get the lines to fit on the
+#              page. Default line spacing will be 1.2 text size then 0.05
+#              decrements down to 1.0 are tried. If more compression is required
+#              then you will get an error message and the script will exit.
+#              Orientation is decided by looking at the line columns versus
+#              lines per page.
+#
+#              Output goes to standard output (the terminal) unless a printer is
+#              chosen, in which case it is routed to the specified printer.
+#
+#              An attempt is made to identify the title of the document and, if
+#              recognised, it will be added to the postscript file as a pdf
+#              bookmark (unless a printer output is specified). Code is added
+#              to the postscript file so that postscript devices are not
+#              confused by the inserted pdf bookmark.
+#
+#              The main utility used by this script to do the ascii to
+#              postscript conversion is "lptops". A user manual for this can be
+#              found at http://www.math.utah.edu/pub/misc/lptops-3.1.7.html
+#
+# Usage      : a4ps file.lst > file.ps
+#              a4ps file1.lst file2.lis subdir/file3.lst > file.ps
+#              a4ps -p john file.lst
+#              a4ps -p mika file1.lst file2.lst
+#              a4ps -t 0.75 -p john file.lst
+#              a4ps -b 0.5 -s 2 -e 3 -p john file.lst
+#===============================================================================
+# OPTIONS:
+#-opt- -------------------------------description-------------------------------
+#  l   (value)  left margin (in)                                  
+#  r   (value)  right margin (in)                                 
+#  t   (value)  top margin (in)                                   
+#  b   (value)  bottom margin (in)                                
+#  p   (value)  printer: mika, john 
+#  1   (switch) extract 1 title only for PDF bookmark
+#  s   (value)  start page (defaults to 1)
+#  e   (value)  end page (defaults to a very high number)
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   file to convert to postscript (and optionally print)
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Define give-usage-message-then-exit function
+usage () {
+  echo "Usage: a4ps -l <left margin (in)> -r <right margin (in)>"  1>&2
+  echo "            -t <top margin (in)>  -b <bottom margin (in)>" 1>&2
+  echo "            -s <start page>       -e <end page>"           1>&2
+  echo "            -1 (extract one title only for bookmark)"      1>&2
+  echo "            -p <printer: mika, john> file1 file2"          1>&2
+  exit 1
+}
+
+
+             #=====================================#
+             #           Option Handling           #
+             #=====================================#
+
+
+# Default option values
+valuel=1.0                       # Default value for left margin (in)      
+valuer=0.75                      # Default value for right margin (in)
+valuet=1.0                       # Default value for top margin (in)
+valueb=1.0                       # Default value for bottom margin (in)
+printer=                         # Default value for printer
+values=1                         # Default value for the start page
+valuee=9999999                   # Default value for the end page
+switch1=0                        # Default switch=off for extract one title only
+
+
+# "case" statement for action to take on selected options
+while getopts "l:r:t:b:p:s:e:1" param ; do
+  case $param in
+   "?") # bad option supplied
+        usage
+        ;;
+   "l") # (value) left margin (in)
+        valuel=$OPTARG
+        ;;
+   "r") # (value) right margin (in)
+        valuer=$OPTARG
+        ;;
+   "t") # (value) top margin (in)
+        valuet=$OPTARG
+        ;;
+   "b") # (value) bottom margin (in)
+        valueb=$OPTARG
+        ;;
+   "1") # extract one title only
+        switch1=1
+        ;;
+   "p") # (value) printer
+        # Check that a valid value was entered
+        OK=0
+        case $OPTARG in
+          "mika")
+                printer=$OPTARG
+                OK=1
+                ;;
+          "john")
+                printer=$OPTARG
+                OK=1
+                ;;
+        esac
+        if [ $OK -eq 0 ] ; then 
+          echo "Error: (a4ps) Invalid value supplied to option -p" 1>&2
+          usage
+        fi
+        ;;
+   "s") # (value) start page
+        values=$OPTARG
+        ;;
+   "e") # (value) end page
+        valuee=$OPTARG
+        ;;
+  esac
+done
+
+
+# shift to bring first parameter to position 1
+shift $(($OPTIND - 1))
+
+if [ $# -lt 1 ] ; then
+  echo "Error: (a4ps) No file specified" 1>&2
+  usage
+fi
+
+
+# extract one title only
+onet=
+if [ $switch1 -eq 1 ] ; then
+  onet=-1
+fi
+
+
+             #=====================================#
+             #=====================================#
+             #     LOOP THROUGH ALL THE FILES      #
+             #=====================================#
+             #=====================================#
+
+for file in "$@" ; do
+
+
+             #=====================================#
+             #          Check on file name         #
+             #=====================================#
+
+
+  # Make sure the file exists
+  if [ ! -f "$file" ] ; then
+    echo "Error: (a4ps) File \"$file\" does not exist" 1>&2
+    continue
+  fi
+
+
+             #=====================================#
+             #          Extract the title          #
+             #=====================================#
+
+  # do not bother extracting titles if going to a printer
+  if [ -z "$printer" ] ; then
+
+    # get the titles for the pdf bookmark and put in brackets
+    btitles=$(getitles $onet -b "$file")
+
+    # set titles to null if nothing recognised
+    if [ "$btitles" == "()" ]
+      then btitles=
+    fi
+
+  fi
+
+             #=====================================#
+             #     Get line size and page size     #
+             #=====================================#
+
+  # get the line size and page size of the print file
+  layout=$(getlsps "$file")
+  ls=$(echo $layout | cut -d " " -f1)
+  ps=$(echo $layout | cut -d " " -f2)
+
+
+  # choose between portrait or landscape
+  if [[ $ps -lt $ls/2 ]] ; then
+    form=A4L
+    width=11.7
+    height=8.27
+    left=$valueb
+    right=$valuet
+    top=$valuel
+    bottom=$valuer
+  else
+    form=A4
+    width=8.27
+    height=11.7
+    left=$valuel
+    right=$valuer
+    top=$valuet
+    bottom=$valueb    
+  fi
+
+
+             #=====================================#
+             #         Layout Calculations         #
+             #=====================================#
+
+  # calculate maximum usable width of text
+  maxw=$(echo "scale=2; $width - $left - $right" | bc -l)
+
+
+  # Calculate big-point size of text on the assumption that
+  # character width is 0.6 character height (as is true for
+  # the Courier font).
+  bp=$(echo "scale=2; 120*$maxw/$ls" | bc -l)
+
+
+  # Calculate five heights of text depending on compression used
+  height1=$(echo "scale=2; $ps*$bp*1.2/72" | bc -l)
+  height2=$(echo "scale=2; $ps*$bp*1.15/72" | bc -l)
+  height3=$(echo "scale=2; $ps*$bp*1.1/72" | bc -l)
+  height4=$(echo "scale=2; $ps*$bp*1.05/72" | bc -l)
+  height5=$(echo "scale=2; $ps*$bp*1.0/72" | bc -l)
+
+
+  # calculate maximum usable height of text
+  maxh=$(echo "scale=2; $height - $top - $bottom" | bc -l)
+ 
+
+  # Calculate line spacing ratio. Try to fit lines by using compression
+  if   [ "$(compfl $height1 $maxh)" == "LT" ]
+  then 
+    hratio=1.2
+  elif [ "$(compfl $height2 $maxh)" == "LT" ]
+  then 
+    hratio=1.15
+  elif [ "$(compfl $height3 $maxh)" == "LT" ]
+  then 
+    hratio=1.1
+  elif [ "$(compfl $height4 $maxh)" == "LT" ]
+  then 
+    hratio=1.05
+  elif [ "$(compfl $height5 $maxh)" == "LT" ]
+  then
+    hratio=1.0
+  else
+    echo "Error: (a4ps) $ps lines will not fit in available space" 1>&2
+    exit 1
+  fi
+
+
+  # inform the user what the point size and line gap ratio will be
+#  echo "(a4ps) Settings chosen for file \"$file\" were:" 1>&2
+#  echo "(a4ps)    font size=${bp}bp, line spacing ratio=$hratio" 1>&2
+#  echo "(a4ps)    paper type=$form, line columns=$ls, lines per page=$ps" 1>&2
+#  echo " " 1>&2
+
+
+  # line spacing in big-points
+  y=$(echo "scale=2; $hratio*$bp" | bc -l)
+
+
+
+             #=====================================#
+             #           lptops processing         #
+             #=====================================#
+
+  # path for lptops to find afm fonts
+  AFMPATH=/usr/lib/X11/fonts:/usr/openwin/lib/X11/fonts/Type1/afm:/usr/lib/X11/fonts/fromttf:\
+/usr/openwin/lib/X11/fonts/Type1/sun/afm
+  export AFMPATH
+
+  # Use "pages" to create temporary file
+  pages -b $values -e $valuee "$file" > ~/a4pspages_$$.tmp
+
+  # run "lptops" on the file coming out of "pages"
+  lptops -y=${y}bp -p=${bp}bp -paper=$form -top=${top}in  -bottom=${bottom}in \
+  -left=${left}in -right=${right}in -font=Courier -quiet ~/a4pspages_$$.tmp > ~/a4ps_$$.tmp
+
+
+  # this is the working temporary file unless title recognised
+  tempfile=~/a4ps_$$.tmp
+
+
+
+             #=====================================#
+             #         Edit postscript file        #
+             #=====================================#
+
+  # add the postscript code to ignore bookmarks and add title bookmark if title recognised
+  if [ -n "$btitles" -a -z "$printer" ] ; then
+    gawk '{
+    if ($0 == "%%BeginProlog")
+    {
+    print $0
+    print "/pdfmark where\n{pop} {userdict /pdfmark /cleartomark load put} ifelse"
+    }
+    else 
+      if ($0 == "%%BeginSetup")
+      {
+      print $0
+      print "[ /Title " btitles "\n  /OUT pdfmark"
+      }
+      else print $0
+    }' btitles="${btitles//\\\\/\\\\}" ~/a4ps_$$.tmp > ~/a4ps_$$.tmp2
+    tempfile=~/a4ps_$$.tmp2
+  fi
+
+
+             #=====================================#
+             #           Print or display          #
+             #=====================================#
+
+  # pipe to a printer (if specified) or cat to standard output (the terminal)
+  if [ -n "$printer" ] ; then
+    cat $tempfile | lpr -h -P $printer
+  else
+    cat $tempfile
+  fi
+
+
+             #=====================================#
+             #           Tidy up and exit          #
+             #=====================================#
+
+  # delete the temporary files now we are finished
+  rm -f ~/a4ps_$$.tmp ~/a4ps_$$.tmp2 ~/a4pspages_$$.tmp
+
+
+
+done

@@ -1,0 +1,284 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="titles Spectre">
+   <meta name="Description" content="Spectre titles macro">
+   <title>titles</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+%titles</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 29 Jun 2006)</b></center>
+
+<h2>
+Introduction</h2>
+This page will describe the macro that fetches the titles from the titles
+dataset and makes them available in your program. It is very simpe to use.
+You will mainly use it with a simple call in your code like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%titles</tt></td>
+</tr>
+</table>
+
+<p>That is all. No semicolon at the end is required (true of nearly all
+macros).
+<p>Most of this page will be about the global macro variables set up by
+the <b>%titles</b> macro and the macros it calls. To see the macro dependency
+for the %titles macro then click <a href="macdep.html#titles" target="_blank">here</a>.
+<h2>
+Global macro variables</h2>
+Spectre sets up a large number of global macro variables. They all start
+and end with an underscore. It uses these global macro variables to communicate
+between macros. You are free to set up your own global macro variables
+in your code, but they must not both start and end with an underscore as
+these are reserved for Spectre. You might, in an extreme case, need to
+change the value of a Spectre global macro variable, but you should never
+change its usage. Sometimes you may need to resolve one of these global
+macro variables in your code, so it is important to know which ones are
+available.
+<p>Any time any of the Spectre macros sets up a global macro variable it
+will write this information to the log. You can see the list of these and
+what the settings are by looking in the log. Here is part of the log from
+the program "t_fpatdem". You will see that %titles calls a few macros.
+<p>The first set of messages comes from a macro named <b>%jobinfo</b> and
+this sets up four global macro variables as you can see.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>MSG: (jobinfo) The following global macro variables have been set
+up</tt>
+<br><tt>MSG: (jobinfo) and can be used in your code.</tt>
+<br><tt>_sysin_=/xxxx/xxx/xxx/xxx/xxxxx_xxx/xx_xx_xx/xxx/dev/t_fpatdem.sas</tt>
+<br><tt>_prog_=t_fpatdem</tt>
+<br><tt>_user_=rrash</tt>
+<br><tt>_path_=/xxxx/xxx/xxx/xxx/xxxxx_xxx/xx_xx_xx/xxx/dev</tt></td>
+</tr>
+</table>
+
+<p>The second set of messages comes from the macro <b>%protinfo</b>. It
+reads in all the protocol information. The Spectre administrator sets up
+a file named "protocol.txt" in the programs folder with this information
+in. You have already heard about the "titles" dataset. Well, there is a
+"protocol" dataset as well. As a programmer, you will probably only be
+interested in the _pop(n)_ settings. You will see that only two values
+"FAS" and "PPS" are available. If you enter a value in the "pop:" line
+in your titles member then it must be one of these or you will get an error
+message.
+<p>Before we leave this one, have a look at the "_titlestyle_=xy". "xy"
+is the client title style. Spectre is designed to work with multiple clients
+(companies). Each client will have their own title style so the %titles
+macro will call the client titles macro which will be called %xytitles
+in this case. This client macro might change the settings of some of the
+global macro variables, but it should report on it if it does.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>MSG: (protinfo) The following global macro variables have been
+set up</tt>
+<br><tt>MSG: (protinfo) and can be resolved in your code. This information</tt>
+<br><tt>MSG: (protinfo) is held in the file "protocol.txt".</tt>
+<br><tt>_drugname_=XXXXX</tt>
+<br><tt>_protocol_=Protocol No. XX-xxx-xx-xx</tt>
+<br><tt>_report_=Report No. XX-xxx-xx-xx, Draft Version,</tt>
+<br><tt>_paper_=A4</tt>
+<br><tt>_lmargin_=1.0</tt>
+<br><tt>_rmargin_=0.75</tt>
+<br><tt>_tmargin_=1.0</tt>
+<br><tt>_bmargin_=1.0</tt>
+<br><tt>_titlestyle_=xy</tt>
+<br><tt>_dflayout_=P10</tt>
+<br><tt>_dfllayout_=L10</tt>
+<br><tt>_dfplayout_=P10</tt>
+<br><tt>_dfltlayout_=LT10</tt>
+<br><tt>_dfptlayout_=PT10</tt>
+<br><tt>_clean_=clean in (0,1)</tt>
+<br><tt>_pop1_=FAS</tt>
+<br><tt>_poplabel1_=Full Analysis Set</tt>
+<br><tt>_pop2_=PPS</tt>
+<br><tt>_poplabel2_=Per-Protocol Set</tt>
+<br><tt>_pop3_=</tt>
+<br><tt>_poplabel3_=</tt>
+<br><tt>_pop4_=</tt>
+<br><tt>_poplabel4_=</tt>
+<br><tt>_pop5_=</tt>
+<br><tt>_poplabel5_=</tt>
+<br><tt>_pop6_=</tt>
+<br><tt>_poplabel6_=</tt>
+<br><tt>_pop7_=</tt>
+<br><tt>_poplabel7_=</tt>
+<br><tt>_pop8_=</tt>
+<br><tt>_poplabel8_=</tt>
+<br><tt>_pop9_=</tt>
+<br><tt>_poplabel9_=</tt></td>
+</tr>
+</table>
+
+<p>The next set of messages comes from the macro <b>%proginfo</b>. Take
+a look at the _repsort_ value. It has used the "13.2.1" in the first title
+to form a sort key. This sort key will be used to sort the output into
+the correct order. I call "13.2.1" a reference number and the same reference
+number can not be used twice. You can't have a "Listing 13.2.1" as well
+as a "Table 13.2.1". It is not allowed and will result in an error message.
+Note that _rotate_ , _device_ , _vsize_ , _hsize_ , _vorigin_ and _horigin_
+contain values for figures. The macro %openrep will use these values in
+a "goptions" statement if you are creating a figure.&nbsp; The _longline_
+setting is useful. You can use this in your titles member. You would typically
+use it as the first footnote with the entry "&amp;_longline_". The length
+of it will be the same as the linesize of your report (shown assigned to
+_ls_) so it will span the full width of the report.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>MSG: (proginfo) The following global macro variables have been
+set up and can be</tt>
+<br><tt>MSG: (proginfo) used in your code. The information is a combination
+of what was</tt>
+<br><tt>MSG: (proginfo) in the .titles file for that program and what is
+in "protocol.txt"</tt>
+<br><tt>_layout_=L10</tt>
+<br><tt>_rotate_=landscape</tt>
+<br><tt>_device_=PS300A4</tt>
+<br><tt>_vsize_=6.52in</tt>
+<br><tt>_hsize_=9.7in</tt>
+<br><tt>_vorigin_=0.75in</tt>
+<br><tt>_horigin_=1.0in</tt>
+<br><tt>_pop_=FAS</tt>
+<br><tt>_poplabel_=Full Analysis Set</tt>
+<br><tt>_reptype_=TABLE</tt>
+<br><tt>_repid_=Table 13.2.1</tt>
+<br><tt>_replabel_=</tt>
+<br><tt>_repsort_=013-002-001-000-000-000</tt>
+<br><tt>_ls_=116</tt>
+<br><tt>_ps_=42</tt>
+<br><tt>_longline_=____________________________________________________________________________________________________________________</tt></td>
+</tr>
+</table>
+
+<p>The next set of messages comes from the client titles macro named <b>%xytitles</b>.
+In this case it might reset the _repid_ value and the _poplabel_ value
+so it reports on this. This client titles macro changes case to capitals
+for tables. It does not do this for listings or appendix tables. Like I
+wrote above, each client has their own titles style. The global macro variable
+_figbkmark_ is set up to contain pdf bookmark text for figures. It is not
+used for tables and listings as the bookmark will be found by reading the
+first ten lines of each output report.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>MSG: (xytitles) The following global macro variables have been
+set</tt>
+<br><tt>MSG: (xytitles) and can be used in your code.</tt>
+<br><tt>_repid_=TABLE 13.2.1</tt>
+<br><tt>_poplabel_=FULL ANALYSIS SET</tt>
+<br><tt>_tline2_=PATIENT DEMOGRAPHICS</tt>
+<br><tt>_tline3_=</tt>
+<br><tt>_tline4_=</tt>
+<br><tt>_figbkmark_=TABLE 13.2.1 PATIENT DEMOGRAPHICS FULL ANALYSIS SET</tt></td>
+</tr>
+</table>
+
+<p>After the client titles macro has done its work, the %titles macro counts
+how many titles and footnotes have been created by calling the <b>%maxtitle</b>
+macro. You can see that no footnotes were created but eight title lines
+created. Supposing you wanted to add a new title line in your code. You
+could do it like this:
+<p><tt>title%eval(&amp;_maxtitle_+1) "New title line";</tt>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>MSG: (maxtitle) The following global macro variables have been
+set up</tt>
+<br><tt>MSG: (maxtitle) and can be used in your code.</tt>
+<br><tt>_maxtitle_=8</tt>
+<br><tt>_maxfoot_=0</tt></td>
+</tr>
+</table>
+
+<h2>
+%titles with parameters</h2>
+Normally you just call the <b>%titles</b> macro with no parameters, but
+if you have set up multiple titles in the same titles file and distinguished
+them with a label defined to "label:" then to get those titles you have
+to specify the label. Suppose the label is "a" then you call the macro
+in this way:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%titles(label=a)</tt></td>
+</tr>
+</table>
+
+<p>If you are writing QC programs then you might want to use the titles
+of the program you are QCing. Suppose you were QCing the program t_fpatdem
+then you can call in its titles like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%titles(program=t_fpatdem)</tt></td>
+</tr>
+</table>
+
+<p>Invoking the %titles macro gives you the value of the population in
+the <b>_pop_</b> global macro variable. You will need to use this to subset
+the population. So if you need to call the %titles macro with label=a for
+a listing then you would normally do it like this. The two macros %openrep
+and %closerep are explained on another page.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><b><tt>%titles</tt></b>
+<p><tt>proc sort data=stat.acct(keep=patno &amp;_pop_.cd where=(&amp;_pop_.cd=1))</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; out=acct(drop=&amp;_pop_.cd);</tt>
+<br><tt>&nbsp; by patno;</tt>
+<br><tt>run;</tt>
+<p><tt>....other code</tt>
+<p><b><tt>%titles(label=a)</tt></b>
+<p><tt>%openrep</tt>
+<br><tt>....produce the listing</tt>
+<br><tt>%closerep</tt>
+<p><b><tt>%titles</tt></b>
+<p><tt>%openrep</tt>
+<br><tt>....produce the table</tt>
+<br><tt>%closerep</tt></td>
+</tr>
+</table>
+
+<p>The reason it is done like the above, with three calls to the %titles
+macro, is because the population is usually only defined for the first
+instance of the titles and that is for where the label is blank (for the
+table). So you use %titles to give you the populaiton, %titles(label=a)
+to give you the titles for the listing and then %titles again to give you
+the titles for the table.
+<h2>
+Conclusion</h2>
+You have seen how easy it is to include the titles in your code using the
+%titles macro. You have also been introduced to the large number of global
+macro variables that are created by some of the macros and you have learned
+that they are written to the log to inform you that they are available.
+<br>&nbsp;
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+</html>

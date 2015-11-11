@@ -1,0 +1,54 @@
+#!/bin/bash
+#<pre><b>
+# Script     : oplist (o/p list)
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 27-Oct-2004
+# Purpose    : To create a list of tables/appendices and the output file names
+# SubScripts : getitles opsortkey
+# Notes      : none
+# Usage      : oplist *.LST
+#              oplist t*.lis
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   File name(s)
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Must be at least one file name
+if [ $# -lt 1 ] ; then
+  echo "Usage: oplist *.LST" 1>&2
+  exit 1
+fi
+
+
+# delete temporary file if it exists
+rm -f ~/oplist_$$.tmp
+
+
+# for each file:
+# 1) get the first title
+# 2) get the reference number
+# 3) call "opsortkey" to create the sort key
+# 4) append sortkey, first title and file name to the temporary file
+for file in $@ ; do
+  title1=$(getitles -1 "$file")
+  ref=$(echo $title1 | cut -d" " -f2)
+  sortkey=$(echo $ref | opsortkey)
+  echo "$sortkey:$title1: $file" >> ~/oplist_$$.tmp
+done
+
+
+# sort the temporary file and drop the sort key
+sort ~/oplist_$$.tmp | cut -d: -f2-
+
+
+# delete the temporary file now we have finished
+rm -f ~/oplist_$$.tmp

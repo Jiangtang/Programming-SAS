@@ -1,0 +1,58 @@
+#!/bin/bash
+#<pre><b>
+# Script     : nobs
+# Version    : 2.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 11-Feb-2007
+# Purpose    : To display the number of observations a dataset has (uses SAS)
+# SubScripts : nobs_win
+# Notes      : 
+# Usage      : nobs       # acts on all datasets in current library
+#              nobs p*    # acts on all datasets starting with "p"
+#              nobs dem labs   # acts on two datasets
+#              nobs dem        # acts on one dataset
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   (optional) dataset(s) to list observations for
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  11Feb07         Call nobs_win for Windows configurations
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# if a Windows config then call nobs_win and exit on return
+if [ -n "$CYGWIN" ] ; then
+  nobs_win "$@"
+  exit $?
+fi
+
+sas -stdio -noautoexec -sasuser work 2>/dev/null << -----FINISH-----
+options validvarname=any nofmterr noovp nodate nonumber;
+%let dsets=$@ ;
+libname here './' access=readonly;
+%macro temp;
+data nobs(keep=memname nobs);
+  set sashelp.vtable(where=(libname="HERE" and memtype="DATA"
+     %if %length(&dsets) %then %do;
+     and memname in (
+     %let i=1;
+     %do %while(%scan(&dsets,&i,%str( )) NE );
+       "%upcase(%scan(%scan(&dsets,&i,%str( )),1,.))"
+       %let i=%eval(&i+1);
+     %end;
+     )
+     %end;
+      ));
+run;
+%mend temp;
+%temp;
+data _null_;
+  file stdout;
+  set nobs;
+  put @1 memname @12 nobs;
+run;
+-----FINISH-----

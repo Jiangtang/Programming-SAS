@@ -1,0 +1,150 @@
+*<PRE>;
+
+       options nosource;
+%macro scale (data,result,plotds,x,y,x_scale,y_scale,
+                                     x_move ,y_move);
+
+ /*developed by Arnold Schick, University of Marburg/Germany
+   December 9, 1994; extended: September 18, 1998
+  */
+
+ options nosource nostimer nosymbolgen nonotes;
+
+%if &data =  %then %do;
+  %put ;
+  %put This macro is to call: ;
+  %put ;
+  %put     SCALE(data,result,plotds,x,y,x_sc,y_sc,x_m,y_m);
+  %put ;
+  %put and scales X-,Y-Values by X_SC and Y_SC from input dataset DATA;
+  %put (default name is _NEW_) into wanted ranges of X-,Y-Planes;
+  %put with possibility of moving in X-,Y-Directions by X_M and Y_M.;
+  %put Default names for X and Y are X and Y.;
+  %put ;
+  %put The new values are written into dataset RESULT (default name is _NEW_). ;
+  %put Dataset PLOTDS has data for plotting (proc GPLOT with;
+  %put plot option SKIPMISS) to show the effect.;
+  %put When the PLOTDS parameter is _NULL_, PLOTDS is not created,;
+  %put default name for PLOTDS is _PLOTDS_.;
+  %put ;
+  %goto fin;
+%end;
+
+/*set default variablenames*/
+%if &data    = . %then %let data    = _LAST_ ;
+%if &result  =  or &result  = . %then %let result  = _NEW_ ;
+%if &plotds  =  or &plotds  = . %then %let plotds  = _PLOTDS_ ;
+%if &x       =  or &x       = . %then %let x       = x;
+%if &y       =  or &y       = . %then %let y       = y;
+
+/*set default values*/
+data _NULL_;
+ k=symget('x_scale')/1.0; if k=. then k=1; call symput('x_scale',k);
+ k=symget('y_scale')/1.0; if k=. then k=1; call symput('y_scale',k);
+ k=symget('x_move')/1.0;  if k=. then k=0; call symput('x_move',k);
+ k=symget('y_move')/1.0;  if k=. then k=0; call symput('y_move',k);
+run;
+
+/*test, if DATA is empty*/
+data _NULL_ ;
+  if 0 then set &data nobs=last;
+  call symput('empty',left(put(last,8.)));
+  stop;
+run;
+%if &empty < 2 %then %goto quit;
+
+proc means data=&data noprint min max;
+  var x y ;
+  output out=_minmax_ min=x_min y_min  max=x_max y_max ;
+run;
+
+data _NULL_;
+  set _minmax_;
+  call symput('x_min',x_min);  call symput('x_max',x_max);
+  call symput('y_min',y_min);  call symput('y_max',y_max);
+run;
+
+data &result;
+  set &data;
+  length default=8;
+  &x = ((&x - &x_min)/(&x_max - &x_min))*&x_scale + &x_move;
+  &y = ((&y - &y_min)/(&y_max - &y_min))*&y_scale + &y_move;
+run;
+
+%if %UPCASE(&plotds) = _NULL_ %then %goto fin;
+  data _scope_ ;
+    if &x_min = 0 then xd=0.01/(&x_max-&x_min); else xd=0;
+    if &x_max = 0 then xr=0.01/(&x_max-&x_min); else xr=0;
+    if &y_min = 0 then yd=0.01/(&y_max-&y_min); else yd=0;
+    if &y_max = 0 then yr=0.01/(&y_max-&y_min); else yr=0;
+    keep &x &y ;
+    &x =.; &y =.; output;
+    &x = &x_min - xd;  &y = &y_min - yd;   output;
+    &x = &x_max + xr;  &y = &y_min - yd;   output;
+    &x = &x_max + xr;  &y = &y_max + yr;   output;
+    &x = &x_min - xd;  &y = &y_max + yr;   output;
+    &x = &x_min - xd;  &y = &y_min - yd;   output;
+    &x =.; &y =&y; output;
+run;
+
+data &plotds;
+  set &result _scope_ &data;
+run;
+
+%goto fin;
+%quit: %put MACRO-NOTE: input dataset &data was empty or has less than 2 points;
+%fin : ;
+
+options source stimer symbolgen notes;
+%mend;    options source;
+
+ %scale;
+
+
+*Example;
+data eins;
+  do x=-3 to 3 by 0.1;
+       y= cos(sqrt(x**2));
+       output;
+  end;
+run;
+
+* %scale(eins,zwei);   * scales into {x|0,1} and {y|0,1} ;
+
+ %scale(eins,drei,,x,y, 0.75,0.5, 1.0,-0.5);
+
+proc gplot data=_plotds_;
+  symbol i=join ;
+  plot y*x / skipmiss;
+run; quit;
+
+ *End of Example;
+
+*</PRE>;
+<script type="text/javascript" src="http://hb.lycos.com/hb.js"></script>
+<script type="text/javascript" src="http://ratings.lycos.com/ratings/lycosRating.js.php"></script>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var cm_role = "live";
+var cm_host = "tripod.lycos.com";
+var cm_taxid = "/memberembedded";
+var tripod_member_name = "schick";
+var tripod_member_page = "schick/scale.sas";
+var tripod_ratings_hash = "1247466536:85400a0b977dcca9714740a8004a219e";
+
+var lycos_ad_category = {"dmoz":"computers\/open_source","ontarget":"&CAT=technology&L2CAT=computing&L3CAT=programming","find_what":"software knowledge base"};
+
+var lycos_ad_remote_addr = "203.125.122.2";
+var lycos_ad_www_server = "www.tripod.lycos.com";
+var lycos_ad_track_small = "http://members.tripod.com/adm/img/common/ot_smallframe.gif?rand=589001";
+var lycos_ad_track_served = "http://members.tripod.com/adm/img/common/ot_adserved.gif?rand=589001";
+//--><!]]></script>
+<script type="text/javascript" src="http://scripts.lycos.com/catman/init.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-start.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-middle.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-end.js"></script>
+<noscript>
+ <img src="http://members.tripod.com/adm/img/common/ot_noscript.gif?rand=589001" alt="" width="1" height="1" />
+ <!-- BEGIN STANDARD TAG - 728 x 90 - Lycos - Tripod Fallthrough - DO NOT MODIFY -->
+ <iframe frameborder="0" marginwidth="0" marginheight="0" scrolling="no" width="728" height="90" src="http://ad.yieldmanager.com/st?ad_type=iframe&ad_size=728x90&section=209094"></iframe>
+ <!-- END TAG -->
+</noscript>

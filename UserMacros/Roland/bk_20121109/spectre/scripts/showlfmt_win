@@ -1,0 +1,63 @@
+#!/bin/sh
+#<pre><b>
+# Script     : showlfmt_win
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 11-Feb-2007
+# Purpose    : To display the contents of a format stored in the current
+#              directory in a catalog named FORMATS (uses SAS).
+# SubScripts : none
+# Notes      : WINDOWS VERSION
+#              The dollar sign of a character format name must be preceded by
+#              the escape character "\" otherwise the Unix command interpreter
+#              will think a Unix variable is being referred to.
+# Usage      : showlfmt_win age
+#              showlfmt_win \$cat
+#
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   Format name. Character formats must have their dollar sign preceded by
+#      the escape character "\".
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Put out a usage message if not enough parameters supplied
+if [ $# -lt 1 ] ; then
+  echo "Usage: showlfmt age" 1>&2
+  echo 'Usage: showlfmt \$age' 1>&2
+  exit 1
+fi
+
+# Write SAS code to a temporary file
+cat > $HOME/showlfmt_$$.sas << -----FINISH-----
+filename _outfile "$HOMEW\showlfmt_$$.tmp";
+libname here '.' access=readonly;
+proc format lib=here cntlout=here;
+  select $1;
+run;
+data _null_;
+  file _outfile notitles noprint;
+  set here;
+  if start ne end then put @1 start @10 '-' @12 end @25 label;
+  else put @1 start @25 label;
+run;
+-----FINISH-----
+
+# run the code
+sas -nosplash -nologo -icon -log "$HOMEW" -sysin "$HOMEW\showlfmt_$$.sas"
+
+# if output file exists then cat it and delete it
+if [ -f $HOME/showlfmt_$$.tmp ] ; then
+  cat $HOME/showlfmt_$$.tmp 
+  rm -f $HOME/showlfmt_$$.tmp 
+fi
+
+# tidy up
+rm -f $HOME/showlfmt_$$.sas $HOME/showlfmt_$$.log

@@ -1,0 +1,490 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="Spectre Administration">
+   <meta name="KeyWords" content="Spectre administration, Spectre administrator's guide">
+   <title>Spectre Administration</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Spectre Administration</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 04 Apr 2011)</b></center>
+
+<h2>
+Introduction</h2>
+To be a Spectre administrator, you do not need to be a programmer working
+with the system, but if you know your Unix commands and understand "piping",
+"substitution" and "redirection" up to the level covered in the "Common
+Unix Commands" document on this web site which you can link to <a href="unixcom.html">here</a>
+then that would be of great help. Being able to maintain simple shell scripts
+and write them would be even better as covered in the "Writing bash shell
+scripts" document which you can link to <a href="bashscr.html">here</a>.
+You will need to be fully familiar with all the scripts that are part of
+Spectre, both production scripts and utility scripts, in addition to what
+you will find on this page. These can be linked to <a href="scrindex.html">here</a>.
+<h2>
+lptops</h2>
+The reporting system relies on the utility named "<b>lptops</b>" to create
+PostScript files from plain text reports and, as the Administrator, you
+need to know something about it. The name says what it does - "<b>lp</b>"=line
+printer, "<b>to</b>"="to" and "<b>ps</b>"=PostScript (I didn't write it).
+It is a C program that your Unix System Administrator can get for you.
+Normally it comes compiled but <b>your Unix System Administrator will need
+to get the C source code for this</b>. The reason the source code is needed
+is because a small change needs to be made to it. In the code it says "#define
+MAXPAGE 1024".
+<b>This needs to be changed to "#define MAXPAGE 8192"</b>
+and the program compiled and stored (there is nothing special about the
+number "8192". It is just a multiple of "1024" that I picked). This number
+has to be set higher than the maximum number of pages that can be in a
+report. Sometimes, lab listings can have thousands of pages and I hope
+this number "8192" will be larger. If you do not do this and you have reports
+that are more than 1024 pages (the trouble seems to happen if the number
+of pages becomes 2000 or larger) then your PostScript file will often become
+corrupted. What happens is that for the C language there is no checking
+on array bounds so if you write to array number 2000, for example, but
+only allowed 1024 entries in the array, then the number will get written
+to an area of memory being used for another purpose. Quite likely it will
+be where text is being stored so this will end up being written to your
+PostScript file. The source code should be available from the following
+link and the member name should be "lptops.c" which is the C source code.
+<br><a href="http://www.math.utah.edu/ftp/pub/lptops/" target="_blank">http://www.math.utah.edu/ftp/pub/lptops/</a>
+<p>There is thorough checking done by the reporting system inside the utility
+"lis2ps" so this problem will be spotted and reported if it happens. I
+wrote a utility "pstolp" (the opposite of "lptops") that strips out the
+text from a PostScript file to turn it back into plain text and then this
+file gets compared to the original text file converted by "lptops". It
+will report any differences, if it finds any, and will explain the problem.
+"pstolp" is written in gawk and it slightly gawk version dependent. This
+is explained in the header. You can view this script below.
+<br><a href="scripts/pstolp" target="_blank">pstolp</a>
+<p>(At the time I developed Spectre, "lptops" was the only utility I could
+find that you could specify individual margins for as well as be able to
+adjust the spacing between lines. Since then the "<a href="http://search.cpan.org/~jonallen/a2pdf-1.11/lib/Script/a2pdf.pm" target="_blank">a2pdf</a>"
+utility (not written by me) has these options. By default, Spectre uses
+1.1 ratio line spacing instead of the more usual 1.2 because Courier font
+characters are not as tall as most other fonts and a line spacing of 1.1
+looks better plus it allows more lines to be fitted on a page. "lptops"
+works very well and there is every indication that it will continue to
+be available, but in case it should ever disappear, I will convert over
+to "a2pdf", so do not be concerned on the reliance on "lptops".)
+<h2>
+crprottmpl</h2>
+Before programmers can start work on a study, the "protocol.txt" file needs
+to be created and the correct values entered. To create it, first use the
+script <a href="scripts/crprottmpl" target="_blank">crprottmpl</a>. This
+creates a file named "<b>protocol.template</b>". You have got to copy this
+to "<b>protocol.txt</b>" and fill in the values.
+<b>You will have to remember
+to remove the "Draft" label for the final run.</b>
+<h2>
+crtitlestmpl</h2>
+Use the script <a href="scripts/crtitlestmpl" target="_blank">crtitlestmpl</a>
+to create the titles template for the programmers to copy and change into
+their titles members. It creates a file named "<b>titles.template</b>".
+<h2>
+%allocr and %allocw</h2>
+Spectre requires two allocation macros -- <b>%allocr</b> and <b>%allocw</b>.
+%allocr assigns data libraries and formats in read mode and %allocw does
+the same for write mode. <b>Within these macros you must set up a global
+macro variable named _ptlibref_ set to the libref of where the "titles"
+dataset and "protocol" dataset are located.</b>
+<p>The job of writing these macros used to be done by a senior programmer
+but since <b>_ptlibref_</b> has been added as a global macro variable then
+the <b>Spectre administrator should set up these two macros</b> to make
+sure <b>_ptlibref_</b> has not been forgotten. If it isn't set up then
+many of the Spectre scripts that call sas will fail. You might have low
+level macros to do this or high level macros. I use low level macros for
+this such that one has to be written for every study increment. You can
+see two examples of them below.
+<br><tt><a href="clinmacros/allocr.sas" target="_blank">%allocr</a></tt>
+<br><tt><a href="clinmacros/allocw.sas" target="_blank">%allocw</a></tt>
+<h2>
+Copying to new increments</h2>
+If you are setting up a new increment for a study and you want to copy
+what is in the old increment into the new one then please be aware that
+if you do the copy, even using "cp -p ", that you will become the new owner
+of the copies. Programmers will be using the "myfiles" utility to identify
+their own files an if the owner gets changed then this will no longer work.
+It is better is this copy is done by the Unix administrator so that ownership
+details and the dates of the files remain the same. If this is not possible,
+then ask the programmers to copy their own files across using "cp -p" (the
+"-p" preserves date details) command. They can use the "myfiles" script
+to copy only their own files across so this is easy for them. This is the
+way they would use it for titles members using the "myfiles" script and
+"substitution".
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>cp -p $(myfiles *.titles) /old/inc /new/inc</tt></td>
+</tr>
+</table>
+
+<h2>
+Program naming conventions</h2>
+
+<blockquote>
+<h3>
+Derived dataset program names</h3>
+If the reporting system is being used for the build of the derived datasets
+then the numbering convention can go out of control. To recap, the derived
+datasets will be built starting with a cut down version of an <b>acct </b>dataset
+having one observation per subject. What this is called will vary from
+site to site. Suppose this cut down version is named <b>acct0</b> and it
+is a stats dataset then the recommendation for the program name is <b>s10_acct0.sas</b>
+. The number "10" acts as a sort key that Spectre uses to run the programs
+in the specified order. The other derived dataset build programs will use
+this acct0 dataset as part of the build process and it is intended that
+the stats programs start with <b>s11_</b> and the derived dataset programs
+start with <b>d11_</b> . The rest of the name should match the name of
+the dataset being built such that the stats adverse events program building
+the dataset <b>adv</b> will have the name <b>s11_adv.sas</b> . After the
+derived datasets have been built it is normal to create a full <b>acct
+</b>dataset.
+This will be based on the cut-down <b>acct0</b> dataset but with information
+from the other derived dataset added. The recommended name for this is
+<b>s20_acct.sas</b>
+assuming the final dataset name is
+<b>acct</b>. Sometimes the numbering
+has to go above "11" if a dataset build program needs the results from
+another dataset build program. Suppose the adverse events dataset required
+dosing values to be merged in so that you knew what dose a patient was
+on when they had an AE. If the dose build program was named s11_dose.sas
+then the adverse event build program would have to use a number higher
+than "11" such as s12_adv.sas . With programmers working independently,
+this numbering of programs can sometimes get out of control. Also, if they
+write the specifications for their own datasets, they might decide they
+want a field from the final acct dataset included so they will use a number
+higher than that used for s20_acct.sas . The situation can get ridiculous
+but confusion can be avoided if two rules are followed.
+<ul>
+<li>
+Only <b><i>efficacy </i></b>stats datasets are allowed to contain fields
+that are in the "acct" dataset that are not in the "acct0" dataset and
+only they can have a number greater than the s20_acct.sas program.</li>
+
+<li>
+Programmers must use the lowest number allowed for their derived dataset
+build programs.</li>
+</ul>
+To track this you can use the "<b>derorder</b>" script. This will identify
+all those programs that match the pattern for a derived dataset build program.
+This is the script that will be called when running these programs to identify
+the list of programs to be run and in what order. Just type in the command
+from the programs directory.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>derorder</tt></td>
+</tr>
+</table>
+
+<p>Another thing you might notice is that some programmers have old version
+of their programs such as <b>d11_adv_old.sas</b> . This is a mistake as
+this program matches the pattern and it too will be run. Old versions should
+have names like <b>d11_adv.old</b> so that they do not match the pattern.
+<h3>
+Report program names</h3>
+Programmers using the reporting system tend to work at a fast pace. Once
+they have a reporting program they will often makes copies of it to use
+for different populations (like "safety", "full analysis set" and "per-protocol")
+and different age groups. If their naming convention is wrong for the first
+program then this error will get propagated to the copies. If they can
+spot this early then some time will be saved. The mistake will be easiest
+seen in their titles members. You can use the "myfiles" command for a specific
+user so to list the titles members to "rrash" you could use this command:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>myfiles -u rrash *.titles</tt></td>
+</tr>
+</table>
+
+<p>It would be a good idea to check on this from time to time and inform
+the programmers if their file names should be changed. It should not be
+a lot of work for them as they can use "<b>grename</b>" to rename their
+files, "<b>mybadtitlesprogs</b>" to then list where the program name is
+different to the titles member file name (using the "-f" option will fix
+it for them) and if their headers follow the recommended convention then
+"<b>mybadprognames</b>" can both identify and fix where the program name
+does not match the file name.</blockquote>
+
+<h2>
+Running programs</h2>
+You will be the person asked to run a suite (suite=entire collection) of
+programs. To remind you again, you will need to change the information
+in "protocol.txt" for the final run so that the reports do not say "Draft
+Version" for this.
+<p>If the reporting system is being used to create the derived datasets
+and you want to run all these programs plus the reporting programs then
+you can do this using the command <a href="scripts/fullrunsuite" target="_blank">fullrunsuite</a>.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>fullrunsuite</tt></td>
+</tr>
+</table>
+
+<p>If you only want to run the derived dataset build programs or the report
+programs then first you have to generate the scripts to do this using the
+command <a href="scripts/makerun" target="_blank">makerun</a>.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>makerun</td>
+</tr>
+</table>
+
+<p>Then you can run whatever set of programs you wish to run using the
+generated scripts "runderived" or "runreports". Whichever you choose to
+run, you should redirect standard error to a file. To run the derived dataset
+programs use this command from the programs directory:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>./runderived 2>runderived.err</tt></td>
+</tr>
+</table>
+
+<p>To run the reports, use this command from the programs directory:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>./runreports 2>runreports.err</tt></td>
+</tr>
+</table>
+
+<p>You should check the "err" files at the end for errors. If you want
+to see only those programs that encountered some sort of problem then use
+the script "<a href="scripts/runproblems" target="_blank">runproblems</a>"
+to display these. Note that <b>when an error is encountered for the derived
+dataset build, the programs following it are aborted</b>. This is not the
+case for the report programs as they have no dependency on each other.
+<h2>
+Splitting "donelist.txt" into sections</h2>
+When the "runreports" script runs, each new output created gets added to
+the file "donelist.txt". At the end of the script the list of outputs is
+sorted in reference number order and the number of pages for each report
+is added at the end of each line. This file can be used as input to build
+a single large PostScript file using the <a href="scripts/bigps" target="_blank">bigps</a>
+script. Most often, the PostScript file would be too large so "donelist.txt"
+will have to be split into sections. "bigps" can work on these donelist
+section files as well using the "-n" option and supplying the section number.
+These donelist section files must follow the naming convention "<b>donesect1.txt</b>",
+"<b>donesect2.txt</b>" etc. The have to be created by hand by copying and
+pasting sections of "donelist.txt". How you do is up to you, but a rough
+guide is that each section should not contain more than 2500 pages. The
+pages are shown at the end of each line in donelist.txt to help you make
+this split. Some files, such as lab tables, will be 2000 pages or more
+so they should have their own donesect file.
+<p>Once you have made your donesect files, these have to be checked again
+the original donelist.txt file to make sure you included all the entries
+and have not repeated any. You do this using the script <a href="scripts/donesectchk" target="_blank">donesectchk</a>.
+It will tell you if it detects any problems.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>donesectchk</tt></td>
+</tr>
+</table>
+
+<h2>
+bigps</h2>
+"<a href="scripts/bigps" target="_blank">bigps</a>" is the script you use
+to create the collected PostScript file, either from the full donelist.txt
+file or the donesect files. For the donesect files you have to use the
+"-n" option. There are other options as well. You can specify a file pattern
+if you want to, but it is better to take the time to create donesect files.
+<p>Here is how you would use this script to create PostScript files and
+PDFs for two donesect files. "<a href="scripts/a4ps2pdf" target="_blank">a4ps2pdf</a>"
+is used to create the PDF files. If your paper size was US Letter then
+"<a href="scripts/usps2pdf" target="_blank">usps2pdf</a>" would be used
+instead.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>bigps -n 1 > BIG1.ps</tt>
+<br><tt>a4ps2pdf BIG1.ps</tt>
+<br><tt>bigps -n 2 > BIG2.ps</tt>
+<br><tt>a4ps2pdf BIG2.ps</tt></td>
+</tr>
+</table>
+
+<p>When "a4ps2pdf" (or "usps2pdf") creates a PDF file it gives it the name
+name as the original file but with the file extension ".pdf" so the two
+PDFs created in the above case would be "BIG1.pdf" and "BIG2.pdf".
+<h2>
+printpdfbookmarks</h2>
+When the PDF files have been produced you may be asked to provide a list
+of bookmarks in each one. You do this using the <a href="scripts/printpdfbookmarks" target="_blank">printpdfbookmarks</a>
+script. To keep the output, redirect to a file.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>printpdfbookmarks BIG1.pdf > bookmarks1.txt</tt></td>
+</tr>
+</table>
+
+<h2>
+titlesvsbkmarks</h2>
+The script "<a href="scripts/titlesvsbkmarks" target="_blank">titlesvsbkmarks</a>"
+will extract the table/appendix reference number from the first title of
+all the titles stored in ALL.TITLES and compare these with what is in the
+bookmarks of the PDF files you specify and will list out the references
+in ALL.TITLES that it can not find in the PDF bookmarks. You can use this
+to make sure nothing is missing in the PDFs.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>titlesvsbkmarks BIG*.pdf</tt></td>
+</tr>
+</table>
+
+<h2>
+biglis</h2>
+Sometimes, instead of a PDF, a collected listing is required. This might
+be for a Word document. The script "<a href="scripts/biglis" target="_blank">biglis</a>"
+is used for this. It accepts similar options to "bigps" and it can optionally
+create a table of contents.
+<h2>
+"ddiff" and report run backups</h2>
+After a set of reports has been produced it is a good idea to make a backup
+of this in a sub folder. There is a script named "<b>ddiff</b>" you can
+use to compare the contents of one directory with another and you can use
+this to see if any numbers have changed in the reports since the previous
+run. To back up all new output to a status directory you need to know what
+files to copy. It might not be sufficient to use <b>t*.lis</b> as a file
+pattern as this pattern might pick up some files that were not created
+when the suite of programs was run. You should use the script "<b>donefiles</b>"
+to give you a list of output. You will be shown how to use this. It reads
+"<b>donelist.txt</b>" and <b>you will need to make a backup copy of this
+file</b> as well, as the script "<b>bigps</b>" (and "biglis") needs it.
+Another file you should back up is the standard error file from the "runreports"
+run. Hopefully, you redirected this to a file. Maybe you named it "runreports.err".
+Suppose you ran these programs on 17 Feb 2006 then you&nbsp; might create
+a backup folder and copy the files to it like this (note the use of the
+"-p" option to ensure the file date stamps do not change):
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>mkdir status060217</tt>
+<br><tt>cp -p $(donefiles) status060217</tt>
+<br><tt>cp -p donelist.txt status060217</tt>
+<br><tt>cp -p runreports.err status060217</tt>
+<br><tt>cp -p runreports.chk status060217</tt>
+<br><tt>cp -p ALL.TITLES status060217</tt></td>
+</tr>
+</table>
+
+<p>Now that you have the backup, it is important to know if any of the
+numbers in the reports have changed since the previous run. You should
+use the script "ddiff" for this. It compares the contents of every file
+(that matches a pattern you supply) <b>in the current directory</b> to
+identically named files in another directory. Since there might be a date
+(and time) change in one line of every output you can specify this to the
+"-i" (ignore) option so that these lines are not compared. Suppose this
+line with the changing date (and time) started with the word "Report" and
+suppose the previous run was on the 05 Feb 2006 then you could make a comparison
+and store the results like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>ddiff -i ^Report -d ../status060205 *.lis* > ddiff_060217_vs_060205.txt</tt></td>
+</tr>
+</table>
+
+<p><b>Using the "ddiff" script should become part of your QC process</b>.
+You should think about including its use in your SOPs. As an administrator,
+you will need to run "ddiff" in this way and be aware of any number differences
+found in any of the output. Someone will need to know about these differences
+if it involves numbers changing. You can learn more about "ddiff" from
+its header.
+<br><a href="scripts/ddiff" target="_blank">ddiff</a>
+<h2>
+PDFs for ad-hoc reports and legacy systems</h2>
+For ad-hoc reporting and legacy systems it may be desirable to create bookmarked
+PDFs so you might be asked to do this. How you do this in these two cases
+is covered on other pages which you can link to below.
+<p><a href="adhoc.html">Ad-hoc Reporting and PDFs</a>
+<p><a href="legacy.html">Legacy Systems and PDFs</a>
+<h2>
+Adding a pdf bookmark to a PostScript file</h2>
+It is possible to edit a postscript file to add a pdf bookmark so that
+when it gets converted to a pdf, the bookmark will be there. You might
+have to do this manually one day, so I will explain how I am doing it in
+Spectre. I don't know the best way to do this, I just know one way that
+works. The clearest way to explain it is to get you to look at the macro
+%closerep in the end section where it deals with figures. You can view
+this macro using the link below. Look for the data _null_ step near the
+end.
+<br><a href="sysmacros/closerep.sas" target="_blank">%closerep</a>
+<p>You will see some of the code below used in the data _null_ step. It
+is writing out lines of postscript code. Don't ask me to explain how postscript
+code works, because I do not have a clue, but what the following code does
+is add four lines after the first line in the postscript file. The first
+two lines act as a warning to a postscript reader to ignore the instruction
+"pdfmark". Most printers are postscript readers so this tells the printer
+not to do anything if it encounters the "pdfmark" instruction (like print
+it out). The last two lines add the bookmark. The text of the bookmark
+should be in round brackets and should <b>not be in quotes</b>. &amp;_figbkmark_
+gets resolved into the bookmark text in this case. If you edit a postscript
+file to add these lines then do not put the lines in double quotes as in
+the code below. These quotes are there to get the program syntax correct.
+And if you edit a file then copy and paste what you see below within the
+double quotes. Do not think in code terms and try to combine two lines
+into one. Just copy it exactly as it is. Note that two sets of brackets
+are curly brackets but round brackets are used to contain the bookmark
+text. If you want to check that you have done it correctly then open up
+the postscript file in "gv" after you have edited it. It will soon tell
+you if there is a problem, though you may not understand its explanation.
+If all is well then the bookmark should be there when you convert the postscript
+file to a pdf.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp;&nbsp;&nbsp; %if %length(&amp;_figbkmark_) %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if _n_=1 then do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put _infile_;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put "/pdfmark where";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put "{pop} {userdict
+/pdfmark /cleartomark load put} ifelse";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put "[ /Title (&amp;_figbkmark_)";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put "&nbsp; /OUT pdfmark";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else put _infile_;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %end;</tt></td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+This concludes the guide to Spectre administration. Hopefully, you can
+see that this work is easy and it won't take up a lot of your time. On
+the negative side, it might mean that you will be given a lot of programming
+to do in addition to your Administrator duties.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+</body>
+</html>

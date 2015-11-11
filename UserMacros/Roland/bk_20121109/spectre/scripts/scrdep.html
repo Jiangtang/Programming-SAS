@@ -1,0 +1,153 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="script dependencies Spectre">
+   <meta name="Description" content="Shell script dependencies within Spectre">
+   <title>Script dependencies</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Script dependencies</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 30 Apr 2006)</b></center>
+
+<h2>
+Introduction</h2>
+The dependencies of the major scripts will be shown on this page.
+<h2>
+<a NAME="fullrunsuite"></a>fullrunsuite</h2>
+
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>fullrunsuite</tt>
+<br><tt>&nbsp;&nbsp; makerun&nbsp;&nbsp; (see below)</tt>
+<br><tt>&nbsp;&nbsp; runsuite&nbsp; (see below)</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="makerun"></a>makerun</h2>
+Note that this script creates the scripts "runsuite", "runderived" and
+"runreports" whose dependencies are shown below.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>makerun</tt>
+<br><tt>&nbsp;&nbsp; crtitlesds</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vtitles</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; alltitles</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %crprotds</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %crtitlesds</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; checktitles</tt>
+<br><tt>&nbsp;&nbsp; derorder</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sortnpref</tt>
+<br><tt>&nbsp;&nbsp; intitlabels</tt>
+<br><tt>&nbsp;&nbsp; intitlesds</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="runsuite"></a>runsuite</h2>
+
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>runsuite</tt>
+<br><tt>&nbsp;&nbsp; getname</tt>
+<br><tt>&nbsp;&nbsp; runderived&nbsp; (see below)</tt>
+<br><tt>&nbsp;&nbsp; runreports&nbsp; (see below)</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="runderived"></a>runderived</h2>
+
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>runderived</tt>
+<br><tt>&nbsp;&nbsp; getname</tt>
+<br><tt>&nbsp;&nbsp; crtitlesds</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vtitles</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; alltitles</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %crprotds</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %crtitlesds</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; checktitles</tt>
+<br><tt>&nbsp;&nbsp; sasb</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sc</tt>
+<br><tt>&nbsp;&nbsp; emailaddr</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gethome</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; getname</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="runreports"></a>runreports</h2>
+
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>runreports</tt>
+<br><tt>&nbsp;&nbsp; getname</tt>
+<br><tt>&nbsp;&nbsp; crtitlesds</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vtitles</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; alltitles</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %crprotds</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %crtitlesds</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; checktitles</tt>
+<br><tt>&nbsp;&nbsp; sasb</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sc</tt>
+<br><tt>&nbsp;&nbsp; donepages</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; getlsps</tt>
+<br><tt>&nbsp;&nbsp; emailaddr</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gethome</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; getname</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="bigps"></a>bigps</h2>
+
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>bigps</tt>
+<br><tt>&nbsp;&nbsp; lis2ps&nbsp; (see below)</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="lis2ps"></a>lis2ps</h2>
+
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>lis2ps</tt>
+<br><tt>&nbsp;&nbsp; getlayout</tt>
+<br><tt>&nbsp;&nbsp; getitles</tt>
+<br><tt>&nbsp;&nbsp; pages</tt>
+<br><tt>&nbsp;&nbsp; lptops</tt>
+<br><tt>&nbsp;&nbsp; badlines</tt>
+<br><tt>&nbsp;&nbsp; badchars</tt>
+<br><tt>&nbsp;&nbsp; pstolp</tt>
+<br><tt>&nbsp;&nbsp; filesize</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="a4ps"></a>a4ps and usps</h2>
+
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>a4ps</tt>
+<br><tt>&nbsp;&nbsp; getitles</tt>
+<br><tt>&nbsp;&nbsp; getlsps</tt>
+<br><tt>&nbsp;&nbsp; compfl</tt>
+<br><tt>&nbsp;&nbsp; pages</tt>
+<br><tt>&nbsp;&nbsp; lptops</tt></td>
+</tr>
+</table>
+
+</body>
+</html>

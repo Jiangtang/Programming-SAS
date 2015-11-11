@@ -1,0 +1,177 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="triple test pack validation for sas macros">
+   <meta name="KeyWords" content="triple test pack validation sas macros">
+   <title>Triple Test Pack Validation Defined</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+"Triple Test Pack Validation" Defined</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 13 Aug 2007)</b></center>
+
+<h2>
+Introduction</h2>
+<b>"Triple Test Pack Validation"</b> is a method for <b>validating distributed
+sas macros</b>. By "distributed sas macros" is meant sas macros written
+by an author for other non-connected users to use. The method was designed
+by Roland Rashleigh-Berry on the 04 August 2007. The method is fully explained
+and formalized on this page and no other formal definition of this methodolgy
+exists elsewhere. A date is put in the second title line to make it clear
+when this document was updated and hence the methodology possibly refined
+or clarified.
+<h2>
+Why the need</h2>
+The need for this specific method of sas macro validation arises from the
+widespread sharing of sas macros that is most commonly distributed through
+the medium of the Internet. There are a lot of useful sas macros available
+but they are used less often than it could be due to their lack of being
+"validated". The methodology is for the benefit of both the macro author
+who wishes their macros to be used and the end users who require that sas
+macros be <b>validated</b> before they can be used. Since the author of
+the sas macros and the end user are entirely unconnected, a different method
+for validation is needed as the macro author is unaware of and is not bound
+by any of the end user's SOPs for developing and writing code. Some method
+is needed for the author to pass on their own validation work on the macros
+that reflects the author's intended use of the macro is required in a way
+that is complete and fully documented that could somehow tie in with the
+end user's requirements for validation purposes. "<b>Triple test pack validation</b>"
+aims to fill that need.
+<h2>
+Sort of macros to test</h2>
+The type of macros to be validated in the way described here are <b>simple
+macros</b>. For complex reporting macros with many parameters, this method
+is also a possibility but there are easier ways of performing validation.
+For that situation I recommend "Restricted Usage Validation", as I will
+explain. For demography reporting, for example, perhaps only a few parameters
+of a complex reporting macro might be used so it would be easier to validate
+the code that calls the macro to produce the demography report rather than
+validate the entire functionality of the macro being called to produce
+the report. Double programming might be done to validate such a report
+and then the macro or code member that calls the complex macro could be
+regarded as validated while the complex macro itself remains unvalidated.
+<h2>
+Type of validation</h2>
+The type of validation done is testing that the output of the macro is
+correct and conforms to what it should be, as described in the purpose
+of the macro. It is purely <b>functionality testing</b>. An expected result
+and an actual result are compared and marked as "equal" if they are equal
+and "not equal" if not equal. There is no "code review" or "peer review"
+done on the macro code itself, as the author is not connected to the end
+user and therefore the author can not be expected to conform to the end
+user's programming standards or SOPs. However, the macro purpose and parameters
+will be looked at and these should be clear.
+<h2>
+How it works in simple terms</h2>
+In simple terms, the author of a macro who intends for it to be distributed
+must do some extra work. In the header of their code they must clearly
+explain the purpose of the macro and briefly describe every parameter and
+how they should be used. In addition, they have to provide a detailed <b>test
+pack</b> that demonstrates that the macro works correctly and as advertised
+and the author has to test all the parameters of the macro (except where
+there are groups of parameters that perform the same function such as parm1-parm9,
+in which case only the first two parameters need be tested). The <b>header</b>
+of the test pack is in <b>three parts</b> corresponding to <b>three levels
+of checking</b> which gives rise to the name "<b>triple test pack validation</b>".
+The author fills in the first part of the header, following the instructions,
+to indicate when they have validated the macro. This is <b>level one</b>
+testing. <b>Level two</b> testing is done by an independent programmer
+who would typically be a programmer who also writes sas software and distributes
+it. This independent programmer reviews the tests done by the program author
+and adds their own tests (at least one) to convince themselves that the
+macro is fulfilling its purpose, as described in the header, and is working
+correctly. When they are sure it is working correctly they fill in their
+part of the header, according to the instructions. <b>Level three</b> testing
+is done by the end user and is more like <b>user acceptance testing</b>.
+This last part of the checking is dependent on the in-house SOPs allowing
+validation to be done this way. The end user must review the testing done
+on the macro to see if it is satisfactory. It is the end user who must
+decide whether the macro is suitable for their purposes and if so, whether
+the degree of testing done reflects the way the macro will be used within
+their own organisation. If deemed suitable for the purpose, but not tested
+to the degree required, then the end user will have to enhance the testing
+in the test pack. If both suitable for the purpose and the end user has
+reviewed the testing done both by the programmer and independent programmer
+and considers it to be sufficient then they can fill in their part of the
+header and by dating it, mark it as validated, and then the validation
+of the macro is complete. The test pack and sas log then get stored in
+a safe place and the macro is then ready for use as a "validated" macro.
+<h2>
+Testing order</h2>
+Where macros are dependent on other macros then those macros at the lowest
+level should be validated first to avoid the situation where a macro is
+calling another macro that has not undergone any testing.
+<h2>
+The header</h2>
+The header of any macro being tested does not get changed by the "triple
+test pack" validation process, such as adding the validator and the validation
+date. It is the test pack header that gets changed. If validation information
+needs to be linked to the macro being tested then this can be done by other
+means such as using a script to link with the validation status held elsewhere
+or maybe there is software like Clearcase to keep a history for the macro
+that records "promotion to QC" dates and validation dates.
+<p>The test pack header has three sections. Each section has instructions
+on how to fill it in and contain fields that must be filled in that clearly
+indicate if the validation work has been done. In the code section there
+are clearly labelled segments where the program author, the independent
+tester and optionally the user acceptance checker adds their test code.
+The header can be linked to <a href="macros/testhdr.sas" target="_blank">here</a>.
+<h2>
+Bug reporting</h2>
+It is hoped that after a macro has been through the first two stages of
+testing then there will be no bugs in a macro. To remind the reader, this
+method of testing is meant for simple macros, so finding a bug at the user
+acceptance stage, after two layers of testing, should be unlikely. Where
+it might occur is where the value supplied to a parameter is unexpected
+and the macro does not deal with this unexpected situation in the way the
+user would like. Bugs should be reported back to the macro author. If the
+author recognises it as a bug and fixes it then the macro can be updated
+and testing started again with the macro author rerunning the test pack.
+There is no need for the second level testing to be done again, by the
+independent programmer, unless the macro author has extended the functionality
+of the macro as evidenced by updating the version number. If the macro
+author does not consider that the bug reported really is a bug then the
+user will have to decide what to do. They might issue a warning to internal
+users about what the macro can not cope with. They might amend or rewrite
+the macro in-house and follow their own internal procedures for validation
+or they might abandon the intention to use the macro.
+<h2>
+Conclusion</h2>
+In this document I have set out a plan for validating sas macros in a way
+that I hope can link in with an end user's SOPs for macro validation that
+will minimise the end user's efforts in the validation process.
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+</html>

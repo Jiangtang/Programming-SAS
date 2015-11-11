@@ -1,0 +1,165 @@
+*<PRE>;
+/*
+On Wed, 18 Oct 1995, Paul Robins wrote:
+
+> The problem:
+>
+> We have a project which involves maintaining approx 300 SCL
+> programs, which have already been created. We would like to
+> be able to extract them to standard ascii files so that we
+> can use grep/awk etc on the source. We really don't want to
+> have to open each catalogue/program independantly and 'save to
+> file'.
+>
+> Has anyone written something to do this painlessly?
+>
+
+Paul,
+
+I had a chat about this to a colleague and they knocked up the following
+code.  It seems to do the trick under SAS v6.10 under MS/Windows.  For other
+operating systems you may need to make some modifications (e.g. The check for
+form feed is ASCII 13, I don't know what value a form feed has under (e.g.)
+EBCDIC).  I suspect that you are running SAS under UNIX; in which case just
+change the file locations.
+
+The code follows, good luck ....
+e-mail : jamie_roberts@sandwich.pfizer.com
+*/
+
+***************************************************************** ;
+** PROGRAM : BUILDPRT                  TYPE: Base SAS          ** ;
+** AUTHOR  : Darrell Edgley, Praxis plc, 20 Manvers Steet,     ** ;
+**                           Bath BA1 1PX, England, UK         ** ;
+** DATE    : 19OCT1995                                         ** ;
+** FUNCTION: Read a SAS AF catalogue and dump its source code  ** ;
+**           to ASCII files.                                   ** ;
+** NOTES   : The output from this routine is sent to the       ** ;
+**           directory C:\TEMP.  This directory must exist     ** ;
+**           or be reassigned.                                 ** ;
+**           Written and tested under SAS v6.10 under          ** ;
+**           MS/Windows v3.1                                   ** ;
+** ----------------------------------------------------------- ** ;
+** MODIFICATION HISTORY:                                       ** ;
+** =====================                                       ** ;
+** NAME    :                 DATE: ddmonyy   CC No. :          ** ;
+** REASON  :                                                   ** ;
+***************************************************************** ;
+
+** Assign a file reference for the PROC BUILD print file ....  ** ;
+FILENAME buildprt 'C:\temp\buildprt.tmp' ;
+
+** Run PROC BUILD, send PRINT output to the BUILDPRT file ref. ** ;
+** NOTE: It is necessary to repeat the PRINT line for each     ** ;
+**       entry type ....                                       ** ;
+
+PROC BUILD CAT = lib_name.cat_name BATCH ;
+  PRINT SOURCE ET = program PRTFILE = buildprt  ;
+  PRINT SOURCE ET = scl     PRTFILE = buildprt APPEND  ;
+RUN ;
+
+** Read the external file, and create individual ASCII files   ** ;
+** for each SAS/AF SCL entry encountered ....                  ** ;
+DATA work.readit  ;
+  INFILE buildprt LRECL = 200 PAD MISSOVER ;
+  LENGTH memname memtype filetype $8 pathname $40 dataline $200 ;
+  RETAIN memname memtype filetype pathname ' ' ;
+
+  ** Check for NEW PAGE (ASCII 13), You may need to modify     ** ;
+  ** this for non-ASCII (e.g. IBM Mainframes use EBCDIC)       ** ;
+  INPUT @1 cc_chk $1 @ ;
+
+  IF cc_chk <= PUT('13'X,2.) THEN DO ;
+    ** Form feed character encountered.  Ignore this line cos  ** ;
+    ** it only contains print time info (i.e. date and time    ** ;
+    ** AND page number.  Also, skip the next line because it   ** ;
+    ** will be blank ....                                      ** ;
+
+    pathname = ' ' ;
+    dataline = 'FF' ; output ;
+    INPUT / ;
+  END ;
+
+  ** Read a line from the external file ....                   ** ;
+  INPUT @1 dataline $200. ;
+
+  ** .... Check this 'read' line for key elements ....         ** ;
+
+  IF INDEX(dataline,'ENTRY:') AND
+     INDEX(UPCASE(dataline),'LAST UPDATED:') THEN DO ;
+    ** This line contains the program header information, i.e. ** ;
+    ** the member name and type, its description and when      ** ;
+    ** it was last modified.                                   ** ;
+    ** ------------------------------------------------------- ** ;
+    ** Get the member name and type ....                       ** ;
+
+    pos = INDEX(dataline,'ENTRY:') ;
+
+    pos = pos + 7 ;
+
+    member = SCAN(SUBSTR(dataline,pos,17),1,' ') ;
+
+    memname = SCAN(member,1) ;
+    memtype = SCAN(member,2) ;
+
+    INPUT / @1 dataline $200. ;
+
+    SELECT(memtype) ;
+      WHEN('SCL')     filetype = 'SCL' ;
+      WHEN('PROGRAM') filetype = 'PRG' ;
+      OTHERWISE       filetype = 'OTH' ;
+    END ;
+
+    ** Assign the name of the ASCII file to be created ....    ** ;
+    pathname = 'C:\temp\' !! memname !! '.' !! filetype ;
+  END ;
+
+  IF INDEX(dataline,'**** SOURCE ****') THEN DO ;
+    ** Start of a new member ....                              ** ;
+
+    INPUT / @1 dataline $200. ;
+  END ;
+
+  OUTPUT ; ** To data set, so we can check the results ....    ** ;
+
+  IF pathname NE ' ' THEN DO ;
+    ** Output to ASCII files.  Using the FILEVAR option will   ** ;
+    ** create physical files depending on the current value    ** ;
+    ** of the PATHNAME variable ....                           ** ;
+
+    FILE outfile FILEVAR = pathname NOPRINT NOTITLES ;
+    PUT @1 dataline ;
+  END ;
+RUN ;
+
+
+****************************** End ****************************** ;
+
+*</PRE>;
+<script type="text/javascript" src="http://hb.lycos.com/hb.js"></script>
+<script type="text/javascript" src="http://ratings.lycos.com/ratings/lycosRating.js.php"></script>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var cm_role = "live";
+var cm_host = "tripod.lycos.com";
+var cm_taxid = "/memberembedded";
+var tripod_member_name = "schick";
+var tripod_member_page = "schick/scl_scan.sas";
+var tripod_ratings_hash = "1247464060:42025bbc1ffa05cafc1309afcae7ed3c";
+
+var lycos_ad_category = {"dmoz":"computers\/open_source","ontarget":"&CAT=technology&L2CAT=computing&L3CAT=programming","find_what":"software knowledge base"};
+
+var lycos_ad_remote_addr = "203.125.122.2";
+var lycos_ad_www_server = "www.tripod.lycos.com";
+var lycos_ad_track_small = "http://members.tripod.com/adm/img/common/ot_smallframe.gif?rand=275250";
+var lycos_ad_track_served = "http://members.tripod.com/adm/img/common/ot_adserved.gif?rand=275250";
+//--><!]]></script>
+<script type="text/javascript" src="http://scripts.lycos.com/catman/init.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-start.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-middle.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-end.js"></script>
+<noscript>
+ <img src="http://members.tripod.com/adm/img/common/ot_noscript.gif?rand=275250" alt="" width="1" height="1" />
+ <!-- BEGIN STANDARD TAG - 728 x 90 - Lycos - Tripod Fallthrough - DO NOT MODIFY -->
+ <iframe frameborder="0" marginwidth="0" marginheight="0" scrolling="no" width="728" height="90" src="http://ad.yieldmanager.com/st?ad_type=iframe&ad_size=728x90&section=209094"></iframe>
+ <!-- END TAG -->
+</noscript>

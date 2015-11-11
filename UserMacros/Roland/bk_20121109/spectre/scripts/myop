@@ -1,0 +1,33 @@
+#!/bin/bash
+#<pre><b>
+# Script     : myop
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 22-Nov-2004
+# Purpose    : To list output files owned by the user in table reference order
+# SubScripts : myfiles oplist
+# Notes      : One per line is printed
+# Usage      : myop t*.lis
+#              myop *.LST
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   File(s) to list
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Must have at least one file specified
+if [ $# -lt 1 ] ; then
+  echo "Usage: myop t*.lis" 1>&2
+  exit 1
+fi
+
+# use "oplist" to give a list of table numbers followed by
+# the file name but drop the table number, colon and space
+oplist $(myfiles "$@") | sed 's/^.*: //'

@@ -1,0 +1,536 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="Spectre FAQ">
+   <meta name="Description" content="Spectre FAQ">
+   <title>Frequently Asked Questions</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Spectre (Clinical) Frequently Asked Questions</h1></center>
+
+<h2>
+Introduction</h2>
+There are plenty of questions that could be asked about the reporting macros
+(or other macros) but you are expected to learn about them from the headers
+and try things out by running test code. This page is for questions about
+Spectre that are not covered elswhere in the documentation. You can submit
+your question to me by email but you should make sure it is not answered
+elsewhere on this web site. There is a search box on the main page to help
+you find what you are looking for. All the html pages as well as every
+sas code member and shell script on this web site has been indexed.
+<h2>
+F.A.Q.</h2>
+<b>Q: Why are there so many macros in the macro library if Spectre does
+not use them all?</b>
+<p><b>A:</b> I have consolidated my entire collection of macros into one
+library and they just so happen to be stored here on the Spectre web site.
+I had to do this because I could not continue to maintain a separate Spectre
+macro collection as a subset of the full macro collection due to time constraints.
+There were good reasons for having separate Spectre macros at first, the
+main one being so that the validation effort could concentrate solely on
+those macros that Spectre needs. However, as the Spectre macros get enhanced,
+more macros from the main macro library need to be copied across to support
+them to the point where it is better if all macros are regarded as potentially
+needing validation so all the macros might just as well be stored together,
+which I have now done.
+<br>&nbsp;
+<p><b>Q: Why are the all Spectre scripts written in the bash shell?</b>
+<p><b>A:</b> Because the bash shell is easy to program in, is widely available
+for free, has good functionality and is a widely used interactive shell
+so a lot of people are familiar with it. Ksh-93 is probably better at time
+of writing but it is not a free shell, not widely available and its advantages
+do not matter for the sort of shell scripts used in Spectre. By using the
+bash shell I hope there is a greater pool of programmers available to maintain
+the Spectre scripts and write new ones as the need arises. I regard the
+shell scripts in Spectre mostly as throw-away code that links the components
+of Spectre together. I hope programmers will be in the position that they
+can see the need for and write shell scripts for Spectre as they see fit
+at any time so that the components of Spectre can fulfill their reporting
+needs in a variety of situations. Spectre is really an infrastructure and
+was never intended as a fixed reporting system.
+<br>&nbsp;
+<p><b>Q: What if I want to keep the titles and footnotes in a spreadsheet
+instead of using Spectre ".titles" members?</b>
+<p><b>A:</b> That is no problem. So long as your spreadsheet is storing
+all the information that Spectre needs, you could create a file exactly
+like ALL.TITLES from your extracted spreadsheet fields so that the Spectre
+script "crtitlesds" can read it in or you could create the "titles" and
+"protocol" dataset by a direct method so long as it entirely matched the
+structure needed by Spectre. If the latter, then you should perform the
+same error checking that Spectre does.
+<br>&nbsp;
+<p><b>Q: How do I break the 10 titles, 10 footnotes limit? I need to do
+this to copy a client layout style.</b>
+<p><b>A:</b> I plan to build in the flexibility to handle this by allowing
+you to declare a client pagexofy macro to enable you to add extra titles
+and footnotes to the output file at the same time as adding the "Page x
+of Y" labels.
+<br>&nbsp;
+<p><b>Q: How do I filter out some categories I am not interested in showing
+using %unistats?</b>
+<p><b>A:</b> If it is "no" responses you want to exclude then one way is
+to reset these to missing in a data step and use the parameter <b>missing=no</b>
+so that these now missing values are not shown. You can also use the <b>filtercode=</b>
+parameter for very simple editing of the report dataset. For other categories
+you can post-process the output dataset to drop these categories and then
+call %unicatrep to produce the report as shown in Demo 12 for %unistats
+that you can link to <a href="unistats.html#demo12" target="_blank">here</a>.
+<br>&nbsp;
+<p><b>Q: Can I show the "%" sign for %unistats and %npcttab percentage
+values?</b>
+<p><b>A:</b> Yes. For both macros you can specify <b>pctsign=yes</b> to
+make these appear.
+<br>&nbsp;
+<p><b>Q: Can I combine two values in one line using %unistats like turning
+min and max values into a range?</b>
+<p><b>A:</b> Yes and since version 5.0 of %unistats this has been made
+very easy. You just specify your stats labels together with no spaces inbetween
+such as "Min;Max" to the <b>descstats=</b> parameter and the macro will
+do the rest. You can get truncation sometimes but you can set <b>mincolw=</b>
+to a suitable value or change the length of the numeric formats to widen
+the column to avoid truncation.
+<br>&nbsp;
+<p><b>Q: The field width used by %unistats is 11 bytes which is not wide
+enough for me. How can I make it wider?</b>
+<p><b>A:</b> The field width is controlled by the "catnfmt" parameter which
+by default is catnfmt=3. The field width is this format length plus 8 bytes
+(includes 5 bytes for the default percentage format pctfmt=5.1). If you
+set the parameter pctsign=yes then an extra byte is allocated. To make
+the field wider then increase the catnfmt= format length to catnfmt=4.
+, catnfmt=5. etc. until it is as long as you want or set the parameter
+<b>mincolw=</b>
+(minimum column width) to a suitable value.
+<br>&nbsp;
+<br>&nbsp;
+<p><b>Q: I want to use Spectre on Windows but I do not want to install
+Cygwin. Will Spectre still work?</b>
+<p><b>A:</b> Yes, Spectre will still work on Windows without Cygwin but
+none of the Spectre scripts will work. Because the "titles" and "protocol"
+datasets are built using a script, you will have to write a sas program
+to do this instead, but this should be easy to do since the script calls
+macros to do this, namely <a href="macros/crtitlesds.sas" target="_blank">%crtitlesds</a>
+and <a href="macros/crprotds.sas" target="_blank">%crprotds</a> so you
+can call these macros in your sas code. If it is just the reporting macros
+<b>%unistats</b>
+and <b>%npcttab</b> you want to use then these will work on any platform
+and&nbsp; how to do this for Windows is explained on this
+<a href="winusers.html" target="_blank">page</a>.
+All the demonstration of these two macros shown on their main pages were
+done on my PC outside of the Spectre system and without using Cygwin so
+you can do the same.
+<br><a href="clinmacros/unistats.html" target="_blank">%unistats</a>
+<br><a href="clinmacros/npcttab.html" target="_blank">%npcttab</a>
+<br>&nbsp;
+<p><b>Q: What email client should I use on Cygwin?</b>
+<p><b>A: </b>There is currently no "<b>mailx</b>" for Cygwin so you need
+to download "<b>ssmtp</b>" from the Cygwin "mail" directory. Make sure
+it is working by using the <a href="scripts/testemail" target="_blank">testemail</a>
+script and making amendments where you need to. When "mailx" has been ported
+over to Cygwin and is reliable then use of "ssmtp" will be dropped from
+the Spectre scripts. The only use Spectre makes of the email client is
+to send an email to the user telling them when a long-running production
+script has finished so it is not important in any case.
+<br>&nbsp;
+<p><b>Q: When will the Postscript and PDF scripts work for Spectre on Windows?</b>
+<p><b>A:</b> This is being worked on.
+<br>&nbsp;
+<p><b>Q: Will the Windows version of Spectre work exactly like the Unix
+version?</b>
+<p><b>A:</b> It will be very similar but you will probably choose to use
+Wordpad on Windows to edit or view files while you are pointing to the
+same directories on Cygwin. Wordpad can also be called directly from Cygwin
+to edit files and how to do this is detailed elsewhere in this FAQ.
+<br>&nbsp;
+<p><b>Q: Can I use Wordpad from a Cygwin terminal window?</b>
+<p><b>A:</b> Yes, you can call Wordpad directly from a Cygwin window, and
+I encourage you to do so, but you have to make sure the directory where
+<b>wordpad.exe</b>
+is stored is on your PATH statement. It will not be there by default (although
+the Notepad directory is probably there). If you have a <b>shortcut</b>
+to Wordpad then look at the properties of the shortcut and where it is
+stored will be in the "<b>Target:</b>" field. In mine it says "C:\Program
+Files\Windows NT\Accessories\wordpad.exe" so I have added it to my PATH
+in my <b>.bashrc</b> file like this.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>PATH=$PATH:/cygdrive/c/"Program Files"/"Windows NT"/Accessories</tt></td>
+</tr>
+</table>
+
+<p>When you call Wordpad you should run it as a background task by having
+a "<b>&amp;</b>" at the end of your command line. Not only will you be
+able to carry on using commands in your Cygwin window in this way but you
+will also be able to open other files using Wordpad -- but again -- remember
+the "<b>&amp;</b>" at the end.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>wordpad filename.ext &amp;</tt></td>
+</tr>
+</table>
+
+<p>Note that <b>Wordpad does not understand Unix-style directory names</b>.
+If you use Wordpad then it is best limited to viewing or editing files
+in the current directory.
+<br>&nbsp;
+<p><b>Q: I am browsing a file using Notepad but the lines are all joined
+together. What is wrong?</b>
+<p><b>A:</b> Notepad expects the file to have DOS line endings which have
+a line feed and carriage return at the end of every line. Unix and Linux
+files do not have these carriage returns (only a line feed) so if one of
+these files are opened in Notepad then it thinks everything is in one line.
+The solution to the problem is to use <b>Wordpad</b> instead. Wordpad understands
+these files and shows them as separate lines and will add carriage returns
+if you save the file after editing it. After you save a file you have edited
+in Wordpad you will find that Notepad can now read it correctly since these
+carriage returns have been added.
+<p>Note that <b>Wordpad does not understand Unix-style directory names</b>.
+If you use Wordpad then it is best limited to viewing or editing files
+in the current directory.
+<br>&nbsp;
+<p><b>Q: I am using Cygwin but can't navigate to the "C:" directory. How
+do I find my way around?</b>
+<p><b>A:</b> Cygwin follows the same convention as Unix so a root directory
+must begin with a slash that looks like this -- "/". Windows have root
+directories that start like this "C:\". To get to the "C:" drive on Cygwin
+then there is a special "<b>/cygdrive/</b>" notation you must use, so to
+navigate to the "C:\" drive on Windows going through a Cygwin window then
+you should use "<b><tt>cd /cygdrive/c</tt></b>". Once you know that then
+you will have no problems navigating to the directory you need to.
+<br>&nbsp;
+<p><b>Q: What Linux emulators are recommended for Spectre on Windows?</b>
+<p><b>A:</b> I only know <a href="http://www.cygwin.com" target="_blank">Cygwin</a>
+well enough to recommend it although there are others about such as <b>UWin</b>
+and WSH (Windows Script Host, aka <b>Interix</b>). I recommend Cygwin because
+it has been around for a long time so most of the bugs should have been
+fixed and I know it has all the utilities that Spectre needs (I have it
+on my PC). Also, Spectre scripts are <b>bash</b> shell scripts and bash
+is the normal shell for Cygwin. For other Linux emulators you might have
+to download bash from somewhere else if it does not come with the package.
+Also, a very important thing, Cygwin should be installed with a <b>Default
+Text File Type</b> of "<b>DOS / text</b>" (not the recommended way) so
+that you can edit command files using Wordpad and not run into problems.
+I don't know if other Linux emulators have this facility that you will
+need.
+<br>&nbsp;
+<p><b>Q: What options should I use for installing Cygwin?</b>
+<p><b>A:</b> At the start of installing Cygwin you will be shown a screen
+that shows the directory it will download to and below it on the left will
+be "<b>Install For</b>" for which you should choose the recommended "<b>All
+Users</b>" (unless you really don't want other people to have access to
+it) and on the right "<b>Default Text File Type</b>" for which <b>you should
+change the default</b> so that it becomes the non-recommended "<b>DOS /text</b>".
+<br>&nbsp;
+<p><b>Q: What is the minimum configuration for running Spectre?</b>
+<p><b>A:</b> If you are running on a pure Unix or Linux platform then you
+will need a Linux/Unix version of SAS software. If on a Windows platform
+then you will need a Windows version of SAS but to run the Spectre shell
+scripts you will need a Linux emulator installed such as <a href="http://www.cygwin.com" target="_blank">Cygwin</a>.
+The bash shell must be present (the default for Cygwin) and gawk 3.1.4
+(or higher) should be installed as well as the "lptops" utility ("lptops"
+for Unix/Linux installations only). Assuming you do not need SAS/GRAPH&reg;
+software then a lot can be done with Base SAS software but calculating
+p-values for numeric variables will require SAS/STAT&reg; software. More
+details can be found on the <a href="install.html" target="_blank">installation</a>
+page. SAS Learning Edition contains all the modules you require but you
+are limited to 1500 observations (for SAS/LE 4.1) so you can not use that
+for production work.
+<br>&nbsp;
+<p><b>Q: I am using SAS</b>&reg;<b> Learning Edition. How can I make the
+Spectre macros automatically available as sasautos macros when I invoke
+it?</b>
+<p><b>A: </b>You can add the Spectre macros to the sasautos path in your
+<b>autoexec.sas</b>
+member. If you do not already have an autoexec member then you can set
+one up. If you are using SAS&reg; Learning Edition 4.1 then you can place
+this in the same directory as the sas executable (<b>sas.exe</b>) which
+should be in <b>C:\Program Files\SAS\SAS Learning Edition 4.1</b> directory
+(assuming that when you installed SAS Learning Edition you let the directory
+names default). I have done this and this is what my autoexec.sas member
+contains. You may have placed the macros in a different directory but the
+change should be obvious. You will see some other options required by Spectre
+in the entry below.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>options noovp nodate nonumber xsync noxwait;</tt>
+<br><tt>options sasautos=("C:\spectre\clinmacros"&nbsp; "C:\spectre\utilmacros"
+SASAUTOS);</tt></td>
+</tr>
+</table>
+
+<p><b>Q: When doing clinical reporting, what does Spectre expect from the
+autoexec.sas member?</b>
+<p><b>A:</b> The required system options "<b>noovp nodate nonumber xsync
+noxwait</b>" must be set and the Spectre macros defined to sasautos as
+was done above. If sas is started from the clinical reporting folders then
+<b>sasautos
+should be set to all needed macro directories in the correct order with
+the Spectre macros and SASAUTOS last</b>. That is all. Do not allocate
+any study libraries in <b>autoexec.sas</b> or call a macro that does this
+as for new studies there won't be any datasets to allocate and perhaps
+no allocation macros to call. You might call a macro from within autoexec.sas
+to set up sasautos but when autoexec.sas ends this should have been done.
+I use a high-level
+<b>autoexec.sas</b> on my PC that is stored in the same
+folder as the sas executable and my directory structure for clinical reporting
+is explained below and this is what the code looks like for my <a href="macros/autoexec.sas" target="_blank">autoexec.sas</a>
+(best viewed as the source file).
+<br>&nbsp;
+<p><b>Q: I wrote my autoexec.sas member that allocates all the macros correctly.
+Now, how do I assign the data libraries and formats?</b>
+<p><b>A: </b>Spectre requires that you have two macros to do this named
+<b>%allocr</b>
+and <b>%allocw</b>. %allocr assigns data libraries and formats in read
+mode and %allocw does the same for write mode. <b>Within these macros you
+must set up a global macro variable named _ptlibref_ set to the libref
+of where the "titles" dataset and "protocol" dataset are to be stored.</b>
+<p>These macros are required for the Spectre scripts so you should use
+these for all allocation purposes. You might have low level macros to do
+this or high level macros. I use low level macros for this such that one
+has to be written for every study increment. You can see two examples of
+them below.
+<br><tt><a href="macros/allocr.sas" target="_blank">%allocr</a></tt>
+<br><tt><a href="macros/allocw.sas" target="_blank">%allocw</a></tt>
+<br>&nbsp;
+<p><b>Q: I am using Cygwin (or another Linux emulator). How can I call
+SAS on Windows from my scripts?</b>
+<p><b>A:</b> To call SAS from the Linux emulator you will have to add the
+directory that contains the sas executable (sas.exe) to your PATH declaration.
+If you don't know where it is located then do a file search for "<b>sas.exe</b>"
+on Windows on the SAS directories contained in the "Program Files" subfolder.
+You should also add the Spectre scripts to the PATH statement. Also, because
+SAS on Windows will not recognise Unix-style path names, you will have
+to declare your home directory in a way that SAS will understand it. For
+the Spectre scripts that call SAS, a variable <b>HOMEW</b> is set up and
+exported for this. You can set this up in your <b>.bashrc</b> file (or
+it might be <b>.bashrc_own</b> or another file name). The relevant entries
+in my <b>.bashrc</b> file (I use Cygwin) are shown below.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt># Add Spectre scripts to the path as well as the sas executables</tt>
+<p><tt># For SAS Learning Edition 1.0 on Windows 98</tt>
+<br><tt>#PATH=$PATH:/cygdrive/c/spectre/scripts:/cygdrive/c/PROGRA~1/SASINS~1/SAS/v8&nbsp;</tt>
+<p><tt># For SAS Learning Edition 4.1 on Windows XP - note that file names
+containing spaces must be quoted</tt>
+<br><tt>PATH=$PATH:/cygdrive/c/spectre/scripts:/cygdrive/c/"Program Files"/SAS/"SAS
+Learning Edition 4.1"</tt>
+<p><tt># Set up HOMEW as a Windows path so SAS on Windows knows where my
+home directory is</tt>
+<br><tt>HOMEW=C:\\cygwin\\home\\$USER</tt>
+<p><tt>export HOMEW</tt></td>
+</tr>
+</table>
+
+<p><b>Q: Why are there different versions for scripts that call SAS on
+Windows?</b>
+<p><b>A: </b>For every shell script that calls sas, there is a mirror Windows
+script whose name ends in "<b>_win</b>". This is a different version of
+the same script that does not rely on the "<b>-stdio</b>" feature of SAS
+that will be there for pure Linux or Unix implementations. For the "_win"
+version, sas code will be written to a temporary file and that file name
+supplied to the "<b>-sysin</b>" statement instead of feeding the code into
+<b>standard
+input</b> (which is by far the better method to use on pure Unix or Linux
+platforms). This could all be done in the same script but it keeps things
+neater and easier to maintain if separate scripts are used. If you are
+running on Windows then you can call the main script as normal but it will
+automatically branch to the "_win" member if it detects you are running
+on Windows.
+<br>&nbsp;
+<p><b>Q: Will there ever be a GUI front end supplied with Spectre?</b>
+<p><b>A:</b> There is a future possibility of a GUI front end for Spectre
+and at the time of writing it is envisaged that it will be written in "python"
+and make Spectre platform independent but as yet, no decision has been
+made. At this stage it is not clear whether the envisaged GUI front end
+will require a Linux emulator for Spectre but it seems likely. If I ever
+get round to writing one, it will only be made available to clients with
+a support contract with me.
+<br>&nbsp;
+<p><b>Q: The ".lis" output files always have the same name (before the
+period) as the program that created it. Is it possible to change this so
+that it fits in with our site naming conventions?</b>
+<p><b>A:</b> This is possible using the "lisfile:" line in the ".titles"
+member. I would urge people to use it sparingly as an important thing about
+any reporting system is to know what program created what output. If you
+break this relationship between program name and output file name then
+you will not be sure what program created what output and you might be
+obliged to write both the program and the output file name somewhere in
+the output such as the final footnote.
+<br>&nbsp;
+<p><b>Q: A p-value I need for one of my variables is not supplied by the
+%unistats macro. Does this mean I can not use the %unistats macro to produce
+the table and I must code everything by hand?</b>
+<p><b>A:</b> No, you should still use %unistats with <b>print=no</b> so
+that it produces an output dataset and no print but <b>do not ask for a
+p-value for that variable</b>. You can then merge in the p-value you need
+into the output dataset after you have calculated it and then you can call
+<b>%unicatrep</b> to finish the job of producing the report. See the <a href="unistats.html#demo12" target="_blank">Demo
+12</a> example on the unistats page as a guide to show you how to do this.
+The macro was designed to work in that way.
+<br>&nbsp;
+<p><b>Q: What sort of directory structure do I need for clinical reporting?</b>
+<p><b>A:</b> If you haven't got one already then consider that a formats
+directory and sas macro directory would sometimes be needed at every level
+with the format search path and sasautos search path going from the lowest
+directory upwards. If you are a CRO then you will have different clients
+and each client office might have different standards, formats or macros
+so it is best if your directory structure distinguishes the office within
+the client even if not needed for some clients. This is the directory structure
+I have set up on my PC for pharma reporting for purposes of illustration.
+What you see is the output from the script <a href="scripts/dirtree" target="_blank">dirtree</a>
+run from the "C:\pharma" directory which equates to the "/cygdrive/c/pharma"
+directory on Cygwin. I have one imaginary customer called "xenuyama" with
+an office in Tokyo. They have a drug they call "DRUG001" and the protocol
+is for their first phase III trial which is named "DRUG001C3001". I am
+working on the "24weeks" increment.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>xenuyama</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; formats</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; macros</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; tokyo</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DRUG001</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+DRUG001C3001</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+24weeks</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+data</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+analysis</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+derived</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+raw</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+formats</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+macros</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+progs</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+formats</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+macros</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+formats</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+macros</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; formats</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; macros</tt></td>
+</tr>
+</table>
+
+<p>Taking this illustrative example further, I am doing a lot of work in
+the 24weeks programs directory for xenuyama so in my <b>.bashrc</b> file
+(might be <b>.bashrc_own</b> for you) I have set up a user environment
+variable so I can jump to this directory using "<b>cd $xyprogs</b>". Here
+are the two lines I put in my <b>.bashrc</b> file so I can do this.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>xyprogs=/cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>export xyprogs</tt></td>
+</tr>
+</table>
+
+<p>This is me jumping to that directory direct from my home directory in
+a Cygwin session.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 ~</tt>
+<br><tt>$ cd $xyprogs</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$</tt></td>
+</tr>
+</table>
+
+<p><b>Q: I have set up the margins and paper type in the protocol member
+but I am not getting the linesize and pagesize values requested by the
+client.</b>
+<p><b>A:</b> Spectre will calculate linesize and pagesize values correctly
+but if your client has special needs for linesize and pagesize values then
+you can override what Spectre calculates in the client titles macro.
+<br>&nbsp;
+<p><b>Q: I need to make a system call from one of my sas programs. What
+is the best way to do this?</b>
+<p><b>A:</b> If you make a system call from one of your sas programs then
+try to write it so that it will work on both Unix and Windows. Use "<b>systask
+command</b>" rather than "<b>x</b>", especially if you are running on Windows,
+to avoid command windows flashing up and disappearing. If using "systask
+command" then consider whether you should wait for the system call to complete
+before you do any more sas work. If you do then use the "<b>waitfor</b>"
+statement. If, for example, your system call was to delete an output file
+that you were then going to write to in your sas code then you should make
+sure the system call has finished before you write to the file otherwise
+it might get deleted after you have written to it. Here is a snippet of
+code from the <a href="macros/openrep.sas" target="_blank">%openrep</a>
+macro that illustrates this.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>*- delete temporary file if it already exists -;</tt>
+<br><tt>%if "&amp;sysscp" EQ "WIN" %then %do;</tt>
+<br><tt>&nbsp; systask command "erase &amp;outfile" taskname=del;</tt>
+<br><tt>%end;</tt>
+<br><tt>%else %do;</tt>
+<br><tt>&nbsp; systask command "rm -f &amp;outfile" taskname=del;</tt>
+<br><tt>%end;</tt>
+<br><tt>waitfor del;</tt></td>
+</tr>
+</table>
+
+<p><b>Q: What sort of power server do I need to run Spectre?</b>
+<p><b>A:</b> Spectre was developed for a <b>single processor server</b>
+and ran live on it for many months without any performance problems so
+its power requirements are very low. The SAS licence is cheaper for single-processor
+servers so the power needs of Spectre have been deliberately kept low.
+Its macros do a lot less error checking than is usual to achieve that.
+But you have to remember that Spectre is a <b>back end system</b>. If you
+are using a GUI front end that is resident on the same server then power
+requirements will be higher (approximately double or more) and there will
+be more traffic on the network in refreshing the graphics. For Spectre
+without a front end then I would recommend having one processor for every
+project suite of programs that you intend to run in parallel on a regular
+basis. For multiple projects that will never have their suites run in parallel
+then you can make do with a single processor server indefinitely, thus
+minimizing licence costs.
+<br>&nbsp;
+<p><b>Q: Does Spectre need expensive Unix administrators to look after
+it?</b>
+<p><b>A:</b> No, Spectre administration can all be done with a single Spectre
+administrator who could also be doing the job of a clinical trials SAS
+programmer. Spectre places no demands on Unix administrators beyond the
+usual requirements of making backups, etc., but sometimes you may need
+to use their services for copying files to other directories as the "root"
+user, thus keeping existing timestamp and ownership details unchanged.
+Some help from a Unix administrator will be required during the installation
+of Spectre on Unix.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+<br>&nbsp;
+</body>
+</html>

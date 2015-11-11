@@ -1,0 +1,424 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="aetab">
+   <meta name="KeyWords" content="aetab">
+   <title>aetab</title>
+<!-- saved from url=(0060)http://www.datasavantconsulting.com/roland/Spectre/bugs.html -->
+<!-- saved from url=(0052)http://www.datasavantconsulting.com/roland/bugs.html -->
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+%aetab</h1></center>
+<b><font color="#000000">Last updated: 19 Dec 2011</font></b>
+<h2>
+Introduction</h2>
+The<b> %aetab</b> macro was planned, designed and written near the end
+of 2011 to address the limitation of the three-level AE reporting maximum
+of <b>%npcttab</b>. Four level reporting is sometimes required and this
+was not possible with the %npcttab macro due to its design limitations
+so %aetab was created to handle an unlimited level of reporting.
+<p>Probably, <b>five level reporting</b> is the most useful for AE reporting
+when you consider the levels in AE reporting namely <b>"System Organ Class",
+"High Level Group Term", "High Level Term", "Preferred Term" and "Intensity"</b>.
+The higher the level you have counts and percentages for, for different
+treatment regimens, the more significant are the differences between drug
+adverse events between treatment arms that could be used in statistical
+analysis. Other low levels you might want to display are "outcome" and
+"hospitalisation".
+<p>It is not clear why AE reporting is limited to only a few levels within
+most pharmaceutical companies. This could be due to the complexity of the
+software. Considering that my own %npcttab macro has become overly complicated
+and difficult to work on then this is a possible reason.
+<p>Part of the rethink of the %npcttab macro and the design of the %aetab
+macro was to split out the processing and make it more generic with no
+limitations assumed for the number of levels of reporting. To this end
+I split up the conceptual elements into the "levels" macros. There is a
+<b>%freqlvls</b>
+macro for calculating <b><i>_FREQ_</i></b> counts, a <b>%trnslvls</b> macro
+for <i><b>transposing</b> </i>these frequency counts by treatment group,
+a <b>%comblvls</b> macro for <i><b>combining</b> </i>the text of the different
+levels and finally a <b>%prntlvls</b> macro for <b><i>printing </i></b>them.
+<p>In 2011, the %aetab macro is still relatively new. It has fewer parameters
+than %npcttab and is relatively easier to learn and understand. Because
+of this, I will leave it to the reader to learn more about its functionality
+from the macro header and in what follows below I will show you only a
+limited use of the %aetab macro. To learn more, you will have to read the
+macro header and try out your own test programs. You can link to the macro
+<a href="clinmacros/aetab.sas" target="_blank">here</a>.
+<h2>
+%npcttab vs. %aetab</h2>
+The <b>"pros"</b> of %aetab when compared to %npcttab is that it can handle
+an unlimited level of AE reporting (9 levels is the practical limit currently
+but can easily be increased if required). The <b>"cons"</b> are that it
+lacks some of the functionality of %npcttab. %aetab can calculate p-values
+in the same way %npcttab does but it chooses between the Chi Squared and
+the Fisher Exact test automatically based on expected cell counts.
+<p>More of the functionality of %npcttab will be added to %aetab but this
+will take some time and needs to be prioritized by user requests.
+<p>%aetab uses a "shared column" method of reporting corresponding to <b>style=3</b>
+for %npcttab. %aetab has only this one style. This style is only suitable
+for ascii reports due to the use of split characters in the column values.
+<b>Note that this style will only work for European character sets such
+that the letters are encoded in single bytes.</b>
+<h2>
+The face off</h2>
+Here you will see the output of %npcttab and %aetab compared, You will
+see that %aetab is a little bit more powerful in that it generates values
+for the summation of every level. You will also see that it can be "dumbed
+down" to make it look like %npcttab.
+<p>At some time in the future, %aetab might take over from %npcttab. It
+is a redesign and the code is much better but this isn't going to happen
+soon - if at all.
+<p>So we have code here that you can run and see the output and I recommend
+you run the code yourself if you are able. It will produce three outputs
+which will be shown below.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>options noovp nodate nonumber nocenter missing=" " formchar='|_---|+|---+=|-/\&lt;>*'&nbsp;</tt>
+<br><tt>sasautos=("C:\spectre\macros" SASAUTOS) ls=90 ps=63;&nbsp;</tt>
+<br><tt>title1;&nbsp;</tt>
+<p><tt>proc format;&nbsp;</tt>
+<br><tt>&nbsp; value trtnarr&nbsp;</tt>
+<br><tt>&nbsp; 1="Ambident@(1g/day)"&nbsp;</tt>
+<br><tt>&nbsp; 2="Betamax@(500mg/day)"&nbsp;</tt>
+<br><tt>&nbsp; 3="No@treatment"&nbsp;</tt>
+<br><tt>&nbsp; ;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>proc sort data=sasuser.demog(where=(fascd=1))&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; out=demog(drop=fascd);&nbsp;</tt>
+<br><tt>&nbsp; by patno invid;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>%popfmt(demog,trtcd,uniqueid=patno invid,trtfmt=trtnarr.)&nbsp;</tt>
+<p><tt>proc sort data=sasuser.adv&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; out=adv;&nbsp;</tt>
+<br><tt>&nbsp; by patno invid;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>data adv;&nbsp;</tt>
+<br><tt>&nbsp; merge demog(in=_dem keep=patno invid trtcd) adv(in=_adv);&nbsp;</tt>
+<br><tt>&nbsp; by patno invid;&nbsp;</tt>
+<br><tt>&nbsp; if _dem and _adv;&nbsp;</tt>
+<br><tt>&nbsp; label amsoc="System Organ Class"&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ampt="Preferred Term"&nbsp;</tt>
+<br><tt>&nbsp; ;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>*- %npcttab style=3 report -;&nbsp;</tt>
+<br><tt>%npcttab(dsin=adv,midlvl=amsoc,lowlvl=ampt,style=3,pvalues=yes);&nbsp;</tt>
+<p><tt>*- %aetab with the highest summation -;&nbsp;</tt>
+<br><tt>%aetab(dsin=adv,varlist=amsoc ampt,colw=33,pvalues=yes);&nbsp;</tt>
+<p><tt>*- %aetab made to look like %npcttab style=3 by dropping the highest
+summation -;&nbsp;</tt>
+<br><tt>%aetab(dsin=adv,varlist=amsoc ampt,colw=33,lvl1anylbl=" ",pvalues=yes);</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>This is the <b>%npcttab style=3</b> output.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="99%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>__________________________________________________________________________________________</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Ambident&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Betamax</tt>
+<br><tt>System Organ Class&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(1g/day)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (500mg/day)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Total</tt>
+<br><tt>&nbsp;&nbsp; Preferred Term&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=9)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (N=8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=17)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; p-value</tt>
+<br><tt>__________________________________________________________________________________________</tt>
+<p><tt>Gastrointestinal disorders&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 77.8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8 (100.0)&nbsp;&nbsp;&nbsp;&nbsp;
+15 ( 88.2)&nbsp;&nbsp;&nbsp;&nbsp; 0.471^</tt>
+<br><tt>&nbsp;&nbsp; Constipation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+9 ( 52.9)&nbsp;&nbsp;&nbsp;&nbsp; 0.637^</tt>
+<br><tt>&nbsp;&nbsp; Nausea&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+9 ( 52.9)&nbsp;&nbsp;&nbsp;&nbsp; 0.153^</tt>
+<br><tt>&nbsp;&nbsp; Abdominal pain NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8 ( 47.1)&nbsp;&nbsp;&nbsp;&nbsp; 0.057^</tt>
+<br><tt>&nbsp;&nbsp; Diarrhoea NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8 ( 47.1)&nbsp;&nbsp;&nbsp;&nbsp; 0.057^</tt>
+<br><tt>&nbsp;&nbsp; Vomiting NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 29.4)&nbsp;&nbsp;&nbsp;&nbsp; 0.620^</tt>
+<p><tt>General disorders and&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 66.7)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;
+11 ( 64.7)&nbsp;&nbsp;&nbsp; >0.999^</tt>
+<br><tt>administration site conditions</tt>
+<br><tt>&nbsp;&nbsp; Chest pain&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+9 ( 52.9)&nbsp;&nbsp;&nbsp; >0.999^</tt>
+<br><tt>&nbsp;&nbsp; Pain NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 29.4)&nbsp;&nbsp;&nbsp;&nbsp; 0.620^</tt>
+<p><tt>Psychiatric disorders&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7 ( 87.5)&nbsp;&nbsp;&nbsp;&nbsp;
+11 ( 64.7)&nbsp;&nbsp;&nbsp;&nbsp; 0.131^</tt>
+<br><tt>&nbsp;&nbsp; Insomnia&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7 ( 87.5)&nbsp;&nbsp;&nbsp;&nbsp;
+11 ( 64.7)&nbsp;&nbsp;&nbsp;&nbsp; 0.131^</tt>
+<br><tt>&nbsp;&nbsp; Anxiety&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 29.4)&nbsp;&nbsp;&nbsp;&nbsp; 0.620^</tt>
+<p><tt>Musculoskeletal and connective&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;
+10 ( 58.8)&nbsp;&nbsp;&nbsp;&nbsp; 0.335^</tt>
+<br><tt>tissue disorders</tt>
+<br><tt>&nbsp;&nbsp; Pain in extremity&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8 ( 47.1)&nbsp;&nbsp;&nbsp;&nbsp; 0.347^</tt>
+<br><tt>&nbsp;&nbsp; Back pain&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 41.2)&nbsp;&nbsp;&nbsp;&nbsp; 0.637^</tt>
+<p><tt>Respiratory, thoracic and&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;
+10 ( 58.8)&nbsp;&nbsp;&nbsp; >0.999^</tt>
+<br><tt>mediastinal disorders</tt>
+<br><tt>&nbsp;&nbsp; Cough&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8 ( 47.1)&nbsp;&nbsp;&nbsp; >0.999^</tt>
+<br><tt>&nbsp;&nbsp; Dyspnoea&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 35.3)&nbsp;&nbsp;&nbsp; >0.999^</tt>
+<p><tt>Vascular disorders&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;
+10 ( 58.8)&nbsp;&nbsp;&nbsp; >0.999^</tt>
+<br><tt>&nbsp;&nbsp; Hypotension NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+9 ( 52.9)&nbsp;&nbsp;&nbsp;&nbsp; 0.637^</tt>
+<br><tt>&nbsp;&nbsp; Hypertension NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2 ( 25.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 23.5)&nbsp;&nbsp;&nbsp; >0.999^</tt>
+<p><tt>Nervous system disorders&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 41.2)&nbsp;&nbsp;&nbsp;&nbsp; 0.153^</tt>
+<br><tt>&nbsp;&nbsp; Headache&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 41.2)&nbsp;&nbsp;&nbsp;&nbsp; 0.153^</tt>
+<br><tt>&nbsp;&nbsp; Tremor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2 ( 25.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 23.5)&nbsp;&nbsp;&nbsp; >0.999^</tt>
+<p>&nbsp;</td>
+</tr>
+</table>
+
+<p>This is the default <b>%aetab </b>output. Note that you must specify
+a column width for %aetab. The difference between the %npcttab and %aetab
+output is that there is an overall total for all patients that is automatically
+generated.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>__________________________________________________________________________________________</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Ambident&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Betamax</tt>
+<br><tt>System Organ Class&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(1g/day)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (500mg/day)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Total</tt>
+<br><tt>&nbsp;&nbsp; Preferred Term&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=9)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (N=8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=17)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; p-value</tt>
+<br><tt>__________________________________________________________________________________________</tt>
+<p><tt>Patients with any Adverse Event&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 77.8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8 (100.0)&nbsp;&nbsp;&nbsp;&nbsp;
+15 ( 88.2)&nbsp;&nbsp;&nbsp;&nbsp; 0.471^</tt>
+<p><tt>Gastrointestinal disorders&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 77.8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8 (100.0)&nbsp;&nbsp;&nbsp;&nbsp;
+15 ( 88.2)&nbsp;&nbsp;&nbsp;&nbsp; 0.471^</tt>
+<br><tt>&nbsp;&nbsp; Constipation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+9 ( 52.9)&nbsp;&nbsp;&nbsp;&nbsp; 0.637^</tt>
+<br><tt>&nbsp;&nbsp; Nausea&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+9 ( 52.9)&nbsp;&nbsp;&nbsp;&nbsp; 0.153^</tt>
+<br><tt>&nbsp;&nbsp; Abdominal pain NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8 ( 47.1)&nbsp;&nbsp;&nbsp;&nbsp; 0.057^</tt>
+<br><tt>&nbsp;&nbsp; Diarrhoea NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8 ( 47.1)&nbsp;&nbsp;&nbsp;&nbsp; 0.057^</tt>
+<br><tt>&nbsp;&nbsp; Vomiting NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 29.4)&nbsp;&nbsp;&nbsp;&nbsp; 0.620^</tt>
+<p><tt>General disorders and&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 66.7)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;
+11 ( 64.7)&nbsp;&nbsp;&nbsp; >0.999^</tt>
+<br><tt>administration site conditions</tt>
+<br><tt>&nbsp;&nbsp; Chest pain&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+9 ( 52.9)&nbsp;&nbsp;&nbsp; >0.999^</tt>
+<br><tt>&nbsp;&nbsp; Pain NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 29.4)&nbsp;&nbsp;&nbsp;&nbsp; 0.620^</tt>
+<p><tt>Psychiatric disorders&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7 ( 87.5)&nbsp;&nbsp;&nbsp;&nbsp;
+11 ( 64.7)&nbsp;&nbsp;&nbsp;&nbsp; 0.131^</tt>
+<br><tt>&nbsp;&nbsp; Insomnia&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7 ( 87.5)&nbsp;&nbsp;&nbsp;&nbsp;
+11 ( 64.7)&nbsp;&nbsp;&nbsp;&nbsp; 0.131^</tt>
+<br><tt>&nbsp;&nbsp; Anxiety&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 29.4)&nbsp;&nbsp;&nbsp;&nbsp; 0.620^</tt>
+<p><tt>Musculoskeletal and connective&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;
+10 ( 58.8)&nbsp;&nbsp;&nbsp;&nbsp; 0.335^</tt>
+<br><tt>tissue disorders</tt>
+<br><tt>&nbsp;&nbsp; Pain in extremity&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8 ( 47.1)&nbsp;&nbsp;&nbsp;&nbsp; 0.347^</tt>
+<br><tt>&nbsp;&nbsp; Back pain&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 41.2)&nbsp;&nbsp;&nbsp;&nbsp; 0.637^</tt>
+<p><tt>Respiratory, thoracic and&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;
+10 ( 58.8)&nbsp;&nbsp;&nbsp; >0.999^</tt>
+<br><tt>mediastinal disorders</tt>
+<br><tt>&nbsp;&nbsp; Cough&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8 ( 47.1)&nbsp;&nbsp;&nbsp; >0.999^</tt>
+<br><tt>&nbsp;&nbsp; Dyspnoea&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 35.3)&nbsp;&nbsp;&nbsp; >0.999^</tt>
+<p><tt>Vascular disorders&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;
+10 ( 58.8)&nbsp;&nbsp;&nbsp; >0.999^</tt>
+<br><tt>&nbsp;&nbsp; Hypotension NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+9 ( 52.9)&nbsp;&nbsp;&nbsp;&nbsp; 0.637^</tt>
+<br><tt>&nbsp;&nbsp; Hypertension NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2 ( 25.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 23.5)&nbsp;&nbsp;&nbsp; >0.999^</tt>
+<p><tt>Nervous system disorders&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 41.2)&nbsp;&nbsp;&nbsp;&nbsp; 0.153^</tt>
+<br><tt>&nbsp;&nbsp; Headache&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 41.2)&nbsp;&nbsp;&nbsp;&nbsp; 0.153^</tt>
+<br><tt>&nbsp;&nbsp; Tremor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2 ( 25.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 23.5)&nbsp;&nbsp;&nbsp; >0.999^</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>And in the third case, %aetab has been asked to work like the %npcttab
+macro by suppressing the highest level summation by setting the label to
+a space.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>__________________________________________________________________________________________</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Ambident&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Betamax</tt>
+<br><tt>System Organ Class&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(1g/day)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (500mg/day)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Total</tt>
+<br><tt>&nbsp;&nbsp; Preferred Term&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=9)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (N=8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=17)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; p-value</tt>
+<br><tt>__________________________________________________________________________________________</tt>
+<p><tt>Gastrointestinal disorders&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 77.8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8 (100.0)&nbsp;&nbsp;&nbsp;&nbsp;
+15 ( 88.2)&nbsp;&nbsp;&nbsp;&nbsp; 0.471^</tt>
+<br><tt>&nbsp;&nbsp; Constipation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+9 ( 52.9)&nbsp;&nbsp;&nbsp;&nbsp; 0.637^</tt>
+<br><tt>&nbsp;&nbsp; Nausea&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+9 ( 52.9)&nbsp;&nbsp;&nbsp;&nbsp; 0.153^</tt>
+<br><tt>&nbsp;&nbsp; Abdominal pain NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8 ( 47.1)&nbsp;&nbsp;&nbsp;&nbsp; 0.057^</tt>
+<br><tt>&nbsp;&nbsp; Diarrhoea NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8 ( 47.1)&nbsp;&nbsp;&nbsp;&nbsp; 0.057^</tt>
+<br><tt>&nbsp;&nbsp; Vomiting NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 29.4)&nbsp;&nbsp;&nbsp;&nbsp; 0.620^</tt>
+<p><tt>General disorders and&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 66.7)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;
+11 ( 64.7)&nbsp;&nbsp;&nbsp; >0.999^</tt>
+<br><tt>administration site conditions</tt>
+<br><tt>&nbsp;&nbsp; Chest pain&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+9 ( 52.9)&nbsp;&nbsp;&nbsp; >0.999^</tt>
+<br><tt>&nbsp;&nbsp; Pain NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 29.4)&nbsp;&nbsp;&nbsp;&nbsp; 0.620^</tt>
+<p><tt>Psychiatric disorders&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7 ( 87.5)&nbsp;&nbsp;&nbsp;&nbsp;
+11 ( 64.7)&nbsp;&nbsp;&nbsp;&nbsp; 0.131^</tt>
+<br><tt>&nbsp;&nbsp; Insomnia&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7 ( 87.5)&nbsp;&nbsp;&nbsp;&nbsp;
+11 ( 64.7)&nbsp;&nbsp;&nbsp;&nbsp; 0.131^</tt>
+<br><tt>&nbsp;&nbsp; Anxiety&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 29.4)&nbsp;&nbsp;&nbsp;&nbsp; 0.620^</tt>
+<p><tt>Musculoskeletal and connective&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;
+10 ( 58.8)&nbsp;&nbsp;&nbsp;&nbsp; 0.335^</tt>
+<br><tt>tissue disorders</tt>
+<br><tt>&nbsp;&nbsp; Pain in extremity&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8 ( 47.1)&nbsp;&nbsp;&nbsp;&nbsp; 0.347^</tt>
+<br><tt>&nbsp;&nbsp; Back pain&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 41.2)&nbsp;&nbsp;&nbsp;&nbsp; 0.637^</tt>
+<p><tt>Respiratory, thoracic and&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;
+10 ( 58.8)&nbsp;&nbsp;&nbsp; >0.999^</tt>
+<br><tt>mediastinal disorders</tt>
+<br><tt>&nbsp;&nbsp; Cough&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8 ( 47.1)&nbsp;&nbsp;&nbsp; >0.999^</tt>
+<br><tt>&nbsp;&nbsp; Dyspnoea&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 35.3)&nbsp;&nbsp;&nbsp; >0.999^</tt>
+<p><tt>Vascular disorders&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;
+10 ( 58.8)&nbsp;&nbsp;&nbsp; >0.999^</tt>
+<br><tt>&nbsp;&nbsp; Hypotension NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+9 ( 52.9)&nbsp;&nbsp;&nbsp;&nbsp; 0.637^</tt>
+<br><tt>&nbsp;&nbsp; Hypertension NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2 ( 25.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 23.5)&nbsp;&nbsp;&nbsp; >0.999^</tt>
+<p><tt>Nervous system disorders&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 41.2)&nbsp;&nbsp;&nbsp;&nbsp; 0.153^</tt>
+<br><tt>&nbsp;&nbsp; Headache&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 41.2)&nbsp;&nbsp;&nbsp;&nbsp; 0.153^</tt>
+<br><tt>&nbsp;&nbsp; Tremor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2 ( 25.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 23.5)&nbsp;&nbsp;&nbsp; >0.999^</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+You have seen how the %aetab macro with its multi-level reporting capabilities
+compares with the %npcttab macro at two levels of reporting.
+<br><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="Spectre.htm" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code --><!-- GoFTP Free Version Start -->
+<br>&nbsp;
+</body>
+</html>

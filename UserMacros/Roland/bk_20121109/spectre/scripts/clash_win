@@ -1,0 +1,89 @@
+#!/bin/bash
+#<pre><b>
+# Script     : clash_win
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 11-Feb-2007
+# Purpose    : To identify mismatches in variable properties between datasets
+#              (uses SAS).
+# SubScripts : none
+# Notes      : WINDOWS VERSION
+#              Make the data directory the current directory
+# Usage      : clash_win
+#
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+# N/A  (none)
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+# 
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+# Write SAS code to a temporary file
+cat > $HOME/clash_$$.sas << -----FINISH-----
+options validvarname=any nofmterr;
+filename _outfile "$HOMEW\clash_$$.tmp";
+libname here './' access=readonly;
+
+proc format;
+  value type 1='N' 2='C';
+run;
+
+proc contents noprint data=here._all_ out=contents;
+run;
+
+data contents;
+  length newfmt $ 15;
+  set contents;
+  newfmt=format;
+  if formatl>0 then do;
+    newfmt=trim(newfmt)||compress(put(formatl,3.))||'.';
+    if formatd>0 then newfmt=trim(newfmt)||compress(put(formatd,3.));
+  end;
+  else if newfmt ne ' ' then newfmt=trim(newfmt)||'.';
+run;
+
+proc sort data=contents;
+  by name;
+run;
+
+proc sort nodupkey data=contents(keep=name length type newfmt label)
+                    out=clash;
+  by name length type newfmt label;
+run;
+
+data clash(keep=name);
+  set clash;
+  by name;
+  if first.name and not last.name then output;
+run;
+
+data clash;
+  merge clash(in=_clash) contents;
+  by name;
+  if _clash;
+run;
+
+data _null_;
+  file _outfile notitles noprint;
+  set clash;
+  put @1 memname @12 name @24 length @28 type type. @30 newfmt @43 label;
+run;
+-----FINISH-----
+
+# run the code
+sas -nosplash -nologo -icon -log "$HOMEW" -sysin "$HOMEW\clash_$$.sas"
+
+# if output file exists then cat it and delete it
+if [ -f $HOME/clash_$$.tmp ] ; then
+  cat $HOME/clash_$$.tmp 
+  rm -f $HOME/clash_$$.tmp 
+fi
+
+# tidy up
+rm -f $HOME/clash_$$.sas $HOME/clash_$$.log

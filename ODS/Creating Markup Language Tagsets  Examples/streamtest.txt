@@ -1,0 +1,56 @@
+this goes to the file
+
+putstream:
+this goes to stream1
+end putstream
+put with stream:
+here it comes
+this goes to stream1
+there it was
+
+this is stream2
+with stream1 in it
+this goes to stream1
+this goes to stream1 too
+The end of stream2
+
+Stream variables:
+<stream1>this goes to stream1
+this goes to stream1 too
+</stream1>
+<stream2>this is stream2
+with stream1 in it
+this goes to stream1
+this goes to stream1 too
+The end of stream2
+</stream2>
+
+putstream:
+
+We are going to flush this
+
+delstream:
+
+putstream stream1:
+
+Open/put Junk4:some more stuff for stream3
+Open/put stream3:some more stuff for stream3 more stuff
+set stream3:
+setself stream3:A completely new stream3 !!! even more stuff for stream3
+setself stream3:
+open/putself stream3:*********A completely new stream3 !!! even more stuff for stream3%%%%%%%%%%!!! This gets duped too!!! 
+*********A completely new stream3 !!! even more stuff for stream3%%%%%%%%%%!!! This gets duped too!!! 
+
+*********A completely new stream3 !!! even more stuff for stream3%%%%%%%%%%!!! This gets duped too!!! 
+*********A completely new stream3 !!! even more stuff for stream3%%%%%%%%%%!!! This gets duped too!!! 
+
+stream3:*********A completely new stream3 !!! even more stuff for stream3%%%%%%%%%%!!! This gets duped too!!! 
+*********A completely new stream3 !!! even more stuff for stream3%%%%%%%%%%!!! This gets duped too!!! 
+
+
+put deleted stream2:
+
+Stream variables:
+<stream3>*********A completely new stream3 !!! even more stuff for stream3%%%%%%%%%%!!! This gets duped too!!! 
+*********A completely new stream3 !!! even more stuff for stream3%%%%%%%%%%!!! This gets duped too!!! 
+</stream3>

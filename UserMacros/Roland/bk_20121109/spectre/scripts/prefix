@@ -1,0 +1,30 @@
+#!/bin/bash
+#<pre><b>
+# Script     : prefix
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 22-Jul-2007
+# Purpose    : To prefix a list of items with a given string
+# SubScripts : none
+# Notes      : You must pipe into this utility
+# Usage      : ls -1 x_*.sas | prefix 'sasb '
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   string to prefix each item with
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# One string parameter allowed
+if [ $# -ne 1 ] ; then
+  echo "Usage: xxxx | prefix 'string'" 1>&2
+  exit 1
+fi
+
+gawk '{print string $0}' string="$1"

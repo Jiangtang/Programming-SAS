@@ -1,0 +1,158 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="Spectre library allocation">
+   <meta name="Description" content="Allocation of sas libraries for Spectre">
+   <title>Allocation of libraries for Spectre</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Allocation of Libraries for Spectre</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 21 Mar 2007)</b></center>
+
+<h2>
+Introduction</h2>
+It is likely that you already have a method for allocating macros libraries,
+data libraries and format libraries. I know that changing your established
+system for doing this is going to be difficult but <b>Spectre has some
+minimal needs</b> that must be satisfied and these will be explained on
+this page.
+<h2>
+Macros and the sasautos path</h2>
+What Spectre needs from the <b>autoexec.sas</b>, and <b>the only thing
+it needs</b>, is for all the macros it might call to be declared to <b>sasautos</b>
+such that they are all allocated, and in the correct order, by the time
+<b>autoexec.sas</b>
+has finished processing. If you are doing study reporting then you will
+have to detect if sas is being invoked from a study reporting area and
+define all the macros relevant for that study. If you are invoking sas
+from an area that is nothing to do with study reporting then you will only
+need the Spectre macros and the supplied SASAUTOS defined to the sasautos
+path. You must set some system options for Spectre, namely "<b>noovp nodate
+nonumber xsync noxwait</b>", so this should also be in your autoexec.sas.
+<p>It is up to you whether you use a high-level <b>autoexec.sas</b> member
+for all users or place autoexec.sas in the directory from which you will
+invoke sas, in which case that one will be used instead. Maybe you will
+use a mix such that some study programs have their own autoexec while others
+use the high-level one. I am currently using a high-level autoexec on my
+PC and if I am in the study reporting area (the "pharma" directory hanging
+off the C: drive) then I assign study reporting macros. I list the contents
+of sasautos at the end and I recommend you do the same. Keeping in mind
+that this is for Windows-style path names, feel free to look at the code
+inside my <a href="macros/autoexec.sas" target="_blank">autoexec.sas</a>
+(best viewed as a source file).
+<h2>
+%allocr and %allocw</h2>
+Most of the Spectre scripts that call sas also call a macro named <b>%allocr</b>
+or <b>%allocw</b> (allocation macro for read and write respectively) and
+their code will have to be written for each site Spectre is installed.
+They allocate the dataset libraries and formats. Unless you want to change
+the shell scripts then these two macros are mandatory. It is important
+for QC purposes to have two macros, one to allocate datasets in read mode
+and the other in write mode, because you should not to allocate datasets
+in write mode for sas programs that only need read access.
+<p>It is possible to have these allocations macros as high-level macros
+but I am using low-level macros that do this. I have included two examples
+of these low-level macros below which are kept in one of my study increment
+macros directories on my PC. These macros are only good for the one study
+increment. They are not generic. They are not part of Spectre and not supported.
+<br><tt><a href="macros/allocr.sas" target="_blank">%allocr</a></tt>
+<br><tt><a href="macros/allocw.sas" target="_blank">%allocw</a></tt>
+<h2>
+The Reporting Directory Structure</h2>
+It will be helpful if you used a consistent directory structure. On my
+PC I have a folder named "pharma" in which all clinical reporting work
+is done. Underneath that I have a single imaginary client named "xenuyama"
+with an office in Tokyo. The have a drug named "DRUG001C" with a single
+protocol "DRUG001C3001" and for now, a "24weeks" increment. This is my
+directory structure downwards from the "pharma" directory. The output comes
+from the script <a href="scripts/dirtree" target="_blank">dirtree</a>.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>xenuyama&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; formats&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; macros&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; tokyo&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DRUG001&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+DRUG001C3001&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+24weeks&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+data&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+analysis&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+derived&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+raw&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+formats&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+macros&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+progs&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+formats&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+macros&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+formats&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+macros&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; formats&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; macros</tt></td>
+</tr>
+</table>
+
+<h2>
+Drug, study and increment macros</h2>
+You will likely have reporting macros that must exist at the increment
+level, the study level and the drug level. Maybe even at the office level
+and client level if you have different clients. Macros stored at the lower
+levels should override those at the higher levels so they should be earlier
+in the sasautos path. You will have to <b>be careful about your macro names</b>
+so that you do not accidentally override the spectre macros when you need
+to use them, although on rare occasions you might need an amended version
+of a Spectre macro. All these macros should be assigned to the sasautos
+path in your autoexec.sas member if you are invoking sas from the clinical
+reporting area. Bearing in mind that I have Cygwin on my PC so all the
+directory names are Windows style, you can see the way I define the macros
+to the sasautos path it in my <a href="macros/autoexec.sas" target="_blank">autoexec.sas</a>
+(best viewed as a source file).
+<h2>
+Conclusion</h2>
+For Spectre to work correctly it was explained that all macros should be
+assigned to sasautos in the correct order in your <b>autoexec.sas</b> member.
+You might call another macro to set up sasautos within your autoexec.sas
+but when it completes it should have been done. Allocation of datasets
+and the format search path should&nbsp; be done in the allocation macros
+%allocr and %allocw.
+<br>&nbsp;
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button on your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+</body>
+</html>

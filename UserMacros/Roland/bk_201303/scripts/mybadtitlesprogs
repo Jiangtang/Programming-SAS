@@ -1,0 +1,81 @@
+#!/bin/bash
+#<pre><b>
+# Script     : mybadtitlesprogs
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 07-Jun-2005
+# Purpose    : To list which of your own titles members do not have a matching 
+#              program name entry.
+# SubScripts : none
+# Notes      : none
+# Usage      : badtitlesprogs 
+#              
+#================================================================================
+# OPTIONS:
+#-opt- -------------------------------description--------------------------------
+#  f   (switch) fixes the program names in your .titles members
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not supply any parameters
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Usage message then exit
+usage () {
+  echo "Usage: mybadtitlesprogs -f" 1>&2
+  exit 1
+}
+
+# options defaults
+switchf=0                           # Default switch=off for fixes your program
+name
+
+
+# "case" statement for action to take on selected options
+while getopts "f" param ; do
+  case $param in
+   "?") # bad option supplied
+        usage
+        ;;
+   "f") # (switch) fixes your program name
+        switchf=1
+        ;;
+  esac
+done
+
+
+# shift to bring first parameter to position 1
+shift $(($OPTIND - 1))
+
+
+# No parameters required
+if [ $# -gt 0 ] ; then
+  echo "Do not supply any parameters" 1>&2
+  usage
+fi
+
+
+if [ $switchf -eq 0 ] ; then
+
+  grep "^program:.*" $(myfiles *.titles) | sed 's% *$%%' | gawk -F:
+'index($1,substr($3,2)".titles")==0'
+
+else
+
+  echo "The following titles members will be fixed:" 1>&2
+  for file in $(grep "^program:.*" $(myfiles *.titles) | sed 's% *$%%' | gawk
+-F: 'index($1,substr($3,2)".titles")==0 {print $1}')
+  do
+    echo "$file" 1>&2
+    root=${file//.titles}
+    perl -i -pe "s%^program:.*%program: $root%" ${file}
+  done
+
+fi

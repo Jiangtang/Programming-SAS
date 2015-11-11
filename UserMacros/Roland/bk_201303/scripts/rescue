@@ -1,0 +1,35 @@
+#!/bin/bash
+#<pre><b>
+# Script     : rescue
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 27-Jul-2003
+# Purpose    : To get back the source code of SAS programs from their logs
+# SubScripts : none
+# Notes      : Programs that are "rescued" will have their names suffixed with
+#              _rescue to they will not overwrite any good copies of programs.
+# Usage      : rescue myprog
+#              rescue myprog1.log myprog2.log
+#              rescue l*.log
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   log(s) to get back the SAS programs from
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+#
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+if [ $# -lt 1 ] ; then
+  echo "Usage: rescue a1*.log" 1>&2
+  exit 1
+fi
+
+for filename in "$@" ; do
+  awk '/^[1-9][0-9]* / {if (NR > 1 && substr($0,11,1) != "+") \
+  print substr($0,12)}' ${filename%.*}.log > ${filename%.*}_rescue.sas
+done

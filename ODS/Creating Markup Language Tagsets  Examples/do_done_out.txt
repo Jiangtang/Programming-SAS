@@ -1,0 +1,20 @@
+HELLO
+i is 0
+Going into a Loop to 10
+Continue at 5
+stop at 8
+I is 1
+I is 2
+I is 3
+I is 4
+I is 6
+I is 7
+i is 0
+Going into a false Loop
+Hello from a while's else
+inside simple if: should print
+inside else: should print
+if inside else, does print
+Still inside else: should print
+Hello from bif: prints
+GOODBYE

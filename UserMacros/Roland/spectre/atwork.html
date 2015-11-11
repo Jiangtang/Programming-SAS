@@ -1,0 +1,2875 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="spectre at work">
+   <meta name="Description" content="Spectre at Work">
+   <title>Spectre at Work</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Spectre at Work</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 27 Sep 2011)</b></center>
+
+<h2>
+Introduction</h2>
+Although Spectre has many components (especially scripts) it is a very
+easy system to use. Spectre is a "<b>back end</b>" system and currently
+has no front end so you have to issue all its commands from a terminal
+window. The terminal window might be a Unix window or a Cygwin window (the
+latter if you are using it on a PC). You might not be familiar with using
+back end systems directly using commands so you will see how it is done
+on this page. It's not so bad when you get used to it. You might end up
+preferring to do it that way. Just because it is a "back end" system doesn't
+mean that there are no utilities to help you. There could be a lot of help
+utilities and indeed there are. You will see some of Spectre's help utilities
+in action.
+<p>What you will see on this page is a study reported <b>all the way through
+from empty directories</b> through dataset build, report code developed
+and tested <b>through to reports produced in a final run</b>. To keep it
+simple, there will only be <b>two derived datasets</b> and <b>two tables</b>
+produced. After this has been done, it will be demonstrated how to convert
+your reporting code into macros so that you can use Spectre as a "<b>push-button</b>"
+reporting system. <b>Being a "push button" reporting system is the ultimate
+goal of Spectre</b>. Once CDISC data standards have all been defined and
+tables and listings content and layouts have all been defined for these
+CDISC datasets then you will be able to have a set of macros to do all
+your reporting, called from the "<b>titles members</b>", and the ultimate
+goal of Spectre will have been achieved. There will be more explanation
+of this later.
+<p>Firstly, I will show you the directory structure I am going to use that
+I have set upon my PC.
+<h2>
+Directory Structure</h2>
+You need to know my directory structure to make sense of my <b>autoexec.sas</b>
+member and my allocation macros <b>%allocr and %allocw</b> (which will
+be explained later). I have Spectre set up on my PC using Cygwin and for
+all my clinical reporting work I have a directory named "<b>pharma</b>"
+that sits under the "<b>C:</b>" drive. The client, their office, the drug,
+protocol and increment directories hang underneath. This is not a recommendation
+as to how to set up your directories but I have seen this system in use
+at two pharmas and I think it is a good system. I will show you the directory
+structure below "<b>C:\pharma</b>". I will navigate to that directory in
+Cygwin and use the script <a href="scripts/dirtree" target="_blank">dirtree</a>
+(a Spectre script) to show you the directory structure. This is what I
+get.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 ~</tt>
+<br><tt>$ cd /cygdrive/c/pharma</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma</tt>
+<br><tt>$ dirtree</tt>
+<p><tt>xenuyama</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; formats</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; macros</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; tokyo</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DRUG001</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+DRUG001C3001</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+24weeks</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+data</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+analysis</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+derived</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+raw</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+formats</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+macros</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+progs</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+formats</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+macros</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+formats</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+macros</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; formats</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; macros</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>If you look at the directory structure above you will see "formats"
+and "macros" directories existing at each level. When I assign macros to
+the sasautos path I want the macros at the lowest level earlier in the
+path than those at the higher levels. Last but one I want the Spectre macros
+and last of all the SASAUTOS that come with sas. The same applies to the
+formats in the sense that the lower level formats should be earlier in
+the fmtsearch= path.
+<p>Note the "progs" and "macros" directory under "24weeks". That is where
+I will be doing most of my coding. I have set up a shortcut in my <b><tt>.bashrc</tt></b>
+member (might be <b><tt>.bashrc_own</tt></b> for you) so that I can jump
+to the <b>24weeks</b> progs directly using "<b><tt>cd $xyprogs</tt></b>".
+Here is the command in my <tt>.bashrc</tt> to set up this variable.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>xyprogs=/cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt></td>
+</tr>
+</table>
+
+<p>If you are not allowed to edit your <b>.bashrc</b> file and are not
+allowed to have a <b><tt>.bashrc_own</tt></b> file then it does not matter.
+You can always create your own command files in your home directory with
+all your shortcuts and other things you need and "<b>source</b>" it. You
+might have different command files for the different studies you are working
+on. How to "<b>source</b>" a command file is explained <a href="unixcom.html#src" target="_blank">here</a>.
+<h2>
+Starting from empty directories</h2>
+I have told you that I will use Spectre to report a study from beginning
+to end, starting out with <b>empty directories</b>. I wil show you the
+evidence so you can decide. I will put one <b>silly_sas_program</b> in
+the lowest level "progs" directory, where I will do most of my coding,
+so you can see it. I will leave it there throughout the study reporting
+phase as it will play no role since it does not match Spectre naming conventions.
+I will do a "<b>find .</b>" from the "pharma" directory downwards and show
+you what is in my directories. Look for "<b><tt>silly_sas_program.sas</tt></b>".
+That is the only member in all these directories. Here goes and I hope
+you are convinced when you see "<b>silly_sas_program.sas</b>" as <b>the
+only entry</b> in all these directories. I am truly reporting from empty
+directories. I will run this "<b>find .</b>" command from time to time
+to give you an update on what has appeared in my directories.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 ~</tt>
+<br><tt>$ cd /cygdrive/c/pharma</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma</tt>
+<br><tt>$ find .</tt>
+<br><tt>.</tt>
+<br><tt>./xenuyama</tt>
+<br><tt>./xenuyama/formats</tt>
+<br><tt>./xenuyama/macros</tt>
+<br><tt>./xenuyama/tokyo</tt>
+<br><tt>./xenuyama/tokyo/DRUG001</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/analysis</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/derived</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/raw</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/formats</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/macros</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/silly_sas_program.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/formats</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/macros</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/formats</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/macros</tt>
+<br><tt>./xenuyama/tokyo/formats</tt>
+<br><tt>./xenuyama/tokyo/macros</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>So there it is! <b>Empty directories</b> apart from "silly_sas_program.sas".
+You will see Spectre at work from <b>nothing</b> through to <b>final reports
+production</b>.
+<h2>
+autoexec.sas</h2>
+First I shall deal with <b>autoexec.sas</b> and the assignment of macros
+to the <b>sasautos</b> path. Study macros should only be assigned if I
+am starting sas from below the "<b>pharma</b>" directory otherwise I just
+want the Spectre macros and SASAUTOS. I keep my <b>autoexec.sas</b> stored
+in the same directory as the sas executable and below is what it contains.
+You will see how sasautos is set up. I could call another code member to
+set up sasautos but whatever method I use, when <b>autoexec.sas</b> ends,
+Spectre must have sufficient macros defined to it so that it can call all
+needed macros directly. To make it clear what macro directories have been
+assigned, I display the contents of the
+<b>sasautos path</b> at the end
+in the sas log and <b>I recommend you do the same</b>.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>*- Note that this is a WINDOWS autoexec member meant to be&nbsp;&nbsp;
+-;</tt>
+<br><tt>*- stored at a high level location such as the folder that contains&nbsp;
+-;</tt>
+<br><tt>*- the sas executable or the C: drive. You can have simpler autoexec
+-;</tt>
+<br><tt>*- members stored in the study programs folders but what they SHOULD
+-;</tt>
+<br><tt>*- ALWAYS DO is assign all needed macro directories in the correct&nbsp;&nbsp;
+-;</tt>
+<br><tt>*- order if you are initiating sas from the pharmaceutical area.
+You -;</tt>
+<br><tt>*- should NOT allocate any study datasets in this member.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<p><tt>*- these options are always needed for Spectre (center optional)
+-;</tt>
+<br><tt>options noovp nodate nonumber center xsync noxwait;</tt>
+<p><tt>*- assign spectre macros to sasautos -;</tt>
+<br><tt>options sasautos=("C:\spectre\macros" SASAUTOS);</tt>
+<p><tt>%*- Allocate study reporting macros if in the reporting area -;</tt>
+<br><tt>%*- (second part of the path name will be "pharma" if so).&nbsp;&nbsp;
+-;&nbsp;</tt>
+<br><tt>%macro allocmac;</tt>
+<br><tt>&nbsp; %local path bitpath macros3 macros4 macros5 macros6 macros7;</tt>
+<br><tt>&nbsp; %let path=%readpipe(cd);</tt>
+<br><tt>&nbsp; %if "%scan(&amp;path,2,\)"="pharma" %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %let bitpath=C:\pharma;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %*- CLIENT MACROS -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %if %length(%scan(&amp;path,3,\)) %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let bitpath=&amp;bitpath.\%scan(&amp;path,3,\);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let macros3="&amp;bitpath.\macros";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %*- OFFICE MACROS -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %if %length(%scan(&amp;path,4,\)) %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let bitpath=&amp;bitpath.\%scan(&amp;path,4,\);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let macros4="&amp;bitpath.\macros";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %*- DRUG MACROS -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %if %length(%scan(&amp;path,5,\)) %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let bitpath=&amp;bitpath.\%scan(&amp;path,5,\);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let macros5="&amp;bitpath.\macros";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %*- PROTOCOL MACROS -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %if %length(%scan(&amp;path,6,\)) %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let bitpath=&amp;bitpath.\%scan(&amp;path,6,\);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let macros6="&amp;bitpath.\macros";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %*- INCREMENT MACROS -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %if %length(%scan(&amp;path,7,\)) %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let bitpath=&amp;bitpath.\%scan(&amp;path,7,\);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let macros7="&amp;bitpath.\macros";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %*- Reset sasautos to include extra macro libraries
+with -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %*- the lowest level macros defined first in
+the path.&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; options sasautos=(&amp;macros7 &amp;macros6
+&amp;macros5 &amp;macros4 &amp;macros3</tt>
+<br><tt>"C:\spectre\macros" SASAUTOS);</tt>
+<br><tt>&nbsp; %end;</tt>
+<br><tt>%mend allocmac;</tt>
+<br><tt>%allocmac;</tt>
+<p><tt>%*- Put an entry in the log so the user has a record -;</tt>
+<br><tt>%*- of what macros are on their sasautos path and&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>%*- what order they will be called in.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>%put NOTE: sasautos=%sysfunc(getoption(sasautos));</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>If I go to the 24weeks "<b>progs</b>" directory and start up sas interactively
+then this is the final "note" statement from <b>autoexec.sas</b> in my
+log window showing the sasautos path.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>NOTE: sasautos=("C:\pharma\xenuyama\tokyo\DRUG001\DRUG001C3001\24weeks\macros"</tt>
+<br><tt>"C:\pharma\xenuyama\tokyo\DRUG001\DRUG001C3001\macros" "C:\pharma\xenuyama\tokyo\DRUG001\macros"</tt>
+<br><tt>"C:\pharma\xenuyama\tokyo\macros" "C:\pharma\xenuyama\macros" "C:\spectre\macros"
+SASAUTOS)</tt>
+<p><tt>NOTE: AUTOEXEC processing completed.</tt></td>
+</tr>
+</table>
+
+<h2>
+%allocr and %allocw</h2>
+<b>%allocr</b> and <b>%allocw</b> are the allocation macros for read and
+write access, respectively. The Spectre scripts that use sas require these
+two macros so you <b>must</b> set them up. They must be on the sasautos=
+path set up by autoexec.sas. For the study I am working on they are in
+the first of the macro directories defined to sasautos= that you can see
+above. You should set up your formats libraries as well as the dataset
+libraries. Also, and very importantly, <b>you must set up the global macro
+variable _ptlibref_ set to the libref where the "protocol" and "titles"
+datasets will be stored</b>. These datasets will contain details about
+the protocol and also the titles of all the reporting programs. They have
+to go somewhere and it is up to you where you choose to put them. I will
+put them in the "<b>der</b>" directory.
+<p>You will see my code members below but since I am starting from empty
+directories so I am going to start by creating the local macro header for
+<b>%allocr</b>
+using the <a href="scripts/lmhdr" target="_blank">lmhdr</a> script (short
+for "<b>l</b>ocal <b>m</b>acro <b>h</b>ea<b>d</b>e<b>r</b>"). If you look
+in the script you will see it is pulling out details from the directory
+path, namely the client, office, drug, protocol and increment. It has been
+coded to match my directory structure. You will likely have to change it
+to match yours. Watch me jump to the "progs" directory from my home directory,
+navigate to the "macros" directory, set up the variable "prog" and export
+it having set it to the program "allocr", generate the header and then
+"cat" it to the terminal. Last I will copy it over as "<b>allocw.sas</b>"
+and will edit any changes I need.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 ~</tt>
+<br><tt>$ cd $xyprogs</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ cd ../macros</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/macros</tt>
+<br><tt>$ prog=allocr</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/macros</tt>
+<br><tt>$ export prog</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/macros</tt>
+<br><tt>$ lmhdr $prog</tt>
+<br><tt>Enter program purpose: Allocate data libraries and formats in read
+mode</tt>
+<br><tt>created allocr.sas</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/macros</tt>
+<br><tt>$ cat allocr.sas</tt>
+<br><tt>/*</tt>
+<br><tt>/ Program&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : allocr.sas</tt>
+<br><tt>/ Version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 1.0</tt>
+<br><tt>/ Author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Roland</tt>
+<br><tt>/ Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 03-Mar-2007</tt>
+<br><tt>/ SAS version&nbsp; : 9.1.3</tt>
+<br><tt>/ Client&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : xenuyama</tt>
+<br><tt>/ Office&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : tokyo</tt>
+<br><tt>/ Drug&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : DRUG001</tt>
+<br><tt>/ Protocol&nbsp;&nbsp;&nbsp;&nbsp; : DRUG001C3001</tt>
+<br><tt>/ Increment&nbsp;&nbsp;&nbsp; : 24weeks</tt>
+<br><tt>/ Purpose&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Allocate data libraries
+and formats in read mode</tt>
+<br><tt>/ SubMacros&nbsp;&nbsp;&nbsp; : none</tt>
+<br><tt>/ Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;</tt>
+<br><tt>/ Usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;</tt>
+<br><tt>/&nbsp;</tt>
+<br><tt>/===============================================================================</tt>
+<br><tt>/ PARAMETERS:</tt>
+<br><tt>/-------name------- -------------------------description------------------------</tt>
+<br><tt>/&nbsp;</tt>
+<br><tt>/===============================================================================</tt>
+<br><tt>/ AMENDMENT HISTORY:</tt>
+<br><tt>/ init --date-- mod-id ----------------------description------------------------</tt>
+<br><tt>/&nbsp;</tt>
+<br><tt>/=============================================================================*/</tt>
+<br>&nbsp;
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/macros</tt>
+<br><tt>$ cp allocr.sas allocw.sas</tt></td>
+</tr>
+</table>
+
+<p>Next I add the code to each macro. The <b>%allocw</b> macro will be
+a copy of the code in the <b>%allocr</b> macro except the libraries will
+be allocated in write mode and it will have access to the "<b>raw</b>"
+directory in read mode. I didn't allocate the "raw" directory in %allocr
+because I don't want the possibility of a report being produced from raw
+data. This suits my standards but maybe not yours.
+<p>Time to code up these two macros. I will use Wordpad as my editor on
+the Windows side to make changes and add the code. Here they are.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>/*</tt>
+<br><tt>/ Program&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : allocr.sas</tt>
+<br><tt>/ Version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 1.0</tt>
+<br><tt>/ Author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Roland</tt>
+<br><tt>/ Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 03-Mar-2007</tt>
+<br><tt>/ SAS version&nbsp; : 9.1.3</tt>
+<br><tt>/ Client&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : xenuyama</tt>
+<br><tt>/ Office&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : tokyo</tt>
+<br><tt>/ Drug&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : DRUG001</tt>
+<br><tt>/ Protocol&nbsp;&nbsp;&nbsp;&nbsp; : DRUG001C3001</tt>
+<br><tt>/ Increment&nbsp;&nbsp;&nbsp; : 24weeks</tt>
+<br><tt>/ Purpose&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Allocate data libraries
+and formats in read mode</tt>
+<br><tt>/ SubMacros&nbsp;&nbsp;&nbsp; : none</tt>
+<br><tt>/ Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : NOT A SPECTRE
+MACRO</tt>
+<br><tt>/ Usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : %allocr</tt>
+<br><tt>/&nbsp;</tt>
+<br><tt>/===============================================================================</tt>
+<br><tt>/ PARAMETERS:</tt>
+<br><tt>/-------name------- -------------------------description------------------------</tt>
+<br><tt>/&nbsp;</tt>
+<br><tt>/===============================================================================</tt>
+<br><tt>/ AMENDMENT HISTORY:</tt>
+<br><tt>/ init --date-- mod-id ----------------------description------------------------</tt>
+<br><tt>/&nbsp;</tt>
+<br><tt>/=============================================================================*/</tt>
+<p><tt>%*- declare which libref to use for the "protocol" and "titles"
+dataset -;</tt>
+<br><tt>%global _ptlibref_;</tt>
+<br><tt>%let _ptlibref_=der;</tt>
+<p><tt>libname der "C:\pharma\xenuyama\tokyo\DRUG001\DRUG001C3001\24weeks\data\derived"</tt>
+<br><tt>access=readonly;</tt>
+<br><tt>libname stats "C:\pharma\xenuyama\tokyo\DRUG001\DRUG001C3001\24weeks\data\analysis"</tt>
+<br><tt>access=readonly;</tt>
+<p><tt>*- assign format libraries for increment, protocol, drug, office
+and client -;</tt>
+<br><tt>libname iformats "C:\pharma\xenuyama\tokyo\DRUG001\DRUG001C3001\24weeks\formats"</tt>
+<br><tt>access=readonly;</tt>
+<br><tt>libname pformats "C:\pharma\xenuyama\tokyo\DRUG001\DRUG001C3001\formats"</tt>
+<br><tt>access=readonly;</tt>
+<br><tt>libname dformats "C:\pharma\xenuyama\tokyo\DRUG001\formats" access=readonly;</tt>
+<br><tt>libname oformats "C:\pharma\xenuyama\tokyo\formats" access=readonly;</tt>
+<br><tt>libname cformats "C:\pharma\xenuyama\formats" access=readonly;</tt>
+<p><tt>options fmtsearch=(iformats.formats pformats.formats dformats.formats</tt>
+<br><tt>&nbsp;oformats.formats cformats.formats);</tt>
+<br><tt>run;</tt>
+<p><tt>%put NOTE: fmtsearch=%sysfunc(getoption(fmtsearch));</tt></td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="99%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>/*</tt>
+<br><tt>/ Program&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : allocr.sas</tt>
+<br><tt>/ Version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 1.0</tt>
+<br><tt>/ Author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Roland</tt>
+<br><tt>/ Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 03-Mar-2007</tt>
+<br><tt>/ SAS version&nbsp; : 9.1.3</tt>
+<br><tt>/ Client&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : xenuyama</tt>
+<br><tt>/ Office&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : tokyo</tt>
+<br><tt>/ Drug&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : DRUG001</tt>
+<br><tt>/ Protocol&nbsp;&nbsp;&nbsp;&nbsp; : DRUG001C3001</tt>
+<br><tt>/ Increment&nbsp;&nbsp;&nbsp; : 24weeks</tt>
+<br><tt>/ Purpose&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Allocate data libraries
+and formats in read mode</tt>
+<br><tt>/ SubMacros&nbsp;&nbsp;&nbsp; : none</tt>
+<br><tt>/ Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : NOT A SPECTRE
+MACRO</tt>
+<br><tt>/ Usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : %allocw</tt>
+<br><tt>/&nbsp;</tt>
+<br><tt>/===============================================================================</tt>
+<br><tt>/ PARAMETERS:</tt>
+<br><tt>/-------name------- -------------------------description------------------------</tt>
+<br><tt>/&nbsp;</tt>
+<br><tt>/===============================================================================</tt>
+<br><tt>/ AMENDMENT HISTORY:</tt>
+<br><tt>/ init --date-- mod-id ----------------------description------------------------</tt>
+<br><tt>/&nbsp;</tt>
+<br><tt>/=============================================================================*/</tt>
+<p><tt>%*- declare which libref to use for the "protocol" and "titles"
+dataset -;</tt>
+<br><tt>%global _ptlibref_;</tt>
+<br><tt>%let _ptlibref_=der;</tt>
+<p><tt>libname raw "C:\pharma\xenuyama\tokyo\DRUG001\DRUG001C3001\24weeks\data\raw"</tt>
+<br><tt>access=readonly;</tt>
+<br><tt>libname der "C:\pharma\xenuyama\tokyo\DRUG001\DRUG001C3001\24weeks\data\derived";</tt>
+<br><tt>libname stats "C:\pharma\xenuyama\tokyo\DRUG001\DRUG001C3001\24weeks\data\analysis";</tt>
+<p><tt>*- assign format libraries for increment, protocol, drug, office
+and client -;</tt>
+<br><tt>libname iformats "C:\pharma\xenuyama\tokyo\DRUG001\DRUG001C3001\24weeks\formats";</tt>
+<br><tt>libname pformats "C:\pharma\xenuyama\tokyo\DRUG001\DRUG001C3001\formats";</tt>
+<br><tt>libname dformats "C:\pharma\xenuyama\tokyo\DRUG001\formats";</tt>
+<br><tt>libname oformats "C:\pharma\xenuyama\tokyo\formats";</tt>
+<br><tt>libname cformats "C:\pharma\xenuyama\formats";</tt>
+<p><tt>options fmtsearch=(iformats.formats pformats.formats dformats.formats</tt>
+<br><tt>&nbsp;oformats.formats cformats.formats);</tt>
+<br><tt>run;</tt>
+<p><tt>%put NOTE: fmtsearch=%sysfunc(getoption(fmtsearch));</tt></td>
+</tr>
+</table>
+
+<p>I will run "<b><tt>find .</tt></b>" again from the "pharma" directory
+to show you what now exists. You will see that these two macros are listed.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/macros</tt>
+<br><tt>$ cd /cygdrive/c/pharma</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma</tt>
+<br><tt>$ find .</tt>
+<br><tt>.</tt>
+<br><tt>./xenuyama</tt>
+<br><tt>./xenuyama/formats</tt>
+<br><tt>./xenuyama/macros</tt>
+<br><tt>./xenuyama/tokyo</tt>
+<br><tt>./xenuyama/tokyo/DRUG001</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/analysis</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/derived</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/raw</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/formats</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/macros</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/macros/allocr.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/macros/allocw.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/silly_sas_program.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/formats</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/macros</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/formats</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/macros</tt>
+<br><tt>./xenuyama/tokyo/formats</tt>
+<br><tt>./xenuyama/tokyo/macros</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<h2>
+Creating the stored formats</h2>
+Next I will create the formats. It will not be done as part of a Spectre
+full run but you may choose otherwise. I will create the program in the
+"progs" directory and call it "<b>mk_ifmts.sas</b>". Before I create the
+header you will see me call the script <a href="scripts/showfmts" target="_blank">showfmts</a>
+to list out all formats that get assigned using the %allocr macro. There
+are none listed as none exist at this stage. To create the program header,
+I use the script <a href="scripts/hdr" target="_blank">hdr</a> rather than
+"lmhdr" because this is an ordinary code member and not a local macro.
+You will see that the generated header is simpler.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ showfmts</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ prog=mk_ifmts</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ hdr $prog</tt>
+<br><tt>Enter program purpose: Create the increment formats</tt>
+<br><tt>created mk_ifmts.sas</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ cat mk_ifmts.sas&nbsp;</tt>
+<br><tt>/*</tt>
+<br><tt>/ Program&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : mk_ifmts.sas</tt>
+<br><tt>/ Author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Roland (Roland)</tt>
+<br><tt>/ Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 03-Mar-2007</tt>
+<br><tt>/ SAS version&nbsp; : 9.1.3</tt>
+<br><tt>/ Client&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : xenuyama</tt>
+<br><tt>/ Office&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : tokyo</tt>
+<br><tt>/ Drug&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : DRUG001</tt>
+<br><tt>/ Protocol&nbsp;&nbsp;&nbsp;&nbsp; : DRUG001C3001</tt>
+<br><tt>/ Increment&nbsp;&nbsp;&nbsp; : 24weeks</tt>
+<br><tt>/ Purpose&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Create the increment
+formats</tt>
+<br><tt>/ Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;</tt>
+<br><tt>/===============================================================================</tt>
+<br><tt>/ Modification History:</tt>
+<br><tt>/ -user-id --date-- --mod-id--- ---------------------purpose--------------------</tt>
+<br><tt>/&nbsp;</tt>
+<br><tt>/=============================================================================*/</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>Next I edit using Wordpad to add the sas code.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>/*</tt>
+<br><tt>/ Program&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : mk_ifmts.sas</tt>
+<br><tt>/ Author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Roland (Roland)</tt>
+<br><tt>/ Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 25-Feb-2007</tt>
+<br><tt>/ SAS version&nbsp; : 9.1.3</tt>
+<br><tt>/ Client&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : xenuyama</tt>
+<br><tt>/ Office&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : tokyo</tt>
+<br><tt>/ Drug&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : DRUG001</tt>
+<br><tt>/ Protocol&nbsp;&nbsp;&nbsp;&nbsp; : DRUG001C3001</tt>
+<br><tt>/ Increment&nbsp;&nbsp;&nbsp; : 24weeks</tt>
+<br><tt>/ Purpose&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Create the increment
+formats</tt>
+<br><tt>/ Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;</tt>
+<br><tt>/===============================================================================</tt>
+<br><tt>/ Modification History:</tt>
+<br><tt>/ -user-id --date-- --mod-id--- ---------------------purpose--------------------</tt>
+<br><tt>/&nbsp;</tt>
+<br><tt>/=============================================================================*/</tt>
+<p><tt>%allocw</tt>
+<p><tt>proc format lib=iformats;&nbsp;</tt>
+<br><tt>value $country</tt>
+<br><tt>&nbsp; "F"="France"</tt>
+<br><tt>&nbsp; "D"="Germany"</tt>
+<br><tt>&nbsp; "CH"="Switzerland"</tt>
+<br><tt>&nbsp; "J"="Japan"</tt>
+<br><tt>&nbsp; ;</tt>
+<br><tt>value racecd&nbsp;</tt>
+<br><tt>&nbsp; 1="CAUCASIAN"&nbsp;</tt>
+<br><tt>&nbsp; 2="BLACK"&nbsp;</tt>
+<br><tt>&nbsp; 3="ASIAN"&nbsp;</tt>
+<br><tt>&nbsp; 4="HISPANIC"&nbsp;</tt>
+<br><tt>&nbsp; 5="OTHER"&nbsp;</tt>
+<br><tt>&nbsp; ;&nbsp;</tt>
+<br><tt>value sexcd&nbsp;</tt>
+<br><tt>&nbsp; 1="MALE"&nbsp;</tt>
+<br><tt>&nbsp; 2="FEMALE"&nbsp;</tt>
+<br><tt>&nbsp; ;&nbsp;</tt>
+<br><tt>value trtcd&nbsp;</tt>
+<br><tt>&nbsp; 1="Ambicor (1g/day)"&nbsp;</tt>
+<br><tt>&nbsp; 2="Betamaxin (500mg/day)"&nbsp;</tt>
+<br><tt>&nbsp; 3="No treatment"&nbsp;</tt>
+<br><tt>&nbsp; ;&nbsp;</tt>
+<br><tt>value trtnarr&nbsp;</tt>
+<br><tt>&nbsp; 1="Ambicor@(1g/day)"&nbsp;</tt>
+<br><tt>&nbsp; 2="Betamaxin@(500mg/day)"&nbsp;</tt>
+<br><tt>&nbsp; 3="No@treatment"&nbsp;</tt>
+<br><tt>&nbsp; ;&nbsp;</tt>
+<br><tt>value NY&nbsp;</tt>
+<br><tt>&nbsp; 0="NO"&nbsp;</tt>
+<br><tt>&nbsp; 1="YES"&nbsp;</tt>
+<br><tt>&nbsp; ;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>Now it is time to run the code. Spectre does all its important runs
+in batch and sas is invoked using the script <a href="scripts/sasb" target="_blank">sasb</a>
+and you are expected to do all your code development in batch using this
+same script. The reason for this is that sasb identifies what it thinks
+might be wrong with your code and you are expected to check on its findings.
+It writes its findings to a file that has the extension ".chk". Note that
+"sasb" will recognise your exported variable "prog" so I don't have to
+supply a program name as a parameter to the sasb script.
+<p>I've already debugged the code so I know it will run without errors
+or warnings. Watch me run the code and use "showfmts" again to see what
+formats have been created.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ sasb</tt>
+<br><tt>sas program "mk_ifmts" ended with return code 0:</tt>
+<br><tt>0 ERROR(s)</tt>
+<br><tt>0 WARNING(s)</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ showfmts</tt>
+<br><tt>$COUNTRY</tt>
+<br><tt>NY</tt>
+<br><tt>RACECD</tt>
+<br><tt>SEXCD</tt>
+<br><tt>TRTCD</tt>
+<br><tt>TRTNARR</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>The "showfmts" script has listed all the formats that are assigned by
+the %allocr script in alphabetical order. To see an individual format,
+use the <a href="scripts/showfmt" target="_blank">showfmt</a> script ("showfmts"
+but without the "s" at the end). Note that for character formats that start
+with a "$" the dollar sign must be "escaped" using a backslash. This is
+because the Unix or Cygwin shell will think it is a variable that it is
+required to resolve just like "$prog" so you have to stop it from resolving
+in this way. I will display the "racecd" format and the "$country" format.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ showfmt racecd</tt>
+<br><tt>1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+CAUCASIAN</tt>
+<br><tt>2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+BLACK</tt>
+<br><tt>3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ASIAN</tt>
+<br><tt>4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+HISPANIC</tt>
+<br><tt>5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+OTHER</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ showfmt \$country</tt>
+<br><tt>CH&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Switzerland</tt>
+<br><tt>D&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Germany</tt>
+<br><tt>F&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+France</tt>
+<br><tt>J&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Japan</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>Time to do a "find ." to see what stage we have reached. Remember that
+the ".chk" file was created by "sasb" with its findings from the sas log.
+It will be empty in this case.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ cd /cygdrive/c/pharma</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma</tt>
+<br><tt>$ find .</tt>
+<br><tt>.</tt>
+<br><tt>./xenuyama</tt>
+<br><tt>./xenuyama/formats</tt>
+<br><tt>./xenuyama/macros</tt>
+<br><tt>./xenuyama/tokyo</tt>
+<br><tt>./xenuyama/tokyo/DRUG001</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/analysis</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/derived</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/raw</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/formats</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/formats/formats.sas7bcat</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/macros</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/macros/allocr.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/macros/allocw.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/mk_ifmts.chk</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/mk_ifmts.log</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/mk_ifmts.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/silly_sas_program.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/formats</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/macros</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/formats</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/macros</tt>
+<br><tt>./xenuyama/tokyo/formats</tt>
+<br><tt>./xenuyama/tokyo/macros</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<h2>
+Creating the derived datasets</h2>
+The programs that create the derived datasets will most definitely be part
+of the final Spectre run. In order to be recognised by Spectre as derived
+dataset programs they have to follow a naming convention which is that
+they must start with "<b>d</b>" (for "derived") or "<b>s</b>" (for "stats")
+followed by a two digit number and an underscore such as "d01_", "d02_",
+"s01_". Programs will be run by Spectre in alphabetical order so you have
+to choose the numbers you use in the program name to give you the correct
+order run. This is explained in detail on this <a href="derived.html" target="_blank">page</a>.
+<p>I am going to build a "demog" dataset and an "adv" dataset and place
+them in the "derived" folder. The "adv" datasets relies on the "demog"
+dataset so I will name the "demog" program as d01_demog and the adv program
+as d02_adv so they run in the correct order. I have no real data so this
+is generated test data. I borrowed some code from the "Creating Test Datasets"
+page that you can link to <a href="mkdsets.html" target="_blank">here</a>.
+<p>First I will generate the headers.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma</tt>
+<br><tt>$ cd $xyprogs</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ prog=d01_demog</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ hdr $prog</tt>
+<br><tt>Enter program purpose: Build the demog dataset</tt>
+<br><tt>created d01_demog.sas</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ hdr d02_adv</tt>
+<br><tt>Enter program purpose: Build the adv dataset</tt>
+<br><tt>created d02_adv.sas</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>Now I add the sas code using Wordpad and here are the two code members..
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>/*</tt>
+<br><tt>/ Program&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : d01_demog.sas</tt>
+<br><tt>/ Author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Roland (Roland)</tt>
+<br><tt>/ Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 03-Mar-2007</tt>
+<br><tt>/ SAS version&nbsp; : 9.1.3</tt>
+<br><tt>/ Client&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : xenuyama</tt>
+<br><tt>/ Office&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : tokyo</tt>
+<br><tt>/ Drug&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : DRUG001</tt>
+<br><tt>/ Protocol&nbsp;&nbsp;&nbsp;&nbsp; : DRUG001C3001</tt>
+<br><tt>/ Increment&nbsp;&nbsp;&nbsp; : 24weeks</tt>
+<br><tt>/ Purpose&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Build the demog dataset</tt>
+<br><tt>/ Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;</tt>
+<br><tt>/===============================================================================</tt>
+<br><tt>/ Modification History:</tt>
+<br><tt>/ -user-id --date-- --mod-id--- ---------------------purpose--------------------</tt>
+<br><tt>/&nbsp;</tt>
+<br><tt>/=============================================================================*/</tt>
+<p><tt>%allocw</tt>
+<p><tt>data der.demog;&nbsp;</tt>
+<br><tt>&nbsp; informat dob date7.&nbsp;</tt>
+<br><tt>&nbsp; trtcd sexcd racecd weight height&nbsp;</tt>
+<br><tt>&nbsp; patno invid sitecd fascd comma13.;&nbsp;</tt>
+<br><tt>&nbsp; input patno invid sitecd fascd dob&nbsp;</tt>
+<br><tt>&nbsp; trtcd sexcd racecd weight height;&nbsp;</tt>
+<br><tt>&nbsp; age=%age(dob,"01jan2006"d);&nbsp;</tt>
+<br><tt>&nbsp; format dob date9. sexcd sexcd. racecd racecd.&nbsp;</tt>
+<br><tt>&nbsp; trtcd trtcd. weight height 5.1 age 3.&nbsp;</tt>
+<br><tt>&nbsp; fascd ny.;&nbsp;</tt>
+<br><tt>&nbsp; label patno="PATIENT NUMBER"&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; invid="INVESTIGATOR
+ID"&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sitecd="SITE CODE"&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fascd="FULL ANALYSIS
+SET (N/Y)"&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dob="DATE OF BIRTH"&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; trtcd="TREATMENT REGIMEN"&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sexcd="GENDER CODE"&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; racecd="RACE CODE"&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; weight="WEIGHT (KG)"&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; height="HEIGHT (CM)"&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; age="AGE (YEARS)"&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;&nbsp;</tt>
+<br><tt>cards;&nbsp;</tt>
+<br><tt>100 1000 10 1 10oct85 1 1 1 78.1 200&nbsp;</tt>
+<br><tt>101 1000 10 1 20nov89 2 2 2 65.5 175&nbsp;</tt>
+<br><tt>102 1000 10 1 10oct75 1 1 1 79.6 212&nbsp;</tt>
+<br><tt>103 1000 10 0 20nov79 2 2 3 75.3 186&nbsp;</tt>
+<br><tt>200 2000 20 1 10oct65 1 1 1 78.1 200&nbsp;</tt>
+<br><tt>201 2000 20 1 20nov69 2 2 3 65.5 175&nbsp;</tt>
+<br><tt>202 2000 20 1 10oct85 1 1 1 79.6 212&nbsp;</tt>
+<br><tt>203 2000 20 1 20nov89 2 2 5 75.3 186&nbsp;</tt>
+<br><tt>300 3000 30 1 10oct75 1 1 2 78.1 200&nbsp;</tt>
+<br><tt>301 3000 30 1 20nov79 2 2 2 65.5 175&nbsp;</tt>
+<br><tt>302 3000 30 0 10oct65 1 1 1 79.6 212&nbsp;</tt>
+<br><tt>303 3000 30 1 20nov69 2 2 3 75.3 186&nbsp;</tt>
+<br><tt>400 4000 40 1 10oct85 1 1 1 78.1 200&nbsp;</tt>
+<br><tt>401 4000 40 1 20nov89 2 2 2 65.5 175</tt>
+<br><tt>402 4000 40 0 10oct75 1 1 1 79.6 212&nbsp;</tt>
+<br><tt>403 4000 40 1 20may79 2 2 3 75.3 186&nbsp;</tt>
+<br><tt>404 4000 40 1 18jun70 1 1 3 76.6 190&nbsp;</tt>
+<br><tt>500 5000 50 1 10oct85 2 1 1 78.1 200&nbsp;</tt>
+<br><tt>501 5000 50 1 20nov89 1 2 2 65.5 175&nbsp;</tt>
+<br><tt>502 5000 50 0 10oct75 2 1 1 79.6 212&nbsp;</tt>
+<br><tt>503 5000 50 1 20may79 1 2 3 75.3 186&nbsp;</tt>
+<br><tt>901 9000 90 0 13may78 3 2 2 74.5 183&nbsp;</tt>
+<br><tt>;&nbsp;</tt>
+<br><tt>run;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>/*</tt>
+<br><tt>/ Program&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : d02_adv.sas</tt>
+<br><tt>/ Author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Roland (Roland)</tt>
+<br><tt>/ Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 03-Mar-2007</tt>
+<br><tt>/ SAS version&nbsp; : 9.1.3</tt>
+<br><tt>/ Client&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : xenuyama</tt>
+<br><tt>/ Office&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : tokyo</tt>
+<br><tt>/ Drug&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : DRUG001</tt>
+<br><tt>/ Protocol&nbsp;&nbsp;&nbsp;&nbsp; : DRUG001C3001</tt>
+<br><tt>/ Increment&nbsp;&nbsp;&nbsp; : 24weeks</tt>
+<br><tt>/ Purpose&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Build the adv dataset</tt>
+<br><tt>/ Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;</tt>
+<br><tt>/===============================================================================</tt>
+<br><tt>/ Modification History:</tt>
+<br><tt>/ -user-id --date-- --mod-id--- ---------------------purpose--------------------</tt>
+<br><tt>/&nbsp;</tt>
+<br><tt>/=============================================================================*/</tt>
+<p><tt>%allocw</tt>
+<p><tt>data adv;&nbsp;</tt>
+<br><tt>&nbsp; length amsoc ampt $ 60;&nbsp;</tt>
+<br><tt>&nbsp; amsoc="Gastrointestinal disorders";&nbsp;</tt>
+<br><tt>&nbsp; ampt="Abdominal pain NOS";output;&nbsp;</tt>
+<br><tt>&nbsp; ampt="Constipation";output;&nbsp;</tt>
+<br><tt>&nbsp; ampt="Diarrhoea NOS";output;&nbsp;</tt>
+<br><tt>&nbsp; ampt="Nausea";output;&nbsp;</tt>
+<br><tt>&nbsp; ampt="Vomiting NOS";output;&nbsp;</tt>
+<br><tt>&nbsp; amsoc="General disorders and administration site conditions";&nbsp;</tt>
+<br><tt>&nbsp; ampt="Chest pain";output;&nbsp;</tt>
+<br><tt>&nbsp; ampt="Pain NOS";output;&nbsp;</tt>
+<br><tt>&nbsp; amsoc="Musculoskeletal and connective tissue disorders";&nbsp;</tt>
+<br><tt>&nbsp; ampt="Back pain";output;&nbsp;</tt>
+<br><tt>&nbsp; ampt="Pain in extremity";output;&nbsp;</tt>
+<br><tt>&nbsp; amsoc="Nervous system disorders";&nbsp;</tt>
+<br><tt>&nbsp; ampt="Headache";output;&nbsp;</tt>
+<br><tt>&nbsp; ampt="Tremor";output;&nbsp;</tt>
+<br><tt>&nbsp; amsoc="Psychiatric disorders";&nbsp;</tt>
+<br><tt>&nbsp; ampt="Anxiety";output;&nbsp;</tt>
+<br><tt>&nbsp; ampt="Insomnia";output;&nbsp;</tt>
+<br><tt>&nbsp; amsoc="Respiratory, thoracic and mediastinal disorders";&nbsp;</tt>
+<br><tt>&nbsp; ampt="Cough";output;&nbsp;</tt>
+<br><tt>&nbsp; ampt="Dyspnoea";output;&nbsp;</tt>
+<br><tt>&nbsp; amsoc="Vascular disorders";&nbsp;</tt>
+<br><tt>&nbsp; ampt="Hypertension NOS";output;&nbsp;</tt>
+<br><tt>&nbsp; ampt="Hypotension NOS";output;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<br><tt>data der.adv;&nbsp;</tt>
+<br><tt>&nbsp; do i=1 to nobsdem;&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; set der.demog(keep=patno invid fascd) point=i
+nobs=nobsdem;&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; do j=5 to ceil(ranuni(111)*30);&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ptr=ceil(ranuni(222)*nobsadv);&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set adv point=ptr nobs=nobsadv;&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output;&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; end;&nbsp;</tt>
+<br><tt>&nbsp; end;&nbsp;</tt>
+<br><tt>&nbsp; stop;&nbsp;</tt>
+<br><tt>&nbsp; drop j;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>Now I'll run the code.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ echo $prog</tt>
+<br><tt>d01_demog</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ sasb</tt>
+<br><tt>sas program "d01_demog" ended with return code 0:</tt>
+<br><tt>0 ERROR(s)</tt>
+<br><tt>0 WARNING(s)</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ sasb d02_adv</tt>
+<br><tt>sas program "d02_adv" ended with return code 0:</tt>
+<br><tt>0 ERROR(s)</tt>
+<br><tt>0 WARNING(s)</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$</tt></td>
+</tr>
+</table>
+
+<p>The programs ran without any problems. Time for another "find ." from
+the pharma directory to see what we have now.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ cd /cygdrive/c/pharma</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma</tt>
+<br><tt>$ find .</tt>
+<br><tt>.</tt>
+<br><tt>./mk_ifmts.sas</tt>
+<br><tt>./xenuyama</tt>
+<br><tt>./xenuyama/formats</tt>
+<br><tt>./xenuyama/macros</tt>
+<br><tt>./xenuyama/tokyo</tt>
+<br><tt>./xenuyama/tokyo/DRUG001</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/analysis</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/derived</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/derived/adv.sas7bdat</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/derived/demog.sas7bdat</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/raw</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/formats</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/formats/formats.sas7bcat</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/macros</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/allocr.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/allocw.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/d01_demog.chk</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/d01_demog.log</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/d01_demog.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/d02_adv.chk</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/d02_adv.log</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/d02_adv.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/mk_ifmts.chk</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/mk_ifmts.log</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/mk_ifmts.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/silly_sas_program.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/formats</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/macros</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/formats</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/macros</tt>
+<br><tt>./xenuyama/tokyo/formats</tt>
+<br><tt>./xenuyama/tokyo/macros</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<h2>
+"makerun" and "runderived"</h2>
+In real life, there will be several programs that build derived datasets
+and it will be necessary to run the entire suite of programs from time
+to time using the official Spectre method. There is a script named <a href="scripts/makerun" target="_blank">makerun</a>
+that will generate three other scripts named "runderived", "runreports"
+and "runsuite". It is "<b>runderived</b>" that will build the derived datasets.
+Don't worry about the error messages coming out of "makerun". It is complaining
+that none of the reporting components are there. I will leave that for
+later. It will still give us the "runderived" we need.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma</tt>
+<br><tt>$ cd $xyprogs</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ makerun</tt>
+<br><tt>Error: File "protocol.txt", the protocol information file, is missing</tt>
+<br><tt>grep: *.titles: No such file or directory</tt>
+<br><tt>cat: [tlg]*.titles: No such file or directory</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ ls r*</tt>
+<br><tt>runderived&nbsp; runreports&nbsp; runsuite</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>Here is the "runderived" script it generated.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#!/bin/bash</tt>
+<br><tt># Script&nbsp;&nbsp;&nbsp;&nbsp; : runderived</tt>
+<br><tt># Author&nbsp;&nbsp;&nbsp;&nbsp; : This script was automatically
+generated by the "makerun" script.</tt>
+<br><tt># Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp; 3-Mar-2007 at
+07:03:06</tt>
+<br><tt># Client&nbsp;&nbsp;&nbsp;&nbsp; : xenuyama</tt>
+<br><tt># Office&nbsp;&nbsp;&nbsp;&nbsp; : tokyo</tt>
+<br><tt># Drug&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : DRUG001</tt>
+<br><tt># Protocol&nbsp;&nbsp; : DRUG001C3001</tt>
+<br><tt># Inc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 24weeks</tt>
+<br><tt># Purpose&nbsp;&nbsp;&nbsp; : To run the programs that build the
+derived datasets</tt>
+<br><tt># SubScripts : crtitlesds</tt>
+<br><tt># Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : If you edit this script
+to limit the number of datasets built</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+then note that there is a delete of all derived datasets in the</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+der. and stat. libraries near the start and all programs .log, .lst</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+and .chk members are deleted using the "rem" script. You should</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+comment out the "rem" lines that do not apply by putting a hash in</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+front of these commands as is the case with all the lines in this</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+header. It is recommended that for interim runs, you comment out the</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+lines that delete all the stats and der datasets.</tt>
+<br><tt>#</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Note that this script was generated by the "makerun" script.</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Next time "makerun" is run, it will overwrite this member.</tt>
+<br><tt>#</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Note that to run this script you must use the command exactly</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+as shown in the usage notes below with the study programs</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+directory the current directory</tt>
+<br><tt>#</tt>
+<br><tt># Usage:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ./runderived 1>runderived.log
+2>runderived.err</tt>
+<br><tt>#</tt>
+<p><tt># Define error exit routine</tt>
+<br><tt>errorexit () {</tt>
+<p><tt>&nbsp; # email the user telling them the job ended due to errors</tt>
+<br><tt>&nbsp; msg="An error forced the derived datasets build script to
+end"</tt>
+<br><tt>&nbsp; iam=$(whoami)</tt>
+<br><tt>&nbsp; sendto=$(emailaddr $iam)</tt>
+<p><tt>&nbsp; # Use "ssmtp" for Cygwin and "mailx" for Unix</tt>
+<br><tt>&nbsp; if [ -n "$CYGWIN" ] ; then</tt>
+<br><tt>/usr/sbin/ssmtp -t &lt;&lt; --END--</tt>
+<br><tt>To: $sendto</tt>
+<br><tt>Subject: $msg</tt>
+<p><tt>$msg</tt>
+<br><tt>--END--</tt>
+<p><tt>&nbsp; else</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; echo "$msg" | mailx -s "$msg" $sendto</tt>
+<br><tt>&nbsp; fi</tt>
+<p><tt>&nbsp; # say when the script ended</tt>
+<br><tt>&nbsp; echo "This script ended due to errors at $(date)"</tt>
+<br><tt>&nbsp; echo "This script ended due to errors at $(date)" 1>&amp;2</tt>
+<br><tt>&nbsp; exit 2</tt>
+<br><tt>}</tt>
+<br>&nbsp;
+<p><tt># identify user</tt>
+<br><tt>iam=$(whoami)</tt>
+<br>&nbsp;
+<p><tt># say who is running this script and what date and time</tt>
+<br><tt>echo "This script was started by $iam ($(getname $iam)) on $(date)"</tt>
+<br><tt>echo "This script was started by $iam ($(getname $iam)) on $(date)"
+1>&amp;2</tt>
+<br>&nbsp;
+<br>&nbsp;
+<p><tt># Delete the "der" and "stat" derived datasets so long</tt>
+<br><tt># as they have group write permission.</tt>
+<br><tt>rem /cygdrive/c/pharma/dat/tokyo/DRUG001/DRUG001C3001/der/progs/*.sas7bdat</tt>
+<br><tt>rem /cygdrive/c/pharma/dat/tokyo/DRUG001/DRUG001C3001/stat/progs/*.sas7bdat</tt>
+<br>&nbsp;
+<p><tt># Re-create the titles and protocol datasets</tt>
+<br><tt>crtitlesds</tt>
+<br>&nbsp;
+<p><tt># For all programs, delete the .log, .lst and .chk if they exist</tt>
+<br><tt># and there is group write permission.</tt>
+<br><tt>rm -f d01_demog.log d01_demog.lst d01_demog.chk</tt>
+<br><tt>rm -f d02_adv.log d02_adv.lst d02_adv.chk</tt>
+<br>&nbsp;
+<p><tt># Run all programs using sasb and exit if a</tt>
+<br><tt># non-zero return code is detected.</tt>
+<br><tt>sasb d01_demog</tt>
+<br><tt>if [ $? -gt 1 ] ; then errorexit ; fi</tt>
+<br><tt>sasb d02_adv</tt>
+<br><tt>if [ $? -gt 1 ] ; then errorexit ; fi</tt>
+<br>&nbsp;
+<p><tt># cat all the .chk files onto an empty runderived.chk</tt>
+<br><tt>rm -f runderived.chk</tt>
+<br><tt>cat d01_demog.chk >> runderived.chk</tt>
+<br><tt>cat d02_adv.chk >> runderived.chk</tt>
+<br>&nbsp;
+<p><tt># email the user telling them the job has ended</tt>
+<br><tt>msg="the derived datasets build script has finished"</tt>
+<br><tt>iam=$(whoami)</tt>
+<br><tt>sendto=$(emailaddr $iam)</tt>
+<p><tt># Use "ssmtp" for Cygwin and "mailx" for Unix</tt>
+<br><tt>if [ -n "$CYGWIN" ] ; then</tt>
+<br><tt>/usr/sbin/ssmtp -t &lt;&lt; --END--</tt>
+<br><tt>To: $sendto</tt>
+<br><tt>Subject: $msg</tt>
+<p><tt>$msg</tt>
+<br><tt>--END--</tt>
+<br><tt>else</tt>
+<br><tt>&nbsp; echo "$msg" | mailx -s "$msg" $sendto</tt>
+<br><tt>fi</tt>
+<br>&nbsp;
+<p><tt># say when the script ended</tt>
+<br><tt>echo "This script finished at $(date)"</tt>
+<br><tt>echo "This script finished at $(date)" 1>&amp;2</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>Now I am going to run "runderived" You will see the same error messages
+as before due to the reporting components being missing. It will write
+to both standard output and standard error so you will see two start and
+finish messages.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ ./runderived</tt>
+<br><tt>This script was started by Roland (Roland) on Sat Mar&nbsp; 3 07:07:46
+WEST 2007</tt>
+<br><tt>This script was started by Roland (Roland) on Sat Mar&nbsp; 3 07:07:46
+WEST 2007</tt>
+<br><tt>Error: File "protocol.txt", the protocol information file, is missing</tt>
+<br><tt>grep: *.titles: No such file or directory</tt>
+<br><tt>cat: [tlg]*.titles: No such file or directory</tt>
+<br><tt>sas program "d01_demog" ended with return code 0:</tt>
+<br><tt>0 ERROR(s)</tt>
+<br><tt>0 WARNING(s)</tt>
+<br><tt>sas program "d02_adv" ended with return code 0:</tt>
+<br><tt>0 ERROR(s)</tt>
+<br><tt>0 WARNING(s)</tt>
+<br><tt>This script finished at Sat Mar&nbsp; 3 07:07:56 WEST 2007</tt>
+<br><tt>This script finished at Sat Mar&nbsp; 3 07:07:56 WEST 2007</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>You will see that it found and ran "d01_demog" and "d02_adv" and did
+it in the correct order. Normally the output from "runderived" is sent
+to a "log" file and an "err" file but I wanted you to see all the messages
+as they were coming out. I'll run it again the way it is supposed to be
+run and "cat" the "log" and "err" file. You will see that all the useful
+stuff is written to the "err" file.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ ./runderived 1>runderived.log 2>runderived.err</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ cat runderived.log</tt>
+<br><tt>This script was started by Roland (Roland) on Sat Mar&nbsp; 3 07:08:54
+WEST 2007</tt>
+<br><tt>This script finished at Sat Mar&nbsp; 3 07:09:03 WEST 2007</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ cat runderived.err</tt>
+<br><tt>This script was started by Roland (Roland) on Sat Mar&nbsp; 3 07:08:54
+WEST 2007</tt>
+<br><tt>Error: File "protocol.txt", the protocol information file, is missing</tt>
+<br><tt>grep: *.titles: No such file or directory</tt>
+<br><tt>cat: [tlg]*.titles: No such file or directory</tt>
+<br><tt>sas program "d01_demog" ended with return code 0:</tt>
+<br><tt>0 ERROR(s)</tt>
+<br><tt>0 WARNING(s)</tt>
+<br><tt>sas program "d02_adv" ended with return code 0:</tt>
+<br><tt>0 ERROR(s)</tt>
+<br><tt>0 WARNING(s)</tt>
+<br><tt>This script finished at Sat Mar&nbsp; 3 07:09:03 WEST 2007</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<h2>
+protocol.txt</h2>
+Normally, before any programming starts in a programs directory, the Spectre
+administrator creates a file named "<b>protocol.txt</b>" that contains
+essential information about the protocol. The error message coming out
+of "makerun" and "runderived" was about this file being missing. The file
+could not be found so this was assumed to be an error. The reporting programs
+rely on it. I am introducing it here, at this later stage, as I want to
+explain to you how it links in with the reporting programs. The reporting
+programs need to know the paper size and the margins to be left around
+the edges to work out the linesize and pagesize for the sas programs. These
+are set up in this "protocol.txt" file. Also the allowed populations and
+the labels they equate to are set there. Another thing needed is the client
+style to be used for setting up the tables and listings header lines. Each
+client will have their own style. Spectre allows for any number of client
+styles. The client style I will be using is "xy" for the client "Xenuyama".
+There is a <a href="macros/titles.sas" target="_blank">%titles</a> macro
+that you will be calling in your reporting programs to set up the titles
+but it only starts this process. The rest must be done by the client titles
+macro which, because I set the style to "xy", will be the macro<a href="sysmacros/xytitles.sas" target="_blank">
+%xytitles</a>.
+<p>To create the "protocol.txt" file a script needs to be run. You know
+what -- <b>I have forgotten the name of it!</b> But that is not a problem.
+All Spectre scripts and macros can be viewed in the terminal window. The
+command I need to find this script is "<b>showme scripts</b>" where I will
+be shown the complete list of scripts and their purposes. I type in the
+command as you see below.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ showme scripts</tt></td>
+</tr>
+</table>
+
+<p>And then my terminal window looks like the following and I can scroll
+up and down and find the script I want.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Index of members in this directory with standard headers</tt>
+<br><tt>========================================================</tt>
+<br><tt>(this list was generated by the crindex script)</tt>
+<p><tt>a4lsps&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- Calculate and display linesize and pagesize values for different</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+layouts based on A4 paper and margins.</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Usage: a4lsps -l 1.0 -r 1.0 -t 1.0 -b 1.0</tt>
+<p><tt>a4ps&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- For paged adhoc reports that are not part of the reporting</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+system, create an A4 postscript file (and optionally print it).</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Usage: a4ps file.lst > file.ps</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+a4ps file1.lst file2.lis subdir/file3.lst > file.ps</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+a4ps -p john file.lst</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+a4ps -p mika file1.lst file2.lst</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+a4ps -t 0.75 -p john file.lst</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+a4ps -b 0.5 -s 2 -e 3 -p john file.lst</tt>
+<p><tt>a4ps2pdf&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- To convert an A4 postscript file to a pdf</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Usage: a4ps2pdf file.ps file.pdf</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+a4ps2pdf file.ps</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+a4ps2pdf -u file.ps&nbsp;&nbsp; # creates uncompressed pdf</tt>
+<p><tt>alltitles&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- Production script to collect all .titles files together and put</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+in ALL.TITLES</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Usage: alltitles</tt>
+<p><tt>antigrep&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- To list all files that DO NOT contain a specified string</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Usage: antigrep 'FG_21_08' *.sas</tt>
+<br>&nbsp;
+<p><tt>badchars&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- Show bad characters (not clean 7 bit) in the input stream</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Usage: badlines file.ext | badchars</tt>
+<br>&nbsp;
+<p><tt>baddrug&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- To list which SAS programs do not have a correct drug name</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+in the standard header.</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Usage: baddrug</tt>
+<br>&nbsp;
+<p><tt>badinc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- To list which SAS programs do not have a correct increment</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+in the standard header.</tt>
+<p><tt>/cygdrive/c/spectre/scripts/@index.txt&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>I'll scroll up and down until I find this script. Here it is in the
+middle of the page.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Usage: contentsl adv</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+contentsl adv acct</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+contentsl&nbsp;&nbsp;&nbsp; # all datasets are listed</tt>
+<p><tt>contentsl_win&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - To list the contents
+(in long form) of one or more SAS datasets</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(or a whole library) in the current directory (uses SAS).</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Usage: contentsl_win adv</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+contentsl_win adv acct</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+contentsl_win&nbsp;&nbsp;&nbsp; # all datasets are listed</tt>
+<p><tt>crindex&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- To create an index of macros or scripts with standard headers</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(uses SAS).</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Usage: crindex * > @index.txt</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+crindex *.sas > @index.txt</tt>
+<p><tt>crindex_win&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - To create
+an index of macros or scripts with standard headers</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(uses SAS).</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Usage: crindex_win * > @index.txt</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+crindex_win *.sas > @index.txt</tt>
+<p><tt>crprottmpl&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - Production
+script to create file "protocol.template" in the study</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+programs directory.</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Usage: crprottmpl</tt>
+<p><tt>crtitlesds&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - Production
+script to create der.titles dataset from individual</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+.titles files and der.protocol dataset from protocol.txt file</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(uses SAS).</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Usage: crtitlesds</tt>
+<p><tt>crtitlesds_win&nbsp;&nbsp;&nbsp;&nbsp; - Production script to create
+der.titles dataset from individual</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+.titles files and der.protocol dataset from protocol.txt file</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(uses SAS).</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Usage: crtitlesds_win</tt>
+<p><tt>crtitlestmpl&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - Production script
+to create file "titles.template" in the study</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+programs directory.</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Usage: crtitlestmpl</tt>
+<p><tt>dashes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- To list files that have spanning dashed lines in them</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Usage: dashes *.lis</tt>
+<br><tt>:</tt></td>
+</tr>
+</table>
+
+<p>The script I need is named <a href="scripts/crprottmpl" target="_blank">crprottmpl</a>.
+It creates "protocol.template" which has to be copied across as "protocol.txt"
+and edited.
+<p>This display, where I can scroll up and down in my terminal window,
+has been created by an editor named "less". <b>To get out of "less" and
+return to the terminal, press the "q" key.</b>
+<p>Now I am back in the terminal window. I'll run the "<b>crprottmpl</b>"
+script and move "<b>procotol.template</b>" to "<b>protocol.txt</b>".
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ crprottmpl</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ ls pro*</tt>
+<br><tt>protocol.template</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ mv protocol.template protocol.txt&nbsp;</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ ls pro*</tt>
+<br><tt>protocol.txt</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>This is the "<b>protocol.txt</b>" file I have to edit. I've reduced
+the text size so it hopefully won't wrap in your browser.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt><font size=-1>#===========================================================================================================================================</font></tt>
+<br><tt><font size=-1># Template for&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Make a copy of this in the programs directory and call it "protocol.txt".</font></tt>
+<br><tt><font size=-1># protocol.txt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+This file contains the list of protocol details that will be written to
+protocol dataset.</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># This member was generated by the script "crprottmpl"
+for:</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># CLIENT: xenuyama</font></tt>
+<br><tt><font size=-1># OFFICE: tokyo</font></tt>
+<br><tt><font size=-1># DRUG: DRUG001</font></tt>
+<br><tt><font size=-1># STUDY: DRUG001C3001</font></tt>
+<br><tt><font size=-1># INC: 24weeks</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># DATE: 03-Mar-2007</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1>#===================== THE LINES BELOW THAT START
+WITH A # ARE A GUIDE TO TELL YOU HOW TO FILL IN THE INFORMATION ==========================</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># drugname: FKXYZ (XXXXX)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(this information will appear in the headers)</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># protocol: Protocol No. XY-XXX-YY-ZZ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(this information will appear in the headers)</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># report: Report No. XYZZ-XXX-YY, Draft version,&nbsp;&nbsp;&nbsp;&nbsp;
+(this information will appear in the headers)</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># titlestyle: xy&nbsp;&nbsp;&nbsp; Set this to the
+prefix of the client titles macro</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># dflayout: p10&nbsp;&nbsp;&nbsp;&nbsp; Default layout
+to use when no layout is specified in the titles member. This must be one
+of the allowed</font></tt>
+<br><tt><font size=-1>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+layouts as listed in "titles.template".</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># dfllayout: l10&nbsp;&nbsp;&nbsp; Default landscape
+layout when only "l" is specified as the layout in the titles member.</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># dfplayout: p10&nbsp;&nbsp;&nbsp; Default portrait
+layout when only "p" is specified as the layout in the titles member.</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># dfltlayout: lt10&nbsp; Default landscape tight
+(i.e. lines are closer together) layout when only "lt" is specified as
+the layout in the titles member.</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># dfptlayout: pt10&nbsp; Default portrait tight (i.e.
+lines are closer together) layout when only "pt" is specified as the layout
+in the titles member.</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># paper: A4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Must be either "A4" or "Letter"</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># margin: 1.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+All-round page margin in inches</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># lmargin:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Left margin in inches if different from all-round margin value assigned
+to margin: (left in sense of portrait orientation).</font></tt>
+<br><tt><font size=-1>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Leave this blank if there is the same all-round margin.</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># rmargin:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Right margin in inches if different from all-round margin value assigned
+to margin: (right in sense of portrait orientation).</font></tt>
+<br><tt><font size=-1>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Leave this blank if there is the same all-round margin.</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># tmargin:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Top margin in inches if different from all-round margin value assigned
+to margin: (top in sense of portrait orientation).</font></tt>
+<br><tt><font size=-1>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Leave this blank if there is the same all-round margin.</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># bmargin:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Bottom margin in inches if different from all-round margin value assigned
+to margin: (bottom in sense of portrait orientation).</font></tt>
+<br><tt><font size=-1>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Leave this blank if there is the same all-round margin.</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># clean: clean in (0,1)&nbsp; Selection criteria
+for selecting clean/unclean patients from the acct dataset.</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># pop1: FAS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+First set of analysis set abbreviation and its label. What the programmer
+puts in their .titles file&nbsp;</font></tt>
+<br><tt><font size=-1># poplabel1: Full Analysis Set&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+for the analysis set will be checked against the list you put in this member.</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># pop2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Second set of analysis set abbreviation and its label.</font></tt>
+<br><tt><font size=-1># poplabel2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+There are a maximum of 9 sets allowed.</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1>#============================================================================================================================================</font></tt>
+<p><tt><font size=-1>drugname: XYZ (XXXXX)</font></tt>
+<br><tt><font size=-1>protocol: Protocol No. XY-XXX-YY-ZZ</font></tt>
+<br><tt><font size=-1>report: Report No. XYZZ-XXX-YY, Draft version,&nbsp;</font></tt>
+<br><tt><font size=-1>titlestyle: xy</font></tt>
+<br><tt><font size=-1>dflayout: p10</font></tt>
+<br><tt><font size=-1>dfllayout: l10</font></tt>
+<br><tt><font size=-1>dfplayout: p10</font></tt>
+<br><tt><font size=-1>dfltlayout: lt10</font></tt>
+<br><tt><font size=-1>dfptlayout: pt10</font></tt>
+<br><tt><font size=-1>paper: A4</font></tt>
+<br><tt><font size=-1>margin: 1.0</font></tt>
+<br><tt><font size=-1>lmargin:&nbsp;</font></tt>
+<br><tt><font size=-1>rmargin:&nbsp;</font></tt>
+<br><tt><font size=-1>tmargin:&nbsp;</font></tt>
+<br><tt><font size=-1>bmargin:&nbsp;</font></tt>
+<br><tt><font size=-1>clean:&nbsp;</font></tt>
+<br><tt><font size=-1>pop1: FAS</font></tt>
+<br><tt><font size=-1>poplabel1: Full Analysis Set</font></tt>
+<br><tt><font size=-1>pop2: PPS</font></tt>
+<br><tt><font size=-1>poplabel2: Per-Protocol Set</font></tt>
+<br><tt><font size=-1>pop3: ITT</font></tt>
+<br><tt><font size=-1>poplabel3: Intent-to-Treat</font></tt>
+<br><tt><font size=-1>pop4: SAF</font></tt>
+<br><tt><font size=-1>poplabel4: Safety population</font></tt>
+<br><tt><font size=-1>pop5:&nbsp;</font></tt>
+<br><tt><font size=-1>poplabel5:&nbsp;</font></tt>
+<br><tt><font size=-1>pop6:&nbsp;</font></tt>
+<br><tt><font size=-1>poplabel6:&nbsp;</font></tt>
+<br><tt><font size=-1>pop7:&nbsp;</font></tt>
+<br><tt><font size=-1>poplabel7:&nbsp;</font></tt>
+<br><tt><font size=-1>pop8:&nbsp;</font></tt>
+<br><tt><font size=-1>poplabel8:&nbsp;</font></tt>
+<br><tt><font size=-1>pop9:&nbsp;</font></tt>
+<br><tt><font size=-1>poplabel9:&nbsp;</font></tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>This is the information part of the file after making the changes. I
+will allow most of them to default.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>drugname: DRUG001</tt>
+<br><tt>protocol: Protocol No. XY-XXX-YY-ZZ</tt>
+<br><tt>report: Report No. XYZZ-XXX-YY, Draft version,&nbsp;</tt>
+<br><tt>titlestyle: xy</tt>
+<br><tt>dflayout: p10</tt>
+<br><tt>dfllayout: l10</tt>
+<br><tt>dfplayout: p10</tt>
+<br><tt>dfltlayout: lt10</tt>
+<br><tt>dfptlayout: pt10</tt>
+<br><tt>paper: A4</tt>
+<br><tt>margin: 1.0</tt>
+<br><tt>lmargin:&nbsp;</tt>
+<br><tt>rmargin:&nbsp;</tt>
+<br><tt>tmargin:&nbsp;</tt>
+<br><tt>bmargin:&nbsp;</tt>
+<br><tt>clean:&nbsp;</tt>
+<br><tt>pop1: FAS</tt>
+<br><tt>poplabel1: Full Analysis Set</tt>
+<br><tt>pop2: PPS</tt>
+<br><tt>poplabel2: Per-Protocol Set</tt>
+<br><tt>pop3: ITT</tt>
+<br><tt>poplabel3: Intent to Treat</tt>
+<br><tt>pop4:&nbsp;</tt>
+<br><tt>poplabel4:&nbsp;</tt>
+<br><tt>pop5:&nbsp;</tt>
+<br><tt>poplabel5:&nbsp;</tt>
+<br><tt>pop6:&nbsp;</tt>
+<br><tt>poplabel6:</tt>
+<br><tt>pop7:&nbsp;</tt>
+<br><tt>poplabel7:&nbsp;</tt>
+<br><tt>pop8:&nbsp;</tt>
+<br><tt>poplabel8:&nbsp;</tt>
+<br><tt>pop9:&nbsp;</tt>
+<br><tt>poplabel9:&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>Once this file has been set up it <b>has to be activated</b>. This is
+done with the same script that activates report program titles members,
+as will be explained later. This script is named <a href="scripts/crtitlesds" target="_blank">crtitlesds</a>
+(create titles dataset). I will run it now. Again, it will complain that
+there are no "titles" members.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ crtitlesds</tt>
+<br><tt>grep: *.titles: No such file or directory</tt>
+<br><tt>cat: [tlg]*.titles: No such file or directory</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>The way this protocol file has been activated is to create a sas dataset
+named "<b>protocol</b>" in the derived dataset folder. To see the contents
+of this dataset then use the <a href="scripts/showprot" target="_blank">showprot</a>
+script. This will create an output that looks like the "<b>protocol.txt</b>"
+file but in reality it has read the "<b>der.protocol</b>" dataset and is
+just displaying it in the same style as the "protocol.txt" file.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ showprot</tt>
+<p><tt>Drugname: DRUG001</tt>
+<br><tt>Protocol: Protocol No. XY-XXX-YY-ZZ</tt>
+<br><tt>Report: Report No. XYZZ-XXX-YY, Draft version,</tt>
+<br><tt>Titlestyle: xy</tt>
+<br><tt>Paper: A4</tt>
+<br><tt>Lmargin: 1.0</tt>
+<br><tt>Rmargin: 1.0</tt>
+<br><tt>Tmargin: 1.0</tt>
+<br><tt>Bmargin: 1.0</tt>
+<br><tt>Dflayout: P10</tt>
+<br><tt>Dfllayout: L10</tt>
+<br><tt>Dfplayout: P10</tt>
+<br><tt>Dfltlayout: LT10</tt>
+<br><tt>Dfptlayout: PT10</tt>
+<br><tt>clean:&nbsp;</tt>
+<br><tt>pop1: FAS</tt>
+<br><tt>poplabel1: Full Analysis Set</tt>
+<br><tt>pop2: PPS</tt>
+<br><tt>poplabel2: Per-Protocol Set</tt>
+<br><tt>pop3: ITT</tt>
+<br><tt>poplabel3: Intent to Treat</tt>
+<br><tt>pop4:&nbsp;</tt>
+<br><tt>poplabel4:&nbsp;</tt>
+<br><tt>pop5:&nbsp;</tt>
+<br><tt>poplabel5:&nbsp;</tt>
+<br><tt>pop6:&nbsp;</tt>
+<br><tt>poplabel6:&nbsp;</tt>
+<br><tt>pop7:&nbsp;</tt>
+<br><tt>poplabel7:&nbsp;</tt>
+<br><tt>pop8:&nbsp;</tt>
+<br><tt>poplabel8:&nbsp;</tt>
+<br><tt>pop9:</tt>
+<br><tt>poplabel9:&nbsp;</tt>
+<br>&nbsp;
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>It is time for another "find ." from the pharma directory. Look out
+for the "protocol" dataset. There will be a "titles" dataset as well but
+with nothing in it.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ cd /cygdrive/c/pharma</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma</tt>
+<br><tt>$ find .</tt>
+<br><tt>.</tt>
+<br><tt>./mk_ifmts.sas</tt>
+<br><tt>./xenuyama</tt>
+<br><tt>./xenuyama/formats</tt>
+<br><tt>./xenuyama/macros</tt>
+<br><tt>./xenuyama/tokyo</tt>
+<br><tt>./xenuyama/tokyo/DRUG001</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/analysis</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/derived</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/derived/adv.sas7bdat</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/derived/demog.sas7bdat</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/derived/protocol.sas7bdat</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/derived/titles.sas7bdat</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/raw</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/formats</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/formats/formats.sas7bcat</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/macros</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/ALL.TITLES</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/allocr.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/allocw.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/d01_demog.chk</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/d01_demog.log</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/d01_demog.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/d02_adv.chk</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/d02_adv.log</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/d02_adv.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/mk_ifmts.chk</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/mk_ifmts.log</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/mk_ifmts.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/protocol.txt</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/runderived</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/runderived.chk</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/runderived.err</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/runderived.log</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/runreports</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/runsuite</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/silly_sas_program.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/work</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/formats</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/macros</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/formats</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/macros</tt>
+<br><tt>./xenuyama/tokyo/formats</tt>
+<br><tt>./xenuyama/tokyo/macros</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<h2>
+"titles" members</h2>
+Every report program in Spectre must have a "titles" member and in that
+"titles" member there must be at least one title line defined which must
+contain a table number/listing number/figure number These numbers must
+be unique so you can not have a Table 1.1 and a Listing 1.1, for example.
+I am going to create two table programs and a "titles" member to go with
+each. There is a "demog" datasets and an "adv" dataset. I want the "demog"
+table to be TABLE 1 and the "adv" table to be TABLE 2. I'll call the programs
+<b>t_demog.sas</b>
+and <b>t_adv.sas</b>.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ prog=t_demog</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ titles</tt>
+<br><tt>The file t_demog.titles has just been created</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>This is what the titles file looks like. There are a lot of instructions
+at the start to help you fill it out. You do not have to keep this header
+information. I have made the text smaller so it hopefully does not wrap
+in your browser.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt><font size=-1>#===========================================================================================================================================</font></tt>
+<br><tt><font size=-1># Template for titles.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Make a copy of this to go with your sas program and give it the file extension
+.titles such as t_meds.titles</font></tt>
+<br><tt><font size=-1>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+You must only have ONE set of titles in this file.</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># This member was generated by the script "crtitlestmpl"
+for:</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># CLIENT: xenuyama</font></tt>
+<br><tt><font size=-1># OFFICE: tokyo</font></tt>
+<br><tt><font size=-1># DRUG: DRUG001</font></tt>
+<br><tt><font size=-1># STUDY: DRUG001C3001</font></tt>
+<br><tt><font size=-1># INC: 24weeks</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># DATE: 03-Mar-2007</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1>#===================== THE LINES BELOW THAT START
+WITH A # ARE A GUIDE TO TELL YOU HOW TO FILL IN THE INFORMATION ==========================</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># program: progname (put your program name here without
+the .sas extension. Case should match your program member name)</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># layout: Leave blank to use study default or set
+it to l/p (landscape/portrait) [t] (tight lines) f (font size)</font></tt>
+<br><tt><font size=-1>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Here is a list of valid possible values: l8 l8.5 l9 l10 lt8 lt8.5 lt9 lt10
+p8 pc8 p9 pt9 p10 pt10 p11 pt11</font></tt>
+<br><tt><font size=-1>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+The preference is for p10 (portrait 10 point). If your report will not
+fit on the page then try l10 (landscape 10 point)</font></tt>
+<br><tt><font size=-1>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+but if it still will not fit then try l9 and if it still will not fit then
+try l8. You should not go lower than an 8 point</font></tt>
+<br><tt><font size=-1>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+font without asking for permission to do so.</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># population: FAS, PPS, SEL etc. abbreviations. This
+must match one of the analysis set abbreviations in "protocol.txt".</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># sascode: If you set this to anything, the sas program
+will be generated and any corresponding program you have will be overwritten.</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># titles below: Put your titles BELOW this line.
+All titles will be CENTRED unless you start with a space in which case
+LEFT-ALIGNED.</font></tt>
+<br><tt><font size=-1># Table 1.2.3</font></tt>
+<br><tt><font size=-1># ANOTHER TITLE LINE</font></tt>
+<br><tt><font size=-1>#&nbsp; A LEFT-ALIGNED TITLE - THE FIRST SPACE WILL
+BE DROPPED WHEN IT IS LEFT-ALIGNED BUT EXTRA SPACES WILL BE SHOWN</font></tt>
+<br><tt><font size=-1># footnotes below: Put your footnotes BELOW this
+line. All footnotes will be LEFT-ALIGNED. Leading spaces are allowed.</font></tt>
+<br><tt><font size=-1># First footnote</font></tt>
+<br><tt><font size=-1># Second footnote</font></tt>
+<br><tt><font size=-1>#&nbsp;&nbsp; Third footnote indented two spaces</font></tt>
+<br><tt><font size=-1>#</font></tt>
+<br><tt><font size=-1># endxxx: This line ends the titles entry. Do not
+specify anything after it.</font></tt>
+<br><tt><font size=-1>#===========================================================================================================================================</font></tt>
+<br><tt><font size=-1>program: t_demog&nbsp;</font></tt>
+<br><tt><font size=-1>layout:&nbsp;</font></tt>
+<br><tt><font size=-1>population:&nbsp;</font></tt>
+<br><tt><font size=-1>sascode:&nbsp;</font></tt>
+<br><tt><font size=-1>#################### Columns ruler for titles and
+footnotes -- do not exceed the maximum column for your layout ############################</font></tt>
+<br><tt><font size=-1>#--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0---------1---------2---------3---------4</font></tt>
+<br><tt><font size=-1>titles below:</font></tt>
+<br><tt><font size=-1>footnotes below:</font></tt>
+<br><tt><font size=-1>endxxx:</font></tt>
+<br><tt><font size=-1>#--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0---------1---------2---------3---------4</font></tt></td>
+</tr>
+</table>
+
+<p>I am going to choose a portrait 10 point font layout for the FAS (Full
+Analysis Set) population and give it a title of "TABLE 1". I'll strip out
+the comment lines so you can see it more clearly in larger text. Note that
+I have given it a footnote of "&amp;_longline_". This is a spanning line
+of underscores that gets set up by Spectre.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>program: t_demog&nbsp;</tt>
+<br><tt>layout: P10</tt>
+<br><tt>population: FAS</tt>
+<br><tt>sascode:&nbsp;</tt>
+<br><tt>titles below:</tt>
+<br><tt>TABLE 1</tt>
+<br><tt>DEMOGRAPHY</tt>
+<br><tt>footnotes below:</tt>
+<br><tt>&amp;_longline_</tt>
+<br><tt>endxxx:</tt></td>
+</tr>
+</table>
+
+<p>The titles member has to be activated using the <a href="scripts/crtitlesds" target="_blank">crtitlesds</a>
+script. After it is activated, I can check it is there using the <a href="scripts/showtitles" target="_blank">showtitles</a>
+script. Note the warning about the program not being there yet.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ crtitlesds</tt>
+<br><tt>Warning: (crtitlesds) Titles entries exist for the following program(s)
+but no program yet exists</tt>
+<br><tt>t_demog.sas</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ showtitles</tt>
+<p><tt>Program: t_demog</tt>
+<br><tt>Label:&nbsp;</tt>
+<br><tt>Population: FAS</tt>
+<br><tt>Layout: P10</tt>
+<br><tt>Sascode:&nbsp;</tt>
+<br><tt>Titles below:</tt>
+<br><tt>TABLE 1</tt>
+<br><tt>DEMOGRAPHY</tt>
+<br><tt>Footnotes below:</tt>
+<br><tt>&amp;_longline_</tt>
+<br>&nbsp;
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>I'll create the titles member for <b>t_adv.sas</b> at this point as
+I want to finish with the titles in this section and get on with the report
+code. I'll give <b>t_adv</b> a landscape 10 point font layout and table
+number 2. First I'll create the template.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ prog=t_adv</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ titles</tt>
+<br><tt>The file t_adv.titles has just been created</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>Next I'll edit it to give this, removing all the header instructions.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>program: t_adv&nbsp;</tt>
+<br><tt>layout: L10</tt>
+<br><tt>population: FAS</tt>
+<br><tt>sascode:&nbsp;</tt>
+<br><tt>titles below:</tt>
+<br><tt>TABLE 2</tt>
+<br><tt>ADVERSE EVENTS</tt>
+<br><tt>footnotes below:</tt>
+<br><tt>&amp;_longline_</tt>
+<br><tt>endxxx:</tt></td>
+</tr>
+</table>
+
+<p>Now I'll activate it.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ crtitlesds</tt>
+<br><tt>Warning: (crtitlesds) Titles entries exist for the following program(s)
+but no program yet exists</tt>
+<br><tt>t_adv.sas</tt>
+<br><tt>t_demog.sas</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<h2>
+Reporting code members</h2>
+I'll create the header for <b>t_demog</b> first.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ prog=t_demog</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ hdr $prog</tt>
+<br><tt>Enter program purpose: Table of demography</tt>
+<br><tt>created t_demog.sas</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>Now I'll add the code. I am making the call to %unistats the simplest
+one possible for this demonstration. See the page about %unistats to learn
+more about improving the layout <a href="unistats.html" target="_blank">here</a>.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>/*</tt>
+<br><tt>/ Program&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : t_demog.sas</tt>
+<br><tt>/ Author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Roland (Roland)</tt>
+<br><tt>/ Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 03-Mar-2007</tt>
+<br><tt>/ SAS version&nbsp; : 9.1.3</tt>
+<br><tt>/ Client&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : xenuyama</tt>
+<br><tt>/ Office&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : tokyo</tt>
+<br><tt>/ Drug&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : DRUG001</tt>
+<br><tt>/ Protocol&nbsp;&nbsp;&nbsp;&nbsp; : DRUG001C3001</tt>
+<br><tt>/ Increment&nbsp;&nbsp;&nbsp; : 24weeks</tt>
+<br><tt>/ Purpose&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Table of demography</tt>
+<br><tt>/ Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;</tt>
+<br><tt>/===============================================================================</tt>
+<br><tt>/ Modification History:</tt>
+<br><tt>/ -user-id --date-- --mod-id--- ---------------------purpose--------------------</tt>
+<br><tt>/&nbsp;</tt>
+<br><tt>/=============================================================================*/</tt>
+<p><tt>%allocr</tt>
+<p><tt>%titles</tt>
+<p><tt>proc sort data=der.demog(where=(&amp;_pop_.cd=1))&nbsp;</tt>
+<br><tt>&nbsp; out=demog(drop=&amp;_pop_.cd);&nbsp;</tt>
+<br><tt>&nbsp; by patno invid;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>%popfmt(demog,trtcd,uniqueid=patno invid)&nbsp;</tt>
+<p><tt>%openrep</tt>
+<p><tt>%unistats(dsin=demog,</tt>
+<br><tt>descstats=N Min Mean Max STD.,&nbsp;</tt>
+<br><tt>varlist=sexcd racecd age weight height)</tt>
+<p><tt>%closerep</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>Now I'll run the code...
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ sasb</tt>
+<br><tt>sas program "t_demog" ended with return code 0:</tt>
+<br><tt>0 ERROR(s)</tt>
+<br><tt>0 WARNING(s)</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>Spectre sends the reporting program output to "<tt>.lis</tt>" files
+when you are between the %openrep and %closerep macros and not the "<tt>.lst</tt>"
+files that you are used to. This is so it can add page numbers to the listings.
+This leaves you free to use "<tt>.lst</tt>" output for diagnostics. Here
+is the contents of <b>t_demog.lis</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>DRUG001&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Page 1 of 1</tt>
+<br><tt>Protocol No. XY-XXX-YY-ZZ</tt>
+<br><tt>Report No. XYZZ-XXX-YY, Draft version, March 3, 2007</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+TABLE 1</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+DEMOGRAPHY</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+FULL ANALYSIS SET</tt>
+<p><tt>___________________________________________________________________________</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Number of Patients (%) / Descriptive Stat</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Ambicor (1g/day)&nbsp;&nbsp;&nbsp; Betamaxin (500mg/day)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=9)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=8)</tt>
+<br><tt>___________________________________________________________________________</tt>
+<p><tt>GENDER CODE</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; MALE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 77.8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1 ( 12.5)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; FEMALE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 87.5)</tt>
+<p><tt>RACE CODE</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; CAUCASIAN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1 ( 12.5)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; BLACK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 37.5)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; ASIAN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 37.5)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; OTHER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0 (&nbsp; 0.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1 ( 12.5)</tt>
+<p><tt>AGE (YEARS)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; N&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Min&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+16.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+16.0</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Mean&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+26.3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+24.0</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Max&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+40.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+36.0</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; STD.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8.03&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8.49</tt>
+<p><tt>WEIGHT (KG)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; N&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Min&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+65.5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+65.5</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Mean&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+76.6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+70.8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Max&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+79.6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+78.1</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; STD.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4.36&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5.69</tt>
+<p><tt>HEIGHT (CM)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; N&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Min&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+175.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+175.0</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Mean&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+197.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+182.3</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Max&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+212.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+200.0</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; STD.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+11.94&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+9.00</tt>
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p><tt>___________________________________________________________________________</tt></td>
+</tr>
+</table>
+
+<p>Next I'll create the header for <b>t_adv</b>.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ prog=t_adv</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ hdr $prog</tt>
+<br><tt>Enter program purpose: Table of adverse events</tt>
+<br><tt>created t_adv.sas</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>Now I add the code. I am making the call to %npcttab the simplest one
+possible for this demonstration. See the page about %npcttab to learn more
+about improving the layout<a href="npcttab.html" target="_blank"> here</a>.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>/*</tt>
+<br><tt>/ Program&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : t_adv.sas</tt>
+<br><tt>/ Author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Roland (Roland)</tt>
+<br><tt>/ Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 03-Mar-2007</tt>
+<br><tt>/ SAS version&nbsp; : 9.1.3</tt>
+<br><tt>/ Client&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : xenuyama</tt>
+<br><tt>/ Office&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : tokyo</tt>
+<br><tt>/ Drug&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : DRUG001</tt>
+<br><tt>/ Protocol&nbsp;&nbsp;&nbsp;&nbsp; : DRUG001C3001</tt>
+<br><tt>/ Increment&nbsp;&nbsp;&nbsp; : 24weeks</tt>
+<br><tt>/ Purpose&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Table of adverse events</tt>
+<br><tt>/ Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;</tt>
+<br><tt>/===============================================================================</tt>
+<br><tt>/ Modification History:</tt>
+<br><tt>/ -user-id --date-- --mod-id--- ---------------------purpose--------------------</tt>
+<br><tt>/&nbsp;</tt>
+<br><tt>/=============================================================================*/</tt>
+<p><tt>%allocr</tt>
+<p><tt>%titles</tt>
+<p><tt>proc sort data=der.demog(where=(&amp;_pop_.cd=1)) out=demog(drop=&amp;_pop_.cd);&nbsp;</tt>
+<br><tt>&nbsp; by patno invid;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>%popfmt(demog,trtcd,uniqueid=patno invid)&nbsp;</tt>
+<p><tt>proc sort data=der.adv out=adv;&nbsp;</tt>
+<br><tt>&nbsp; by patno invid;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>data adv;&nbsp;</tt>
+<br><tt>&nbsp; merge demog(in=_dem keep=patno invid trtcd) adv(in=_adv);&nbsp;</tt>
+<br><tt>&nbsp; by patno invid;&nbsp;</tt>
+<br><tt>&nbsp; if _dem and _adv;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>%openrep</tt>
+<p><tt>%npcttab(dsin=adv,midlvl=amsoc,lowlvl=ampt)</tt>
+<p><tt>%closerep</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>Now I'll run the code.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ sasb</tt>
+<br><tt>sas program "t_adv" ended with return code 0:</tt>
+<br><tt>0 ERROR(s)</tt>
+<br><tt>0 WARNING(s)</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>Here is the contents of <b>t_adv.lis</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>DRUG001&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Page 1 of 2</tt>
+<br><tt>Protocol No. XY-XXX-YY-ZZ</tt>
+<br><tt>Report No. XYZZ-XXX-YY, Draft version, March 3, 2007</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+TABLE 2</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ADVERSE EVENTS</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+FULL ANALYSIS SET</tt>
+<p><tt>____________________________________________________________________________________________________________________</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Ambicor (1g/day)&nbsp;&nbsp;&nbsp; Betamaxin (500mg/day)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Total</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=9)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=17)</tt>
+<br><tt>____________________________________________________________________________________________________________________</tt>
+<p><tt>Gastrointestinal disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 87.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12 ( 70.6)</tt>
+<br><tt>&nbsp;&nbsp; Diarrhoea NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9
+( 52.9)</tt>
+<br><tt>&nbsp;&nbsp; Constipation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7
+( 41.2)</tt>
+<br><tt>&nbsp;&nbsp; Abdominal pain NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6
+( 35.3)</tt>
+<br><tt>&nbsp;&nbsp; Nausea&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6
+( 35.3)</tt>
+<br><tt>&nbsp;&nbsp; Vomiting NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6
+( 35.3)</tt>
+<p><tt>Respiratory, thoracic and mediastinal disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 87.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12 ( 70.6)</tt>
+<br><tt>&nbsp;&nbsp; Dyspnoea&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10 ( 58.8)</tt>
+<br><tt>&nbsp;&nbsp; Cough&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8
+( 47.1)</tt>
+<p><tt>Psychiatric disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 11 ( 64.7)</tt>
+<br><tt>&nbsp;&nbsp; Insomnia&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9
+( 52.9)</tt>
+<br><tt>&nbsp;&nbsp; Anxiety&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7
+( 41.2)</tt>
+<p><tt>Musculoskeletal and connective tissue disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10 ( 58.8)</tt>
+<br><tt>&nbsp;&nbsp; Pain in extremity&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7
+( 41.2)</tt>
+<br><tt>&nbsp;&nbsp; Back pain&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 25.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6
+( 35.3)</tt>
+<p><tt>Vascular disorders</tt>
+<p><tt>____________________________________________________________________________________________________________________</tt>
+<br><tt>DRUG001&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Page 2 of 2</tt>
+<br><tt>Protocol No. XY-XXX-YY-ZZ</tt>
+<br><tt>Report No. XYZZ-XXX-YY, Draft version, March 3, 2007</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+TABLE 2</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ADVERSE EVENTS</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+FULL ANALYSIS SET</tt>
+<p><tt>____________________________________________________________________________________________________________________</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Ambicor (1g/day)&nbsp;&nbsp;&nbsp; Betamaxin (500mg/day)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Total</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=9)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=17)</tt>
+<br><tt>____________________________________________________________________________________________________________________</tt>
+<p><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10 ( 58.8)</tt>
+<br><tt>&nbsp;&nbsp; Hypotension NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9
+( 52.9)</tt>
+<br><tt>&nbsp;&nbsp; Hypertension NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1 ( 11.1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4
+( 23.5)</tt>
+<p><tt>General disorders and administration site conditions</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9
+( 52.9)</tt>
+<br><tt>&nbsp;&nbsp; Pain NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9
+( 52.9)</tt>
+<br><tt>&nbsp;&nbsp; Chest pain&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 25.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5
+( 29.4)</tt>
+<p><tt>Nervous system disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9
+( 52.9)</tt>
+<br><tt>&nbsp;&nbsp; Headache&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8
+( 47.1)</tt>
+<br><tt>&nbsp;&nbsp; Tremor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7
+( 41.2)</tt>
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p><tt>____________________________________________________________________________________________________________________</tt></td>
+</tr>
+</table>
+
+<p>Time for another "find ." from the pharma directory.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ cd /cygdrive/c/pharma</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma</tt>
+<br><tt>$ find .</tt>
+<br><tt>.</tt>
+<br><tt>./xenuyama</tt>
+<br><tt>./xenuyama/formats</tt>
+<br><tt>./xenuyama/macros</tt>
+<br><tt>./xenuyama/tokyo</tt>
+<br><tt>./xenuyama/tokyo/DRUG001</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/analysis</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/derived</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/derived/adv.sas7bdat</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/derived/demog.sas7bdat</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/derived/protocol.sas7bdat</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/derived/titles.sas7bdat</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/raw</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/formats</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/formats/formats.sas7bcat</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/macros</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/macros/allocr.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/macros/allocw.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/ALL.TITLES</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/d01_demog.chk</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/d01_demog.log</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/d01_demog.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/d02_adv.chk</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/d02_adv.log</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/d02_adv.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/mk_ifmts.chk</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/mk_ifmts.log</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/mk_ifmts.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/protocol.txt</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/runderived</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/runderived.chk</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/runderived.err</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/runderived.log</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/runreports</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/runsuite</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/silly_sas_program.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/titles.template</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/t_adv.chk</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/t_adv.lis</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/t_adv.log</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/t_adv.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/t_adv.titles</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/t_demog.chk</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/t_demog.lis</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/t_demog.log</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/t_demog.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/t_demog.titles</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/formats</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/macros</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/formats</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/macros</tt>
+<br><tt>./xenuyama/tokyo/formats</tt>
+<br><tt>./xenuyama/tokyo/macros</tt></td>
+</tr>
+</table>
+
+<h2>
+"makerun" and "runreports"</h2>
+In real life, there will be many reporting programs and it will be necessary
+to run the entire suite of programs from time to time using the official
+Spectre method. You have already been introduced to the script named <a href="scripts/makerun" target="_blank">makerun</a>
+that will generate the three scripts named "runderived", "runreports" and
+"runsuite". It is "<b>runreports</b>" that will create the report output.
+This time it will run with no error messages as everything that should
+be there is now in place.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma</tt>
+<br><tt>$ cd $xyprogs</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ makerun</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>This is the contents of <b>runreports</b> that was generated.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#!/bin/bash</tt>
+<br><tt># Script&nbsp;&nbsp;&nbsp;&nbsp; : runreports</tt>
+<br><tt># Author&nbsp;&nbsp;&nbsp;&nbsp; : This script was automatically
+generated by the "makerun" script.</tt>
+<br><tt># Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp; 3-Mar-2007 at
+07:57:06</tt>
+<br><tt># Client&nbsp;&nbsp;&nbsp;&nbsp; : xenuyama</tt>
+<br><tt># Office&nbsp;&nbsp;&nbsp;&nbsp; : tokyo</tt>
+<br><tt># Drug&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : DRUG001</tt>
+<br><tt># Protocol&nbsp;&nbsp; : DRUG001C3001</tt>
+<br><tt># Inc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 24weeks</tt>
+<br><tt># Purpose&nbsp;&nbsp;&nbsp; : To run the programs that create reports</tt>
+<br><tt># SubScripts : crtitlesds donepages</tt>
+<br><tt># Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : If you edit this script
+to limit the number of reports produced</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+then note that there is a delete of all programs .log, .lst, .chk</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+and .lis members using "rm". You should comment out the "rm"</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+lines that do not apply by putting a hash in front of these</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+commands as is the case with all the lines in this header.</tt>
+<br><tt>#</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Note that this script was generated by the "makerun" script.</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Next time "makerun" is run, it will overwrite this member.</tt>
+<br><tt>#</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Note that to run this script you must use the command exactly</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+as shown in the usage notes below with the study programs</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+directory the current directory.</tt>
+<br><tt>#</tt>
+<br><tt># Usage:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ./runreports 1>runreports.log
+2>runreports.err</tt>
+<br><tt>#</tt>
+<br>&nbsp;
+<p><tt># identify user</tt>
+<br><tt>iam=$(whoami)</tt>
+<p><tt># say who is running this script and what date and time</tt>
+<br><tt>echo "This script was started by $iam ($(getname $iam)) on $(date)"</tt>
+<br><tt>echo "This script was started by $iam ($(getname $iam)) on $(date)"
+1>&amp;2</tt>
+<br>&nbsp;
+<p><tt># Create the titles and protocol datasets</tt>
+<br><tt>crtitlesds</tt>
+<br>&nbsp;
+<p><tt># Set up an environment variable for routing the output</tt>
+<br><tt>OUTDIR=$PWD</tt>
+<br>&nbsp;
+<p><tt># convert to a Windows path style for Cygwin</tt>
+<br><tt>OUTDIRWIN=$(echo "$OUTDIR" | sed -e 's%^/cygdrive/%%' -e 's%\(^.\)%\1:%'
+-e 's%/%\\%g')</tt>
+<p><tt>export OUTDIR OUTDIRWIN</tt>
+<br>&nbsp;
+<p><tt># Delete the "donelist" files</tt>
+<br><tt>rm -f $OUTDIR/donelist.txt $OUTDIR/donelist.tmp</tt>
+<br>&nbsp;
+<p><tt># For all programs, delete the .log, .lst, .chk and .lis* if they
+exist</tt>
+<br><tt># and there is group write permission.</tt>
+<br><tt>rm -f t_adv.log t_adv.lst t_adv.chk t_adv.lis&nbsp;</tt>
+<br><tt>rm -f t_demog.log t_demog.lst t_demog.chk t_demog.lis&nbsp;</tt>
+<br>&nbsp;
+<p><tt># Run all programs using sasb</tt>
+<br><tt>sasb t_adv</tt>
+<br><tt>sasb t_demog</tt>
+<br>&nbsp;
+<p><tt># cat all the .chk files onto an empty runreports.chk</tt>
+<br><tt>rm -f runreports.chk</tt>
+<br><tt>cat t_adv.chk >> runreports.chk</tt>
+<br><tt>cat t_demog.chk >> runreports.chk</tt>
+<br>&nbsp;
+<p><tt># add number of pages and sort "donelist" into order</tt>
+<br><tt>donepages $OUTDIR/donelist.tmp | sort > $OUTDIR/donelist.txt</tt>
+<br>&nbsp;
+<p><tt># email the user telling them the job has ended</tt>
+<br><tt>msg="the report production script has finished"</tt>
+<br><tt>iam=$(whoami)</tt>
+<br><tt>sendto=$(emailaddr $iam)</tt>
+<p><tt># Use "ssmtp" for Cygwin and "mailx" for Unix</tt>
+<br><tt>if [ -n "$CYGWIN" ] ; then</tt>
+<br><tt>/usr/sbin/ssmtp -t &lt;&lt; --END--</tt>
+<br><tt>To: $sendto</tt>
+<br><tt>Subject: $msg</tt>
+<p><tt>$msg</tt>
+<br><tt>--END--</tt>
+<br><tt>else</tt>
+<br><tt>&nbsp; echo "$msg" | mailx -s "$msg" $sendto</tt>
+<br><tt>fi</tt>
+<br>&nbsp;
+<p><tt># say when the script ended</tt>
+<br><tt>echo "This script finished at $(date)"</tt>
+<br><tt>echo "This script finished at $(date)" 1>&amp;2</tt></td>
+</tr>
+</table>
+
+<p>If you look at the "<b>runreports</b>" script you will see it deletes
+two files named "<b>donelist.txt</b>" and "<b>donelist.tmp</b>". These
+files do not appear in the "find ." above. This is because they are only
+created when "<b>runreports</b>" runs and not when individual users run
+their reporting code. What it is doing is writing a record of what reporting
+programs ran. At the end it will add the number of pages in each output
+and sorts it into order as the final "<b>donelist.txt</b>". This file can
+then be used to gather outputs in the correct order and can form the basis
+for creating PDF files. We are not going to go into creating PDFs on this
+page, though. Next I will run "runreports".
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ ./runreports</tt>
+<br><tt>This script was started by Roland (Roland) on Sat Mar&nbsp; 3 08:00:04
+WEST 2007</tt>
+<br><tt>This script was started by Roland (Roland) on Sat Mar&nbsp; 3 08:00:04
+WEST 2007</tt>
+<br><tt>sas program "t_adv" ended with return code 0:</tt>
+<br><tt>0 ERROR(s)</tt>
+<br><tt>0 WARNING(s)</tt>
+<br><tt>sas program "t_demog" ended with return code 0:</tt>
+<br><tt>0 ERROR(s)</tt>
+<br><tt>0 WARNING(s)</tt>
+<br><tt>This script finished at Sat Mar&nbsp; 3 08:00:21 WEST 2007</tt>
+<br><tt>This script finished at Sat Mar&nbsp; 3 08:00:21 WEST 2007</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>Here is a "find ." done from the pharma directory again. Note the "<b>donelist</b>"
+files that have appeared.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ cd /cygdrive/c/pharma</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma</tt>
+<br><tt>$ find .</tt>
+<br><tt>.</tt>
+<br><tt>./xenuyama</tt>
+<br><tt>./xenuyama/formats</tt>
+<br><tt>./xenuyama/macros</tt>
+<br><tt>./xenuyama/tokyo</tt>
+<br><tt>./xenuyama/tokyo/DRUG001</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/analysis</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/derived</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/derived/adv.sas7bdat</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/derived/demog.sas7bdat</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/derived/protocol.sas7bdat</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/derived/titles.sas7bdat</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/data/raw</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/formats</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/formats/formats.sas7bcat</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/macros</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/macros/allocr.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/macros/allocw.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/ALL.TITLES</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/d01_demog.chk</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/d01_demog.log</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/d01_demog.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/d02_adv.chk</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/d02_adv.log</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/d02_adv.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/donelist.tmp</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/donelist.txt</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/mk_ifmts.chk</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/mk_ifmts.log</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/mk_ifmts.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/protocol.txt</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/runderived</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/runderived.chk</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/runderived.err</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/runderived.log</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/runreports</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/runreports.chk</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/runsuite</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/silly_sas_program.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/titles.template</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/t_adv.chk</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/t_adv.lis</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/t_adv.log</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/t_adv.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/t_adv.titles</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/t_demog.chk</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/t_demog.lis</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/t_demog.log</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/t_demog.sas</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/t_demog.titles</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/work</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/formats</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/DRUG001C3001/macros</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/formats</tt>
+<br><tt>./xenuyama/tokyo/DRUG001/macros</tt>
+<br><tt>./xenuyama/tokyo/formats</tt>
+<br><tt>./xenuyama/tokyo/macros</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>These are the contents of the <b>donelist</b> files. Note that <b>donelist.txt</b>
+is a sorted version of <b>donelist.tmp</b> and with total pages added.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma</tt>
+<br><tt>$ cd -</tt>
+<br><tt>/cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ cat donelist.tmp</tt>
+<br><tt>002-000-000-000-000-000 t_adv.lis&nbsp;</tt>
+<br><tt>001-000-000-000-000-000 t_demog.lis&nbsp;</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ cat donelist.txt</tt>
+<br><tt>001-000-000-000-000-000 t_demog.lis&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1</tt>
+<br><tt>002-000-000-000-000-000 t_adv.lis&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>As I promised, I have guided you through from <b>empty directories</b>
+to producing <b>final reports</b>, step by step. That is now done. What
+you see is what ran on my PC using Cygwin.
+<h2>
+Spectre as a "push button" reporting system</h2>
+In this final section, I will explain, in very simple terms, how Spectre
+can become a "<b>push button</b>" reporting system. For this to be achieved,
+a full set of reporting macros needs to be written such that there is no
+reporting code in the "progs" directory. These reporting macros still have
+to be called from somewhere and that somewhere is the "<b>titles</b>" files
+in the "<b>sascode</b>" line. What I will do first is move <b>t_demog.sas</b>
+and <b>t_adv.sas</b> into the increment macros directory as macros of the
+same name and put macro definitions around them. The needed change should
+be obvious so I won't repeat the code here.
+<p>Now comes the change to the titles members to call these macros from
+the "<b>sascode</b>" line. <b>t_demog.titles</b> now looks like this.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>program: t_demog&nbsp;</tt>
+<br><tt>layout: P10</tt>
+<br><tt>population: FAS</tt>
+<br><tt>sascode: %t_demog</tt>
+<br><tt>titles below:</tt>
+<br><tt>TABLE 1</tt>
+<br><tt>DEMOGRAPHY</tt>
+<br><tt>footnotes below:</tt>
+<br><tt>&amp;_longline_</tt>
+<br><tt>endxxx:</tt></td>
+</tr>
+</table>
+
+<p><b>t_adv.titles</b> now looks like this.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>program: t_adv&nbsp;</tt>
+<br><tt>layout: L10</tt>
+<br><tt>population: FAS</tt>
+<br><tt>sascode: %t_adv</tt>
+<br><tt>titles below:</tt>
+<br><tt>TABLE 2</tt>
+<br><tt>ADVERSE EVENTS</tt>
+<br><tt>footnotes below:</tt>
+<br><tt>&amp;_longline_</tt>
+<br><tt>endxxx:</tt></td>
+</tr>
+</table>
+
+<p>I want you to consider that these two very simple titles definitions
+could have come out of a spreadsheet somewhere and been exported to the
+programs directory. Once this method is used, then in a sense, report coding
+is no more. True, somebody has to write the reporting macros, but when
+the CDISC standards have all been clarified and report layouts clarified
+then there could be a repository of reporting macros for you to use. If
+this happens then you won't need programmers to write the reporting macros
+any more. When that happens, Spectre will have become a push-button reporting
+system.
+<p>Now I have changed the titles, I will rerun the "<b>crtitlesds</b>"
+script. There will still be a <b>t_adv.sas</b> and a <b>t_demog.sas</b>
+after "crtitlesds" has run but <b>look at them now!</b> They have been
+overwritten and now contain the sas code that was defined to the titles
+member in the "<b>sascode</b>" line.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ crtitlesds</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ ls t*.sas</tt>
+<br><tt>t_adv.sas&nbsp; t_demog.sas</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ cat t_adv.sas</tt>
+<br><tt>/*</tt>
+<br><tt>/ Program&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : t_adv.sas</tt>
+<br><tt>/ Author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Automatically generated
+by the "crtitlesds" script</tt>
+<br><tt>/ Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;
+3-Mar-2007 at 08:06:26</tt>
+<br><tt>/ Client&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : xenuyama</tt>
+<br><tt>/ Office&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : tokyo</tt>
+<br><tt>/ Drug&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : DRUG001</tt>
+<br><tt>/ Protocol&nbsp;&nbsp;&nbsp;&nbsp; : DRUG001C3001</tt>
+<br><tt>/ Increment&nbsp;&nbsp;&nbsp; : 24weeks</tt>
+<br><tt>/ Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Do not edit
+this member as it will get overwritten next time</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"crtitlesds" is run. If you wish to change the code you must</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+change it in the .titles member.</tt>
+<br><tt>/==============================================================================*/</tt>
+<p><tt>%t_adv</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ cat t_demog.sas</tt>
+<br><tt>/*</tt>
+<br><tt>/ Program&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : t_demog.sas</tt>
+<br><tt>/ Author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Automatically generated
+by the "crtitlesds" script</tt>
+<br><tt>/ Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;
+3-Mar-2007 at 08:06:26</tt>
+<br><tt>/ Client&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : xenuyama</tt>
+<br><tt>/ Office&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : tokyo</tt>
+<br><tt>/ Drug&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : DRUG001</tt>
+<br><tt>/ Protocol&nbsp;&nbsp;&nbsp;&nbsp; : DRUG001C3001</tt>
+<br><tt>/ Increment&nbsp;&nbsp;&nbsp; : 24weeks</tt>
+<br><tt>/ Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Do not edit
+this member as it will get overwritten next time</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"crtitlesds" is run. If you wish to change the code you must</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+change it in the .titles member.</tt>
+<br><tt>/==============================================================================*/</tt>
+<p><tt>%t_demog</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>What I will do now is delete all the t_* files that are not titles members
+so that only the titles members remain.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ ls t_*</tt>
+<br><tt>t_adv.chk&nbsp; t_adv.lis&nbsp; t_adv.log&nbsp; t_adv.sas&nbsp;
+t_adv.titles&nbsp; t_demog.chk&nbsp; t_demog.lis&nbsp; t_demog.log&nbsp;
+t_demog.sas&nbsp; t_demog.titles</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ \rm t_*.chk t_*.lis t_*.log t_*.sas</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ ls t_*</tt>
+<br><tt>t_adv.titles&nbsp; t_demog.titles</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>Can you see that all that is left are the two "titles" members? <b>Imagine
+they were exported there from a statistician's spreadsheet.</b> Now I will
+run "makerun". No problems there, as you can see.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ makerun</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>Now I will run "<b>runreports</b>". Everything worked as it did before.
+<b>The
+".lis" outputs are there and the same as before!</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ ./runreports</tt>
+<br><tt>This script was started by Roland (Roland) on Sat Mar&nbsp; 3 08:10:36
+WEST 2007</tt>
+<br><tt>This script was started by Roland (Roland) on Sat Mar&nbsp; 3 08:10:37
+WEST 2007</tt>
+<br><tt>sas program "t_adv" ended with return code 0:</tt>
+<br><tt>0 ERROR(s)</tt>
+<br><tt>0 WARNING(s)</tt>
+<br><tt>sas program "t_demog" ended with return code 0:</tt>
+<br><tt>0 ERROR(s)</tt>
+<br><tt>0 WARNING(s)</tt>
+<br><tt>This script finished at Sat Mar&nbsp; 3 08:10:52 WEST 2007</tt>
+<br><tt>This script finished at Sat Mar&nbsp; 3 08:10:52 WEST 2007</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$ ls t_*.*</tt>
+<br><tt>t_adv.chk&nbsp; t_adv.log&nbsp; t_adv.titles&nbsp; t_demog.lis&nbsp;
+t_demog.sas</tt>
+<br><tt>t_adv.lis&nbsp; t_adv.sas&nbsp; t_demog.chk&nbsp;&nbsp; t_demog.log&nbsp;
+t_demog.titles</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>So there you see Spectre working as a "<b>push button</b>" reporting
+system. It may take a while for this concept to "sink in" but I hope you
+will eventually realize that Spectre can, indeed, become a "push button"
+reporting system.
+<h2>
+Conclusion</h2>
+You have seen, step by step, Spectre report a very simple study from empty
+directories through to final report run. Lastly, you have seen how Spectre
+can become a "push button" reporting system.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+<br>&nbsp;
+</body>
+</html>

@@ -1,0 +1,38 @@
+#!/bin/bash
+#<pre><b>
+# Script     : listempty
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 27-Jul-2003
+# Purpose    : To list "empty" files
+# SubScripts : none
+# Notes      : You can use this to check that all your output listings contain
+#              something.
+# Usage      : listempty *.lis
+#
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   File or list of files to check that they contain something
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+#
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+if [ $# -lt 1 ] ; then
+  echo "Usage: listempty *.lst" 1>&2
+  exit 1
+fi
+
+while [ $# -gt 0 ]
+do
+  if [ ! -s $1 ]
+  then
+    echo $1
+  fi
+  shift
+done

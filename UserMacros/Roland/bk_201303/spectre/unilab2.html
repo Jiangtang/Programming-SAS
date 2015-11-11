@@ -1,0 +1,172 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="%unistats Spectre lab">
+   <meta name="Description" content="Spectre's %unistats macro used with lab data">
+   <title>Using unistats with Lab data (2)</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Using unistats with Lab data (2)</h1></center>
+<b>Last updated: 03 Jan 2012</b>
+<h2>
+Introduction</h2>
+If you are reporting lab data with %unistats then you are almost certainly
+transposing the data by setting dstranstat= to a dataset name that you
+will display in a following step using "proc report". You will have effectively
+transposed by statistics keyword name such that the _statname value "MEAN"
+becomes a variable named "MEAN" and this will be a numeric variable and
+as such will have a fixed display format assigned to it. But in this we
+have a problem because of this display format being fixed. For different
+lab parameters we need to display different numbers of decimal places and
+this is not possible using a single numeric variable that can only have
+one format assigned to it. But there is a solution! Since the end of 2011,
+%unistats creates character variables for every numeric variable so that
+MEAN has a character variable equivalent named MEANSTR etc. and that you
+can apply a different format to this character variable. All you need to
+do is to set up a numeric variable that gives the number of decimal places
+for that parameter's value and declare this variable to the parameter dpvar=
+and the ---STR variable created will show the correct number of decimal
+places. It is as simple as that!
+<h2>
+A real-life example</h2>
+Here is a real life example from a QC macro I wrote at the start of 2012.
+There is a variable that I have named <b>_dplaces</b> that contains an
+integer that gives the number of decimal places accuracy and I have used
+that when calling %unistats. After the %unistats call I merge with some
+lab group ordering data that I have included so that the following "proc
+report" step makes more sense.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /************************************</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Calculate
+Descriptive Statistics</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ************************************/</tt>
+<br><tt>&nbsp; *- Call unistats to calculate descriptive statistics with
+-;</tt>
+<br><tt>&nbsp; *- a transposed-by-statistic output dataset produced.&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; %unistats(dsin=_laball4,print=no,varlist=&amp;labval,</tt>
+<br><tt>&nbsp; trtvar=&amp;trtvar,trtfmt=$atrfmt.,leftstr=yes,</tt>
+<br><tt>&nbsp; byvars=tp labnm labparmstr,dpvar=_dplaces,</tt>
+<br><tt>&nbsp; nfmt=5.,stdfmt=5.,minfmt=5.,maxfmt=5.,meanfmt=5.,</tt>
+<br><tt>&nbsp; descstats=&amp;descstat,dstranstat=_transtat);</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /************************</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Add Lab Group Info</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ************************/</tt>
+<br><tt>&nbsp; *- add in the lab group info -;</tt>
+<br><tt>&nbsp; proc sql noprint;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; create table _transtat2 as (</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; select a.*, b.labgrp, b.labgrpx, b.labnmor</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; from _transtat as a</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; left join _labgrp as b</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; on a.labnm=b.labnm</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; ) order by labgrp, labgrpx;</tt>
+<br><tt>&nbsp; quit;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>The list of numeric statistics variables will be the list of "keywords"
+held in <b>&amp;_statkeys_ </b>and the corresponding character variables
+will have the same name but ending in "STR". A little later in the code
+I list these character variables that I need to use in a "proc report"
+step. Look carefully at the way I refer to them. Look for <b><tt>%suffix(STR,&amp;_statkeys_)</tt></b>
+and <b><tt>%scan(&amp;_statkeys_,&amp;i,%str( ))STR</tt></b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /*******************************</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Produce report</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *******************************/</tt>
+<br><tt>&nbsp; %let ncolw=8;</tt>
+<br><tt>&nbsp; %if %words(&amp;_statkeys_) GT 6 %then %let ncolw=6;</tt>
+<p><tt>&nbsp; *- style=2 (XLAB 2) report with treatment arm as the across
+variable -;</tt>
+<br><tt>&nbsp; %if &amp;style2 EQ Y %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; proc report missing headline headskip nowd split="@"
+data=_transtat2 spacing=2;&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; by labgrp labgrpx;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; columns ( "%sysfunc(repeat(%sysfunc(byte(131)),%eval(&amp;repwidth-1)))"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+labnmor labparmstr labnm tp &amp;trtvar,(<b>%suffix(STR,&amp;_statkeys_)</b>)
+_foolrep);&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; define labnmor / group noprint;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; define labparmstr / group noprint;&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; define labnm / group noprint;&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; define tp / id group order=internal
+"Parameter/" "&nbsp; Visit/" "&nbsp; Difference from %lowcase(&amp;bslnlbl)"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+format=tpind. width=30 spacing=0 left;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; define &amp;trtvar / across " "
+order=internal format=&amp;_popfmt_ ;&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %do i=1 %to %words(&amp;_statkeys_);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let key=<b>%scan(&amp;_statkeys_,&amp;i,%str(
+))STR</b>;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let spac=;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %if &amp;i EQ 1 %then
+%let spac=spacing=&amp;gap;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %if &amp;key EQ NMISSSTR
+%then %let colw=%sysfunc(max(7,&amp;ncolw));</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %else %let colw=&amp;ncolw;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; define &amp;key / display
+width=&amp;colw &amp;spac right;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; define _foolrep / noprint;&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; compute before labnm;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; line @1 labparmstr $char60.;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; endcompute;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break after labnm / skip;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; run;</tt>
+<br><tt>&nbsp; %end;</tt></td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+You have seen how the number of decimal places can be changed using the
+dpvar= parameter and stored in the character variables that %unistats creates
+that you can then report using "proc report".
+<br><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+</body>
+</html>

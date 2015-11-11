@@ -1,0 +1,64 @@
+#!/bin/bash
+#<pre><b>
+# Script     : intitlesds_win
+# Version    : 1.1
+# Author     : Roland Rashleigh-Berry
+# Date       : 02-Mar-2007
+# Purpose    : Production script to list all the programs in the titles dataset
+#              (uses SAS).
+# SubScripts : intitlesds_win
+# SubMacros  : %allocr
+# Notes      : WINDOWS VERSION
+#              The case will be the same as that held in the titles dataset.
+#              You must add the .sas extension to the list yourself if needed.
+#              Duplicate program names are dropped.
+# Usage      : intitlesds_win
+#
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not supply any parameters
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  22Feb07         Call %allocr macro
+# rrb  02Mar07         Use "&_ptlibref_.." instead of "der."
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# No parameters required
+if [ $# -gt 0 ] ; then
+  echo "Error: (intitlesds) Do not supply any parameters" 1>&2
+  exit 2
+fi
+
+
+# Write SAS code to a temporary file
+cat > $HOME/intitlesds_$$.sas << -----FINISH-----
+%allocr
+options validvarname=v7 nofmterr noovp nodate nonumber;
+filename _outfile "$HOMEW\intitlesds_$$.tmp";
+proc sort nodupkey data=&_ptlibref_..titles(where=(type='T' and number=1))
+                    out=_titles(keep=program);
+  by program;
+run;
+data _null_;
+  file _outfile notitles noprint;
+  set _titles;
+  put @1 program;
+run;
+-----FINISH-----
+
+# run the code
+sas -nosplash -nologo -icon -log "$HOMEW" -sysin "$HOMEW\intitlesds_$$.sas"
+
+# if output file exists then cat it and delete it
+if [ -f $HOME/intitlesds_$$.tmp ] ; then
+  cat $HOME/intitlesds_$$.tmp 
+  rm -f $HOME/intitlesds_$$.tmp 
+fi
+
+# tidy up
+rm -f $HOME/intitlesds_$$.sas $HOME/intitlesds_$$.log

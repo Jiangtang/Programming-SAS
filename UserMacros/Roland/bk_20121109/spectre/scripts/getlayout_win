@@ -1,0 +1,90 @@
+#!/bin/bash
+#<pre><b>
+# Script     : getlayout_win
+# Version    : 1.1
+# Author     : Roland Rashleigh-Berry
+# Date       : 02-Mar-2007
+# Purpose    : Production script to get layout details for a .lis output
+#              (Uses SAS).
+# SubScripts : none
+# SubMacros  : %allocr
+# Notes      : WINDOWS VERSION
+#              Displays 5 pieces of information in the following order separated
+#              by spaces:
+#              paper, lmargin, rmargin, tmargin, bmargin, layout
+# Usage      : getlayout_win filename.lis
+#
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   Lis file to get layout for
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  20Feb07         Call %allocr macro
+# rrb  28Feb07         Remove some redundant code
+# rrb  02Mar07         Use "&_ptlibref_.." instead of "der."
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Put out a usage message if wrong number of parameters
+if [ $# -ne 1 ] ; then
+  echo "Usage: getlayout filename.lis     (only one file name)" 1>&2
+  exit 1
+fi
+
+
+# path
+dir=$(dirname $1)
+if [ "$dir" == "." ] ; then
+  dir=$(pwd)
+fi
+
+
+# file name
+file=$(basename $1)
+
+
+# get report label which will be anything after .lis (usually nothing)
+label=${file##*.lis}
+
+
+# get program name by dropping the .lis* extension
+prog=${file%.lis*}
+
+
+# Write SAS code to a temporary file
+cat > $HOME/getlayout_$$.sas << -----FINISH-----
+%allocr
+options validvarname=v7 nofmterr noovp nodate nonumber;
+filename _outfile "$HOMEW\getlayout_$$.tmp";
+%protinfo
+%macro prog;
+  %if %sysfunc(exist(&_ptlibref_..titles)) %then %do;
+    %proginfo(program=$prog,label=$label)
+  %end;
+  %else %do;
+    %global _layout_;
+    %let _layout_=&_dflayout_;
+  %end;
+%mend prog;
+%prog
+data _null_;
+  file _outfile notitles noprint;
+  put "&_paper_ &_lmargin_ &_rmargin_ &_tmargin_ &_bmargin_ &_layout_";
+run;
+-----FINISH-----
+
+# run the code
+sas -nosplash -nologo -icon -log "$HOMEW" -sysin "$HOMEW\getlayout_$$.sas"
+
+# if output file exists then cat it and delete it
+if [ -f $HOME/getlayout_$$.tmp ] ; then
+  cat $HOME/getlayout_$$.tmp 
+  rm -f $HOME/getlayout_$$.tmp 
+fi
+
+# tidy up
+rm -f $HOME/getlayout_$$.sas $HOME/getlayout_$$.log

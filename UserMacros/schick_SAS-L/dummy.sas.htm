@@ -1,0 +1,124 @@
+*<PRE>;
+/*
+Date: Thu, 15 Jun 1995 14:42:54 EST
+Sender: "SAS(r) Discussion" <SAS-L%VTVM1.BITNET@VTBIT.CC.VT.EDU>
+From: Ismail Parsa <sip@EPSILON.COM>
+Subject: Re: "Elegant" sol'n to creating dummy vars
+
+The following macro code will do what the user intends to do.  I posted
+a less elaborated version of this macro earlier.
+
+Try both "paste=yes" and "paste=no" options and see the results...
+Parametres  DSN= SAS date
+            VAR= Variable
+            PREFIX=
+            PASTE=
+Test Program:
+   data test ;
+   input code $ @@;
+   datalines ;
+   d c c d d e b c b b b e f b a e d a e
+   ;
+   %Dummy ( dsn = test, var = code, prefix = z_ , paste = Y ) ;
+   proc print ; run ;
+
+
+*-----------------------------*
+|        Ismail Parsa         |
+|   Epsilon Data Management   |
+|     50 Cambridge Street     |
+|   Burlington MA 01803 USA   |
+|                             |
+| E-MAIL: sip@epsilon.com     |
+| V-MAIL: (617) 273-0250*6734 |
+|    FAX: (617) 272-8604      |
+|                             |
+|  The Usual Caveat Applies   |
+*-----------------------------*
+*------------------------------------------------------------------------*/
+
+%macro DUMMY    ( dsn    = ,
+                  var    = ,
+                  prefix = D_,
+                  paste  = YES ) ;
+
+proc summary data = &dsn nway ;
+     class &var ;
+     output out = __cnts ( keep = &var ) ;
+
+*Ho fico jo per eliminar la variable asociada al primer valor;
+data __CNTS;
+  set __CNTS;
+  if _n_ = 1 then delete;
+run;
+data _null_ ;
+ set __cnts nobs = numvals ;
+
+ if _n_ = 1 then
+  call symput ( 'num', trim ( left ( put ( numvals, best. ) ) ) ) ;
+  call symput ( 'c' || trim ( left ( put ( _n_,     best. ) ) ),
+                       trim ( left ( &var ) ) ) ;
+run ;
+
+%if %substr ( %upcase ( %left ( &paste ) ), 1, 1 ) = Y %then
+%do ;
+      data &dsn  ( drop = j ) ;
+       set &dsn ;
+
+      array __d ( &num ) %do k=1 %to &num ;
+                           &prefix&&c&k
+                         %end ; ;
+%end ;
+
+%else
+%do ;
+      data &dsn  ( drop = j rename = ( %do k=1 %to &num ;
+                                         d&k = &prefix.&k
+                                       %end ; ) ) ;
+      set &dsn ;
+
+      array __d ( &num ) d1-d&num ;
+%end ;
+
+
+do j = 1 to &num ; /* initilaize to 0 */
+  __d(j) = 0 ;
+end ;
+
+if &var = "&c1" then __d ( 1 ) = 1 ;  /* create dummies */
+
+%do i = 2 %to &num ;
+   else if &var="&&c&i" then __d ( &i ) = 1 ;
+%end;
+
+run ;
+
+%mend Dummy ;
+
+*</PRE>;<script type="text/javascript" src="http://hb.lycos.com/hb.js"></script>
+<script type="text/javascript" src="http://ratings.lycos.com/ratings/lycosRating.js.php"></script>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var cm_role = "live";
+var cm_host = "tripod.lycos.com";
+var cm_taxid = "/memberembedded";
+var tripod_member_name = "schick";
+var tripod_member_page = "schick/dummy.sas";
+var tripod_ratings_hash = "1247464038:c6ec7631c014c5bdc7f402d10d987026";
+
+var lycos_ad_category = {"dmoz":"computers\/open_source","ontarget":"&CAT=technology&L2CAT=computing&L3CAT=programming","find_what":"software knowledge base"};
+
+var lycos_ad_remote_addr = "203.125.122.2";
+var lycos_ad_www_server = "www.tripod.lycos.com";
+var lycos_ad_track_small = "http://members.tripod.com/adm/img/common/ot_smallframe.gif?rand=430294";
+var lycos_ad_track_served = "http://members.tripod.com/adm/img/common/ot_adserved.gif?rand=430294";
+//--><!]]></script>
+<script type="text/javascript" src="http://scripts.lycos.com/catman/init.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-start.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-middle.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-end.js"></script>
+<noscript>
+ <img src="http://members.tripod.com/adm/img/common/ot_noscript.gif?rand=430294" alt="" width="1" height="1" />
+ <!-- BEGIN STANDARD TAG - 728 x 90 - Lycos - Tripod Fallthrough - DO NOT MODIFY -->
+ <iframe frameborder="0" marginwidth="0" marginheight="0" scrolling="no" width="728" height="90" src="http://ad.yieldmanager.com/st?ad_type=iframe&ad_size=728x90&section=209094"></iframe>
+ <!-- END TAG -->
+</noscript>

@@ -1,0 +1,136 @@
+**************General
+
+1. SAS Macros by Richard A. DeVenezia, http://www.devenezia.com/downloads/sas/macros/index.php
+rich, well documented, friendly for navigate and review 
+
+SAS Code Samples:
+http://www.devenezia.com/downloads/sas/samples/
+
+Software ? Windows, SAS, Java, Perl, PHP, JavaScript
+AF
+
+2.Roland's SAS? Macros   http://www.datasavantconsulting.com/roland/  
+rich, well documented, friendly for navigate and review 
+
+Macro list
+    http://www.datasavantconsulting.com/roland/Spectre/maclist2.html
+    
+Spectre - a Practical and Educational Clinical Trials Reporting Engine
+    http://www.datasavantconsulting.com/roland/Spectre/index.html
+    
+RGPP -Graphical Patient Profiler
+    http://www.datasavantconsulting.com/roland/RGPP/rgpp.html
+    
+Tips:
+    http://www.datasavantconsulting.com/roland/sastips.html
+    
+3. Chris's SAS Macros
+http://sas.cswenson.com/downloads/macros
+rich, well documented, friendly for navigate and review 
+
+Fun Macros
+
+4. sconsig SAS Coding Tips and Techniques  http://www.sconsig.com/sastip.htm
+rich, well documented, while badly for navigate and review 
+
+
+5. Arnold Schick's macros:
+
+http://schick.tripod.com/macros.html
+
+SAS-L macros: http://schick.tripod.com/p-index.html
+
+rich, well documented, friendly for navigate and review 
+
+
+6. 
+
+
+6.CDISC Express, SAS_academy
+http://support.sas.com/notes/index.html
+SAS_L, SAS forum
+http://www.prochelp.com/  http://www.codecraftersinc.com/
+
+
+22. http://ww2.mcw.edu/pcor/bugs/  
+Rodney A. Sparapani  ?function like macro?? ??????
+Emacs and WinBugs Bayesian 
+http://ess.r-project.org/Manual/ess.html
+
+switch to
+http://www.mcw.edu/PCOR/Education/SASMacros.htm
+
+24. sas: 625799 Lines -C:\Program Files\SAS92\SASFoundation\9.2
+
+C:\Program Files\SAS92\SASFoundation\9.2\access\sample
+C:\Program Files\SAS92\SASFoundation\9.2\core\sample
+C:\Program Files\SAS92\SASFoundation\9.2\core\sasmacro ---autocall macro lowcase
+
+C:\Program Files\SAS92\SASFoundation\9.2\graph\sasmacro
+C:\Program Files\SAS92\SASFoundation\9.2\stat\sasmacro
+
+C:\Program Files\SAS92\SASFoundation\9.2\sastest\base
+
+
+**************Statistics
+
+1. Mayo Clinic Locally Written SAS Macros
+http://cancercenter.mayo.edu/mayo/research/biostat/sasmacros.cfm
+
+well documented, friendly for navigate and review
+
+or in
+
+http://mayoresearch.mayo.edu/biostat/sasmacros.cfm
+
+
+2.Paul D. Allison
+http://www.ssc.upenn.edu/~allison/#Macros
+new site: http://www.pauldallison.com/Download3.html
+
+few but well documented, friendly for navigate and review
+
+Books by Paul Allison
+
+    Survival Analysis Using SAS: A Practical Guide, 2nd Edition
+    Fixed Effects Regression Models
+    Fixed Effects Regression Methods for Longitudinal Data Using SAS
+    Missing Data
+    Multiple Regression: A Primer
+    Logistic Regression Using SAS: Theory & Application
+    Event History Analysis: Regression Analysis of Longitudinal Event Data
+    Processes of Stratification in Science 
+    
+3. MCHP SAS Macros 
+
+http://mchp-appserv.cpe.umanitoba.ca/viewConcept.php?conceptID=1048
+
+relatively rich, well documented, friendly for navigate and review 
+
+4. Ralph O'Brien ,UnifyPow: A SAS Module for Sample-Size Analysis
+http://www.bio.ri.ccf.org/Power/
+well documented
+
+5. Usual Dietary Intakes: SAS Macros for the NCI Method
+http://riskfactor.cancer.gov/diet/usualintakes/macros.html
+
+6. Clinician's corner: SAS macros 
+http://www.medicine.mcgill.ca/epidemiology/Joseph/PBelisle/sas-macros.html
+
+
+**************Graph
+
+1. Robert Allison's SAS/Graph Examples!
+http://robslink.com/SAS/Home.htm
+
+extremly rich, well documented, friendly for navigate and review
+
+1. SAS Graphic Programs and Macros by Michael Friendly
+http://www.datavis.ca/sasmac/
+
+rich, well documented, friendly for navigate and review 
+
+-------------------------------------------------------------
+
+
+

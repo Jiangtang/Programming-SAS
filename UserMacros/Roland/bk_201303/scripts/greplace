@@ -1,0 +1,77 @@
+#!/bin/bash
+#<pre><b>
+# Script     : greplace
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 21-Sep-2004
+# Purpose    : To replace a string with another string in the files listed
+#              that are owned by you.
+# SubScripts : none
+# Notes      : This works on LITERAL text and not regular expressions. Case is
+#              important. 
+#
+#              This script is intended to run on text files such as program code
+#              and should not be used for binary files or files with very long
+#              record lengths.
+#
+#              You can only change the files YOU OWN, using this script. Files
+#              that do not contain the string to be replaced will not be
+#              changed.
+#
+#              THIS SCRIPT IS DANGEROUS !!!  Do yourself a favour by making
+#              backups before using it. Test run it on a dummy file before you
+#              use it for real.
+#
+#              If your target string contains a backslash character ("\") then
+#              enclose your target string in single quotes.
+#
+# Usage      : greplace "this string" "that string" *.sas
+#              greplace '\stat\' '/STAT/' *.sas
+#              WARNING: Always back up your files before using this
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   Literal target string to replace
+#  2   Replacement string
+#  3   Files(s)
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+iam=$(whoami)
+
+# Edit the test below for the number of expected parameters and put out
+# a usage note if an incorrect number supplied. Remove if not required.
+if [ $# -lt 3 ] ; then
+  echo "Usage: greplace \"target\" \"replacement\" *.sas" 1>&2
+  exit 1
+fi
+
+target="$1"
+repl="$2"
+
+shift 2
+
+echo 
+echo "target string: \"$target\""
+echo "replacement string: \"$repl\""
+echo
+
+for file in "$@" ; do
+  owner=$(ls -ld "$file" | gawk '{print $3}')
+  if [ "$owner" == "$iam" ] ; then
+    if fgrep -s "$target" "$file" ; then
+      echo "changing file $file"
+      cp -p "$file" ~/greplace_$$.tmp
+      gawk '{gsub(target,repl);print $0}' target="${target//\\\\/\\\\\\\\}" \
+        repl="$repl"  ~/greplace_$$.tmp > "$file"
+    fi
+  fi
+done
+
+rm -f ~/greplace_$$.tmp

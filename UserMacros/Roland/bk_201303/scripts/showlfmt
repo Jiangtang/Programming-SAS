@@ -1,0 +1,56 @@
+#!/bin/sh
+#<pre><b>
+# Script     : showlfmt
+# Version    : 2.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 11-Feb-2007
+# Purpose    : To display the contents of a format stored in the current
+#              directory in a catalog named FORMATS (uses SAS).
+# SubScripts : showlfmt_win
+# Notes      : The dollar sign of a character format name must be preceded by
+#              the escape character "\" otherwise the Unix command interpreter
+#              will think a Unix variable is being referred to.
+# Usage      : showlfmt age
+#              showlfmt \$cat
+#
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   Format name. Character formats must have their dollar sign preceded by
+#      the escape character "\".
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  24Nov05         -stdio used for sas invocation
+# rrb  11Feb07         Call showlfmt_win for Windows configurations
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Put out a usage message if not enough parameters supplied
+if [ $# -lt 1 ] ; then
+  echo "Usage: showlfmt age" 1>&2
+  echo 'Usage: showlfmt \$age' 1>&2
+  exit 1
+fi
+
+# if a Windows config then call showlfmt_win and exit on return
+if [ -n "$CYGWIN" ] ; then
+  showlfmt_win "$@"
+  exit $?
+fi
+
+# Feed SAS code into standard input
+sas -stdio -noautoexec -sasuser work 2>/dev/null << -----FINISH-----
+libname here '.' access=readonly;
+proc format lib=here cntlout=here;
+  select $1;
+run;
+data _null_;
+  file stdout;
+  set here;
+  if start ne end then put @1 start @10 '-' @12 end @25 label;
+  else put @1 start @25 label;
+run;
+-----FINISH-----

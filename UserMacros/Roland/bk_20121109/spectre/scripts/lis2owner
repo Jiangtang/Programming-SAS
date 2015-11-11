@@ -1,0 +1,34 @@
+#!/bin/bash
+#<pre><b>
+# Script     : lis2owner
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 08-Mar-2006
+# Purpose    : To search .lis files for a given literal string (in any case)
+#              and return owner of the corresponding .titles member
+# SubScripts : owner
+# Notes      : none
+# Usage      : lis2owner "literal string"
+#              
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   Literal string to search for (in any case)
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# One literal string needs to be supplied
+if [ $# -ne 1 ] ; then
+  echo "Usage: lis2owner 'literal string' " 1>&2
+  exit 1
+fi
+
+fgrep -ci "$1" t_*.lis* ta_*.lis* la_*.lis* | grep -v ':0$' | \
+sed -e 's/:.*$//' -e 's/\.lis$/.titles/' | owner
+

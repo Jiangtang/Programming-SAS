@@ -1,0 +1,37 @@
+#!/bin/bash
+#<pre><b>
+# Script     : wt
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 21-Sep-2005
+# Purpose    : To find which .titles member has a reference number
+# SubScripts : none
+# Notes      : Just the program name without the .titles extension is returned
+# Usage      : wt 13.2.3.4
+#              
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+
+if [ $# -ne 1 ] ; then
+  echo "Usage: wt 13.2.3.4" 1>&2
+  exit 1
+fi
+
+# mask the dots
+pattern=$(echo "$1" | sed 's%\.%\\\.%g')
+
+
+# Search for the pattern at the end of a line preceded 
+# by a space and perhaps with trailing spaces
+grep " ${pattern} *$" *.titles | gawk -F\.titles '{print $1}'

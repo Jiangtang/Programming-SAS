@@ -1,0 +1,38 @@
+#!/bin/bash
+#<pre><b>
+# Script     : orphans
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 08-Feb-2006
+# Purpose    : List files with no entry in the titles dataset
+# SubScripts : none
+# Notes      : Lists files that look as though they should have an entry in the
+#              titles dataset but do not.
+# Usage      : orphans 
+#
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not supply any parameters 
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+if [ $# -ne 0 ] ; then
+  echo "Usage: orphans" 1>&2
+  exit 1
+fi
+
+ls -d1 [tl]*.sas [tl]*.chk [tl]*.log [tl]*.lis* [tl]*.lst | awk -F. '{print $1, $0}' \
+| sort > ~/orphans.tmp1
+
+intitlesds | sort > ~/orphans.tmp2
+
+join -v 2 ~/orphans.tmp2 ~/orphans.tmp1 | awk -F" " '{print $2}'
+
+rm -f ~/orphans.tmp1 ~/orphans.tmp2

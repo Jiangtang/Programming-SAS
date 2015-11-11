@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odsxml>
+<head>
+<meta operator="jhu"/>
+<css file="file1.css file2.css file3.css"/>
+</head>
+<body>
+</body>
+</odsxml>

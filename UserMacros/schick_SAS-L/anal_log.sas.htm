@@ -1,0 +1,128 @@
+*<PRE>;
+
+/*
+This is a simple macro which read SAS logs which have been saved. It
+extracts information about downloads and keeps the information in a
+dataset. It then produces 4 graphs using this information and another
+graph (with the 4 graphs on one page) is sent to the printer.
+
+Developed using SAS 6.11 under Windows 3.1 - could be easily changed
+to analyse other information from the SAS Log (eg. CPU times for
+various PROCS).
+
+-----------------------------------------------------------+
+! Philip Mason                                             !
+!     Freelance SAS Consultant                             !
+!   & SUGI-21 Coders' Corner co-chair                      !
+! 1 Pimm Court,  Glen Waverley,  Victoria,  AUSTRALIA      !
+! Home: +61 (0)3 9886 1904        Work: +61 (0)3 9805 8109 !
+! Mobile: +61 (0)414 221 482                               !
+-----------------------------------------------------------+
+
+
+===> Macro
+*/
+
+%macro anallog(file) ;
+data download(keep=bytes rate time recs) ;
+  length line $ 80 ;
+  format bytes rate comma12. time 12.1 ;
+  infile &file ;
+  input line & $80. @ ;
+  if line=:'NOTE' ;
+  x=index(line,'transferred') ;
+  if index(line,'transferred') then
+    do ;
+      input @7 bytes @ ;
+      input @'at' rate ;
+      input @'has' recs ;
+      time=bytes/rate ;
+      output ;
+    end ;
+run ;
+%mend anallog ;
+
+* Analyse the first log file ;
+%anallog('s:\is&it\mis\testlogs\justin1.log')
+
+* Put the data in a central dataset ;
+data logs ; set download ; run ;
+
+* Analyse another log ;
+%anallog('s:\is&it\mis\testlogs\phil1.log')
+
+* Add the data to the central dataset ;
+data logs ; set logs download ; run ;
+
+proc sort data=logs ;
+  by descending bytes ;
+proc print ;
+run ;
+
+* Delete any graphs already there ;
+proc datasets lib=work ;
+  delete gseg / mt=catalog ;
+run ;
+quit ;
+
+* Set plot to be a joined line graph with plus signs marking points ;
+symbol i=join v=plus ;
+
+* Use a logarithmic axis to avoid crowding at lower end of axis ;
+axis1 logbase=10 ;
+
+* Plot response time and data transfer rate vs. #bytes ;
+proc gplot data=logs ;
+  plot time*bytes / haxis=axis1 ;
+  plot rate*bytes / haxis=axis1 ;
+run ;
+quit ;
+
+proc sort data=logs ;
+  by descending recs ;
+* Plot response time and data transfer rate vs. # observations ;
+proc gplot data=logs ;
+  plot time*recs / haxis=axis1 ;
+  plot rate*recs / haxis=axis1 ;
+run ;
+quit ;
+
+* Sent next graph to printer ;
+goptions rotate dev=winprtm ;
+
+* Combine the 4 graphs on one page ;
+proc greplay igout=work.gseg nofs tc=sashelp.templt ;
+  template l2r2 ;
+  treplay 1:gplot 2:gplot1 3:gplot2 4:gplot3 ;
+run ;
+quit ;
+goptions norotate dev=win ;
+
+*</PRE>;
+<script type="text/javascript" src="http://hb.lycos.com/hb.js"></script>
+<script type="text/javascript" src="http://ratings.lycos.com/ratings/lycosRating.js.php"></script>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var cm_role = "live";
+var cm_host = "tripod.lycos.com";
+var cm_taxid = "/memberembedded";
+var tripod_member_name = "schick";
+var tripod_member_page = "schick/anal_log.sas";
+var tripod_ratings_hash = "1247464030:bc2b119a7f55a9d3960ea4e3d7868408";
+
+var lycos_ad_category = {"dmoz":"computers\/open_source","ontarget":"&CAT=technology&L2CAT=computing&L3CAT=programming","find_what":"software knowledge base"};
+
+var lycos_ad_remote_addr = "203.125.122.2";
+var lycos_ad_www_server = "www.tripod.lycos.com";
+var lycos_ad_track_small = "http://members.tripod.com/adm/img/common/ot_smallframe.gif?rand=865220";
+var lycos_ad_track_served = "http://members.tripod.com/adm/img/common/ot_adserved.gif?rand=865220";
+//--><!]]></script>
+<script type="text/javascript" src="http://scripts.lycos.com/catman/init.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-start.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-middle.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-end.js"></script>
+<noscript>
+ <img src="http://members.tripod.com/adm/img/common/ot_noscript.gif?rand=865220" alt="" width="1" height="1" />
+ <!-- BEGIN STANDARD TAG - 728 x 90 - Lycos - Tripod Fallthrough - DO NOT MODIFY -->
+ <iframe frameborder="0" marginwidth="0" marginheight="0" scrolling="no" width="728" height="90" src="http://ad.yieldmanager.com/st?ad_type=iframe&ad_size=728x90&section=209094"></iframe>
+ <!-- END TAG -->
+</noscript>

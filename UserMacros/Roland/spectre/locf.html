@@ -1,0 +1,341 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="LOCF macro">
+   <meta name="Description" content="LOCF processing">
+   <title>LOCF processing</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+LOCF Processing</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 10 Jun 2006)</b></center>
+
+<h2>
+Introduction</h2>
+"LOCF" stands for "Last Observation Carried Forward", right? Well, "yes"
+and "no". <b>It doesn't mean last SAS&reg; software dataset observation
+carried forward</b>. It means last non-missing value carried forward. And
+if you have multiple variables containing these values then they will be
+carried forward independently. If you are a SAS programmer, but not a statistician,
+it is very easy to fall into the trap of thinking the "observation" being
+carried forward is an observation in a SAS software dataset. It isn't.
+And if you code on that basis then you will be making a mistake. It is
+the non-missing values that are being carried forward and they are being
+carried forward independently at that. This makes things an awful lot more
+complicated so I wrote a macro to do this which you can link to below.
+<br><a href="macros/locf.sas" target="_blank">locf</a>
+<p>I have seen code to do this processing using arrays. In one sense this
+is a good idea since it is the most efficient way of handling it. However,
+the solution using this method never struck me as being elegant. I feel
+the array method springs from an incorrect assumption of what can be achieved
+using merges. I'll explain in the next section.
+<h2>
+LOCF Merging</h2>
+For some reason, some programmers think a merge, as shown below, can not
+be done using SAS software.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>Values to carry forward (values dataset)&nbsp;
+<br><tt>&nbsp;date&nbsp;&nbsp;&nbsp;&nbsp; value&nbsp;</tt>
+<br><tt>01jan02&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;</tt>
+<br><tt>01mar02&nbsp;&nbsp;&nbsp;&nbsp; 2&nbsp;</tt>
+<br><tt>01may02&nbsp;&nbsp;&nbsp;&nbsp; 3&nbsp;</tt>
+<p>Dates to merge with (dates dataset)&nbsp;
+<br><tt>&nbsp;date&nbsp;</tt>
+<br><tt>01jan02&nbsp;</tt>
+<br><tt>01feb02&nbsp;</tt>
+<br><tt>01mar02&nbsp;</tt>
+<br><tt>01apr02&nbsp;</tt>
+<br><tt>01may02&nbsp;</tt>
+<br><tt>01jun02&nbsp;</tt>
+<p>Resulting dataset (final dataset)&nbsp;
+<br><tt>&nbsp;date&nbsp;&nbsp;&nbsp;&nbsp; value&nbsp;</tt>
+<br><tt>01jan02&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;</tt>
+<br><tt>01feb02&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;</tt>
+<br><tt>01mar02&nbsp;&nbsp;&nbsp;&nbsp; 2&nbsp;</tt>
+<br><tt>01apr02&nbsp;&nbsp;&nbsp;&nbsp; 2&nbsp;</tt>
+<br><tt>01may02&nbsp;&nbsp;&nbsp;&nbsp; 3&nbsp;</tt>
+<br><tt>01jun02&nbsp;&nbsp;&nbsp;&nbsp; 3&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>It is true that such a merge can not be done using only the variables
+shown above but what we can do is add a sequence number to the "dates"
+dataset and increment it when we get a match on date with the "values"
+dataset like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data dates;&nbsp;</tt>
+<br><tt>&nbsp; retain _seq 0;&nbsp;</tt>
+<br><tt>&nbsp; merge dates values(in=_val);&nbsp;</tt>
+<br><tt>&nbsp; by date;&nbsp;</tt>
+<br><tt>&nbsp; if _val then _seq=_seq+1;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>And now we have a sequence number that retains its value corresponding
+to each observation in the values dataset. So if we simply add the same
+sequence number to the "values" dataset like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data values;&nbsp;</tt>
+<br><tt>&nbsp; set values;&nbsp;</tt>
+<br><tt>&nbsp; _seq=_n_;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>.... then we can merge like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data final;&nbsp;</tt>
+<br><tt>&nbsp; merge dates values;&nbsp;</tt>
+<br><tt>&nbsp; by _seq;&nbsp;</tt>
+<br><tt>&nbsp; drop _seq;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>... and this gives us the type of merge we need for LOCF merging. If
+you need further convincing, then here is some code you can copy and paste
+and run.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data values;&nbsp;</tt>
+<br><tt>&nbsp; date='01jan2002'd;value=1;output;&nbsp;</tt>
+<br><tt>&nbsp; date='01mar2002'd;value=2;output;&nbsp;</tt>
+<br><tt>&nbsp; date='01may2002'd;value=3;output;&nbsp;</tt>
+<br><tt>&nbsp; format date date7.;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>data dates;&nbsp;</tt>
+<br><tt>&nbsp; date='01jan2002'd;output;&nbsp;</tt>
+<br><tt>&nbsp; date='01feb2002'd;output;&nbsp;</tt>
+<br><tt>&nbsp; date='01mar2002'd;output;&nbsp;</tt>
+<br><tt>&nbsp; date='01apr2002'd;output;&nbsp;</tt>
+<br><tt>&nbsp; date='01may2002'd;output;&nbsp;</tt>
+<br><tt>&nbsp; date='01jun2002'd;output;&nbsp;</tt>
+<br><tt>&nbsp; format date date7.;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>data dates;&nbsp;</tt>
+<br><tt>&nbsp; retain _seq 0;&nbsp;</tt>
+<br><tt>&nbsp; merge dates values(in=_val keep=date);&nbsp;</tt>
+<br><tt>&nbsp; by date;&nbsp;</tt>
+<br><tt>&nbsp; if _val then _seq=_seq+1;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>data values;&nbsp;</tt>
+<br><tt>&nbsp; set values;&nbsp;</tt>
+<br><tt>&nbsp; _seq=_n_;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>data final;&nbsp;</tt>
+<br><tt>&nbsp; merge dates values;&nbsp;</tt>
+<br><tt>&nbsp; by _seq;&nbsp;</tt>
+<br><tt>&nbsp; drop _seq;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>options nocenter;&nbsp;</tt>
+<br><tt>proc print data=final;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>And if you look at the proc print output then this is what you will
+see. And I think you will agree that this is correct.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Obs&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; date&nbsp;&nbsp;&nbsp;
+value&nbsp;</tt>
+<p><tt>&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp; 01JAN02&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1&nbsp;</tt>
+<br><tt>&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp; 01FEB02&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1&nbsp;</tt>
+<br><tt>&nbsp;3&nbsp;&nbsp;&nbsp;&nbsp; 01MAR02&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;</tt>
+<br><tt>&nbsp;4&nbsp;&nbsp;&nbsp;&nbsp; 01APR02&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;</tt>
+<br><tt>&nbsp;5&nbsp;&nbsp;&nbsp;&nbsp; 01MAY02&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3&nbsp;</tt>
+<br><tt>&nbsp;6&nbsp;&nbsp;&nbsp;&nbsp; 01JUN02&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>So at least, in principle, it is possible to merge values in with a
+time sequence using a sequence.variable we have created. The above is very
+simple test data, of course, but we can use the same principle in more
+complex cases. In reality we will have an owner variable such as a subject-id
+that changes. There may be subcategories like a lab parameter. We would
+probably use visit numbers instead of dates. But the same principle of
+adding a sequence number to both datasets and merging using that sequence
+number could still apply. And it is this principle I have used in my macro
+solution for this sort of processing.
+<h2>
+More Complex LOCF Merging</h2>
+Let's drop the use of dates and assume we have visit numbers that ascend
+with time. Also that we have multiple subjects and that we are dealing
+with lab data with multiple measures. Suppose we have datasets like the
+following:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>(values dataset)&nbsp;</tt>
+<br><tt>subj&nbsp; param&nbsp; visit&nbsp; value&nbsp;</tt>
+<br><tt>&nbsp;AA&nbsp;&nbsp;&nbsp; RBC&nbsp;&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+22&nbsp;</tt>
+<br><tt>&nbsp;AA&nbsp;&nbsp;&nbsp; RBC&nbsp;&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+44&nbsp;</tt>
+<br><tt>&nbsp;AA&nbsp;&nbsp;&nbsp; WBC&nbsp;&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+33&nbsp;</tt>
+<br><tt>&nbsp;BB&nbsp;&nbsp;&nbsp; ALB&nbsp;&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+55&nbsp;</tt>
+<p><tt>(visits dataset)&nbsp;</tt>
+<br><tt>subj&nbsp; param&nbsp; visit&nbsp;</tt>
+<br><tt>&nbsp;AA&nbsp;&nbsp;&nbsp; RBC&nbsp;&nbsp;&nbsp;&nbsp; 2&nbsp;</tt>
+<br><tt>&nbsp;AA&nbsp;&nbsp;&nbsp; RBC&nbsp;&nbsp;&nbsp;&nbsp; 3&nbsp;</tt>
+<br><tt>&nbsp;AA&nbsp;&nbsp;&nbsp; RBC&nbsp;&nbsp;&nbsp;&nbsp; 4&nbsp;</tt>
+<br><tt>&nbsp;AA&nbsp;&nbsp;&nbsp; RBC&nbsp;&nbsp;&nbsp;&nbsp; 5&nbsp;</tt>
+<br><tt>&nbsp;AA&nbsp;&nbsp;&nbsp; WBC&nbsp;&nbsp;&nbsp;&nbsp; 2&nbsp;</tt>
+<br><tt>&nbsp;AA&nbsp;&nbsp;&nbsp; WBC&nbsp;&nbsp;&nbsp;&nbsp; 3&nbsp;</tt>
+<br><tt>&nbsp;AA&nbsp;&nbsp;&nbsp; WBC&nbsp;&nbsp;&nbsp;&nbsp; 4&nbsp;</tt>
+<br><tt>&nbsp;AA&nbsp;&nbsp;&nbsp; WBC&nbsp;&nbsp;&nbsp;&nbsp; 5&nbsp;</tt>
+<br><tt>&nbsp;BB&nbsp;&nbsp;&nbsp; ALB&nbsp;&nbsp;&nbsp;&nbsp; 2&nbsp;</tt>
+<br><tt>&nbsp;BB&nbsp;&nbsp;&nbsp; ALB&nbsp;&nbsp;&nbsp;&nbsp; 3&nbsp;</tt>
+<br><tt>&nbsp;BB&nbsp;&nbsp;&nbsp; ALB&nbsp;&nbsp;&nbsp;&nbsp; 4&nbsp;</tt>
+<br><tt>&nbsp;BB&nbsp;&nbsp;&nbsp; ALB&nbsp;&nbsp;&nbsp;&nbsp; 5&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>Now before we decide on how to merge these datasets, take a look at
+the "visits" dataset. Visits 2-5 are the "on-treatment" visits right up
+to the planned end point which is visit 5. It is for these visits we want
+to carry forward our last observation. Visit 1 is not shown because it
+is likely a baseline value and because it was not a measure taken while
+on and as a result of treatment we would probably not want to carry forward
+these baseline values. So Visits 2-5 are the "eligible" visit values for
+carrying forward. Now look at the values dataset. Again these only have
+the "eligible" visits and their values and these will be the values we
+will be carrying forward where required. Note that the subj/param pairings
+in the "visits" dataset match those in the values dataset. It makes sense
+to only have subj/param pairings to match values otherwise you would have
+nothing to carry forward. But this is an assumption. You should understand
+the assumptions being made. Sometimes the assumptions will not be approppriate
+for a study you are working on and you might have to change the logic.
+<p>Now consider how we are going to approach the merge of the two datasets.
+Look at the data for subject AA. We would not want to carry forward values
+of RBC into the following WBC so obviously we will be merging using matching
+on the subj/param pairing. We will have to reset our sequence count at
+the start of each subj/param grouping and increment from there. And when
+we add the sequence number to the "values" dataset we will have to do the
+same so that when we merge using subj/param/_seq we will get the correct
+matching.
+<p>First read through the following code until you understand what it is
+doing. The first two data steps generate the observations as shown above.
+The next two data steps add the sequence number and the final data step
+merges the data before printing it. Then copy and paste the code, run it
+under SAS software and convince yourself that it is producing the correct
+output:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data values;&nbsp;</tt>
+<br><tt>&nbsp; subj='AA';&nbsp;</tt>
+<br><tt>&nbsp; param='RBC';&nbsp;</tt>
+<br><tt>&nbsp; visit=2;value=22;output;&nbsp;</tt>
+<br><tt>&nbsp; visit=4;value=44;output;&nbsp;</tt>
+<br><tt>&nbsp; param='WBC';&nbsp;</tt>
+<br><tt>&nbsp; visit=3;value=33;output;&nbsp;</tt>
+<br><tt>&nbsp; subj='BB';&nbsp;</tt>
+<br><tt>&nbsp; param='ALB';</tt>
+<br><tt>&nbsp; visit=3;value=55;output;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>data visits;&nbsp;</tt>
+<br><tt>&nbsp; subj='AA';&nbsp;</tt>
+<br><tt>&nbsp; do param='RBC', 'WBC';&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; do visit=2 to 5;&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output;&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; end;&nbsp;</tt>
+<br><tt>&nbsp; end;&nbsp;</tt>
+<br><tt>&nbsp; subj='BB';&nbsp;</tt>
+<br><tt>&nbsp; param='ALB';&nbsp;</tt>
+<br><tt>&nbsp; do visit=2 to 5;&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; output;&nbsp;</tt>
+<br><tt>&nbsp; end;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>data visits;&nbsp;</tt>
+<br><tt>&nbsp; retain _seq 0;&nbsp;</tt>
+<br><tt>&nbsp; merge visits values(in=_val keep=subj param visit);&nbsp;</tt>
+<br><tt>&nbsp; by subj param visit;&nbsp;</tt>
+<br><tt>&nbsp; if first.param then _seq=0;&nbsp;</tt>
+<br><tt>&nbsp; if _val then _seq=_seq+1;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>data values;&nbsp;</tt>
+<br><tt>&nbsp; retain _seq 0;&nbsp;</tt>
+<br><tt>&nbsp; set values;&nbsp;</tt>
+<br><tt>&nbsp; by subj param;&nbsp;</tt>
+<br><tt>&nbsp; if first.param then _seq=0;&nbsp;</tt>
+<br><tt>&nbsp; _seq=_seq+1;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>data final;&nbsp;</tt>
+<br><tt>&nbsp; merge values visits;&nbsp;</tt>
+<br><tt>&nbsp; by subj param _seq;&nbsp;</tt>
+<br><tt>&nbsp; drop _seq;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>options nocenter;&nbsp;</tt>
+<br><tt>proc print data=final;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt></td>
+</tr>
+</table>
+
+<h2>
+The Macro Solution - %locf</h2>
+The macro I wrote to do this processing uses the method of merging shown
+above. It will operate on whatever data you feed into the macro. You should
+only feed it data that is eligible for carrying forward (for example, you
+would not feed in baseline visit data if baseline values were not eligible
+for carrying forward). It is your responsibility to prepare the data beforehand
+if needed. Non-missing for numeric values means not equal to missing value.
+Non-missing for a character variable means not a blank. If "0" signifies
+missing for some of your numeric variables then the dataset you feed in
+to the %locf macro will have to be an amended one with the 0's set to missing
+values. The same applies to the character variables. You have to do all
+the data preparation. The %locf macro does none. And if you want only one
+or two timepoints in the output dataset then you have to make that selection.
+The %locf macro will not do it for you. This way I can keep the macro as
+simple as possible and that way it should stay maintainable.
+<p>You should regard this macro as <b>a </b>solution rather than <b>the</b>
+solution. You need to understand what it is doing and what assumptions
+are being made. It may or may not match with your study requirements. You
+might end up writing a new macro that fits your site standards better,
+based on this macro. I can only go so far with it and keep it as generic
+and as simple as possible. If you want to develop it further then feel
+free but I will only be able to support the version you find here. To view
+the macro click on the link below.
+<br><a href="macros/locf.sas" target="_blank">locf</a>
+<br>&nbsp;
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+<br>&nbsp;
+<br>&nbsp;
+</body>
+</html>

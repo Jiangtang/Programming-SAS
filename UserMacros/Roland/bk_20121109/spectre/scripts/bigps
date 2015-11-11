@@ -1,0 +1,147 @@
+#!/bin/bash
+#<pre><b>
+# Script     : bigps
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 24-Nov-2005
+# Purpose    : Production script to convert *.lis* files listed in donelist.txt
+#              (or listed in a donelist section file) to one large postscript
+#              file.
+# SubScripts : lis2ps
+# Notes      : This must be run from the directory where both "donelist.txt" and
+#              the output files are. Only files of the pattern *.lis* are
+#              selected for conversion to postscript. Donelist section files 
+#              referenced using the -n option must be named according to the
+#              convention donesect1.txt, donesect2.txt etc. where the numeric
+#              digit is the value supplied to the -n option.
+# Usage      : bigps > big.ps
+#              bigps -1 > big.ps
+#              bigps -s > selbig.ps
+#              bigps -r -s > selbig.ps
+#              bigps -n 2 > big2.ps
+#================================================================================
+# OPTIONS:
+#-opt- -------------------------------description--------------------------------
+#  1   (switch) extract only one title for the PDF bookmark
+#  r   (switch) reference number only (i.e. no TABLE or Appendix) for PDF bookmark
+#  s   (switch) select on file pattern
+#  n   (value)  donelist section number
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+# N/A  Do not supply any parameters  
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+# 
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+# Define give-usage-message-then-exit function
+usage () {
+  echo "Usage: bigps -1 -r -s -n <donelist section number>" 1>&2
+  exit 1
+}
+
+
+# The following variable names and defaults have been generated for you
+# to help you start. You can rename the variables to something more 
+# meaningful but be sure to change all occurrences of that name in the code.
+switchs=0                           # Default switch=off for select on file pattern                            
+switch1=0                           # Default switch=off for extracting one title only
+valuen=                             # Default value for donelist section number                           
+switchr=0                           # Default switch=off for reference number only
+
+
+# "case" statement for action to take on selected options
+while getopts "s1rn:" param ; do
+  case $param in
+   "?") # bad option supplied
+        usage
+        ;;
+   "s") # (switch) select on file pattern
+        switchs=1
+        ;;
+   "1") # (switch) extract one title only for PDF bookmark
+        switch1=1
+        ;;
+   "r") # (switch) extract reference number only for PDF bookmark
+        switchr=1
+        ;;
+   "n") # (value) donelist section number
+        valuen=$OPTARG
+        ;;
+  esac
+done
+
+
+# shift to bring first parameter to position 1
+shift $(($OPTIND - 1))
+
+
+# No parameters allowed
+if [ $# -gt 0 ] ; then
+  echo "Error: (bigps) Do not supply any parameters" 1>&2
+  usage
+fi
+
+
+# set the donefile to use
+if [ ! -z "$valuen" ] ; then
+  donefile=donesect${valuen}.txt
+else
+  donefile=donelist.txt
+fi
+
+
+# extract one title only for PDF bookmark
+onet=
+if [ $switch1 -eq 1 ] ; then
+  onet=-1
+fi
+
+
+# reference number only
+refonly=
+if [ $switchr -eq 1 ] ; then
+  refonly=-r
+fi
+
+
+# select only valid entries and sort in order
+grep '^...-...-...-...-...-... ' $donefile | sort > ~/bigps_$$.tmp
+
+
+#################### SWITCH OFF SHELL GLOBBING #######################
+set -f
+
+
+# if option set then prompt for file pattern else default to *
+patt=*
+if [ "$switchs" == "1" ] ; then
+  if [ -z $valuen ] ; then
+    echo -n "Enter your file pattern: " 1>&2
+    read patt
+  else
+    echo "You requested a file pattern but this is not for donelist section
+files" 1>&2
+  fi
+fi
+
+
+for filename in $(cat ~/bigps_$$.tmp | gawk '{print $2}') ; do
+  case "$filename" in
+    $patt)
+      if [[ "$filename" == *.lis* ]] ; then
+        lis2ps $onet $refonly "$filename"
+      elif [[ "$filename" == *.ps* ]] ; then
+        cat "$filename"
+      fi
+    ;;
+  esac
+done
+
+
+rm -f ~/bigps_$$.tmp

@@ -1,0 +1,78 @@
+#!/bin/bash
+#<pre><b>
+# Script     : a4ps2pdf
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 26-Mar-2006
+# Purpose    : To convert an A4 postscript file to a pdf
+# SubScripts : none
+# Notes      : If no second file is specified then the output file will have
+#              the same name as the input file but with the extension .pdf
+# Usage      : a4ps2pdf file.ps file.pdf
+#              a4ps2pdf file.ps
+#              a4ps2pdf -u file.ps   # creates uncompressed pdf
+#===============================================================================
+# OPTIONS:
+#-opt- -------------------------------description-------------------------------
+#  u   (switch) uncompressed                                      
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   Postscript file to convert to a pdf
+#  2   (optional) Name of pdf output file
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Define give-usage-message-then-exit function
+usage () {
+  echo "Usage: a4ps2pdf -u <uncompressed> file.ps" 1>&2
+  exit 1
+}
+
+
+# Default options
+switchu=true                          # Default switch=true for compressed                                      
+
+
+# "case" statement for action to take on selected options
+while getopts "u" param ; do
+  case $param in
+   "?") # bad option supplied
+        usage
+        ;;
+   "u") # (switch) uncompressed
+        switchu=false
+        ;;
+  esac
+done
+
+
+# shift to bring first parameter to position 1
+shift $(($OPTIND - 1))
+
+
+
+# One postscript file must be specified
+if [ $# -lt 1 ] ; then
+  echo "Error: no input postscript file name supplied" 1>&2
+  usage
+fi
+
+
+# Tell GhostScript where the fonts are if required
+GS_LIB=/usr/local/share/ghostscript/8.00/fonts:/usr/openwin/lib/X11/fonts/Type1/afm:\
+/usr/lib/X11/fonts/fromttf:/usr/openwin/lib/X11/fonts/Type1/sun/afm:\
+/usr/openwin/lib/X11/fonts/F3:/usr/openwin/lib/locale/iso_8859_8/X11/fonts/Type1
+export GS_LIB
+
+
+# Call ps2pdfwr
+ps2pdfwr -sPAPERSIZE=a4 -dAutoRotatePages=/PageByPage -dPDFSETTINGS=/default \
+-dCompatibilityLevel=1.4 -dEmbedAllFonts=true -dCannotEmbedFontPolicy=/Error \
+-dCompressPages=$switchu $1 $2

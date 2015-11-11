@@ -1,0 +1,243 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="%unistats Spectre lab">
+   <meta name="Description" content="Spectre's %unistats macro used with lab data">
+   <title>Using unistats with Lab data (3)</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Using unistats with Lab data (3)</h1></center>
+<b>Last updated: 10 Jan 2012</b>
+<h2>
+Introduction</h2>
+I am going to show you a very complex use of %unistats for lab data reporting.
+I am going to transpose not only by statistics name but by treatment arm
+as well. But to make it more complicated, the treatment arm is a timepoint
+I have chosen ("Value at visit"=1 and "Change from baseline"=2) and nothing
+to do with a real treatment arm such as Placebo and Drug.
+<p>You might (and should) question why I am using the macros in such a
+strange fashion. The answer being that <b>the macros were designed to do
+all the complicated work for you</b> and were designed to handle many situations.
+The idea is that if you use the macros for creating tables then the work
+you have to do is mostly in selecting the data and feeding it to the macros
+and displaying the results afterwards (if the macro can not do it). <b>Tables
+should just be tabulations</b>. And by "tabulations" it means that you
+should not be doing any processing work. You should just select the data,
+feed it into the macro, and if it can not display the results you want
+then you do so using "proc report" on the output dataset <b>but at no time
+do you do any "real processing" of the data</b> because that would need
+"validation" and the Spectre macros should be "validated" already and able
+to do the work for you without any worries. They have been in use since
+2006 and have never been known to produce a wrong value (except in the
+case of sparse p-value statistics that got fixed a few years ago). You
+can rely on them completely and they can do a few things for you like transpose
+the results any way you wish. You are going to see a complex example that
+I will explain.
+<h2>
+The Challenge</h2>
+I'm first going to explain why I have to do some crazy stuff with the macros.
+It all stems from having a "proc report" "across" variable that must not
+use up a line due to a strict client requirement. This is not possible
+with "across" variables and "proc report" so to get round it the variables
+need to be transposed somehow and I don't want to do the transpose in the
+macro code. Below in the box is the header columns of the output I want
+to create. What is important here is that there is no avaliable line above
+the "_Value at Visit_" and "_Difference from baseline_" line to have a
+"proc report" "across" variable so if the character variable being displayed
+are named "NSTR", "MEANSTR" etc. then they need to be named something like
+"N1STR", "N2STR", "MEAN1STR", "MEAN2STR" etc. so that there is no "across"
+variable but instead just a list of variables with the "across" variable
+value as part of the name of the variable which in this case is "1" and
+"2". The "1" list we will label as '("__Value at Visit__" N1STR MEAN1STR
+STD1STR MIN1STR MEDIAN1STR MAX1STR)' and the next group '("__Difference
+from baseline__" N2STR MEAN2STR STD2STR MIN2STR MEDIAN2STR MAX2STR)'. I
+have a timepoint variable named <b>tp</b> which is "1" for "Value on Visit"
+and "2" for "Difference from baseline" and <b>I am going to tell the %unistats
+macro that "tp" is my treatment arm variable even though it is not.</b>
+It is just the "across" variable. %unistats will accept it and use the
+value of this variable to create the statistics variable names as listed
+in this paragraph. <b>But there is a minor problem with doing this.....</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<pre><font face="Courier New,Courier">________________________________________________________________________________________________________________________________________________________
+Treatment/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ______________________Value at Visit______________________&nbsp;&nbsp; _________________Difference from baseline_________________
+&nbsp; Visit&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; N*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mean&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Min&nbsp;&nbsp;&nbsp; Median&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Max&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; N*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mean&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Min&nbsp;&nbsp;&nbsp; Median&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Max
+________________________________________________________________________________________________________________________________________________________</font></pre>
+</td>
+</tr>
+</table>
+
+<h2>
+The "minor problem" explained</h2>
+The <b>minor problem</b> with telling %unistats to use a treatment variable
+<b>that
+it did not expect</b> is that it relies on the <b>%popfmt</b> macro to
+tell it what the values of the treatment arm variable are. These will be
+written to the global macro variable <b>_trtvallist_</b> . It expects the
+unique values to be there. This is better than scanning the input dataset
+which might have a million observations or more. It assumes you ran <b>%popfmt</b>
+on a demography dataset with just a few hundred observations and was easily
+able to list out the unique treatment identifiers. But supposing you have
+not done this? Most likely you have run %popfmt on the treatment arm variable
+just to create a format that has the "<b>(N=xxx)</b>" label at the end
+and now you are not going to use the information it provided for you in
+the global macro variables. It might have told you that <b>&amp;_trtvallist_
+= 010 500 </b>but that is no use to you because you are about to use "<b>tp</b>"
+as the treatment variable and that only contains the values "1" and "2".
+But you can specify this directly. You can either set "<b>%let _trtvallist_=1
+2;</b>" to override what %popfmt set up or supply it to the %popfmt macro
+directly using a parameter in the form <b>"trtvallist=1 2"</b> like I did
+in the following example. After this I merge with some lab info. You will
+see that we still refer to the treatment arm variable
+<b>&amp;trtvar</b>
+but this is now just a "by" variable. Note that like in the example on
+the previous page I am adjusting the number of decimal places displayed
+using the contents of the variable <b>dpvar=rounding</b>. I am switching
+off messages using <b>msgs=no</b> and I am adjusting the number of spaces
+to the right of a missing value using <b>misspad=yes</b>.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/**************************</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Summarize</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+**************************/</tt>
+<p><tt>&nbsp; %let wherecls=and _hasbase=1 and _haslast=1;</tt>
+<br><tt>&nbsp; %if &amp;showmiss EQ Y %then %let wherecls=;</tt>
+<p><tt>&nbsp; %unistats(dsin=_laball3(where=((_fgprev or _fgontv or _fgpostv)
+&amp;wherecls and missing(_fgrept))),</tt>
+<br><tt>&nbsp; print=no,varlist=_val,msglevel=X,<b>padmiss=yes,msgs=no,</b></tt>
+<br><tt>&nbsp; trtvar=_tp,trtfmt=tpfmt.,<b>dpvar=rounding,trtvallist=1
+2,</b></tt>
+<br><tt>&nbsp; byvars=<b>&amp;trtvar</b> labnm labnmx &amp;labunit _phase
+_period visno _vistext,</tt>
+<br><tt>&nbsp; nfmt=5.,stdfmt=5.,minfmt=5.,maxfmt=5.,meanfmt=5.,</tt>
+<br><tt>&nbsp; descstats=&amp;descstat,dstranstattrt=_transtat,leftstr=yes);</tt>
+<br>&nbsp;
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/**************************</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Add lab group order</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+**************************/</tt>
+<p><tt>&nbsp; *- add in the lab group info -;</tt>
+<br><tt>&nbsp; proc sql noprint;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; create table _transtat2 as (</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; select a.*, b.labgrp, b.labgrpx, b.labnmor</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; from _transtat as a</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; left join _labgrp as b</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; on a.labnm=b.labnm</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; ) order by labgrp, labgrpx, labnmor, labnm,
+labnmx;</tt>
+<br><tt>&nbsp; quit;</tt></td>
+</tr>
+</table>
+
+<p>The list of numeric statistics variables will be the list of "keywords"
+held in <b>&amp;_statkeys_ </b>and the corresponding character variables
+will have the same name but ending in "1STR" or "2STR". A little later
+in the code I list these character variables that I need to use in a "proc
+report" step. Look carefully at the way I refer to them. Look for <b><tt>%suffix(1STR,&amp;_statkeys_)</tt></b>
+and <b><tt>%scan(&amp;_statkeys_,&amp;i,%str( ))&amp;j.STR</tt></b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/**************************</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Produce report</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+**************************/</tt>
+<p><tt>&nbsp; %let ncolw=8;</tt>
+<br><tt>&nbsp; %if %words(&amp;_statkeys_) GT 6 %then %let ncolw=6;</tt>
+<p><tt>&nbsp; proc report missing headline headskip nowd split="@" data=_transtat2
+spacing=2;&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; by labgrp labgrpx labnmor labnm labnmx &amp;labunit;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; columns ("%sysfunc(repeat(%sysfunc(byte(131)),%eval(&amp;repwidth-1)))"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&amp;trtvar _phase _period visno _vistext&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+("_Value at visit_" <b>%suffix(1STR,&amp;_statkeys_))&nbsp;</b></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+("_Difference from %lowcase(&amp;bslnlbl)_" <b>%suffix(2STR,&amp;_statkeys_))</b></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+);&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; define &amp;trtvar / order order=internal noprint;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; define _phase / order noprint;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; define _period / order noprint;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; define visno / order noprint;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; define _vistext / id order width=26 "Treatment/"
+"&nbsp; Visit" spacing=0;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %do j=1 %to 2;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %do i=1 %to %words(&amp;_statkeys_);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let key=<b>%scan(&amp;_statkeys_,&amp;i,%str(
+))&amp;j.STR;</b></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let spac=;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %if &amp;i EQ 1 %then
+%let spac=spacing=&amp;gap;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; define &amp;key / display
+width=&amp;ncolw &amp;spac right;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; compute before &amp;trtvar;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; line @1 &amp;trtvar &amp;_popfmt_.;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; endcompute;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; break after _phase / skip;</tt>
+<br><tt>&nbsp; run;&nbsp;</tt></td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+You have seen how to use the macro %unistats with a different treatment
+arm variable to provide a more "flattened" report.
+<br><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="Reasons why I like Spectre (Clinical)">
+   <meta name="KeyWords" content="reasons like spectre clinical">
+   <title>Why I like Spectre (Clinical)</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Why I like Spectre (Clinical)</h1></center>
+
+<h2>
+Introduction</h2>
+I thought I would put on this page all the reasons why I like Spectre (Clinical).
+Obviously, I am going to be biased, as I wrote the system, but I thought
+it would be useful to have a page where my thinking about this clinical
+reporting system "shines through" as I feel it is the ideas behind it which
+make it such a good system and "tuning in" to these ideas might reveal
+facets of the system design that would otherwise be overlooked.
+<p><b>This page is historic</b> but most of the comments still stand. The
+<b>Clinical reporting macros are no longer free</b> but the rest of the
+system is free. Since the following page was written there have been major
+upgrades to the reporting macros but they still act as a tool to aid programmer
+creativity rather than as a substitute for their skills.
+<p><b>Below was last updated 20 Jul 2007</b>
+<h2>
+What makes Spectre (Clinical) so good</h2>
+
+<ul>
+<li>
+<b>Programmer Popularity</b>. The old Glaxo Wellcome system, on which Spectre
+(Clinical) is based, was in use for eleven years and was <b>popular</b>
+among the <b>SAS&reg;</b> programmers in the company. Now there are two
+diametrically opposed points of view on whether it matters if a reporting
+system is <b>popular</b> among sas programmers. From a management point
+of view, it might be considered that if a reporting system is in place
+that will result in greater efficiency then the programmers should get
+used to it or go elsewhere. On the other hand, programmers tend to be creative
+and if they are limited in their creativeness by the reporting system they
+have to use then they will be unhappy and perhaps less productive. The
+reason I thought the Glaxo Wellcome system was popular among programmers
+was because it gave them tools that <b>aided them in their creativity</b>.
+The system was not "overdeveloped" to the point where programmers were
+setting parameters to get their output and had no understanding of the
+processes underneath. Instead, the Glaxo Wellcome system took away the
+tedium of certain programming tasks and helped them to be creative. The
+two main reporting macros in the Glaxo Wellcome system were called %aetab
+and %sumtab and I have replaced these with <a href="npcttab.html" target="_blank">%npcttab</a>
+and <a href="unistats.html" target="_blank">%unistats</a> and in a way
+that still allows the programmer to work with them and <b>think</b> with
+them. It is this "<b>thinking</b>" with the macros that I consider to be
+important. These macros can produce output datasets where all the tedious
+work of coding the "proc univariate" steps and "proc summary" steps are
+taken care of, leaving the programmer with a dataset that they are free
+to manipulate and present in any way they like. They might calculate complex
+p-values and merge them in with these output datasets and put the dataset
+through "proc report" to produce sophisticated efficacy tables. With the
+macros being so flexible, then almost any report that shows patient counts
+with percentages can be produced using the %npcttab macro, once you understand
+how the macro works, and combined with the %unistats macro then almost
+all safety tables can be produced as well. The ease of using the macros,
+plus their output datasets, allow programmers to effortlessly cross the
+boundary between safety and efficacy programming. A lot of reporting systems
+are so heavily developed on the safety reporting side and have become so
+complex that it forms a split, creating an "efficacy reporting function"
+and a "safety reporting function". This is not the case with Spectre, where
+the two roles naturally converge into one.</li>
+
+<li>
+<b>p-values</b>. The macros %npcttab and %unistats are heavily loaded with
+p-values capabilities (if this is required) and it is possible to display
+these p-values not only in a column but in footnotes instead. Some clients
+tend to be "p-value happy" and require p-values to be shown, even in demography
+and for baseline values, so it is important to have this reporting capability
+in your standard reporting macros. %npcttab and %unistats has this. Because
+of their advanced p-value capabilities, these two "safety" macros become
+"efficacy" macros and encourages safety programmers to become efficacy
+programmers and efficacy programmers to become safety programmers. I think
+it is a good thing if programmers feel happy in both fields and I hope
+it leads to greater flexibility.</li>
+
+<li>
+<b>Push-button Reporting</b>. Spectre (Clinical) encourages the use of
+reporting macros. As soon as your <b>autoexec.sas</b> has completed then
+all your macros for a study should have been assigned. If you have got
+a complete set of reporting macros then they are ready to be called. Spectre
+allows you to define macro calls in the titles members using the "sascode"
+line. This single line of code then becomes your sas program. Suppose your
+table templates could be linked to your macros such that if you chose a
+template then it would match it with the macro call then you have the chance
+of creating a push-button reporting system such that if the titles and
+footnotes are chosen along with the table template then everything will
+have been selected to produce the final report as defined to the titles
+member. No other reporting system that I know of has a suitable architecture
+to come so close to being a push-button reporting system in the way I describe.
+And if the CDISC project results in people reporting from these standard
+datasets, then standard macros could be written to report these datasets
+and the goal of a push-button reporting system could be achieved.</li>
+
+<li>
+<b>A Universal Reporting System</b>. Spectre can be downloaded for free.
+The reporting macros %npcttab and %unistats will run on any platform SAS
+runs on and if people want to use the full Spectre system then that will
+work on both Windows and *nix platforms. It is the first, free universal
+clinical reporting system that I know of and I think it makes a lot of
+sense to use it as such. I note the major pharmaceutical companies spend
+millions of dollars developing their own in-house reporting systems and
+yet farm out most of their work to to CROs who they do not allow to use
+their in-house systems, even if they have been validated, due to copyright
+issues and the possibility that the CRO would use their system for their
+own advantage (why not let them -- who loses money?). Often, these in-house
+systems are so overdeveloped and complex that their own permanent programming
+staff members, due to the frequent organizational communications and interruptions
+that is typical of a large company, are unable to concentrate on working
+with the system for long enough periods to maintain an understanding and
+familiarity of the system. I would guess it takes 15 minutes of concentrated
+effort to "get back into" a complex system before the programmer can start
+being productive with it and by that time they may have been interrupted
+more than once and are unable to make any progress. And so the organization
+becomes reliant on external contract staff, who are subject to less distractions,
+to work with the system with the resulting added expense.&nbsp; I have
+to wonder if the money spent was worth it when there is a system like Spectre
+that people can use for free, is easy to use and understand and most likely
+has far more features and is far more flexible and reliable than those
+systems written in-house. I would suggest that these companies drop their
+in-house systems and use Spectre instead and ask that the CROs do the same
+-- and then everything would run a lot smoother.</li>
+
+<li>
+<b>Multiple client styles</b>. Spectre was designed to produce output in
+multiple client styles. The location of titles and footnotes plus various
+headers such as protocol, report number and increments is handled by the
+client titles macro. If your client has the abbreviation "xy", for example,
+then a macro named %xytitles will be called to create the headers and footnotes
+to match that client's style. This makes the system so much more of a universal
+reporting system in that it allows you to write reporting macros that are
+independent of client layout requirements. Much greater efficiencies are
+possible in this way and I feel a satisfaction in that regard in using
+Spectre.</li>
+
+<li>
+<b>Batch is Fast</b>. I know it will be inconceivable to anyone who has
+always worked through a GUI interface that working in Unix batch and typing
+all your commands through terminal windows can be easier and faster but
+I can assure you from personal experience that it is. The speed increase
+can be several-fold, once you know your Unix commands. You can work up
+to an incredible speed using Spectre. Its demands on processor power is
+low and network traffic is minimized by working in batch, so it runs faster
+and your screen refreshes quicker than would be the case if you worked
+through a GUI. When you are working at high speed, you want your computer
+to give quick responses too. Spectre is ideal for this.</li>
+
+<li>
+<b>Programs run automatically</b>. You don't need to keep a list of what
+programs need to run, only to find that after the final run and with tight
+timescales, a few of your outputs are missing. Spectre keeps track of what
+programs are there. For the derived datasets build programs it goes by
+the program name and for the output programs the program names are all
+held in the titles dataset and it uses that to generate a list of all the
+programs that need to be run. Another plus is it checks to make sure you
+do not have more than one table or listing with the same reference number.
+A small extra is that it e-mails the Spectre Administrator to tell them
+when all the programs finish and tells them whether it worked or not. It
+allows the Administrator to get on with other tasks.</li>
+</ul>
+
+<h2>
+Conclusion</h2>
+Here, I have set out, and in my personal opinion only, some of my thinking
+on why Spectre (Clinical) is such a good reporting system.
+<br>&nbsp;
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+<br><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+</html>

@@ -1,0 +1,47 @@
+#!/bin/bash
+#<pre><b>
+# Script     : otitles
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 19-Feb-2004
+# Purpose    : To view the original .titles file of the program being validated
+#              (as defined to "prog" but without the "v" or "v_" prefix).
+# SubScripts : none
+# Notes      : You must have set up the system environment variable "prog"
+#              to your sas program name (no extension) and have exported it
+#              like this:
+#              $ prog=progname  # no extension
+#              $ export prog
+# Usage      : otitles
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not supply any parameters
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  11Mar07         Whatever defined to VISUAL used as viewer else "less"
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+if [ -z $prog ] ; then
+  echo "You have to set \"prog\" equal to your sas program name and export it" 1>&2
+  exit 1
+fi
+
+oprog=$(echo "$prog" | gawk '{sub(/^v_?/,"");print}')
+
+if [ -n "$VISUAL" ] ; then
+  if [ "$VISUAL" == "less" ] || [ "$VISUAL" == "vi" ] ; then
+    # done in current terminal window for "less" and "vi"
+    $VISUAL ${prog%.*}.titles
+  else
+    # done as a background task
+    $VISUAL ${prog%.*}.titles &
+  fi
+else
+  # default is to use "less" in current terminal window
+  less ${prog%.*}.titles
+fi

@@ -1,0 +1,105 @@
+#!/bin/bash
+#<pre><b>
+# Script     : titlesvsbkmarks
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 12-May-2006
+# Purpose    : Production script to display table/appendix reference numbers in
+#              ALL.TITLES that can not be found in the PDF bookmarks.
+# SubScripts : printpdfbookmarks
+# Notes      : Must be run in the same directory where ALL.TITLES is held. If
+#              -r option was used when creating the PDF bookmarks then the very
+#              start of the bookmark will be a reference so the -r option must
+#              also be used with this script to tell it that the reference is
+#              the first word in the bookmark.
+# Usage      : titlesvsbkmarks ONE.pdf TWO.pdf
+#              titlesvsbkmarks BIG*.pdf
+#===============================================================================
+# OPTIONS:
+#-opt- -------------------------------description-------------------------------
+#  r   (switch) reference number at start of bookmarks
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   List of final output PDFs or file pattern for these
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Define give-usage-message-then-exit function. Edit to add any useful option
+# information, to change valid values of options and to add parameter values
+# ("xxxxxx" and onwards) if used. Split into multiple lines if required but
+# be sure to echo every line to error output using 1>&2.
+usage () {
+  echo 'Usage: titlesvsbkmarks -r BIG*.pdf' 1>&2
+  exit 1
+}
+
+
+# The following variable names and defaults have been generated for you
+# to help you start. You can rename the variables to something more 
+# meaningful but be sure to change all occurrences of that name in the code.
+switchr=0                           # Default switch=off for reference number only comparison                  
+
+
+# "case" statement for action to take on selected options
+while getopts "r" param ; do
+  case $param in
+   "?") # bad option supplied
+        usage
+        ;;
+   "r") # (switch) reference number only comparison
+        switchr=1
+        ;;
+  esac
+done
+
+
+# shift to bring first parameter to position 1
+shift $(($OPTIND - 1))
+
+# Edit the test below for the number of expected parameters and call
+# the give-usage-message-then-exit function if an incorrect number 
+# supplied. Remove if parameters are optional.
+if [ $# -lt 1 ] ; then
+  echo "Error: no names of PDF file(s) supplied" 1>&2
+  usage
+fi
+
+# position of the word in the pdf bookmarks containing the reference
+pos=2
+if [ $switchr -eq 1 ] ; then
+  pos=1
+fi
+
+gawk '{
+if (toupper(substr(keep,1,13))=="TITLES BELOW:")
+  print $2
+keep=$0
+}' ALL.TITLES | sort > ~/trefs.tmp
+
+# make sure file not there before we append to it
+rm -f ~/prefs.tmp
+
+# for each pdf, extract bookmarks, print the reference
+# and append to a temporary file
+for pdf in "$@" ; do
+  printpdfbookmarks $pdf | gawk '{print $pos}' pos=$pos >> ~/prefs.tmp
+done
+
+# sort the pdf bookmark references in order
+sort ~/prefs.tmp > ~/prefs2.tmp
+
+# delete the unsorted temporary file
+rm -f ~/prefs.tmp
+
+# show title references not in PDF bookmarks
+join -v 1 ~/trefs.tmp ~/prefs2.tmp
+
+# delete the temporary files used in the join
+rm -f ~/trefs.tmp ~/prefs2.tmp

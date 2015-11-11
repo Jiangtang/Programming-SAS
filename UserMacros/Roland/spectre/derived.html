@@ -1,0 +1,149 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="Building derived datasets using Spectre">
+   <meta name="KeyWords" content="derived datasets Spectre">
+   <title>Derived datasets build</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Building the Derived Datasets</h1></center>
+
+<center>
+<p><br><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 10 Jun 2006)</b></center>
+
+<h2>
+Introduction</h2>
+The Spectre component for building the derived datasets and "stats" datasets
+might not be in use at your site. Either not at all or not for certain
+studies. If not at all then you will learn nothing useful here, so it is
+recommended that you skip this page and go back to the previous page using
+your browser's "Back" button.
+<p>Spectre offers very little to help programmers build their derived datasets.
+It is quite the opposite, in fact. You have to help the reporting system.
+This will be explained later.
+<p>The reporting system upon which this one is based, used the "make" utility.
+The "make" utility analyses the dependencies between programs and creates
+a script to run programs in the correct order. Though an extremely clever
+utility, I witnessed much time wasted in editing the scripts it created.
+Also, nearly all the programs within a reporting system are there to create
+tables and listings, and if this is sensibly done from derived/stats/reporting-ready
+datasets then there should no dependencies between these programs. This
+only leaves the few programs that create the derived datasets (maybe only
+twenty) and there are easier, more visible and more obvious ways of running
+these programs in the correct order.
+<h2>
+Program numbering</h2>
+The way the reporting system runs the derived dataset build programs in
+the correct order is to trust a numbering system that you are supposed
+to use. It runs programs in the order using the number as the first sort
+key and the full program name as the second sort key. The number must be
+placed directly before the first underscore in the program name. This is
+best explained using examples.
+<p>The way derived datasets are built, there is usually a cut down version
+of an "<b>acct</b>" dataset that the other programs use so this cut down
+"acct" dataset has to be the first built. Let us assume that this cut down
+"acct" dataset is named "<b>acct0</b>". There may well be other programs
+that have to be run before this can be created, so a recommended name for
+it would be <b>s10_acct0.sas</b> . The "10" gives it the main order key,
+the full name "s10_acct0" is the name order key and will be used as the
+second key in the sort. Note the underscore. This is compulsory. You can
+have other underscores but the number must be directly before the first
+underscore. The actual "name" part of the program, in this case "acct0",
+should be the same as the dataset it builds. Finally, the program name,
+to qualify, must end with ".sas".
+<p>The way the scripts are delivered, it is a requirement that program
+names starts with "<b>s</b>" or "<b>d</b>" but the Spectre administrator
+is allowed to edit the script to change this to meet your site standards.
+Note that you must not leave old versions of programs around that fit this
+pattern, otherwise these old versions will be run as well. For example,
+suppose you have an old version of the program just mentioned, then do
+not call it <b>s10_acct0_old.sas</b> or this too will be run. Call it <b>s10_acct0.old
+</b>instead
+or use some other way to make sure it does not match the pattern.
+<h2>
+Numbering order</h2>
+The program that creates the cut down "acct" dataset should have the lowest
+number. "10" is recommended. Then it is hoped that all the other programs
+that build derived dataset can have the number "11". It is recommended
+that the number of the program that builds the full "acct" dataset be "20"
+so that it should be named <b>s20_acct.sas</b> . Once the full version
+"acct" dataset is built there will probably be some efficacy program that
+have to be built later that use information in the full "acct" dataset
+that could not be put in the cut down "acct0" dataset so these should have
+the number "21".
+<p>There will often be some dependencies between the derived dataset build
+programs. To give an example, it may be a requirement to include the dose
+a patient was on for the onset of every AE (Adverse Event). So the "dose"
+dataset program has to come before the "adv" (adverse event) dataset program.
+So if the dose program is named <b>s11_dose.sas</b> then the adverse event
+dataset program should be called <b>s12_adv.sas</b> (assuming the dataset
+is named "adv").
+<p>From time to time, programs will have to be renamed where more dependencies
+are found. This can get out of control, with numbers going higher and higher,
+unless two rules are followed. These are:
+<blockquote>
+<ul>
+<li>
+<b>No derived dataset is allowed to contain fields that are in the full
+"acct" dataset that are not in the cut down "acct0" dataset. This is only
+allowed for efficacy datasets.</b></li>
+
+<li>
+<b>You should use the lowest number you can, within the constraints of
+the numbering system.</b></li>
+</ul>
+</blockquote>
+The Spectre administrator is also aware of these rules and will make checks
+on your program names.
+<h2>
+derorder</h2>
+The script that will be called to identify all the programs to be run and
+the order to run them in is called "<b>derorder</b>". You can call this
+script to give you this list of programs. It will just display the list
+- it will not run any programs. You call it like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>derorder</tt></td>
+</tr>
+</table>
+
+<p>You can use this script to ensure that all the programs you want to
+run will be run and those you do not want to run will be left out. You
+will see the order in which your programs will be run.
+<h2>
+Conclusion</h2>
+You will see that the only help the reporting system gives you in the area
+of building the derived datasets is the script "derorder" which tells you
+all the derived dataset programs that match the pattern it has found and
+the order in which they will run. The rest of the work you must do yourself
+to ensure the reporting system will run the programs in the correct order.
+<br>&nbsp;
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><!-- Start of StatCounter Code --> 
+<script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a> 
+</noscript> 
+<!-- End of StatCounter Code -->
+
+</body>
+</html>

@@ -1,0 +1,107 @@
+#!/bin/bash
+#<pre><b>
+# Script     : ohdr
+# Version    : 2.1
+# Author     : Roland Rashleigh-Berry
+# Date       : 04-Mar-2007
+# Purpose    : To create an old-style standard SAS program header
+# SubScripts : getname getfields
+# Notes      : This shell script generates a SAS program header for a sas
+#              program in the current directory and places it at the top of the
+#              code if the program exists. If invoked without a following
+#              program name then the user will be prompted to enter the name.
+#              The drug, protocol and increment will be added to the header
+#              using details taken from the current directory.
+# Usage      : ohdr
+#              ohdr progname
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   program name (optional)
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  18Feb07         Now uses fields 5, 6, 7, 8, 9
+# rrb  04Mar07         "getfields" script used
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# prompt for program name if not supplied
+if [ $# -lt 1 ]
+then
+  echo -n "Enter program name: "
+  read progname
+else
+  progname=$1
+fi
+
+# put the ".sas" at the end of the sas program name if it isn't there
+progname=`echo $progname | awk -F. '{print $1 ".sas"}'`
+
+# prompt for program purpose
+echo -n "Enter program purpose: "
+read purpose
+
+# use the getname script to find out the name of the user
+author=`getname`
+
+# format today's date in DD-Mon-YYYY form
+date=`date '+%d-%b-%Y'`
+
+# strip out information returned by the "getfields" script
+client=$(getfields | cut -d/ -f1)
+office=$(getfields | cut -d/ -f2)
+drug=$(getfields | cut -d/ -f3)
+study=$(getfields | cut -d/ -f4)
+inc=$(getfields | cut -d/ -f5)
+
+# route all following standard output to a file
+exec 1>$HOME/hdr.tmp
+
+echo   "/************************************************************************/"
+echo   "/*                                                                      */"
+printf "/* CLIENT:          %-50s  */\n" $client
+echo   "/*                                                                      */"
+printf "/* OFFICE:          %-50s  */\n" $office
+echo   "/*                                                                      */"
+printf "/* DRUG:            %-50s  */\n" $drug
+echo   "/*                                                                      */"
+printf "/* STUDY:           %-50s  */\n" $study
+echo   "/*                                                                      */"
+printf "/* INC:             %-50s  */\n" $inc
+echo   "/*                                                                      */"
+printf "/* PROGRAM:         %-50s  */\n" $progname
+echo   "/*                                                                      */"
+printf "/* DESCRIPTION:     %-50s  */\n" "$purpose"
+echo   "/* DESCRIPTION:                                                         */"
+echo   "/*                                                                      */"
+echo   "/* INPUT DATASETS:                                                      */"
+echo   "/*                                                                      */"
+echo   "/* OUTPUT DATASETS:                                                     */"
+echo   "/*                                                                      */"
+printf "/* WRITTEN BY:      %-30s   Date: %-9s  */\n" "$author" $date
+echo   "/*                                                                      */"
+echo   "/* VALIDATED BY:                                     Date:              */"
+echo   "/*                                                                      */"
+echo   "/* MODIFIED BY:                                      Date:              */"
+echo   "/*                                                                      */"
+echo   "/************************************************************************/"
+echo
+
+# restore standard output to the terminal
+exec 1>/dev/tty
+
+if [ -f $progname ]
+then
+  cat $HOME/hdr.tmp $progname > $HOME/hdr2.tmp
+  rm -f $progname
+  cat $HOME/hdr2.tmp > $progname
+  rm -f $HOME/hdr2.tmp
+else
+  cat $HOME/hdr.tmp > $progname
+  echo "created $progname"
+fi
+
+rm -f $HOME/hdr.tmp

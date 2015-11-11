@@ -1,0 +1,44 @@
+#!/bin/bash
+#<pre><b>
+# Script     : numtest
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 09-Feb-2004
+# Purpose    : Test a string for being an valid integer or decimal number
+# SubScripts : none
+# Notes      : A decimal number may start with a "." but must not end with one.
+#              A negative sign (but not a plus sign) is allowed in front of a 
+#              valid number. A zero value is regarded as a valid numeric.
+#
+#              The exit code will be 0 if numeric, 1 if null and 2 if 
+#              non-numeric or more than one parameter. Test for the return code
+#              after calling this utility by checking the value of $? after the
+#              call. See usage notes.
+#
+# Usage      : numtest 12a3.45 ; echo $?
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   string to test for being a valid number
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+if [ $# -lt 1 ] ; then 
+  exit 1
+elif [ $# -gt 1 ] ; then
+  exit 2
+fi
+
+res=$(echo ${1} | egrep '^-?[0-9]*[0-9.]?[0-9]+$')
+
+if [ -n "$res" ] ; then
+  exit 0
+else
+  exit 2
+fi

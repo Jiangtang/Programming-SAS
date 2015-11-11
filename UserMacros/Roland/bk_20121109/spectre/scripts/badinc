@@ -1,0 +1,34 @@
+#!/bin/bash
+#<pre><b>
+# Script     : badinc
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 25-Oct-2005
+# Purpose    : To list which SAS programs do not have a correct increment
+#              in the standard header.
+# SubScripts : none
+# Notes      : none
+# Usage      : badinc
+#              
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not supply any parameters
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# No parameters required
+if [ $# -gt 0 ] ; then
+  echo "Usage: badinc # do not supply any parameters" 1>&2
+  exit 1
+fi
+
+inc=$(pwd | awk -F/ '{print $8}')
+
+grep "^/ Increment  *: .* *" *.sas | gawk -F: 'index($3,inc)==0' inc="$inc"

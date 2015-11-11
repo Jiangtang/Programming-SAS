@@ -1,0 +1,191 @@
+#!/bin/bash
+#<pre><b>
+# Script     : a4lsps
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 21-Jun-2004
+# Purpose    : Calculate and display linesize and pagesize values for different 
+#              layouts based on A4 paper and margins.
+# SubScripts : none
+# Notes      : Margin options will default if not set. All margin settings will
+#              be displayed.
+# Usage      : a4lsps -l 1.0 -r 1.0 -t 1.0 -b 1.0
+#===============================================================================
+# OPTIONS:
+#-opt- -------------------------------description-------------------------------
+#  l   (value)  left margin (in)                                  
+#  r   (value)  right margin (in)                                 
+#  t   (value)  top margin (in)                                   
+#  b   (value)  bottom margin (in)                                                                 
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not use parameters
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+
+# Define give-usage-message-then-exit function
+usage () {
+  echo "Usage: a4lsps -l <left margin (in)> -r <right margin (in)>" 1>&2
+  echo "       -t <top margin (in)> -b <bottom margin (in)>" 1>&2
+  exit 1
+}
+
+
+# Defaults
+valuel=1.0                          # Default value for left margin (in)                                  
+valuer=0.75                         # Default value for right margin (in)                                 
+valuet=1.0                          # Default value for top margin (in)                                   
+valueb=1.0                          # Default value for bottom margin (in)                                
+
+
+
+# "case" statement for action to take on selected options
+while getopts "l:r:t:b:" param ; do
+  case $param in
+   "?") # bad option supplied
+        usage
+        ;;
+   "l") # (value) left margin (in)
+        valuel=$OPTARG
+        ;;
+   "r") # (value) right margin (in)
+        valuer=$OPTARG
+        ;;
+   "t") # (value) top margin (in)
+        valuet=$OPTARG
+        ;;
+   "b") # (value) bottom margin (in)
+        valueb=$OPTARG
+        ;;
+  esac
+done
+
+
+
+# shift to bring first parameter to position 1
+shift $(($OPTIND - 1))
+
+
+# No parameters allowed
+if [ $# -gt 0 ] ; then
+  echo "Error: (a4lsps) Do not supply parameters for this script. Use options only." 1>&2
+  usage
+fi
+
+
+# Use gawk to calculate linesize and pagesize.
+# Echo nothing into it so that we can pass parameter values in.
+echo | gawk '
+
+#######################  DEFINE FUNCTIONS  #######################
+
+function initwhra()
+{
+# initialize width and height array in inches
+width["A4P"]=8.2677
+height["A4P"]=11.6929
+width["A4L"]=11.6929
+height["A4L"]=8.2677
+width["LETTERP"]=8.5
+height["LETTERP"]=11
+width["LETTERL"]=11
+height["LETTERL"]=8.5
+}
+
+function setmargins(layout,        holdm1,holmd2)
+{
+left=lmargin
+right=rmargin
+top=tmargin
+bottom=bmargin
+
+# swap round the margins for landscape mode
+if (substr(layout,1,1)=="L")
+  {
+  holdm1=left
+  holdm2=right
+  left=bottom
+  right=top
+  top=holdm1
+  bottom=holdm2
+  }
+}
+
+function lsps(layout,           form, ratio, spacing, pointsz, usewidth,linesize, useheight, pagesize)
+{
+setmargins(layout)
+
+# paper form to match array entries is the paper size followed by the first
+layout letter
+form=paper substr(layout,1,1)
+
+
+# Font width to height ratio is normally 0.6 
+# but is 0.5 for a "condensed" (i.e. narrow) font.
+ratio=0.6
+if (index(layout,"C")>0)
+  ratio=0.5
+
+
+# If using a tight layout format then line spacing is 1.0 times font point size.
+# If standard then the value 1.1 is used. If wide then the value 1.2 is used.
+# Font point size is the number at the end of the layout identifier.
+spacing=1.1
+if (index(layout,"T")>0)  #- tight
+  spacing=1.0
+if (index(layout,"W")>0)  #- wide
+  spacing=1.2
+
+
+# get font point size by removing letters from the layout
+pointsz=layout
+gsub(/[LPCTW]/,"",pointsz)
+
+
+# usable width is the paper width minus left margin minus right margin
+usewidth=width[form]-left-right
+
+
+# maximum characters to fit in usable width
+linesize=int((120.450*0.6*usewidth+0.0001)/(pointsz*(ratio+0)))
+
+
+# usable height is the paper height minus top margin minus bottom margin
+useheight=height[form]-top-bottom
+
+
+# maximum lines to fit in usable height
+pagesize=int((72.27*useheight+0.0001)/(pointsz*spacing))
+
+
+# output the results
+printf "%-6s %-3d %-2d\n", layout, linesize, pagesize
+
+}
+
+
+
+####################  MAIN BLOCK STARTS HERE  ####################
+{
+paper="A4"
+initwhra()
+print paper, "margin settings (inches): -l", lmargin, "-r", rmargin, "-t",
+tmargin, "-b", bmargin
+print "Layout ls  ps"
+print "------ --- --"
+lsps("L10")
+lsps("L9")
+lsps("L8")
+lsps("P10")
+lsps("P9")
+lsps("P8")
+
+}' lmargin="$valuel" rmargin="$valuer" tmargin="$valuet" bmargin="$valueb" 

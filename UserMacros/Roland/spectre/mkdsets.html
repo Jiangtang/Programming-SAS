@@ -1,0 +1,263 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="Creating test datasets for Spectre">
+   <meta name="KeyWords" content="test datasets Spectre">
+   <title>Creating Test Datasets</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Creating Test Datasets</h1></center>
+
+<center>
+<p><br><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 08 Aug 2011)</b></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p>To see a demonstration of the main reporting macros <b>%unistats</b>
+and <b>%npcttab</b> you will need some datasets as input. This section
+gives you the code to create two datasets in your <b>sasuser</b> area for
+use in these demonstrations.
+<p>If you are using a laptop for these demonstrations or your PC at home
+then the following code and all the demonstration code will function using
+<a href="http://support.sas.com/rnd/le/index.html" target="_blank">SAS&reg;
+Learning Edition</a> . You will learn more if you actually submit the code
+and see the results and SAS Learning Edition is an inexpensive and worthwhile
+alternative to owning a full copy of SAS&reg; software.
+<p>Note that at the start of the code, the library containing the macros
+is added to the sasautos search path. I did this because it calls the macro
+%age to calculate age as there is no SAS software function to do this (at
+least not that I know of). What you have to do is to copy and paste the
+code in an interactive SAS software session or run it from batch so that
+it creates two datasets, <b>sasuser.demog</b> and <b>sasuser.adv</b>. These
+will then be the datasets used to demonstrate the functions of the <b>%unistats</b>
+and <b>%npcttab</b> macro in later sections. You will have to amend the
+code so that the macros are in the correct location.
+<p><b>Check your SASUSER library before running this code. If you have
+datasets named DEMOG or ADV in your sasuser library that were not created
+for Spectre testing then BACK THEM UP before running this code as this
+code will overwrite them.</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>/* Makes sasuser.demog and sasuser.adv datasets for testing */</tt>
+<p><tt>options fmtsearch=(sasuser);</tt>
+<p><tt>proc format lib=sasuser;</tt>
+<br><tt>&nbsp; value racecd</tt>
+<br><tt>&nbsp; 1="CAUCASIAN"</tt>
+<br><tt>&nbsp; 2="BLACK"</tt>
+<br><tt>&nbsp; 3="ASIAN"</tt>
+<br><tt>&nbsp; 4="HISPANIC"</tt>
+<br><tt>&nbsp; 5="OTHER"</tt>
+<br><tt>&nbsp; ;</tt>
+<br><tt>&nbsp; value sexcd</tt>
+<br><tt>&nbsp; 1="MALE"</tt>
+<br><tt>&nbsp; 2="FEMALE"</tt>
+<br><tt>&nbsp; ;</tt>
+<br><tt>&nbsp; *- 1 and 2 for male, 3 and 4 for female -;</tt>
+<br><tt>&nbsp; value trtgencd</tt>
+<br><tt>&nbsp; 1="Ambident@(1g/day)"</tt>
+<br><tt>&nbsp; 2="Betamax@(500mg/day)"</tt>
+<br><tt>&nbsp; 3="Ambident@(1g/day)"</tt>
+<br><tt>&nbsp; 4="Betamax@(500mg/day)"</tt>
+<br><tt>&nbsp; ;</tt>
+<br><tt>&nbsp; value trtcd</tt>
+<br><tt>&nbsp; 1="Ambident (1g/day)"</tt>
+<br><tt>&nbsp; 2="Betamax (500mg/day)"</tt>
+<br><tt>&nbsp; 3="No treatment"</tt>
+<br><tt>&nbsp; ;</tt>
+<br><tt>&nbsp; value trtnarr</tt>
+<br><tt>&nbsp; 1="Ambident@(1g/day)"</tt>
+<br><tt>&nbsp; 2="Betamax@(500mg/day)"</tt>
+<br><tt>&nbsp; 3="No@treatment"</tt>
+<br><tt>&nbsp; ;</tt>
+<br><tt>&nbsp; *- 1-9 = Female, 11-19 = Male -;</tt>
+<br><tt>&nbsp; value trtsex</tt>
+<br><tt>&nbsp; 1="Ambident@(1g/day)"</tt>
+<br><tt>&nbsp; 2="Betamax@(500mg/day)"</tt>
+<br><tt>&nbsp; 9="Total"</tt>
+<br><tt>&nbsp; 11="Ambident@(1g/day)"</tt>
+<br><tt>&nbsp; 12="Betamax@(500mg/day)"</tt>
+<br><tt>&nbsp; 19="Total"</tt>
+<br><tt>&nbsp; ;</tt>
+<br><tt>&nbsp; *- 1-9 = study 101+102, 11-19 = study 301+302 -;</tt>
+<br><tt>&nbsp; value trtcdx&nbsp;</tt>
+<br><tt>&nbsp; 1="Placebo"&nbsp;</tt>
+<br><tt>&nbsp; 2="Drug A"&nbsp;</tt>
+<br><tt>&nbsp; 3="Drug B"&nbsp;</tt>
+<br><tt>&nbsp; 9="Total"</tt>
+<br><tt>&nbsp; 11="Placebo"&nbsp;</tt>
+<br><tt>&nbsp; 12="Drug A"&nbsp;</tt>
+<br><tt>&nbsp; 13="Drug B"&nbsp;</tt>
+<br><tt>&nbsp; 19="Total"</tt>
+<br><tt>&nbsp; ;</tt>
+<br><tt>&nbsp; value NY</tt>
+<br><tt>&nbsp; 0="NO"</tt>
+<br><tt>&nbsp; 1="YES"</tt>
+<br><tt>&nbsp; ;</tt>
+<br><tt>&nbsp; value intensity</tt>
+<br><tt>&nbsp; 1="Mild"</tt>
+<br><tt>&nbsp; 2="Moderate"</tt>
+<br><tt>&nbsp; 3="Severe"</tt>
+<br><tt>&nbsp; ;</tt>
+<br><tt>run;</tt>
+<p><tt>data sasuser.demog;</tt>
+<br><tt>&nbsp; informat dob date7.&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; trtcd
+sexcd racecd weight height&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; patno
+invid sitecd fascd comma13.;</tt>
+<br><tt>&nbsp; input patno invid sitecd fascd dob&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; trtcd sexcd racecd weight
+height;</tt>
+<br><tt>&nbsp; age=%age(dob,"01jan2006"d);</tt>
+<p><tt>&nbsp; *- assign a random study treatment arm -;</tt>
+<br><tt>&nbsp; trtcdx=ceil(ranuni(88)*6);</tt>
+<br><tt>&nbsp; if trtcdx>3 then trtcdx=trtcdx+7;</tt>
+<p><tt>&nbsp; *- set up the gender-derived treatment arm -;</tt>
+<br><tt>&nbsp; *- with males shown after females -;</tt>
+<br><tt>&nbsp; trtsex=trtcd;</tt>
+<br><tt>&nbsp; if sexcd=1 then trtsex=trtcd+10;</tt>
+<p><tt>&nbsp; format dob date9. sexcd sexcd. racecd racecd.&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; trtcd trtcd. weight
+height 5.1 age 3.</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; trtsex trtsex.
+trtcdx trtcdx. fascd ny.;</tt>
+<br><tt>&nbsp; label patno="PATIENT NUMBER"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; invid="INVESTIGATOR
+ID"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sitecd="SITE CODE"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fascd="FULL ANALYSIS
+SET (N/Y)"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dob="DATE OF BIRTH"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; trtcd="TREATMENT REGIMEN"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; trtsex="GENDER/TREATMENT
+REGIMEN (1+2 female, 11+12 male)"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sexcd="GENDER CODE"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; racecd="RACE CODE"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; weight="WEIGHT (KG)"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; height="HEIGHT (CM)"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; age="AGE (YEARS)"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+<br><tt>&nbsp; cards;</tt>
+<br><tt>&nbsp; 100 1000 10 1 10oct85 1 1 1 78.1 200</tt>
+<br><tt>&nbsp; 101 1000 10 1 20nov89 2 1 2 65.5 175</tt>
+<br><tt>&nbsp; 102 1000 10 1 10oct75 1 2 1 79.6 212</tt>
+<br><tt>&nbsp; 103 1000 10 0 20nov79 2 2 3 75.3 186</tt>
+<br><tt>&nbsp; 200 2000 20 1 10oct65 1 1 1 78.1 200</tt>
+<br><tt>&nbsp; 201 2000 20 1 20nov69 2 1 3 65.5 175</tt>
+<br><tt>&nbsp; 202 2000 20 1 10oct85 1 2 1 79.6 212</tt>
+<br><tt>&nbsp; 203 2000 20 1 20nov89 2 2 5 75.3 186</tt>
+<br><tt>&nbsp; 300 3000 30 1 10oct75 1 1 2 78.1 200</tt>
+<br><tt>&nbsp; 301 3000 30 1 20nov79 2 2 2 65.5 175</tt>
+<br><tt>&nbsp; 302 3000 30 0 10oct65 1 2 1 79.6 212</tt>
+<br><tt>&nbsp; 303 3000 30 1 20nov69 2 2 3 75.3 186</tt>
+<br><tt>&nbsp; 400 4000 40 1 10oct85 1 2 1 78.1 200</tt>
+<br><tt>&nbsp; 401 4000 40 1 20nov89 2 2 2 65.5 175</tt>
+<br><tt>&nbsp; 402 4000 40 0 10oct75 1 1 1 79.6 212</tt>
+<br><tt>&nbsp; 403 4000 40 1 20may79 2 2 3 75.3 186</tt>
+<br><tt>&nbsp; 404 4000 40 1 18jun70 1 1 3 76.6 190</tt>
+<br><tt>&nbsp; 500 5000 50 1 10oct85 2 1 1 78.1 200</tt>
+<br><tt>&nbsp; 501 5000 50 1 20nov89 1 2 2 65.5 175</tt>
+<br><tt>&nbsp; 502 5000 50 0 10oct75 2 1 1 79.6 212</tt>
+<br><tt>&nbsp; 503 5000 50 1 20may79 1 2 3 75.3 186</tt>
+<br><tt>&nbsp; 901 9000 90 0 13may78 3 2 2 74.5 183</tt>
+<br><tt>&nbsp; ;</tt>
+<br><tt>run;</tt>
+<p><tt>proc print data=sasuser.demog;</tt>
+<br><tt>&nbsp; id patno invid;</tt>
+<br><tt>run;</tt>
+<p><tt>data adv;</tt>
+<br><tt>&nbsp; length amsoc ampt $ 60;</tt>
+<p><tt>&nbsp; amsoc="Gastrointestinal disorders";</tt>
+<br><tt>&nbsp; ampt="Abdominal pain NOS";output;</tt>
+<br><tt>&nbsp; ampt="Constipation";output;</tt>
+<br><tt>&nbsp; ampt="Diarrhoea NOS";output;</tt>
+<br><tt>&nbsp; ampt="Nausea";output;</tt>
+<br><tt>&nbsp; ampt="Vomiting NOS";output;</tt>
+<p><tt>&nbsp; amsoc="General disorders and administration site conditions";</tt>
+<br><tt>&nbsp; ampt="Chest pain";output;</tt>
+<br><tt>&nbsp; ampt="Pain NOS";output;</tt>
+<p><tt>&nbsp; amsoc="Musculoskeletal and connective tissue disorders";</tt>
+<br><tt>&nbsp; ampt="Back pain";output;</tt>
+<br><tt>&nbsp; ampt="Pain in extremity";output;</tt>
+<p><tt>&nbsp; amsoc="Nervous system disorders";</tt>
+<br><tt>&nbsp; ampt="Headache";output;</tt>
+<br><tt>&nbsp; ampt="Tremor";output;</tt>
+<p><tt>&nbsp; amsoc="Psychiatric disorders";</tt>
+<br><tt>&nbsp; ampt="Anxiety";output;</tt>
+<br><tt>&nbsp; ampt="Insomnia";output;</tt>
+<p><tt>&nbsp; amsoc="Respiratory, thoracic and mediastinal disorders";</tt>
+<br><tt>&nbsp; ampt="Cough";output;</tt>
+<br><tt>&nbsp; ampt="Dyspnoea";output;</tt>
+<p><tt>&nbsp; amsoc="Vascular disorders";</tt>
+<br><tt>&nbsp; ampt="Hypertension NOS";output;</tt>
+<br><tt>&nbsp; ampt="Hypotension NOS";output;</tt>
+<br><tt>run;</tt>
+<br>&nbsp;
+<p><tt>data sasuser.adv;</tt>
+<br><tt>&nbsp; do i=1 to nobsdem;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; set sasuser.demog(keep=patno invid fascd) point=i
+nobs=nobsdem;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; do j=5 to ceil(ranuni(111)*30);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; intensity=ceil(ranuni(333)*3);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ptr=ceil(ranuni(222)*nobsadv);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set adv point=ptr nobs=nobsadv;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>&nbsp; stop;</tt>
+<br><tt>&nbsp; drop j;</tt>
+<br><tt>&nbsp; format intensity intensity.;</tt>
+<br><tt>run;</tt>
+<p><tt>proc print data=sasuser.adv;</tt>
+<br><tt>&nbsp; id patno invid;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+<br><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+</html>

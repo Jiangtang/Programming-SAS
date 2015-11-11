@@ -1,0 +1,107 @@
+1.
+#include <iostream.h>
+
+
+#define q = 3
+
+int main()
+
+
+{
+   int n;
+	if  (n < 0) return 0;
+   int f;
+
+   for (n=1; n <= q; n++)
+   {
+      double f = 1;
+   	{f *= n;}
+    }
+
+   cout<< f;
+   char w;
+   cin>>w;
+   return 0;
+}
+
+
+2.
+for (n=1; n <= q; n++)
+{
+double f = 1;
+{f *= n;}
+}
+
+3
+#include <iostream> // let's try to use a compiler from this millenium
+ 
+int main()
+{
+int n, result = 1, value = 3;
+for ( n = 1; n <= value; n++ )
+{
+	 result *= n;
+}
+std::cout << value << "! = " << result << std::endl;
+std::cin.get(); // pause ???
+return 0;
+}
+ 
+/* my output
+3! = 6
+*/
+
+4
+for (n=1; n <= q; n++)
+{
+double f = 1;
+{f *= n;}
+}
+
+5
+#include <iostream> // let's try to use a compiler from this millenium
+ 
+int main()
+{
+int n, result = 1, value = 3;
+for ( n = 1; n <= value; n++ )
+{
+	 result *= n;
+}
+std::cout << value << "! = " << result << std::endl;
+std::cin.get(); // pause ???
+return 0;
+}
+ 
+/* my output
+3! = 6
+*/
+
+6.
+int main()
+{
+int num;
+do{
+cout << "Enter a number between 1 and 10";
+cin>>num;
+}while( num < 1 || num > 10 ); /* ask some more if we dont get something between 1 and 10 */
+double factorial( num );
+for( int n(num-1) ; n > 0 ; factorial *= n, --n); /* demonstration of how the for loop can be extremely useful */
+cout << "The factorial of "<< num << " is "<< factorial << endl;
+}
+
+7.
+nt numbers[50];//setup array
+numbers[0]=1; //factorial of 0 is 1
+int factorial = 0;//initialize your factorial
+
+//loop will multiply all the numbers in the array
+for (int i = 1; i < 50; i ++){
+    factorial = numbers[i] * numbers[i -1];
+
+}
+
+cout <<"\nFactorial is: "<< factorial << endl;
+
+8
+

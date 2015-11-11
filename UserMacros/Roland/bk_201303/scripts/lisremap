@@ -1,0 +1,64 @@
+#!/bin/bash
+#<pre><b>
+# Script     : lisremap
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 20-Jul-2007
+# Purpose    : Production script to list all the outputs file names that have
+#              been remapped in a .titles "lisfile:" line (uses SAS).
+# SubScripts : lisremap_win
+# SubMacros  : %allocr
+# Notes      : Output will be in program, label order
+# Usage      : lisremap
+#
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not supply any parameters
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# No parameters required
+if [ $# -gt 0 ] ; then
+  echo "Error: (lisremap) Do not supply any parameters" 1>&2
+  exit 2
+fi
+
+# if a Windows config then call lisremap_win and exit on return
+if [ -n "$CYGWIN" ] ; then
+  lisremap_win
+  exit $?
+fi
+
+# Feed SAS code into standard input
+sas -stdio -sasuser work 2>/dev/null << -----FINISH-----
+%allocr
+options validvarname=v7 nofmterr noovp nodate nonumber;
+data _titles;
+  length lisfile $ 38;
+  set &_ptlibref_..titles(where=(type='T' and number=1));
+  if lisfile ne " ";
+run;
+proc sort data=_titles;
+   by program label;
+run;
+data _null_;
+  length templis $ 38;
+  file stdout;
+  set _titles;
+  if _n_=1 then do;
+    put " ";
+    put @1 "The following outputs have been mapped to different";
+    put @1 'output file names using "lisfile:" .titles entries.';
+    put @1 "===================================================";
+  end;
+  templis=trim(program)||".lis"||left(label);
+  put @1 templis " ----> " lisfile;
+run;
+-----FINISH-----

@@ -1,0 +1,725 @@
+Loop $i= 24
+Loop $j= 1
+$city[$j]= Fort Bragg $city[$jplus1]=Elon
+Swapping Fort Bragg and Elon
+Loop $j= 2
+$city[$j]= Fort Bragg $city[$jplus1]=Kannapolis
+Loop $j= 3
+$city[$j]= Kannapolis $city[$jplus1]=Durham
+Swapping Kannapolis and Durham
+Loop $j= 4
+$city[$j]= Kannapolis $city[$jplus1]=Ocracoke
+Loop $j= 5
+$city[$j]= Ocracoke $city[$jplus1]=Icard
+Swapping Ocracoke and Icard
+Loop $j= 6
+$city[$j]= Ocracoke $city[$jplus1]=Statesville
+Loop $j= 7
+$city[$j]= Statesville $city[$jplus1]=Valdese
+Loop $j= 8
+$city[$j]= Valdese $city[$jplus1]=Wrightsville Beach
+Loop $j= 9
+$city[$j]= Wrightsville Beach $city[$jplus1]=Lenoir
+Swapping Wrightsville Beach and Lenoir
+Loop $j= 10
+$city[$j]= Wrightsville Beach $city[$jplus1]=Yadkinville
+Loop $j= 11
+$city[$j]= Yadkinville $city[$jplus1]=Burlington
+Swapping Yadkinville and Burlington
+Loop $j= 12
+$city[$j]= Yadkinville $city[$jplus1]=Ahoskie
+Swapping Yadkinville and Ahoskie
+Loop $j= 13
+$city[$j]= Yadkinville $city[$jplus1]=Charlotte
+Swapping Yadkinville and Charlotte
+Loop $j= 14
+$city[$j]= Yadkinville $city[$jplus1]=Zebulon
+Loop $j= 15
+$city[$j]= Zebulon $city[$jplus1]=Union Grove
+Swapping Zebulon and Union Grove
+Loop $j= 16
+$city[$j]= Zebulon $city[$jplus1]=Rodanthe
+Swapping Zebulon and Rodanthe
+Loop $j= 17
+$city[$j]= Zebulon $city[$jplus1]=Greensboro
+Swapping Zebulon and Greensboro
+Loop $j= 18
+$city[$j]= Zebulon $city[$jplus1]=Tarboro
+Swapping Zebulon and Tarboro
+Loop $j= 19
+$city[$j]= Zebulon $city[$jplus1]=Newton
+Swapping Zebulon and Newton
+Loop $j= 20
+$city[$j]= Zebulon $city[$jplus1]=Hickory
+Swapping Zebulon and Hickory
+Loop $j= 21
+$city[$j]= Zebulon $city[$jplus1]=Pittsboro
+Swapping Zebulon and Pittsboro
+Loop $j= 22
+$city[$j]= Zebulon $city[$jplus1]=Mocksville
+Swapping Zebulon and Mocksville
+Loop $j= 23
+$city[$j]= Zebulon $city[$jplus1]=Jonas Ridge
+Swapping Zebulon and Jonas Ridge
+Loop $i= 23
+Loop $j= 1
+$city[$j]= Elon $city[$jplus1]=Fort Bragg
+Loop $j= 2
+$city[$j]= Fort Bragg $city[$jplus1]=Durham
+Swapping Fort Bragg and Durham
+Loop $j= 3
+$city[$j]= Fort Bragg $city[$jplus1]=Kannapolis
+Loop $j= 4
+$city[$j]= Kannapolis $city[$jplus1]=Icard
+Swapping Kannapolis and Icard
+Loop $j= 5
+$city[$j]= Kannapolis $city[$jplus1]=Ocracoke
+Loop $j= 6
+$city[$j]= Ocracoke $city[$jplus1]=Statesville
+Loop $j= 7
+$city[$j]= Statesville $city[$jplus1]=Valdese
+Loop $j= 8
+$city[$j]= Valdese $city[$jplus1]=Lenoir
+Swapping Valdese and Lenoir
+Loop $j= 9
+$city[$j]= Valdese $city[$jplus1]=Wrightsville Beach
+Loop $j= 10
+$city[$j]= Wrightsville Beach $city[$jplus1]=Burlington
+Swapping Wrightsville Beach and Burlington
+Loop $j= 11
+$city[$j]= Wrightsville Beach $city[$jplus1]=Ahoskie
+Swapping Wrightsville Beach and Ahoskie
+Loop $j= 12
+$city[$j]= Wrightsville Beach $city[$jplus1]=Charlotte
+Swapping Wrightsville Beach and Charlotte
+Loop $j= 13
+$city[$j]= Wrightsville Beach $city[$jplus1]=Yadkinville
+Loop $j= 14
+$city[$j]= Yadkinville $city[$jplus1]=Union Grove
+Swapping Yadkinville and Union Grove
+Loop $j= 15
+$city[$j]= Yadkinville $city[$jplus1]=Rodanthe
+Swapping Yadkinville and Rodanthe
+Loop $j= 16
+$city[$j]= Yadkinville $city[$jplus1]=Greensboro
+Swapping Yadkinville and Greensboro
+Loop $j= 17
+$city[$j]= Yadkinville $city[$jplus1]=Tarboro
+Swapping Yadkinville and Tarboro
+Loop $j= 18
+$city[$j]= Yadkinville $city[$jplus1]=Newton
+Swapping Yadkinville and Newton
+Loop $j= 19
+$city[$j]= Yadkinville $city[$jplus1]=Hickory
+Swapping Yadkinville and Hickory
+Loop $j= 20
+$city[$j]= Yadkinville $city[$jplus1]=Pittsboro
+Swapping Yadkinville and Pittsboro
+Loop $j= 21
+$city[$j]= Yadkinville $city[$jplus1]=Mocksville
+Swapping Yadkinville and Mocksville
+Loop $j= 22
+$city[$j]= Yadkinville $city[$jplus1]=Jonas Ridge
+Swapping Yadkinville and Jonas Ridge
+Loop $i= 22
+Loop $j= 1
+$city[$j]= Elon $city[$jplus1]=Durham
+Swapping Elon and Durham
+Loop $j= 2
+$city[$j]= Elon $city[$jplus1]=Fort Bragg
+Loop $j= 3
+$city[$j]= Fort Bragg $city[$jplus1]=Icard
+Loop $j= 4
+$city[$j]= Icard $city[$jplus1]=Kannapolis
+Loop $j= 5
+$city[$j]= Kannapolis $city[$jplus1]=Ocracoke
+Loop $j= 6
+$city[$j]= Ocracoke $city[$jplus1]=Statesville
+Loop $j= 7
+$city[$j]= Statesville $city[$jplus1]=Lenoir
+Swapping Statesville and Lenoir
+Loop $j= 8
+$city[$j]= Statesville $city[$jplus1]=Valdese
+Loop $j= 9
+$city[$j]= Valdese $city[$jplus1]=Burlington
+Swapping Valdese and Burlington
+Loop $j= 10
+$city[$j]= Valdese $city[$jplus1]=Ahoskie
+Swapping Valdese and Ahoskie
+Loop $j= 11
+$city[$j]= Valdese $city[$jplus1]=Charlotte
+Swapping Valdese and Charlotte
+Loop $j= 12
+$city[$j]= Valdese $city[$jplus1]=Wrightsville Beach
+Loop $j= 13
+$city[$j]= Wrightsville Beach $city[$jplus1]=Union Grove
+Swapping Wrightsville Beach and Union Grove
+Loop $j= 14
+$city[$j]= Wrightsville Beach $city[$jplus1]=Rodanthe
+Swapping Wrightsville Beach and Rodanthe
+Loop $j= 15
+$city[$j]= Wrightsville Beach $city[$jplus1]=Greensboro
+Swapping Wrightsville Beach and Greensboro
+Loop $j= 16
+$city[$j]= Wrightsville Beach $city[$jplus1]=Tarboro
+Swapping Wrightsville Beach and Tarboro
+Loop $j= 17
+$city[$j]= Wrightsville Beach $city[$jplus1]=Newton
+Swapping Wrightsville Beach and Newton
+Loop $j= 18
+$city[$j]= Wrightsville Beach $city[$jplus1]=Hickory
+Swapping Wrightsville Beach and Hickory
+Loop $j= 19
+$city[$j]= Wrightsville Beach $city[$jplus1]=Pittsboro
+Swapping Wrightsville Beach and Pittsboro
+Loop $j= 20
+$city[$j]= Wrightsville Beach $city[$jplus1]=Mocksville
+Swapping Wrightsville Beach and Mocksville
+Loop $j= 21
+$city[$j]= Wrightsville Beach $city[$jplus1]=Jonas Ridge
+Swapping Wrightsville Beach and Jonas Ridge
+Loop $i= 21
+Loop $j= 1
+$city[$j]= Durham $city[$jplus1]=Elon
+Loop $j= 2
+$city[$j]= Elon $city[$jplus1]=Fort Bragg
+Loop $j= 3
+$city[$j]= Fort Bragg $city[$jplus1]=Icard
+Loop $j= 4
+$city[$j]= Icard $city[$jplus1]=Kannapolis
+Loop $j= 5
+$city[$j]= Kannapolis $city[$jplus1]=Ocracoke
+Loop $j= 6
+$city[$j]= Ocracoke $city[$jplus1]=Lenoir
+Swapping Ocracoke and Lenoir
+Loop $j= 7
+$city[$j]= Ocracoke $city[$jplus1]=Statesville
+Loop $j= 8
+$city[$j]= Statesville $city[$jplus1]=Burlington
+Swapping Statesville and Burlington
+Loop $j= 9
+$city[$j]= Statesville $city[$jplus1]=Ahoskie
+Swapping Statesville and Ahoskie
+Loop $j= 10
+$city[$j]= Statesville $city[$jplus1]=Charlotte
+Swapping Statesville and Charlotte
+Loop $j= 11
+$city[$j]= Statesville $city[$jplus1]=Valdese
+Loop $j= 12
+$city[$j]= Valdese $city[$jplus1]=Union Grove
+Swapping Valdese and Union Grove
+Loop $j= 13
+$city[$j]= Valdese $city[$jplus1]=Rodanthe
+Swapping Valdese and Rodanthe
+Loop $j= 14
+$city[$j]= Valdese $city[$jplus1]=Greensboro
+Swapping Valdese and Greensboro
+Loop $j= 15
+$city[$j]= Valdese $city[$jplus1]=Tarboro
+Swapping Valdese and Tarboro
+Loop $j= 16
+$city[$j]= Valdese $city[$jplus1]=Newton
+Swapping Valdese and Newton
+Loop $j= 17
+$city[$j]= Valdese $city[$jplus1]=Hickory
+Swapping Valdese and Hickory
+Loop $j= 18
+$city[$j]= Valdese $city[$jplus1]=Pittsboro
+Swapping Valdese and Pittsboro
+Loop $j= 19
+$city[$j]= Valdese $city[$jplus1]=Mocksville
+Swapping Valdese and Mocksville
+Loop $j= 20
+$city[$j]= Valdese $city[$jplus1]=Jonas Ridge
+Swapping Valdese and Jonas Ridge
+Loop $i= 20
+Loop $j= 1
+$city[$j]= Durham $city[$jplus1]=Elon
+Loop $j= 2
+$city[$j]= Elon $city[$jplus1]=Fort Bragg
+Loop $j= 3
+$city[$j]= Fort Bragg $city[$jplus1]=Icard
+Loop $j= 4
+$city[$j]= Icard $city[$jplus1]=Kannapolis
+Loop $j= 5
+$city[$j]= Kannapolis $city[$jplus1]=Lenoir
+Loop $j= 6
+$city[$j]= Lenoir $city[$jplus1]=Ocracoke
+Loop $j= 7
+$city[$j]= Ocracoke $city[$jplus1]=Burlington
+Swapping Ocracoke and Burlington
+Loop $j= 8
+$city[$j]= Ocracoke $city[$jplus1]=Ahoskie
+Swapping Ocracoke and Ahoskie
+Loop $j= 9
+$city[$j]= Ocracoke $city[$jplus1]=Charlotte
+Swapping Ocracoke and Charlotte
+Loop $j= 10
+$city[$j]= Ocracoke $city[$jplus1]=Statesville
+Loop $j= 11
+$city[$j]= Statesville $city[$jplus1]=Union Grove
+Loop $j= 12
+$city[$j]= Union Grove $city[$jplus1]=Rodanthe
+Swapping Union Grove and Rodanthe
+Loop $j= 13
+$city[$j]= Union Grove $city[$jplus1]=Greensboro
+Swapping Union Grove and Greensboro
+Loop $j= 14
+$city[$j]= Union Grove $city[$jplus1]=Tarboro
+Swapping Union Grove and Tarboro
+Loop $j= 15
+$city[$j]= Union Grove $city[$jplus1]=Newton
+Swapping Union Grove and Newton
+Loop $j= 16
+$city[$j]= Union Grove $city[$jplus1]=Hickory
+Swapping Union Grove and Hickory
+Loop $j= 17
+$city[$j]= Union Grove $city[$jplus1]=Pittsboro
+Swapping Union Grove and Pittsboro
+Loop $j= 18
+$city[$j]= Union Grove $city[$jplus1]=Mocksville
+Swapping Union Grove and Mocksville
+Loop $j= 19
+$city[$j]= Union Grove $city[$jplus1]=Jonas Ridge
+Swapping Union Grove and Jonas Ridge
+Loop $i= 19
+Loop $j= 1
+$city[$j]= Durham $city[$jplus1]=Elon
+Loop $j= 2
+$city[$j]= Elon $city[$jplus1]=Fort Bragg
+Loop $j= 3
+$city[$j]= Fort Bragg $city[$jplus1]=Icard
+Loop $j= 4
+$city[$j]= Icard $city[$jplus1]=Kannapolis
+Loop $j= 5
+$city[$j]= Kannapolis $city[$jplus1]=Lenoir
+Loop $j= 6
+$city[$j]= Lenoir $city[$jplus1]=Burlington
+Swapping Lenoir and Burlington
+Loop $j= 7
+$city[$j]= Lenoir $city[$jplus1]=Ahoskie
+Swapping Lenoir and Ahoskie
+Loop $j= 8
+$city[$j]= Lenoir $city[$jplus1]=Charlotte
+Swapping Lenoir and Charlotte
+Loop $j= 9
+$city[$j]= Lenoir $city[$jplus1]=Ocracoke
+Loop $j= 10
+$city[$j]= Ocracoke $city[$jplus1]=Statesville
+Loop $j= 11
+$city[$j]= Statesville $city[$jplus1]=Rodanthe
+Swapping Statesville and Rodanthe
+Loop $j= 12
+$city[$j]= Statesville $city[$jplus1]=Greensboro
+Swapping Statesville and Greensboro
+Loop $j= 13
+$city[$j]= Statesville $city[$jplus1]=Tarboro
+Loop $j= 14
+$city[$j]= Tarboro $city[$jplus1]=Newton
+Swapping Tarboro and Newton
+Loop $j= 15
+$city[$j]= Tarboro $city[$jplus1]=Hickory
+Swapping Tarboro and Hickory
+Loop $j= 16
+$city[$j]= Tarboro $city[$jplus1]=Pittsboro
+Swapping Tarboro and Pittsboro
+Loop $j= 17
+$city[$j]= Tarboro $city[$jplus1]=Mocksville
+Swapping Tarboro and Mocksville
+Loop $j= 18
+$city[$j]= Tarboro $city[$jplus1]=Jonas Ridge
+Swapping Tarboro and Jonas Ridge
+Loop $i= 18
+Loop $j= 1
+$city[$j]= Durham $city[$jplus1]=Elon
+Loop $j= 2
+$city[$j]= Elon $city[$jplus1]=Fort Bragg
+Loop $j= 3
+$city[$j]= Fort Bragg $city[$jplus1]=Icard
+Loop $j= 4
+$city[$j]= Icard $city[$jplus1]=Kannapolis
+Loop $j= 5
+$city[$j]= Kannapolis $city[$jplus1]=Burlington
+Swapping Kannapolis and Burlington
+Loop $j= 6
+$city[$j]= Kannapolis $city[$jplus1]=Ahoskie
+Swapping Kannapolis and Ahoskie
+Loop $j= 7
+$city[$j]= Kannapolis $city[$jplus1]=Charlotte
+Swapping Kannapolis and Charlotte
+Loop $j= 8
+$city[$j]= Kannapolis $city[$jplus1]=Lenoir
+Loop $j= 9
+$city[$j]= Lenoir $city[$jplus1]=Ocracoke
+Loop $j= 10
+$city[$j]= Ocracoke $city[$jplus1]=Rodanthe
+Loop $j= 11
+$city[$j]= Rodanthe $city[$jplus1]=Greensboro
+Swapping Rodanthe and Greensboro
+Loop $j= 12
+$city[$j]= Rodanthe $city[$jplus1]=Statesville
+Loop $j= 13
+$city[$j]= Statesville $city[$jplus1]=Newton
+Swapping Statesville and Newton
+Loop $j= 14
+$city[$j]= Statesville $city[$jplus1]=Hickory
+Swapping Statesville and Hickory
+Loop $j= 15
+$city[$j]= Statesville $city[$jplus1]=Pittsboro
+Swapping Statesville and Pittsboro
+Loop $j= 16
+$city[$j]= Statesville $city[$jplus1]=Mocksville
+Swapping Statesville and Mocksville
+Loop $j= 17
+$city[$j]= Statesville $city[$jplus1]=Jonas Ridge
+Swapping Statesville and Jonas Ridge
+Loop $i= 17
+Loop $j= 1
+$city[$j]= Durham $city[$jplus1]=Elon
+Loop $j= 2
+$city[$j]= Elon $city[$jplus1]=Fort Bragg
+Loop $j= 3
+$city[$j]= Fort Bragg $city[$jplus1]=Icard
+Loop $j= 4
+$city[$j]= Icard $city[$jplus1]=Burlington
+Swapping Icard and Burlington
+Loop $j= 5
+$city[$j]= Icard $city[$jplus1]=Ahoskie
+Swapping Icard and Ahoskie
+Loop $j= 6
+$city[$j]= Icard $city[$jplus1]=Charlotte
+Swapping Icard and Charlotte
+Loop $j= 7
+$city[$j]= Icard $city[$jplus1]=Kannapolis
+Loop $j= 8
+$city[$j]= Kannapolis $city[$jplus1]=Lenoir
+Loop $j= 9
+$city[$j]= Lenoir $city[$jplus1]=Ocracoke
+Loop $j= 10
+$city[$j]= Ocracoke $city[$jplus1]=Greensboro
+Swapping Ocracoke and Greensboro
+Loop $j= 11
+$city[$j]= Ocracoke $city[$jplus1]=Rodanthe
+Loop $j= 12
+$city[$j]= Rodanthe $city[$jplus1]=Newton
+Swapping Rodanthe and Newton
+Loop $j= 13
+$city[$j]= Rodanthe $city[$jplus1]=Hickory
+Swapping Rodanthe and Hickory
+Loop $j= 14
+$city[$j]= Rodanthe $city[$jplus1]=Pittsboro
+Swapping Rodanthe and Pittsboro
+Loop $j= 15
+$city[$j]= Rodanthe $city[$jplus1]=Mocksville
+Swapping Rodanthe and Mocksville
+Loop $j= 16
+$city[$j]= Rodanthe $city[$jplus1]=Jonas Ridge
+Swapping Rodanthe and Jonas Ridge
+Loop $i= 16
+Loop $j= 1
+$city[$j]= Durham $city[$jplus1]=Elon
+Loop $j= 2
+$city[$j]= Elon $city[$jplus1]=Fort Bragg
+Loop $j= 3
+$city[$j]= Fort Bragg $city[$jplus1]=Burlington
+Swapping Fort Bragg and Burlington
+Loop $j= 4
+$city[$j]= Fort Bragg $city[$jplus1]=Ahoskie
+Swapping Fort Bragg and Ahoskie
+Loop $j= 5
+$city[$j]= Fort Bragg $city[$jplus1]=Charlotte
+Swapping Fort Bragg and Charlotte
+Loop $j= 6
+$city[$j]= Fort Bragg $city[$jplus1]=Icard
+Loop $j= 7
+$city[$j]= Icard $city[$jplus1]=Kannapolis
+Loop $j= 8
+$city[$j]= Kannapolis $city[$jplus1]=Lenoir
+Loop $j= 9
+$city[$j]= Lenoir $city[$jplus1]=Greensboro
+Swapping Lenoir and Greensboro
+Loop $j= 10
+$city[$j]= Lenoir $city[$jplus1]=Ocracoke
+Loop $j= 11
+$city[$j]= Ocracoke $city[$jplus1]=Newton
+Swapping Ocracoke and Newton
+Loop $j= 12
+$city[$j]= Ocracoke $city[$jplus1]=Hickory
+Swapping Ocracoke and Hickory
+Loop $j= 13
+$city[$j]= Ocracoke $city[$jplus1]=Pittsboro
+Loop $j= 14
+$city[$j]= Pittsboro $city[$jplus1]=Mocksville
+Swapping Pittsboro and Mocksville
+Loop $j= 15
+$city[$j]= Pittsboro $city[$jplus1]=Jonas Ridge
+Swapping Pittsboro and Jonas Ridge
+Loop $i= 15
+Loop $j= 1
+$city[$j]= Durham $city[$jplus1]=Elon
+Loop $j= 2
+$city[$j]= Elon $city[$jplus1]=Burlington
+Swapping Elon and Burlington
+Loop $j= 3
+$city[$j]= Elon $city[$jplus1]=Ahoskie
+Swapping Elon and Ahoskie
+Loop $j= 4
+$city[$j]= Elon $city[$jplus1]=Charlotte
+Swapping Elon and Charlotte
+Loop $j= 5
+$city[$j]= Elon $city[$jplus1]=Fort Bragg
+Loop $j= 6
+$city[$j]= Fort Bragg $city[$jplus1]=Icard
+Loop $j= 7
+$city[$j]= Icard $city[$jplus1]=Kannapolis
+Loop $j= 8
+$city[$j]= Kannapolis $city[$jplus1]=Greensboro
+Swapping Kannapolis and Greensboro
+Loop $j= 9
+$city[$j]= Kannapolis $city[$jplus1]=Lenoir
+Loop $j= 10
+$city[$j]= Lenoir $city[$jplus1]=Newton
+Loop $j= 11
+$city[$j]= Newton $city[$jplus1]=Hickory
+Swapping Newton and Hickory
+Loop $j= 12
+$city[$j]= Newton $city[$jplus1]=Ocracoke
+Loop $j= 13
+$city[$j]= Ocracoke $city[$jplus1]=Mocksville
+Swapping Ocracoke and Mocksville
+Loop $j= 14
+$city[$j]= Ocracoke $city[$jplus1]=Jonas Ridge
+Swapping Ocracoke and Jonas Ridge
+Loop $i= 14
+Loop $j= 1
+$city[$j]= Durham $city[$jplus1]=Burlington
+Swapping Durham and Burlington
+Loop $j= 2
+$city[$j]= Durham $city[$jplus1]=Ahoskie
+Swapping Durham and Ahoskie
+Loop $j= 3
+$city[$j]= Durham $city[$jplus1]=Charlotte
+Swapping Durham and Charlotte
+Loop $j= 4
+$city[$j]= Durham $city[$jplus1]=Elon
+Loop $j= 5
+$city[$j]= Elon $city[$jplus1]=Fort Bragg
+Loop $j= 6
+$city[$j]= Fort Bragg $city[$jplus1]=Icard
+Loop $j= 7
+$city[$j]= Icard $city[$jplus1]=Greensboro
+Swapping Icard and Greensboro
+Loop $j= 8
+$city[$j]= Icard $city[$jplus1]=Kannapolis
+Loop $j= 9
+$city[$j]= Kannapolis $city[$jplus1]=Lenoir
+Loop $j= 10
+$city[$j]= Lenoir $city[$jplus1]=Hickory
+Swapping Lenoir and Hickory
+Loop $j= 11
+$city[$j]= Lenoir $city[$jplus1]=Newton
+Loop $j= 12
+$city[$j]= Newton $city[$jplus1]=Mocksville
+Swapping Newton and Mocksville
+Loop $j= 13
+$city[$j]= Newton $city[$jplus1]=Jonas Ridge
+Swapping Newton and Jonas Ridge
+Loop $i= 13
+Loop $j= 1
+$city[$j]= Burlington $city[$jplus1]=Ahoskie
+Swapping Burlington and Ahoskie
+Loop $j= 2
+$city[$j]= Burlington $city[$jplus1]=Charlotte
+Loop $j= 3
+$city[$j]= Charlotte $city[$jplus1]=Durham
+Loop $j= 4
+$city[$j]= Durham $city[$jplus1]=Elon
+Loop $j= 5
+$city[$j]= Elon $city[$jplus1]=Fort Bragg
+Loop $j= 6
+$city[$j]= Fort Bragg $city[$jplus1]=Greensboro
+Loop $j= 7
+$city[$j]= Greensboro $city[$jplus1]=Icard
+Loop $j= 8
+$city[$j]= Icard $city[$jplus1]=Kannapolis
+Loop $j= 9
+$city[$j]= Kannapolis $city[$jplus1]=Hickory
+Swapping Kannapolis and Hickory
+Loop $j= 10
+$city[$j]= Kannapolis $city[$jplus1]=Lenoir
+Loop $j= 11
+$city[$j]= Lenoir $city[$jplus1]=Mocksville
+Loop $j= 12
+$city[$j]= Mocksville $city[$jplus1]=Jonas Ridge
+Swapping Mocksville and Jonas Ridge
+Loop $i= 12
+Loop $j= 1
+$city[$j]= Ahoskie $city[$jplus1]=Burlington
+Loop $j= 2
+$city[$j]= Burlington $city[$jplus1]=Charlotte
+Loop $j= 3
+$city[$j]= Charlotte $city[$jplus1]=Durham
+Loop $j= 4
+$city[$j]= Durham $city[$jplus1]=Elon
+Loop $j= 5
+$city[$j]= Elon $city[$jplus1]=Fort Bragg
+Loop $j= 6
+$city[$j]= Fort Bragg $city[$jplus1]=Greensboro
+Loop $j= 7
+$city[$j]= Greensboro $city[$jplus1]=Icard
+Loop $j= 8
+$city[$j]= Icard $city[$jplus1]=Hickory
+Swapping Icard and Hickory
+Loop $j= 9
+$city[$j]= Icard $city[$jplus1]=Kannapolis
+Loop $j= 10
+$city[$j]= Kannapolis $city[$jplus1]=Lenoir
+Loop $j= 11
+$city[$j]= Lenoir $city[$jplus1]=Jonas Ridge
+Swapping Lenoir and Jonas Ridge
+Loop $i= 11
+Loop $j= 1
+$city[$j]= Ahoskie $city[$jplus1]=Burlington
+Loop $j= 2
+$city[$j]= Burlington $city[$jplus1]=Charlotte
+Loop $j= 3
+$city[$j]= Charlotte $city[$jplus1]=Durham
+Loop $j= 4
+$city[$j]= Durham $city[$jplus1]=Elon
+Loop $j= 5
+$city[$j]= Elon $city[$jplus1]=Fort Bragg
+Loop $j= 6
+$city[$j]= Fort Bragg $city[$jplus1]=Greensboro
+Loop $j= 7
+$city[$j]= Greensboro $city[$jplus1]=Hickory
+Loop $j= 8
+$city[$j]= Hickory $city[$jplus1]=Icard
+Loop $j= 9
+$city[$j]= Icard $city[$jplus1]=Kannapolis
+Loop $j= 10
+$city[$j]= Kannapolis $city[$jplus1]=Jonas Ridge
+Swapping Kannapolis and Jonas Ridge
+Loop $i= 10
+Loop $j= 1
+$city[$j]= Ahoskie $city[$jplus1]=Burlington
+Loop $j= 2
+$city[$j]= Burlington $city[$jplus1]=Charlotte
+Loop $j= 3
+$city[$j]= Charlotte $city[$jplus1]=Durham
+Loop $j= 4
+$city[$j]= Durham $city[$jplus1]=Elon
+Loop $j= 5
+$city[$j]= Elon $city[$jplus1]=Fort Bragg
+Loop $j= 6
+$city[$j]= Fort Bragg $city[$jplus1]=Greensboro
+Loop $j= 7
+$city[$j]= Greensboro $city[$jplus1]=Hickory
+Loop $j= 8
+$city[$j]= Hickory $city[$jplus1]=Icard
+Loop $j= 9
+$city[$j]= Icard $city[$jplus1]=Jonas Ridge
+Loop $i= 9
+Loop $j= 1
+$city[$j]= Ahoskie $city[$jplus1]=Burlington
+Loop $j= 2
+$city[$j]= Burlington $city[$jplus1]=Charlotte
+Loop $j= 3
+$city[$j]= Charlotte $city[$jplus1]=Durham
+Loop $j= 4
+$city[$j]= Durham $city[$jplus1]=Elon
+Loop $j= 5
+$city[$j]= Elon $city[$jplus1]=Fort Bragg
+Loop $j= 6
+$city[$j]= Fort Bragg $city[$jplus1]=Greensboro
+Loop $j= 7
+$city[$j]= Greensboro $city[$jplus1]=Hickory
+Loop $j= 8
+$city[$j]= Hickory $city[$jplus1]=Icard
+Loop $i= 8
+Loop $j= 1
+$city[$j]= Ahoskie $city[$jplus1]=Burlington
+Loop $j= 2
+$city[$j]= Burlington $city[$jplus1]=Charlotte
+Loop $j= 3
+$city[$j]= Charlotte $city[$jplus1]=Durham
+Loop $j= 4
+$city[$j]= Durham $city[$jplus1]=Elon
+Loop $j= 5
+$city[$j]= Elon $city[$jplus1]=Fort Bragg
+Loop $j= 6
+$city[$j]= Fort Bragg $city[$jplus1]=Greensboro
+Loop $j= 7
+$city[$j]= Greensboro $city[$jplus1]=Hickory
+Loop $i= 7
+Loop $j= 1
+$city[$j]= Ahoskie $city[$jplus1]=Burlington
+Loop $j= 2
+$city[$j]= Burlington $city[$jplus1]=Charlotte
+Loop $j= 3
+$city[$j]= Charlotte $city[$jplus1]=Durham
+Loop $j= 4
+$city[$j]= Durham $city[$jplus1]=Elon
+Loop $j= 5
+$city[$j]= Elon $city[$jplus1]=Fort Bragg
+Loop $j= 6
+$city[$j]= Fort Bragg $city[$jplus1]=Greensboro
+Loop $i= 6
+Loop $j= 1
+$city[$j]= Ahoskie $city[$jplus1]=Burlington
+Loop $j= 2
+$city[$j]= Burlington $city[$jplus1]=Charlotte
+Loop $j= 3
+$city[$j]= Charlotte $city[$jplus1]=Durham
+Loop $j= 4
+$city[$j]= Durham $city[$jplus1]=Elon
+Loop $j= 5
+$city[$j]= Elon $city[$jplus1]=Fort Bragg
+Loop $i= 5
+Loop $j= 1
+$city[$j]= Ahoskie $city[$jplus1]=Burlington
+Loop $j= 2
+$city[$j]= Burlington $city[$jplus1]=Charlotte
+Loop $j= 3
+$city[$j]= Charlotte $city[$jplus1]=Durham
+Loop $j= 4
+$city[$j]= Durham $city[$jplus1]=Elon
+Loop $i= 4
+Loop $j= 1
+$city[$j]= Ahoskie $city[$jplus1]=Burlington
+Loop $j= 2
+$city[$j]= Burlington $city[$jplus1]=Charlotte
+Loop $j= 3
+$city[$j]= Charlotte $city[$jplus1]=Durham
+Loop $i= 3
+Loop $j= 1
+$city[$j]= Ahoskie $city[$jplus1]=Burlington
+Loop $j= 2
+$city[$j]= Burlington $city[$jplus1]=Charlotte
+Loop $i= 2
+Loop $j= 1
+$city[$j]= Ahoskie $city[$jplus1]=Burlington
+Loop $i= 1
+City Ahoskie
+City Burlington
+City Charlotte
+City Durham
+City Elon
+City Fort Bragg
+City Greensboro
+City Hickory
+City Icard
+City Jonas Ridge
+City Kannapolis
+City Lenoir
+City Mocksville
+City Newton
+City Ocracoke
+City Pittsboro
+City Rodanthe
+City Statesville
+City Tarboro
+City Union Grove
+City Valdese
+City Wrightsville Beach
+City Yadkinville
+City Zebulon

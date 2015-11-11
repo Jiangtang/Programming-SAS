@@ -1,0 +1,840 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="writing gawk programs">
+   <meta name="Description" content="Writing gawk programs">
+   <title>Writing gawk programs</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Writing gawk programs</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 06 Feb 2007)</b></center>
+
+<h2>
+Introduction</h2>
+The “gawk” utility is a very powerful stream editor that has built-in programming
+constructs. By “stream editor” is meant that you do not see the file you
+are editing on a screen and make changes or additions to it there. Rather
+it runs through the file line by line and makes appropriate changes and
+you do not see anything on a screen except the output, if it is directed
+to a terminal. It is like “sed” but much more powerful and useful. Another
+thing about it is you have an optional “begin” and “end” section where
+you can do things before you start reading a file and also after you have
+finished reading it. This makes it especially suitable for some tasks.
+One such task that comes to mind is for converting a text file to a postscript
+file. There already exist utilities that do this, but you can use gawk
+to do this yourself and get it to do exactly what you want. The focus of
+this document is the techniques you have to know to do this task.
+<h2>
+Awk, nawk and gawk</h2>
+Gawk is a GNU implementation of the original utility “awk”. “GNU” stands
+for “GNU’s Not Unix” and “gawk” stands for “GNU awk”. GNU is an open source
+project such that the code is freely available. “nawk” stands for “new
+awk” and was a later version of “awk”. “nawk” and “gawk” are very similar,
+but because gawk is free, then it is preferred to nawk.
+<h2>
+The Author’s web site</h2>
+One of the original authors of “gawk”, who once had his very own version
+of awk called “mawk”, is now the only maintainer of gawk and he has his
+own web site devoted to gawk here where you can find “The GNU Awk User’s
+Guide”. This is your definitive reference source for this utility. You
+should bookmark this page if you intend to use gawk. This is a very long
+document but you should consider reading it through from beginning to end
+so that you get the author’s same insight into the purpose of the language
+and the way he uses it.
+<p><a href="http://www.gnu.org/software/gawk/manual/gawk.html" target="_blank">http://www.gnu.org/software/gawk/manual/gawk.html</a>
+<p>There is a more detailed reference by the same author, that you can
+refer to, but the above link will be easier for starting out with gawk.
+The site below is spread over many pages and searching the site is difficult.
+You have to use the “Index” link, at the top of the page, for searching
+(do not use the “Search” facility at the top of the page, as this searches
+the entire web site).
+<p><a href="http://www.delorie.com/gnu/docs/gawk/gawk_toc.html">http://www.delorie.com/gnu/docs/gawk/gawk_toc.html</a>
+<h2>
+What gawk isn’t</h2>
+In reading the author’s guide to gawk and perhaps other books and sources,
+you might get the idea that it is a comprehensive database language that
+will one day become widely accepted and used. This will never be the case.
+The clearest indication of this is that it can not read or write floating
+point numbers in internal format and so could never be a serious database
+language. It was designed as a powerful stream editor with an inbuilt programming
+language and you should accept it as such. If you read the entire web site,
+you will see that there is a great deal to learn. Although you should be
+aware of its capabilities, you will need to concentrate on its capabilities
+as a stream editor and make sure you can put those capabilities into practise.
+<h2>
+How to run gawk</h2>
+If you are writing shell scripts, then there are different ways to run
+gawk. You would normally have a bash shell script that calls gawk. You
+should stick with that method.
+<p>Another way to run gawk is to call it directly. Just as you have “#!/bin/bash”
+as the first line of your script, you can instead have “#!/usr/local/bin/gawk
+–f “ as your first line. This would then run gawk instead of bash and gawk
+would expect all the lines that follow in the file to be a valid gawk program.
+But if you did that you would probably need to check the arguments supplied
+to the gawk program but you would have to do that using the gawk language
+itself. Maybe you will have to handle options as well. There is no point
+learning a second way to do this if you already know how to do it in a
+bash shell script.
+<p>The third way to run gawk is to call it from a bash script but put the
+gawk code itself in a separate file something like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>gawk -f gawkprog file1 file2</tt></td>
+</tr>
+</table>
+
+<p>The trouble with the above is that if the gawk code is complicated enough
+to put in a separate file, then it is likely that you will be passing parameters
+to it when you call gawk. If the parameters are not only listed in the
+call to gawk but in the gawk code itself then it could be very confusing.
+So it is better to put the gawk code inline where you can see it, even
+if it is complicated.
+<h2>
+A working gawk script</h2>
+When you first start writing gawk programs, you get frustrated by the syntax.
+It is even more difficult than the syntax of shell scripts. You will get
+error messages and not understand what is causing the error. This is a
+major hurdle to get over. You may feel you can never get gawk to work for
+you. Many people try and give up. But here is a working gawk program that
+you can try out yourself and it will be fully explained.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#!/bin/bash</tt>
+<p><tt>gawk '</tt>
+<br><tt># Begin block - initialise page count to 1</tt>
+<br><tt>BEGIN {pages=1}</tt>
+<p><tt># ======== Main code block start ========</tt>
+<br><tt>{</tt>
+<p><tt># A form feed character in position one&nbsp;</tt>
+<br><tt># indicates the first line of a new page</tt>
+<br><tt>if (index($0,"\f")==1)</tt>
+<br><tt>&nbsp; {</tt>
+<br><tt>&nbsp; ls=length($0)-1&nbsp; # subtract 1 so we do not count the
+form feed</tt>
+<br><tt>&nbsp; pages++&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+# increment the page count</tt>
+<br><tt>&nbsp; if (lines > maxps )&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; maxps=lines&nbsp;&nbsp;&nbsp; # set maxps (maximum
+number of lines on a page)</tt>
+<br><tt>&nbsp; lines=1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+# reset line count to 1 for first line on new page</tt>
+<br><tt>&nbsp; }</tt>
+<br><tt># Any other line</tt>
+<br><tt>else</tt>
+<br><tt>&nbsp; {</tt>
+<br><tt>&nbsp; ls=length($0)</tt>
+<br><tt>&nbsp; lines++&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+# increment the line count</tt>
+<br><tt>&nbsp; }</tt>
+<p><tt># Set maximum line size</tt>
+<br><tt>if (ls>maxls)</tt>
+<br><tt>&nbsp; maxls=ls&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+# set maxls (maximum line size)</tt>
+<p><tt>}</tt>
+<br><tt># ======== End of main code block ========</tt>
+<p><tt># End block - print results</tt>
+<br><tt>END {</tt>
+<br><tt>if (lines > maxps )&nbsp;</tt>
+<br><tt>&nbsp; maxps=lines&nbsp;&nbsp;&nbsp; # set maxps (maximum number
+of lines on a page)</tt>
+<br><tt>print maxls, maxps, pages</tt>
+<br><tt>}' "$1"</tt></td>
+</tr>
+</table>
+
+<h2>
+The input file</h2>
+What the above script does is find the maximum line size, the maximum page
+size and the number of pages in a listing and print the results at the
+end. The file it is working on is the first parameter, $1, which you will
+find in double quotes right at the end (it is always a good idea to have
+parameter values and variable values in quotes if there is any possibility
+that the value might contain a space – this does not only apply to gawk).
+Gawk can accept standard input coming from a pipe, as you will know from
+reading the “Common Unix Commands” document. If coming from a file, then
+the file is put at the end of the call to gawk as is shown above.
+<h2>
+Quoting</h2>
+Note that the code that gawk is running is all enclosed in single quotes.
+Look directly after the call to gawk and right at the end just before “$1”.
+Single quotes! You have to remember this. If the code were in a file and
+we used the “-f” option to fetch the file then we would not need to use
+single quotes. But if the program is inline, as it is above, then we must
+use single quotes. Now this is going to give us a problem in most gawk
+programs where we reference external parameters and variables. If we use
+these inside these programs then we have to remember that this single quote
+at the start and end might stop the references being resolved. This is
+one reason people give up on gawk (or awk or nawk). Try out this command:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>var='hello world'; echo message: | gawk '{print $0, "'"$var"'"}'</tt></td>
+</tr>
+</table>
+
+<p>The above command includes a tiny program that references an external
+variable “var”. gawk references its internal variable $0 easily (it means
+the whole input line) but the external variable reference has to be wrapped
+in quotes in the way shown. If we knew for sure that the value assigned
+to “var” would never include a space then it would be simpler, as shown
+below.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>var=1234; echo message: | gawk '{print $0, "'$var'"}'</tt></td>
+</tr>
+</table>
+
+<p>Hopefully you have tried out both these examples in your terminal window
+and you now know it works, even if it looks messy. Fortunately, there is
+a much easier way to give this value to gawk. Try out the following command:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>echo message: | gawk '{print $0, var}' var=1234</tt></td>
+</tr>
+</table>
+
+<p>The above has the same effect. The variable “var” becomes a gawk internal
+variable. Note that “var” inside the gawk program does not have a dollar
+in front of it. Also, the value of “var”, passed in this way, will not
+be available in the BEGIN block. Its value will only be correct in the
+main code block or the END block.
+<p>Now try this command:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>echo "hello world" | gawk '{print $0, var}' var=2</tt></td>
+</tr>
+</table>
+
+<p>…and compare it with this command where “var” has a dollar in front:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>echo "hello world" | gawk '{print $0, $var}' var=2</tt></td>
+</tr>
+</table>
+
+<p>In the second command, you get a repeat of the word “world” because
+“var” has the value “2” and so “$var” is the same as “$2” which means the
+second field in the input line which is “world” because the default field
+separation character is a space.
+<p>Now you have seen some important information about quoting and passing
+values to gawk programs so hopefully you will not be too troubled by it
+in the future.
+<h2>
+Curly brackets</h2>
+The most fundamental thing to know about gawk is that it works in this
+way:
+<p><b>' pattern-or-expression { action } '</b>
+<p>If the pattern is found or the expression is true then the action in
+curly brackets is performed. If no action is specified then the action
+defaults to “<b>{ print $0}</b>”. If no pattern or expression is specified
+then the action will be done for every line of input.
+<p>Here is something for you to try out. Go to a directory where you know
+you have programs written using SAS&reg; software where some of them have
+a “proc print” in it. Try out the following commands to convince yourself
+that the results are the same:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>gawk '/proc print/' *.sas</tt>
+<br><tt>gawk '/proc print/ {print $0}' *.sas</tt>
+<br><tt>gawk '$0 ~ /proc print/' *.sas</tt>
+<br><tt>gawk '$0 ~ "proc print"' *.sas</tt>
+<br><tt>gawk 'index($0,"proc print")' *.sas</tt>
+<br><tt>gawk 'index($0,"proc print") { print $0 }' *.sas</tt>
+<br><tt>gawk '{if (index($0,"proc print")>0) {print $0}}' *.sas</tt>
+<br><tt>gawk '{if (index($0,"proc print")) print $0}' *.sas</tt></td>
+</tr>
+</table>
+
+<p>All the above commands give the same result. The things to note are
+that you put regular expressions in // brackets and you put strings in
+double quotes. No action specified defaults to printing out the whole input
+line. You can use functions like “index” as part of the pattern-or-expression
+as well as in the action. The “if” statement must be used inside the “action”
+curly brackets. Curly brackets within curly brackets can be used for grouping
+commands together. “If” tests must be enclosed in round brackets. Like
+SAS software, “true” for gawk is any number greater than 0, hence the index()
+function, that exists in both languages, can be used in the same way (note
+that, in contrast, “0” means true for the bash shell language).
+<p>Curly brackets are very important for “if” statements. If you have more
+than one line of code that you want to perform if a condition is met (or
+not met) then you must enclose them in curly brackets. If you forget to
+do this then only the following line is under control of the “if” statement
+and the line after that will get performed in all cases. This is something
+people forget to tell you about. Even the author seems to forget this on
+his web site.
+<h2>
+BEGIN and END blocks</h2>
+As well as the “pattern-or-expression { action }” construct there are “BEGIN”
+and “END” actions for before the file is read and after it is read. You
+will see that used in the code. So fundamentally, gawk works like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>gawk '</tt>
+<br><tt>[ BEGIN {action} ]</tt>
+<br><tt>pattern-or-expression {action}</tt>
+<br><tt>[ pattern-or-expression {action} ]</tt>
+<br><tt>[ END {action} ]</tt>
+<br><tt>' file1 file2</tt></td>
+</tr>
+</table>
+
+<p>…but please note that I have used square brackets above to show that
+some things are optional. It does not mean you should use square brackets
+in your code. Also there can be multiple “pattern-or-expression” and these
+will be done for every input line that matches. If you use more than one
+then you might get duplicate output when an input line matches more than
+one pattern.
+<p>Only one “pattern or expression” was used in the example of a working
+gawk script. Have a look at it again and spot the curly brackets for the
+“BEGIN” block, the “END” block and the main block. Look for the other curly
+brackets and see how they are used to group multiple statements in the
+“if / else” condition. Note that they are not used for two “if” conditions
+because there was only one line of code it applied to and so curly brackets
+were not needed.
+<h2>
+Program layout</h2>
+Another thing to note is that blank lines and comments are allowed in gawk
+code. This makes the code easier to follow. Because curly brackets can
+cause so many syntax errors, it would be a good idea to put if/else curly
+brackets on their own lines. For multi-line “actions”, opening curly brackets
+should directly follow the “pattern or expression” and the ending curly
+bracket should be on its own line. If you do this then your code will be
+much easier for you and others to understand.
+<h2>
+Initialising variables</h2>
+There is no need to initialise number variables to 0 in the BEGIN block.
+This will be done automatically for you. In the above working example,
+pages=1 in the BEGIN block because it needs to be initialised to 1 and
+not 0.
+<h2>
+Comparing floating point numbers</h2>
+Floating point number comparison is difficult in bash because it only deals
+with integers. People use “bc” for floating point arithmetic. But with
+“bc” it is not easy to compare two floating point values. You have to subtract
+one from another and check using pattern matching to see if it starts with
+a minus sign. This is not very intuitive. But gawk has no problem with
+floating point numbers. The trick is to get the numbers into gawk. Here
+is a simple gawk program to compare two numbers and return a string saying
+what it found. It uses the positional parameters $1 and $2. Note how they
+are referenced in gawk. Also note that gawk expects some sort of input
+like a file. But we are not using to read a file or anything else. However,
+since we are just using a BEGIN block, which is handled before any input
+is read, it does not get as far as expecting a file.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>gawk 'BEGIN {</tt>
+<br><tt># force the parameters to be numeric by adding 0</tt>
+<br><tt>if (("'$1'"+0) > ("'$2'"+0))</tt>
+<br><tt>&nbsp; print "GT"</tt>
+<br><tt>else</tt>
+<br><tt>&nbsp; {</tt>
+<br><tt>&nbsp; if (("'$1'"+0) == ("'$2'"+0))</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; print "EQ"</tt>
+<br><tt>&nbsp; else</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; print "LT"</tt>
+<br><tt>&nbsp; }</tt>
+<br><tt>}'</tt></td>
+</tr>
+</table>
+
+<p>Note that 0 is being added to the input parameters. This is because
+gawk will expect the values to be strings. You have to force gawk to treat
+them as numbers and adding 0 to them will achieve that. Always be on the
+lookout for this feature of gawk, if you are doing numeric comparisons.
+<h2>
+”=” vs. “==”</h2>
+There is a big difference between “=” and “==” in gawk. The first is for
+assignment and the second is for comparison. To illustrate this, try out
+this example. It will give a list of fonts and their classification.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>cat /usr/openwin/lib/X11/fonts/100dpi/fonts.dir</tt></td>
+</tr>
+</table>
+
+<p>The 12th field, as defined by using “-“ as field separators, will be
+“m” for mono-spaced fonts and “p” for proportional fonts. List out only
+the mono-spaced fonts like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>cat /usr/openwin/lib/X11/fonts/100dpi/fonts.dir | awk -F- '$12
+== "m"'</tt></td>
+</tr>
+</table>
+
+<p>You will see that those with an “m” in a certain position have been
+selected. Now do the same with a single “=” like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>cat /usr/openwin/lib/X11/fonts/100dpi/fonts.dir | awk -F- '$12
+= "m"'</tt></td>
+</tr>
+</table>
+
+<p>This time you get a huge list with no “-“s and all with an “m” in the
+same position. The “=” does an assignment. It puts an “m” in the 12th field
+position and writes out the new line. And in writing out the new line it
+uses its default “output field separator” (OFS) of a space and so you do
+not get any hyphens. You can specify the OFS to be a hyphen like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>cat /usr/openwin/lib/X11/fonts/100dpi/fonts.dir | awk -F- '$12
+= "m"' OFS=-</tt></td>
+</tr>
+</table>
+
+<p>…and so you will get the hyphens used as field separators again, but
+the point is that “=” is for setting a value while “==” is for comparing
+values. This is true for many computer languages.
+<h2>
+Gawk arrays</h2>
+Arrays in gawk are very strange in that they are not only indexed by number,
+they can be indexed by strings. In fact they are always indexed by strings,
+since if they are numbers then they are automatically converted to a string.
+This opens up new possibilities for programming. Here is a sample program
+that accepts input from the keyboard and at the end, prints out a count
+of the actual words you used (it is case sensitive). To explain, if you
+typed in the word “and” in a line then it would update an array element
+like this “freq[and]++” (there is nothing special about using the name
+“freq” for the array).
+<p>Try creating a bash script with the following code in it. Invoke the
+script and type in lines of words and press Enter to submit them. Use Cntl-D
+to finish input and to see the results.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>gawk '</tt>
+<br><tt># Print list of word frequencies</tt>
+<br><tt>{</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; for (i = 1; i &lt;= NF; i++)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; freq[$i]++</tt>
+<br><tt>}</tt>
+<p><tt>END {</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; for (word in freq)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printf "%s\t%d\n", word,
+freq[word]</tt>
+<br><tt>}'</tt></td>
+</tr>
+</table>
+
+<p>Here is an explanation of the code. Firstly, there is no input file
+so it takes input from “standard input” which is the terminal. Next, notice
+the first “for” loop. You have three elements, separated by semicolons.
+The first element is the initial statement, the second is the conditional
+that must be satisfied for the loop to continue and the third is the action
+taken each time. So it starts by setting “i” to 1 and will continue to
+loop while I is less than or equal to the number of fields in the input
+record and it will add 1 to “i” each time it executed the loop. The first
+“for” statement perform the following line. Since there is only one line
+there is no need to enclose it in curly brackets but if it was supposed
+to do more than one line then you would have to enclose them in curly brackets.
+Looking at the line the first “for” loop is executing we see that the array
+“freq” (there is nothing special about the name) is having its “$i”th element
+incremented. Firstly, there is no need to initialise any variable in gawk.
+This gets done for you. And note that it is the “$i”th element being incremented
+and not the “i”th element.&nbsp; In other words, it is not a numbered element
+being incremented but rather the element corresponding to the “i”th field
+in the input line. This could be a word like “and”. The input line is referred
+to as $0 and to have fields $1, $2, $3 etc. up to the maximum number of
+fields that is stored in the internal variable NF. The default field separator
+(again an internal variable FS) is a space and so the first word on a line
+is field one ($1) and the second word on a line is field two ($2) etc..
+So if you typed in the line “the quick fox” then one would get added to
+freq[the], one would get added to freq[quick] and one would get added to
+freq[fox]. If you have worked with numbered arrays for a long time, then
+having strings as indices takes a lot of getting used to. Gawk arrays are
+known as “associative arrays”, since they associate one value with another
+value. Associative arrays are also known as “hashes” to distinguish them
+from the more usual arrays that are indexed by number. The term “hash”
+comes from “hash tables”, used in older programming languages to associate
+one value with another. Gawk arrays can be multidimensional as well, using
+the “array[y,x]” notation.
+<p>Lastly, there is the “END” block. This will get done at the end of input,
+which is signified by a Cntl-D in the first position. Since arrays work
+in such a different way in gawk, then we need a different way to refer
+to all the elements so this is done using “for (word in freq)” (there is
+nothing special about the word “word” used in the context just as there
+is nothing special about the array name “freq”). This gets each element
+value in turn (in whatever order it is stored internally) and places it
+in the variable “word”. So the last line prints out this value, followed
+by a tab, and then the frequency count of that element.
+<h2>
+User-defined functions</h2>
+If you write complex programs using gawk you are almost certain to need
+user-defined functions so that you can call the same code from more than
+one place or just to make the code more understandable. User-defined functions
+have named parameters. Also, there is no such thing as a local variable
+in a function (unless you use an awk implementation named “tawk”). Since
+local variables are often desirable, then a trick to get round this problem
+is to include them as parameters that never get used since parameters are
+effectively local variables. By convention, these extra variables are listed
+after the true parameters, separated by a number of spaces.
+<p>You would normally declare user-defined functions before your “BEGIN”
+block or your main block. Here is a gawk program that attempts to translate
+special characters into their octal code as well as prefixing left and
+right round brackets with an escape slash. Note that one of the functions
+has to be run before anything else to initialise an array.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#!/usr/local/bin/gawk -f</tt>
+<p><tt>function _ord_init (&nbsp;&nbsp;&nbsp; i,t)</tt>
+<br><tt>{</tt>
+<br><tt>for (i=0; i&lt;=255; i++)&nbsp;</tt>
+<br><tt>&nbsp; {</tt>
+<br><tt>&nbsp; t = sprintf("%c", i)</tt>
+<br><tt>&nbsp; _ord_[t]=i</tt>
+<br><tt>&nbsp; }</tt>
+<br><tt>}</tt>
+<p><tt>function ord (char)</tt>
+<br><tt>{</tt>
+<br><tt>return _ord_[char]</tt>
+<br><tt>}</tt>
+<br>&nbsp;
+<p><tt>function Clean7Bit (str,&nbsp;&nbsp; i,newstr1,newstr2,bite,num)</tt>
+<br><tt>{</tt>
+<br><tt>newstr2= ""</tt>
+<br><tt>newstr1=str</tt>
+<br><tt>gsub(/\(/,"\\(",newstr1)</tt>
+<br><tt>gsub(/\)/,"\\)",newstr1)</tt>
+<br><tt>for (i=1; i&lt;=length(newstr1); i++)</tt>
+<br><tt>&nbsp; {</tt>
+<br><tt>&nbsp; bite=substr(newstr1,i,1)</tt>
+<br><tt>&nbsp; num=ord(bite)+0</tt>
+<br><tt>&nbsp; if ((num>=27 &amp;&amp; num&lt;=126) || num==9 || num==10
+|| num==13)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; newstr2=newstr2 bite</tt>
+<br><tt>&nbsp; else&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; newstr2=newstr2 sprintf("\\%o",num)</tt>
+<br><tt>&nbsp; }</tt>
+<br><tt>&nbsp; return newstr2</tt>
+<br><tt>}</tt>
+<p><tt>BEGIN&nbsp; { _ord_init()</tt>
+<p><tt>for (;;)&nbsp;</tt>
+<br><tt>{</tt>
+<br><tt>printf("enter a string: ")</tt>
+<br><tt>if (getline string &lt;= 0)&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; break</tt>
+<br><tt>printf("%s\n",&nbsp; Clean7Bit(string))</tt>
+<br><tt>}</tt>
+<p><tt>}</tt></td>
+</tr>
+</table>
+
+<p>Here is an explanation of the code:
+<p>Firstly, note from the very first line, that this is not a shell script.
+It is a gawk script. Gawk residing in the /usr/local/bin directory is being
+called to run the code and the “-f” option tells gawk that this is a program
+file. Most examples you will see, call bash and then gawk gets called from
+within the bash script. This one is different to show you an example of
+another way to run gawk programs.
+<p>Note that the first function named “_ord_init” has two local variables
+“i” and “t”. The space in front of them indicates that they are local variables,
+although it does not stop them from being parameters. There are no parameters
+to this function. Its purpose is to initialise an array named _ord_, hence
+its name. If you look down to the BEGIN block then you will see this function
+being called at the start of processing. Looking at the code inside the
+function you will see that the number from 0 to 255 is being formatted
+using “%c” to give the character that would appear on screen corresponding
+to that ascii code number. “sprintf” is used for this. It differs from
+“printf” in that it does not actually print the result to standard output
+but rather just returns what it would have printed. So this character that
+would appear on the screen is used as the index to the array and the number
+itself is the element value. We can then use it to return the numeric value
+of a character like a letter. The next function declared does that.
+<p>If you look at the “ord” function you will see that it does have a parameter
+named “char” and there are no local variables declared after the parameter.
+It “returns” the corresponding numeric value for the ascii character supplied
+as a parameter by using the _ord_ array. Note that the array is called
+“_ord_” and not ord. There is a reason for this. One is that you can not
+have a function called “ord” and another entity like an array called “ord”
+at the same time. But the most important reason the array is called “_ord_”
+is because, by convention, if data is to be shared between functions, then
+it is customary to start the name with an underscore. It does not matter
+much with this small program, but at some stage you might want to place
+your user-defined functions in a library and then we have to think carefully
+about how we name entities that hold data that other functions rely on.
+So information held in functions that other functions need are, by convention,
+started with an underscore. This is so that when you write a main program
+the names do not get confused. Of course, in a main program, you should
+not use names that start with an underscore, or the advantage is lost.
+<p>The next declared function “Clean7Bit” does the most work. It has one
+parameter and 5 local variables. The first thing it does is to make sure
+newstr2 is set to null. It is going to append onto this later in the function
+and we want to make sure nobody has called this function with values supplied
+to the local variables and maybe given this a value, or we will end up
+adding on to the end of whatever is already there. This is of course possible,
+since these are effectively parameters, so we must ensure that if this
+happens then it has no effect on the result. The next thing it does is
+make a copy of the input value into newstr1. This is because it is going
+to use “gsub” (global substitution) to change “(“ to “\(“ and “)” to “\)”.
+“gsub” changes the string input to it and this is why it made a copy. The
+first parameter for “gsub” is the regular expression which is put between
+forward slashes. The next parameter is the replacement string. The third
+parameter is the variable that contains the string (if you miss off this
+third parameter then it acts on the entire input line $0). Next, with the
+round brackets with an escape character in front, it checks every character
+in the string one at a time to see what its numeric value is. For those
+in the correct range it builds up newstr2 by adding the single character
+contents of “bite” onto the end (note that to concatenate you just state
+the variables one after the other with no comma between them) but for those
+out of range it adds the octal representation of the number escaped with
+a backslash in front (note that in code, when you want a single backslash
+you often have to put two of them together to say you really mean a backslash).
+Then right at the end of the function the value of newstr2 is “returned”.
+<p>Lastly is the BEGIN loop. This is where the processing starts since
+the functions are only definitions. The function code doesn’t run until
+they are called. First the “_ord_init “ function is called (with no parameters)
+to initialise the “_ord_” array. Then there is an empty “for” loop (i.e
+there is no start, conditional or action defined so that the separating
+semicolons are on their own) which will loop forever. Fortunately, not
+forever, as if a “break” is encountered then the loop is broken out of.
+So the user is prompted to supply a string and it returns the results of
+calling the “Clean7Bit” function. It does this until the user breaks out
+of the loop by ending input with Cntl-D (“getline” will have a value of
+0 when this happens). Note the “\n” in the “printf” inbuilt function to
+throw a new line. This is something that is easy to forget. But if you
+can remember that “printf” is the visible version of “sprintf” which is
+used to store values rather than display them, then just as you would not
+want a new-line character at the end of that then nor do you get one by
+default with “printf”.
+<h2>
+Searching for strings in files</h2>
+Gawk’s string searching capabilities are very good. If you can combine
+this with the programming capabilities, then searching for strings in files
+is made easy. The following gawk program is for searching through a table
+or a listing to extract the table/listing number and also the title on
+the next line (if there is one) and to display them together. The program
+will stop reading the file as soon as it has this information.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>gawk '</tt>
+<br><tt># Begin block - set gotitle to not found</tt>
+<br><tt>BEGIN {</tt>
+<br><tt>gotitle=0</tt>
+<br><tt>}</tt>
+<p><tt># ======== Main code block start ========</tt>
+<br><tt>{</tt>
+<p><tt># Extract the title or listing identity if encountered first time</tt>
+<br><tt># and extract the following title as well on the following line</tt>
+<br><tt>if (gotitle==0 &amp;&amp; match(tolower($0),/listing [^ ]*|table
+[^ ]*/))</tt>
+<br><tt>&nbsp; {</tt>
+<br><tt>&nbsp; title=substr($0,RSTART,RLENGTH)</tt>
+<br><tt>&nbsp; gotitle=1</tt>
+<br><tt>&nbsp; justfound=1</tt>
+<br><tt>&nbsp; }</tt>
+<br><tt>else</tt>
+<br><tt>&nbsp; {</tt>
+<br><tt>&nbsp; if (justfound==1)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; {</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; justfound=0</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; where=match($0,/[^ ].*[^ ]/)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if (where)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; title2=substr($0,RSTART,RLENGTH)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; }</tt>
+<br><tt>&nbsp; }</tt>
+<p><tt>if (gotitle==1 &amp;&amp; justfound==0) exit</tt>
+<p><tt>}</tt>
+<br><tt># ======== End of main code block ========</tt>
+<p><tt># End block - print results</tt>
+<br><tt>END {print title, title2}' "$1"</tt></td>
+</tr>
+</table>
+
+<p>Note the use of the inbuilt “match” function. The second argument to
+it is a regular expression that is put in “/” slashes. You can use a “|”
+inside this regular expression as an “or” symbol as has been done to identifx
+either “table” or “listing”. Note that the inbuilt “tolower” function is
+used to search for “table” or “listing” in the lower-case version of the
+input line. If “match” finds a match with the regular expression, then
+the longest regular expression possible is matched, not the shortest one.
+It is looking for “listing” followed by a space followed by zero or more
+characters that are not a space. The same for “table”. “match” sets the
+internal variables RSTART and RLENGTH. If there is no match then RSTART=0
+and RLENGTH=-1.&nbsp; But if a match is found then RSTART will be the first
+position in the string where the match is found and RLENGTH will be the
+length of the match. These can be used to substring the input line, as
+is done in the code. Variables are set if a match is found so that the
+code will search the following line for the next title. It is looking for
+a non-space followed by zero or more characters and ending with a non-space.
+If it has found what it wants then it uses the settings of “gotitle” and
+“justfound” to exit. If it exits in the main code block, then it still
+performs the END block where it displays the result of its searches. An
+“exit” in a BEGIN or END block results in immediate termination.
+<h2>
+igawk and a function library</h2>
+“igawk” is a shell program that runs gawk but with a bit of useful pre-processing.
+The “i” stands for “include”. What you will find, if you write a lot of
+gawk programs, is that you keep needing the same user-defined functions
+in different programs. You can, of course, copy them from program to program,
+but it would be better if you kept them together in a library of gawk functions
+and then “include” them into your gawk program. “igawk” achieves just this.
+It uses the system environment variable <b>AWKPATH</b> to search for files
+you want to include. If it has not been set up then it will search in the
+current directory first and then the <b>/usr/local/share/awk</b> directory.
+<p>Functions tend to belong together and will maybe rely on each other.
+If so, then it makes sense to keep them together in one file. For example,
+the following is a file names “strconv.awk” containing string conversion
+functions that are not available to gawk. If you are using “igawk” then
+these functions will be available to you if found on the AWKPATH and asked
+for in the igawk program using:
+<p><b>@include strconv.awk</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#================= strconv.awk -- String Conversion Functions ==================</tt>
+<br><tt># Author : Roland Rashleigh-Berry</tt>
+<br><tt># Date&nbsp;&nbsp; : 19-Mar-2004</tt>
+<br><tt>#===============================================================================</tt>
+<br><tt># FUNCTIONS:</tt>
+<br><tt>#---name---&nbsp; ---------------------------description-----------------------------</tt>
+<br><tt># _ord_init&nbsp; Initialises an array used by the ord() function</tt>
+<br><tt># ord&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Equates a supplied
+character with a decimal ascii number</tt>
+<br><tt># chr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Equates a decimal
+ascii number with a character</tt>
+<br><tt># clean7bit&nbsp; Converts a supplied string to PostScript Clean7Bit
+format</tt>
+<br><tt>#===============================================================================</tt>
+<br><tt># AMENDMENT HISTORY:</tt>
+<br><tt># init --date-- mod-id --------------------description--------------------------</tt>
+<br><tt>#</tt>
+<br><tt>#===============================================================================</tt>
+<p><tt># Extra BEGIN block required to initialise the _ord_ array. Note
+that</tt>
+<br><tt># you can have multiple BEGIN blocks in a gawk program. They are
+executed</tt>
+<br><tt># in the order encountered.</tt>
+<br><tt>BEGIN { _ord_init() }</tt>
+<p><tt># Initialises the _ord_ array which is needed by the ord() function</tt>
+<br><tt>function _ord_init (&nbsp;&nbsp;&nbsp; i,t)</tt>
+<br><tt>{</tt>
+<br><tt># fill up the array</tt>
+<br><tt>for (i=0; i&lt;=255; i++)&nbsp;</tt>
+<br><tt>&nbsp; {</tt>
+<br><tt>&nbsp; t = sprintf("%c", i)</tt>
+<br><tt>&nbsp; _ord_[t]=i</tt>
+<br><tt>&nbsp; }</tt>
+<br><tt>}</tt>
+<br>&nbsp;
+<p><tt># Equate a character with the ascii decimal number</tt>
+<br><tt>function ord (char)</tt>
+<br><tt>{</tt>
+<br><tt># Return the array entry. Use only the first character</tt>
+<br><tt># in case a string longer than one character was supplied</tt>
+<br><tt>return _ord_[substr(char,1,1)]</tt>
+<br><tt>}</tt>
+<br>&nbsp;
+<p><tt># Equate a decimal ascii number with a character</tt>
+<br><tt>function chr (num)</tt>
+<br><tt>{</tt>
+<br><tt># force num to be numeric by adding 0</tt>
+<br><tt>return sprintf("%c", num + 0)</tt>
+<br><tt>}</tt>
+<br>&nbsp;
+<p><tt># Convert a string to PostScript Clean7Bit format</tt>
+<br><tt>function clean7bit (str,&nbsp;&nbsp; i,newstr1,newstr2,bite,num)</tt>
+<br><tt>{</tt>
+<br><tt>newstr2=""</tt>
+<br><tt>newstr1=str</tt>
+<br><tt>for (i=1; i&lt;=length(newstr1); i++)</tt>
+<br><tt>&nbsp; {</tt>
+<br><tt>&nbsp; bite=substr(newstr1,i,1)</tt>
+<br><tt>&nbsp; num=ord(bite)+0</tt>
+<br><tt>&nbsp; if ((num>=27 &amp;&amp; num&lt;=126) || num==9 || num==10
+|| num==13)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; newstr2=newstr2 bite</tt>
+<br><tt>&nbsp; else&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; newstr2=newstr2 sprintf("\\%o",num)</tt>
+<br><tt>&nbsp; }</tt>
+<br><tt>&nbsp; return newstr2</tt>
+<br><tt>}</tt></td>
+</tr>
+</table>
+
+<p>A word of warning -- if you convert a gawk program to an “igawk” program
+so that it can call user-defined functions in this way then there is something
+you have got to keep in mind. That is “igawk” generates a new gawk program
+with the “includes” expanded out. In so doing it can “use up” some of the
+escape slashes “\” in your original program when it generates the new code.
+You may have to add extra pairs of these to the program you have changed
+to run under “igawk” to keep it working the same way. These escape slashes
+will continue to plague you throughout your career of writing gawk programs.
+In the end, you will know where to look for trouble.
+<p>Do not put too many functions in the one file. Just include those functions
+that belong together. Name the file in such a way that can describe what
+these functions do just as the name “strconv” was used in the above example
+for “string conversion” functions. Make sure that any variables or arrays
+that need to be kept in the functions start with an underscore so that
+they do not get confused with variables in gawk programs that might call
+these functions.
+<p>There are more conventions you should stick to, apart from having shared
+entities starting with an underscore. The functions should always have
+lower-case names. In some cases you might need functions that return a
+value to the calling program. These would then be global variables. Starting
+names with an underscore only belongs to communication between functions.
+For communicating back to the calling program using global variables you
+should start the variable name with a capital letter but follow it with
+lower-case letters. In the main program your variable and array names could
+be lower case unless it is one of the internal variables which always have
+upper-case names. If you stick to a convention like this then you will
+avoid problems.
+<p>Note that the code above has a BEGIN block in it. This will not cause
+a problem to any gawk program that “includes” this code since you can have
+multiple BEGIN (and also END) blocks in a gawk program. They get executed
+in the order encountered. Sometimes you will need to call a function in
+a BEGIN block, as is done above, to run a function that other functions
+depend on.
+<h2>
+Conclusion</h2>
+Hopefully this page has given you a good introduction to gawk. There is
+a script needed by Spectre to extract titles from report output named "getitles"
+that is mainly written in gawk. Hopefully, after working through this page,
+you will be able to make sense of the code. You can link to this script
+below.
+<br><a href="scripts/getitles" target="_blank">getitles</a>
+<br><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+</body>
+</html>

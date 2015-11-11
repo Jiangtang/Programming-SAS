@@ -1,0 +1,58 @@
+#!/bin/bash
+#<pre><b>
+# Script     : titles
+# Version    : 2.1
+# Author     : Roland Rashleigh-Berry
+# Date       : 11-Mar-2007
+# Purpose    : To create the titles file defined to "prog" and to edit it if a
+#              call to an editor is made.
+# SubScripts : crtitlestmpl
+# Notes      : You must have set up the system environment variable "prog"
+#              to your sas program name (no extension) and have exported it.
+# Usage      : titles
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not supply any parameters
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  25Feb07         Editor call removed. Feel free to add a call to an editor
+#                      to edit the titles file as a last background task.
+# rrb  11Mar07         Editor call added again if something defined to EDITOR
+#                      system environment variable (v2.1)
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# No parameters allowed
+if [ $# -gt 0 ] ; then
+  echo "Error: (titles) Do not supply any parameters" 1>&2
+  exit 2
+fi
+
+if [ -z $prog ] ; then
+  echo "You have to set \"prog\" equal to your sas program name and export it" 1>&2
+  exit 1
+fi
+
+newprog=${prog%.*}
+
+if [ ! -f ${prog%.*}.titles ] ; then
+  if [ ! -f titles.template ] ; then
+    crtitlestmpl
+  fi
+  sed "s/^program:/program: $newprog/" titles.template > ${newprog}.titles
+  echo "The file ${newprog}.titles has just been created" 1>&2
+fi
+
+if [ -n "$EDITOR" ] ; then
+  if [ "$EDITOR" == "vi" ] ; then
+    # done in terminal window
+    $EDITOR ${newprog}.titles
+  else
+    # done as a background task
+    $EDITOR ${newprog}.titles &
+  fi
+fi

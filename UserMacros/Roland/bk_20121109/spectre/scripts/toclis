@@ -1,0 +1,124 @@
+#!/bin/bash
+#<pre><b>
+# Script     : toclis
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 13-Jan-2005
+# Purpose    : Production script to create a "table of contents" for all the
+#              .lis files specified in donelist.txt or a donelist section file
+#              in sorted report-id order.
+# SubScripts : getitles
+# Notes      : This must be run from the directory where both "donelist.txt" and
+#              the output files are. Only files with the pattern *.lis* are
+#              selected. You can specify a donelist section file instead of the
+#              default donelist.txt if you use the -n option.
+# Usage      : toclis > toc.txt
+#              toclis -n 2 > toc2.txt
+#              toclis -s 'ta_*' > tocta.txt
+#===============================================================================
+# OPTIONS:
+#-opt- -------------------------------description-------------------------------
+#  1   (switch) extract 1 title only
+#  s   (value)  selection file pattern                            
+#  n   (value)  donelist section number                           
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not supply any parameters
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Define give-usage-message-then-exit function. 
+usage () {
+  echo "Usage: toclis -s <selection file pattern> -n <donelist section number>"
+1>&2
+  exit 1
+}
+
+
+# The following variable names and defaults have been generated for you
+# to help you start. You can rename the variables to something more 
+# meaningful but be sure to change all occurrences of that name in the code.
+values=                             # Default value for selection file pattern                            
+valuen=                             # Default value for donelist section number                          
+switch1=0                           # default switch=off for extract one title
+only
+
+
+# "case" statement for action to take on selected options
+while getopts "1s:n:" param ; do
+  case $param in
+   "?") # bad option supplied
+        usage
+        ;;
+   "1") # extract one title only 
+        switch1=1
+        ;;
+   "s") # (value) selection file pattern
+        values=$OPTARG
+        ;;
+   "n") # (value) donelist section number
+        valuen=$OPTARG
+        ;;
+  esac
+done
+
+
+# shift to bring first parameter to position 1
+shift $(($OPTIND - 1))
+
+
+# No parameters allowed
+if [ $# -gt 0 ] ; then
+  echo "Error: (toclis) Do not supply parameters" 1>&2
+  usage
+fi
+
+
+# set one title option
+onet=
+if [ $switch1 -eq 1 ] ; then
+  onet=-1
+fi
+
+
+# set the donefile to use
+if [ ! -z "$valuen" ] ; then
+  donefile=donesect${valuen}.txt
+else
+  donefile=donelist.txt
+fi
+
+
+# select only those entries that are .lis* files and sort in order
+grep '^...-...-...-...-...-... ' $donefile | gawk '{print $2}' | \
+  grep '.*\.lis.*$' | sort > ~/toclis_$$.tmp
+
+
+#################### SWITCH OFF SHELL GLOBBING #######################
+set -f
+
+
+# if file pattern set then use else default file pattern to *
+patt=*
+if [ ! -z $values ] ; then
+  patt=$values
+fi
+
+# get the titles of each file
+for filename in $(cat ~/toclis_$$.tmp | cut -d' ' -f2-) ; do
+  case "$filename" in
+    $patt) getitles $onet $filename
+    ;;
+  esac
+done
+
+
+# tidy up
+rm -f ~/toclis_$$.tmp

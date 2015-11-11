@@ -1,0 +1,38 @@
+#!/bin/bash
+#<pre><b>
+# Script     : badlines
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 28-Jul-2005
+# Purpose    : Production script to find lines in a text file containing bad
+#              characters (i.e. not clean 7 bit)
+# SubScripts : none
+# Notes      : If any bad characters are found in a line then the line number
+#              followed by a colon followed by the original line will be shown.
+#              If you want to see the hex values of the bad characters then
+#              pipe the output to "badchars" which will show these characters
+#              as hex codes in angle brackets such as <0><f6><f9> 
+# Usage      : badlines file.ext
+#              badlines file.ext | badchars
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   Input file name
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Edit the test below for the number of expected parameters and put out
+# a usage note if an incorrect number supplied. Remove if not required.
+if [ $# -ne 1 ] ; then
+  echo "Usage: badlines file.ext" 1>&2
+  exit 1
+fi
+
+
+gawk '/[\x00-\x08\x0b\x0e-\x19\x80-\xff]/ {print NR ":" $0}' "$1"

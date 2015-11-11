@@ -1,0 +1,303 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="%unistats and %npcttab for MS Windows Users">
+   <meta name="KeyWords" content="unistats and npcttab for MS Windows Users">
+   <title>unistats and npcttab for MS Windows Users</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+%unistats and %npcttab for MS Windows Users</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 27 Sep 2011)</b></center>
+
+<h2>
+Introduction</h2>
+Spectre was originally written for Unix but got ported over to Windows
+in February 2007. However, its main reporting macros %unistats and %npcttab
+were never platform specific. They can be used on any platform that SAS
+runs on. You can run both %unistats and %npcttab independently of Spectre
+so you need not be deprived of these two very powerful and flexible macros.
+The example code and output shown on this web site for those two macros
+all ran using SAS Learning Edition 4.1 on my PC independently of Spectre
+so they will certainly work for you under Windows. You can link to these
+pages below and run this code yourself.
+<br><a href="npcttab.html" target="_blank">%npcttab</a>
+<br><a href="unistats.html" target="_blank">%unistats</a>
+<br>&nbsp;
+<h2>
+%npcttab and %unistats as "standard macros"</h2>
+If you use these macros, then you might think they are limited to the layout
+of the reports they give and the p-values they can calculate but that is
+not the case. The macros were designed to be very flexible and are intended
+for use by any and all pharmaceutical companies and CROs. Neither of these
+macros are tied to a report layout style. %unistats does not produce a
+report by default and the report capability of %npcttab can be disabled
+using <b>print=no</b> and they will give you output datasets that you are
+free to present in any style you wish. If you require p-values these macros
+can not currently give then you can calculate them yourself in your code
+and merge these p-values in with the output datasets and then produce a
+report in any required layout style. Bearing in mind that these two macros
+will run on any platform and are free to anybody to download and use, then
+perhaps they are the first macros ever released with a claim to being called
+"<b>standard macros</b>" for safety reporting across the pharmaceutical
+industry. As you get to know the output datasets from these macros you
+can think of ways to merge them with efficacy values and produce efficacy
+reports so they are not strictly limited to being "safety" macros.
+<h2>
+Options setting</h2>
+If you intend to use the Spectre macro %pagexofy to add page labels then
+for <b>%unistats</b> and <b>%npcttab</b> to work correctly you should set
+the options <b>noovp nodate nonumber</b>. The "nodate" and "nonumber" are
+to ensure the "Page x of Y" labels can be added correctly (you can still
+have these labels added even if you are not using Spectre as will be explained
+below) and the "noovp" will stop the triple display of error messages in
+the log which is a nuisance. If you use Spectre then all these options
+are set in the <b>%titles</b> macro but if you are using these macros independently
+and not calling %titles then you will have to set these options yourself
+before making a call to these macros.
+<h2>
+<a NAME="p"></a>Avoid %openrep and %closerep</h2>
+Both <b>%openrep</b> and <b>%closerep</b> are very Spectre-specific macros
+so you must not use these if you are running under Windows outside of Spectre.
+But you will need to do some of the things that <b>%openrep</b> is doing
+such as setting the <b>options missing=" "</b> and changing the
+<b>formchar</b>
+characters so if you are a Windows user then you will need to do this yourself
+in your code or write a different macro to do this. The %openrep macro
+calls "<b>proc printto</b>" to redirect the print output. This is so it
+can add page number labels to the output as a post-process using the %pagexofy
+macro. If you wish to add page labels in this manner then I presume you
+will need to do this as well. If you are not adding page labels then you
+do not need to redirect the output. You can look at the code of the macro
+below.
+<br><a href="sysmacros/openrep.sas" target="_blank">%openrep</a>
+<p>The <b>%closerep</b> macro calls the macro <b>%pagexofy</b> to add the
+"Page x of Y" labels and to make some character substitutions such as changing
+the "A0"x character to spaces put there by %unistats for descriptive statistics
+decimal point alignment. If you are not adding page labels of the form
+"Page x of Y" then you do not need to call this macro. You have the choice
+with %pagexofy of overwriting the input file or specifying an output file.
+<b>You
+must make sure you have freed the print file</b> before you call this macro
+to overwrite it. If you have used a "<b>proc printto</b>" to redirect print
+output then you must cancel it with another call "<b>proc printto print=print;</b>"
+to free the output file before you call the %pagexofy macro to overwrite
+it. If you have allocated the print file using a filename statement then
+you must "<b>clear</b>" that fileref. Details of how to use the macro are
+in the header. Note that you must supply file names to this macro and not
+filerefs.
+<br><a href="sysmacros/pagexofy.sas" target="_blank">%pagexofy</a>
+<h2>
+"Page x of Y" labels</h2>
+As mentioned in the previous section, you can use the macro %pagexofy to
+add "Page x of Y" labels to your output. If you are not adding page labels
+of this form then you need not use %pagexofy. What this macro is looking
+for is the character 'FF'x. This is known in Spectre as the "page marker".
+It assumes you have one of these per page and that you want the label to
+be put where this character is. The %titles macro calls a client titles
+macro to put these 'FF'x characters on a page but if you are not using
+%titles then you can still put these 'FF'x page markers there yourself.
+For some special situations you might need to do this in your code but
+if you want the page marker character to be on the top line on the far
+right then you can use the <b>%latitle</b> macro with the "<b>pagemark=yes</b>"
+option (for left-aligned titles) or the <b>%ctitlepgmrk</b> macro (for
+centred titles).
+<br><a href="utilmacros/latitle.sas" target="_blank">%latitle</a>
+<br><a href="sysmacros/ctitlepgmrk.sas" target="_blank">%ctitlepgmrk</a>
+<h2>
+Example code for %unistats</h2>
+This is an example piece of code for using %unistats and then calling the
+%pagexofy macro to turn the "&thorn;" characters into spaces. Note that
+the output file must be freed before it can be converted "in-place". You
+will see I have redirected the print output back to its default destination
+in the "proc printto" statement, followed it by a "run" statement so that
+it takes effect before I deallocate the fileref with a "clear".
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>options noovp nodate nonumber center&nbsp;</tt>
+<br><tt>missing=" " formchar='|_---|+|---+=|-/\&lt;>*';&nbsp;</tt>
+<p><tt>options sasautos=("C:\spectre\macros" SASAUTOS);&nbsp;</tt>
+<p><tt>options ls=78 ps=63;&nbsp;</tt>
+<p><tt>%ctitlepgmrk("Centered title with a page marker on the right")</tt>
+<br>&nbsp;
+<p><tt>proc format;&nbsp;</tt>
+<br><tt>&nbsp; value racecd&nbsp;</tt>
+<br><tt>&nbsp; 1="CAUCASIAN"&nbsp;</tt>
+<br><tt>&nbsp; 2="BLACK"&nbsp;</tt>
+<br><tt>&nbsp; 3="ASIAN"&nbsp;</tt>
+<br><tt>&nbsp; 4="HISPANIC"&nbsp;</tt>
+<br><tt>&nbsp; 5="OTHER"&nbsp;</tt>
+<br><tt>&nbsp; ;&nbsp;</tt>
+<br><tt>&nbsp; value sexcd&nbsp;</tt>
+<br><tt>&nbsp; 1="MALE"&nbsp;</tt>
+<br><tt>&nbsp; 2="FEMALE"&nbsp;</tt>
+<br><tt>&nbsp; ;&nbsp;</tt>
+<br><tt>&nbsp; value trtcd&nbsp;</tt>
+<br><tt>&nbsp; 1="Ambident (1g/day)"&nbsp;</tt>
+<br><tt>&nbsp; 2="Betamax (500mg/day)"&nbsp;</tt>
+<br><tt>&nbsp; 3="No treatment"&nbsp;</tt>
+<br><tt>&nbsp; ;&nbsp;</tt>
+<br><tt>&nbsp; value trtnarr&nbsp;</tt>
+<br><tt>&nbsp; 1="Ambident@(1g/day)"&nbsp;</tt>
+<br><tt>&nbsp; 2="Betamax@(500mg/day)"&nbsp;</tt>
+<br><tt>&nbsp; 3="No@treatment"&nbsp;</tt>
+<br><tt>&nbsp; ;</tt>
+<br><tt>&nbsp; value NY&nbsp;</tt>
+<br><tt>&nbsp; 0="NO"&nbsp;</tt>
+<br><tt>&nbsp; 1="YES"&nbsp;</tt>
+<br><tt>&nbsp; ;&nbsp;</tt>
+<br><tt>run;</tt>
+<br><tt></tt>&nbsp;
+<p><tt>proc sort data=sasuser.demog(where=(fascd=1))&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; out=demog(drop=fascd);&nbsp;</tt>
+<br><tt>&nbsp; by patno invid;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<br>&nbsp;
+<p><tt>%popfmt(demog,trtcd,uniqueid=patno invid)&nbsp;</tt>
+<p><b><tt>filename tmp "roland.txt";</tt></b>
+<br><b><tt>proc printto print=tmp new;</tt></b>
+<p><tt>%unistats(dsin=demog,</tt>
+<br><tt>descstats=N Min Mean Max STD.,&nbsp;</tt>
+<br><tt>varlist=sexcd racecd age weight height);</tt>
+<p><b><tt>proc printto print=print;</tt></b>
+<br><b><tt>run;</tt></b>
+<p><b><tt>filename tmp clear;</tt></b>
+<p><b><tt>%pagexofy("roland.txt");</tt></b></td>
+</tr>
+</table>
+
+<p>And here is "roland.txt" after being converted in-place by %pagexofy
+to change the "FF"x character to a page label.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Centered title with a page marker on the right&nbsp;&nbsp;&nbsp;&nbsp;
+Page 1 of 1</tt>
+<br><tt>&nbsp;</tt>
+<br><tt>______________________________________________________________________________</tt>
+<br><tt>&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Ambident (1g/day)&nbsp;&nbsp;&nbsp; Betamax (500mg/day)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=9)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=8)</tt>
+<br><tt>______________________________________________________________________________</tt>
+<br><tt>&nbsp;</tt>
+<br><tt>GENDER CODE</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; MALE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 37.5)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; FEMALE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)</tt>
+<br><tt>&nbsp;</tt>
+<br><tt>RACE CODE</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; CAUCASIAN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1 ( 12.5)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; BLACK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 37.5)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; ASIAN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 37.5)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; HISPANIC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0 (&nbsp; 0.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0 (&nbsp; 0.0)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; OTHER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0 (&nbsp; 0.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1 ( 12.5)</tt>
+<br><tt>&nbsp;</tt>
+<br><tt>AGE (YEARS)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; N&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Min&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+16.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+16.0</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Mean&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+26.3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+24.0</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Max&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+40.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+36.0</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; STD.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8.03&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8.49</tt>
+<br><tt>&nbsp;</tt>
+<br><tt>WEIGHT (KG)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; N&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Min&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+65.5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+65.5</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Mean&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+76.6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+70.8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Max&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+79.6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+78.1</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; STD.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4.36&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5.69</tt>
+<br><tt>&nbsp;</tt>
+<br><tt>HEIGHT (CM)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; N&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Min&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+175.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+175.0</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Mean&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+197.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+182.3</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Max&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+212.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+200.0</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; STD.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+11.94&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+9.00</tt>
+<br><tt>&nbsp;</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+%npcttab and %unistats can be used on Windows platforms independently of
+the Spectre reporting system and the way to do this has been explained
+on this page. If you are using these macros outside of the Spectre system
+on <b>Unix</b> then you should read the page on "Ad-hoc reporting" that
+you can link to below.
+<br><a href="adhoc.html">Ad-hoc Reporting and PDFs</a>
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+</html>

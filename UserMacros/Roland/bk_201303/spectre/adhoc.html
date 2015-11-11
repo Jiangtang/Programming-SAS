@@ -1,0 +1,311 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="Ad hoc reporting and PDF creation using Spectre">
+   <meta name="KeyWords" content="ad hoc Spectre PDF">
+   <title>Ad Hoc Reporting and PDFs</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Ad-Hoc Reporting and PDFs</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 21 Mar 2007)</b></center>
+
+<h2>
+Introduction</h2>
+Sometimes it is a requirement to produce reports for a study that are outside
+the study plan. Reports such as these will not form part of a submission
+so it is normal to keep these reports separate. There are a number of utilities
+to help you do this and you can create bookmarked PDFs from these extra
+reports.
+<p>If you are doing ad-hoc reporting you will not have any ".titles" members,
+therefore you should not run the <b>crtitlesds</b> utility to create a
+titles dataset (if you do you will update the titles and protocol datasets
+which might not be allowed if a study has been already reported) and you
+will not be using the macros %titles, %openrep and %closerep. Instead you
+will have to set up all the titles and footnotes in your program code and
+you will have to choose your own line size and page size.
+<p>This page assumes you are working on a Linux or Unix platform. If you
+are working on a non-Unix/Linux platform then you should read the following
+page.
+<br><a href="winusers.html">%unistats and %npcttab for MS Windows users</a>
+<h2>
+Options setting</h2>
+You should always use the SAS options "<b>noovp nodate nonumber</b>". "nodate
+nonumber" is required so that "Page x of Y" labels can be added correctly
+and "noovp" will stop the triple display of warnings and errors in the
+log.
+<h2>
+Choosing line size and page size</h2>
+You can use the scripts <a href="scripts/a4lsps" target="_blank">a4lsps</a>
+and <a href="scripts/uslsps" target="_blank">uslsps</a> to choose a suitable
+line size and page size for your report that reflects the paper size (A4
+or US Letter) and margins. These scripts default to a 1.0 inch margin except
+for the right margin (in the portrait sense) which is 0.75 inches. You
+can change these margin defaults if you wish. Whatever margin choices are
+made will be displayed. A choice of values for different font sizes will
+be displayed. A layout of "L10" means "landscape 10 point" and a layout
+of "P8" means "portrait 8 points" etc.. Here is the output from "a4lsps"
+using default margins:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>$ a4lsps</tt>
+<br><tt>A4 margin settings (inches): -l 1.0 -r 0.75 -t 1.0 -b 1.0</tt>
+<br><tt>Layout ls&nbsp; ps</tt>
+<br><tt>------ --- --</tt>
+<br><tt>L10&nbsp;&nbsp;&nbsp; 116 42</tt>
+<br><tt>L9&nbsp;&nbsp;&nbsp;&nbsp; 129 47</tt>
+<br><tt>L8&nbsp;&nbsp;&nbsp;&nbsp; 145 53</tt>
+<br><tt>P10&nbsp;&nbsp;&nbsp; 78&nbsp; 63</tt>
+<br><tt>P9&nbsp;&nbsp;&nbsp;&nbsp; 87&nbsp; 70</tt>
+<br><tt>P8&nbsp;&nbsp;&nbsp;&nbsp; 98&nbsp; 79</tt></td>
+</tr>
+</table>
+
+<p>The margin default "options" were shown in the last example. Here is
+another call with the right margin set to 1.0 inch:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>$ a4lsps -r 1.0</tt>
+<br><tt>A4 margin settings (inches): -l 1.0 -r 1.0 -t 1.0 -b 1.0</tt>
+<br><tt>Layout ls&nbsp; ps</tt>
+<br><tt>------ --- --</tt>
+<br><tt>L10&nbsp;&nbsp;&nbsp; 116 41</tt>
+<br><tt>L9&nbsp;&nbsp;&nbsp;&nbsp; 129 45</tt>
+<br><tt>L8&nbsp;&nbsp;&nbsp;&nbsp; 145 51</tt>
+<br><tt>P10&nbsp;&nbsp;&nbsp; 75&nbsp; 63</tt>
+<br><tt>P9&nbsp;&nbsp;&nbsp;&nbsp; 83&nbsp; 70</tt>
+<br><tt>P8&nbsp;&nbsp;&nbsp;&nbsp; 94&nbsp; 79</tt></td>
+</tr>
+</table>
+
+<p>The line size and page size values should be supplied to the "ls=" and
+"ps=" options in your code.
+<h2>
+Changing the formchar= option</h2>
+If you use the reporting system then the formchar= options is changed by
+default inside the %openrep macro so that the spanning line in "proc report"
+comes out as underscores and not dashes. Underscores form a solid line
+and this is usually preferred so if you want to set the formchar= value
+to the same used by %openrep then use the following in your code.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>options formchar='|_---|+|---+=|-/\&lt;>*';</tt></td>
+</tr>
+</table>
+
+<h2>
+The page marker</h2>
+If you use the reporting system, it places a page mark on the first line
+of each page in the extreme right position. This page marker gets used
+for inserting the "Page X of Y" labels. You will probably still want these
+page labels so you need to make sure that these page markers get added.
+There are two macros you can use for this, <a href="macros/latitle.sas" target="_blank">%latitle</a>
+and <a href="macros/ctitlepgmrk.sas" target="_blank">%ctitlepgmrk</a>.
+The first is for left-aligned titles and for the topmost title you can
+specify "<b>pagemark=yes</b>" in the macro call. If your topmost title
+is centred you can use "%ctitlepgmrk" and the page mark will be added automatically.
+<h2>
+Left-aligning titles and footnotes</h2>
+Macros <a href="utilmacros/latitle.sas" target="_blank">%latitle</a> and
+<a href="utilmacros/lafootnote.sas" target="_blank">%lafootnote</a> can
+be used for left-aligning titles and footnotes if the "center" option is
+in effect.
+<h2>
+A solid footnote line</h2>
+If you are using the reporting system then a solid footnote line is easy
+to do in the titles member. You use "&amp;_longline_". But if you are doing
+ad-hoc reporting then this is not set up. The easiest way to create a spanning
+footnote is to repeat underscores like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>footnote1 "%sysfunc(repeat(_,199))";</tt></td>
+</tr>
+</table>
+
+<p>Here is an important piece of information - <b>you must have at least
+one footnote, even if it is blank</b>. You can specify a blank footnote
+using this method.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>footnote1 " ";</tt></td>
+</tr>
+</table>
+
+<p>The reason you need one footnote is to make sure the full number of
+page lines is used. This is to help a utility create a correct PostScript
+file (described later).
+<h2>
+Keeping reports separate</h2>
+If you are producing more than one table then you need to keep the output
+separate for each table. This is so page labels can be added correctly
+for each table. How you do this is up to you, but a suggested way is to
+use a "proc printto" call for each table like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>proc printto print="myprog.lsta" new;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>You could increment the suffix for each table so that you would create
+myprog.lsta, myprog.lstb, myprog.lstc etc.. Remember to use the "new" options
+otherwise if you rerun your code it will append output to what is already
+there.
+<h2>
+Adding page labels</h2>
+You will have to add page labels using the "pagexofy" script. This has
+to be done for each output. This is how I suggest you use it - create a
+"lis" member out of your "lst" member and give it the same suffix.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>pagexofy myprog.lsta > myprog.lisa</tt></td>
+</tr>
+</table>
+
+<h2>
+"a4ps" and "usps"</h2>
+As mentioned in other places on this web site, PDF files are created from
+PostScript files. So you have to create a PostScript file before you can
+create a PDF. If you were using the reporting system, "lis2ps" would be
+used. This extracts information from the titles dataset. But in the case
+of ad-hoc reports, your titles will not be in there, so you have to use
+"<b>a4ps</b>" or "<b>usps</b>" depending on your paper size ("a4ps" for
+A4, "usps" for US Letter). Neither "a4ps" nor "usps" knows what your margins
+are. Their default is one inch for all margins except for the right margin
+which is 0.75 inches. If you chose different margins when using "a4lsps"
+or "uslsps" to give you the line size and page size, you will have to specify
+this to the "a4ps" or "usps" utilities. This will be explained in the header
+of the script. You can link to a4ps below to read the header if you wish.
+<br><a href="scripts/a4ps" target="_blank">a4ps</a>
+<p>Both these scripts will handle any mix of layouts in multiple files
+so long as you specified the margins correctly. It will probably manage
+in any case. It will tell you if it can not. What these scripts need you
+to do is to <b>specify all the files in the correct order</b>. They call
+other scripts. To see the dependencies, click <a href="scrdep.html#a4ps" target="_blank">here</a>.
+<h2>
+Ordering the files for "a4ps" and "usps"</h2>
+If all your reports came out of one program and you used the method suggested
+of having "lst" files with suffixes and this was done in the order you
+wanted the output to appear then it is no problem. Assuming you then added
+the "Page X of Y" labels using "pagexofy" and used the same suffix then
+you would create the PostScript files like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>a4ps myprog.lis* > myprog.ps</tt></td>
+</tr>
+</table>
+
+<p>But suppose there was a mix of program names? If you knew the order
+then you could specify it to "a4ps" like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>a4ps file1.lis file2.lis file3.lis file4.lis > myprog.ps</tt></td>
+</tr>
+</table>
+
+<p>Using the above method might be difficult if you have a lot of files.
+Happily, there are some scripts that might help you. It all depends on
+whether "getitles" can extract the titles from your output and identify
+the table/appendix reference numbers. It it can, then the script "<b>oplist</b>"
+can order the files for you in reference order. You use this command:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>oplist myprog1.lis* myprog2.lis*</tt></td>
+</tr>
+</table>
+
+<p>If you try the command above, specifying your complete list of "lis"
+files somehow using wild cards character in the file name if need be, and
+if it gives you the correct order then you are in luck. There is another
+script like "oplist" called "<b>oporder</b>" that does the same as "oplist"
+but just displays the file name. The you can then build your PostScript
+file like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>a4ps $(oporder myprog1.lis* myprog2.lis*) > myprog.ps</tt></td>
+</tr>
+</table>
+
+<p>In the above command, what is in "$( )" gets done first (this is called
+"substitution"). So the "$(<tt>oporder prog1.lis* myprog2.lis*</tt>)" gets
+turned into a list of files in the correct output order which then gets
+fed to "a4ps" which then converts them to PostScript in that order.
+<p>There is another way of doing this. Suppose all your outputs were listed
+in a file, somewhere. Just the file names and nothing else, one per line
+and already in the correct order. Then you could use the same "substitution"
+technique. If this list were in the file "outlis.txt" then you could use
+this command:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>a4ps $(cat outlis.txt) > myprog.ps</tt></td>
+</tr>
+</table>
+
+<p>If you had changed the right margin to one inch (instead of the default
+0.75 inches) then the command would take the form:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>a4ps -r 1.0 $(cat outlis.txt) > myprog.ps</tt></td>
+</tr>
+</table>
+
+<p>You can see that you have to think about getting the order of your output
+right and that there are different ways of doing this.
+<h2>
+Creating the PDF</h2>
+Once you have the PostScript file then the rest is easy. You use the script
+"a4ps2pdf" or "usps2pdf" depending on your paper size. The PDF created
+will have the same name as your file but with the extension ".pdf". Note
+that you will only get correct bookmarks if the "getitles" script (called
+from "oporder") was able to extract the titles.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>a4ps2pdf myprog.ps</tt></td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+You have seen how to create bookmarked PDFs when doing ad-hoc reporting.
+You can see that it is a lot more difficult than using the reporting system
+but there are tools to help you.
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+</html>

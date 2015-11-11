@@ -1,0 +1,35 @@
+#!/bin/bash
+# Script     : getfields
+# Version    : 1.0
+# Author     : Roland
+# Date       : 04-Mar-2007
+# Purpose    : To display the client, office, drug, study and increment from
+#              the current directory separated by forward slashes.
+# SubScripts : none
+# Notes      : Needs to be edited for each client site
+# Usage      : getfields
+#               
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not supply any parameters
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+
+# No parameters
+if [ $# -gt 0 ] ; then
+  echo "Usage: getfields  # do not supply any parameters" 1>&2
+  exit 1
+fi
+
+client=$(pwd | cut -d/ -f5)
+office=$(pwd | cut -d/ -f6)
+drug=$(pwd | cut -d/ -f7)
+study=$(pwd | cut -d/ -f8)
+inc=$(pwd | cut -d/ -f9)
+
+fields=$client/$office/$drug/$study/$inc;
+echo $fields;

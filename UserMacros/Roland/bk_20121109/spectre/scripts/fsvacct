@@ -1,0 +1,86 @@
+#!/bin/bash
+#<pre><b>
+# Script     : fsvacct
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 04-Aug-2003
+# Purpose    : To launch fsview to browse a SAS dataset in the current directory
+#              with fields from the acct dataset included (Uses SAS)
+# SubScripts : none
+# Notes      : the command "fsvacct" is followed by the dataset you want to
+#              view and then the field you want to merge on and then the 
+#              fields you want included.
+#
+#              fsvacct dataset patno/patient field1 field2 field3
+#
+#              Make the data directory the current directory. When fsview is
+#              invoked it will go into command line mode. This task is run in
+#              background so you can continue to use your xterm window for other
+#              tasks.
+#
+#              The dataset viewed will be in your work library. This is because
+#              the dataset is temporary. The first three fields supplied will be
+#              made the showid variables so make sure they are not long text
+#              fields. Change order or insert a small field in the first three
+#              if this is the case.
+#
+#              If you give a SAS dataset file extension, the extension will be
+#              ignored.
+#
+#              The toolbox window is closed on startup. If you wish to use it 
+#              then issue the command "toolopen" on the fsview command line.
+#
+# Usage      : fsvacct adv patno begindt ldosedt 
+#              fsvacct demog.sas7bdat patno begindt ldosedt
+#
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   Name of SAS dataset
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+#
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+if [ $# -lt 3 ] ; then
+  echo "Usage: fsvacct SAS-dataset patno begindt ldosedt" 1>&2
+  exit 1
+fi
+
+dset=$(echo $1 | cut -d. -f1)
+
+sas -nofmterr -sasuser work -initstmt "
+
+%alloc
+libname here './'; 
+%macro fmtlookup;
+  %if %sysfunc(cexist(stat.formats)) %then %do;
+    options fmtsearch=(stat);
+  %end;
+  %else %if %sysfunc(cexist(der.formats)) %then %do;
+    options fmtsearch=(der);
+  %end;
+%mend fmtlookup;
+%fmtlookup;
+
+proc sort data=here.acct(keep=$2 $3 $4 $5 $6 $7 $8 $9)
+           out=acct;
+  by $2;
+run;
+
+proc sort data=here.$dset
+           out=$dset;
+  by $2;
+run;
+
+data $dset;
+  merge acct(in=_acct) $dset(in=_data);
+  by $2;
+  if _acct and _data;
+run;
+
+" -initcmd "fsview $dset;toolclose;command;show id $2 $3 $4" &

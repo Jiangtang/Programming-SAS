@@ -1,0 +1,51 @@
+#!/bin/bash
+#<pre><b>
+# Script     : sortnpref
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 26-Apr-2004
+# Purpose    : Production script to sort a list using a numeric prefix as the
+#              main key.
+# SubScripts : none
+# Notes      : This utility must be piped into.
+#
+#              Strings of the form ABCnn_XXX.xx are sorted using the number nn
+#              as the main key and the whole string as the secondary key. Only
+#              numeric digits immediately preceding the underscore in the 
+#              string will be used as the main sort key such that s3d45_meds.sas
+#              will have 45 as the main sort key and 3 will not play a part.
+#
+#              If the string has more than one underscore in the name then only
+#              the characters up to the first underscore are used to determine
+#              the first sort key such that s11_f88_meds.sas will use the number
+#              11 as the main sort key and not 88.
+#
+# Usage      : ls *[0-9]_*.sas | sortnpref
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  This utility must be piped into. There are no parameters.
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+
+gawk -F_ '{ # use "_" as the field separator
+
+# find where we get a numeric match at the end of the first field
+pos=match($1,/[0-9]*$/)       
+
+# Use RSTART and RLENGTH to extract the matching number and add 0
+# to force it to be numeric.
+num=substr($1,RSTART,RLENGTH)+0  
+
+# print the number (minimum 5 digits preceeded with zeros) and the original
+printf "%0#5d %s\n",num,$0
+
+# sort the list then drop the first numeric field to leave the original 
+}' | sort | cut -d' ' -f2-

@@ -1,0 +1,31 @@
+#!/bin/bash
+#<pre><b>
+# Script     : oporder
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 20-Dec-2004
+# Purpose    : To put a list of outputs in table reference order
+# SubScripts : none
+# Notes      : none
+# Usage      : oporder *.lis
+#              oporder t*fadu*.lis
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   file(s) to put in table reference order
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Must be at least one filename
+if [ $# -lt 1 ] ; then
+  echo "Usage: oporder filename(s)" 1>&2
+  exit 1
+fi
+
+oplist $@ | gawk -F":" '{print substr($2,2)}'

@@ -1,0 +1,57 @@
+#!/bin/bash
+#<pre><b>
+# Script     : linesize
+# Version    : 2.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 20-Feb-2007
+# Purpose    : To show the linesize for a sas program in the titles dataset
+#              (uses SAS).
+# SubScripts : calclsps linesize_win
+# SubMacros  : %allocr %protinfo %proginfo
+# Notes      : Uses SAS
+# Usage      : linesize progname
+#              linesize
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   (optional) Program name (case is important)
+#  2   (optional) Label to distinguish multiple outputs per program
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  24Nov05         -stdio used for sas invocation
+# rrb  11Feb07         Call linesize_win for Windows configurations
+# rrb  20Feb07         Call %allocr macro
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# if a Windows config then call linesize_win and exit on return
+if [ -n "$CYGWIN" ] ; then
+  linesize_win "$@"
+  exit $?
+fi
+
+# drop the .sas extension if there
+pgm=$(echo "$1" | awk -F. '{print $1}')
+
+
+# Feed SAS into standard input
+sas -stdio -sasuser work 2>/dev/null << -----FINISH-----
+%allocr
+options validvarname=v7 nofmterr;
+%protinfo
+%proginfo(program=$pgm,label=$2)
+%macro show;
+data _null_;
+  file stdout;
+  put @1 "&_ls_"
+  %if not %length(&_repid_) %then %do;
+  "  (protocol default)"
+  %end;
+  ;
+run;
+%mend;
+%show
+-----FINISH-----

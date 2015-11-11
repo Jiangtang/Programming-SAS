@@ -1,0 +1,268 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="Amending Spectre">
+   <meta name="KeyWords" content="amending Spectre">
+   <title>Amending Spectre (Clinical)</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Amending Spectre (Clinical)</h1></center>
+
+<h2>
+Introduction</h2>
+This document carries on from where the "Key Components of Spectre" document
+left off. The "Key Components" document tells you which parts of Spectre
+must not be changed and which parts can be changed. To recap that document,
+you <b>must not change any of the macros</b> (apart from %unimap, as was
+described) but you can change the scripts, replace the scripts or not use
+them at all. If you are thinking of using Spectre then do not assume it
+is imposing a structure and a set of program naming convention on you.
+It is not. What you see on this web site is more like a full-blown example
+of Spectre in use that is written in a way that illustrates its full capabilities.
+You are free to make changes to it and how you would typically do this
+to meet your site standards for naming programs and output will be described.
+<h2>
+Maintaining the scripts</h2>
+There are more scripts in Spectre than there are macros. It is the scripts
+that mostly need changing when tailoring Spectre and this can seem a fearful
+task to a sas programmer who is used to sas but does not know the platform
+well or how to write shell scripts. Scripts are something you can get used
+to. There are a few complicated scripts webbed here to do with creating
+PDFs, but as for most of them, you will learn in time that they are trivial
+and easy to amend or rewrite. Whoever "looks after" Spectre at your place
+of work must be prepared to maintain the scripts as the way you end up
+using Spectre may not be what the supplied scripts are expecting. There
+is a lot of documentation on this web site about learning Unix commands
+and writing shell scripts to help you, but instead of learning this all
+in one go, you might prefer to amend the scripts as you need to until you
+reach the point where you feel confident about learning all this material.
+What I will be assuming, during this document, is that you do not feel
+confident with scripts yet and you need a lot of guidance in changing them.
+<h2>
+alltitles</h2>
+You have to edit the <b>alltitles</b> script to make sure the file pattern
+it is using matches the program names for which you want to store titles
+in the titles dataset. The file pattern I am using in the script is:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>[xgtl]*.titles</tt></td>
+</tr>
+</table>
+
+<p>....which matches any file that starts with "x", "g", "t" or "l" and
+ends with ".titles". Your valid program names might start with other letters
+and need other matching characters. Suppose your valid program names had
+to start with "t_", "l_" or "f_" then your file pattern would be:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>[tlf]_*.titles</tt></td>
+</tr>
+</table>
+
+<p>Note that "pattern matching" is not the same thing as "regular expressions".
+I explain this briefly in my "Common Unix Commands" document <a href="unixcom.html#patt" target="_blank">here</a>.
+If you are not sure about your file pattern then go to the directory where
+all your titles members are held and do an "echo" command on your file
+pattern like this to see if it lists what it should do:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>echo &lt;filepattern>*.titles</tt></td>
+</tr>
+</table>
+
+<p>If you look at the <b>alltitles</b> script it makes it very clear where
+you can do the edit to match your program file pattern. You can look at
+it (it will open in a new window) <a href="scripts/alltitles" target="_blank">here</a>.
+<h2>
+makerun (for reports)</h2>
+The script <b>makerun </b>generates the script <b>runreports</b> that runs
+all the reporting members. It gets this list from the titles dataset using
+the scripts <b>intitlesds</b> and <b>intitlis</b> to get a list of programs
+and their output. In the code, if a program name starts with an "x" then
+it is excluded from the generated <b>runreports</b> script. This is because
+these "x" programs are "extra analysis" programs that run after the main
+analysis has been done. These extra programs are handled in the <b>makexrun</b>
+script instead which is expecially for a run of "extra analysis" programs.
+If your "extra analysis" programs begin with a different letter then you
+will have to edit the code where you see the following. Look for the "grep
+-v ^x". "-v" as used in grep means "not" and the "^" means "begins with"
+so it is selecting those programs that "do not begin with 'x' ". If you
+do not have any "extra analysis" programs and your regular reporting programs
+do not begin with "x" then it will do no harm to leave this code in.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt># get a list of reporting sas programs and their lisfile names</tt>
+<br><tt># (excluding "extra" analysis programs)</tt>
+<br><tt>intitlis | grep -v ^x | sed 's%\r$%%' > ~/rproglis_$$.tmp</tt>
+<p><tt># get a list of reporting sas programs (excluding "extra" analysis)</tt>
+<br><tt>intitlesds | grep -v ^x | sed 's%\r$%%' > ~/rprogs_$$.tmp</tt></td>
+</tr>
+</table>
+
+<p>This code is not marked in any clear way and is near the top of this
+long script that you can link to <a href="scripts/makerun" target="_blank">here</a>.
+<h2>
+makexrun</h2>
+The script <b>makexrun</b> generates the script <b>runxreports</b> that
+runs all the "extra analysis" programs. Maybe you don't have any of these.
+These extra analysis programs start with an "x" in the way I have it set
+up on this web site so I select on these programs that start with "x" in
+the code like this. Look for "grep ^x":
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt># get a list of extra analysis reporting sas programs and their
+lisfile names</tt>
+<br><tt>intitlis | grep ^x | sed 's%\r$%%'&nbsp; > ~/rproglis_$$.tmp</tt>
+<p><tt># get a list of extra analysis reporting programs</tt>
+<br><tt>intitlesds | grep ^x | sed 's%\r$%%' > ~/rprogs_$$.tmp</tt></td>
+</tr>
+</table>
+
+<p>The "grep ^x" will select on members that start with an "x" (the "^"
+means "begins with" in this case). If you have "extra analysis" programs
+that start with a different letter then you will have to amend this. If
+you don't have any "extra analysis" programs then you can leave it as it
+is because you won't be using this script in any case. You can link to
+the script <a href="scripts/makexrun" target="_blank">here</a>.
+<h2>
+makerun (for derived datasets)</h2>
+The script <b>makerun</b> generates a script named <b>runderived</b> to
+run the programs that create the derived datasets. It could be that you
+do not create derived datasets and instead get them created by an external
+organisation, in which case you will never need to run <b>runderived</b>,
+or your program naming conventions for the sas programs creating the derived
+datasets could be very different from what the <b>makerun</b> script is
+expecting. In this case you might want to amend the script extensively
+or replace it with an in-house written script. Another alternative would
+be to use the <b>runderived</b> script as generated as a template and edit
+in the programs you want to run. If you do this you should rename <b>runderived</b>
+as something else otherwise it will get overwritten next time <b>makerun</b>
+is run.
+<p>When creating the derived datasets then the order the programs run is
+important. This is not the case for the reporting programs as there should
+be no dependencies between any of the programs. Also, if a program ends
+due to an error, it would be better to abort the rest of the derived dataset
+build programs. This is not so important for the reporting programs where
+there are no dependencies so it would be normal to carry on with the rest
+of the reporting programs even if one or more of them failed.
+<p>The way the <b>makerun</b> script generates <b>runderived</b> is by
+using the script <a href="scripts/derorder" target="_blank">derorder</a>
+("derived dataset program order") which looks for program names matching
+the file pattern "<b><tt>ls -1 [sd]*[0-9]_*.sas</tt></b>". In other words
+the program name must start with an "s" or a "d" (short for "stats" and
+"derived"), be followed by one or more characters which are followed by
+a numeric digit followed by an underscore, followed by other characters
+and ending ".sas". This would match program names like d01_demog.sas and
+s02_effic.sas and then it will sort by calling <a href="scripts/sortnpref" target="_blank">sortnpref</a>
+("sort using the numeric prefix") with the start letter as a secondary
+key to give the order in which the programs should be run. It is up to
+the user to choose the numeric prefix so that the programs run in the correct
+order. You may not want to use this system at all, in which case you could
+write your own script for running these programs, or you may want to fit
+your naming conventions to make use of this numeric prefix as it is quite
+a useful method for ordering programs.
+<h2>
+To recap so far</h2>
+If you have performed the needed amendments as described above then you
+will be able to run all the programs that create the derived datasets,
+you will have defined to alltitles all the programs you want to store titles
+for and you will have defined to makerun and makexrun all the programs
+that should be part of the normal run and all the programs that should
+be part of the "extra analysis" run. Spectre should therefore be able to
+run all the programs as fit in with your site standard. You can see that
+Spectre is very flexible, although you have to do a bit of script editing
+to get there.
+<h2>
+The titles and protocol datasets</h2>
+The <b>question</b> with the titles and protocol datasets, that get created
+from the ".titles" members and "protocol.txt", is <b>where to put them</b>.
+Early versions of Spectre put them in with the other derived datasets,
+however there was some confusion as to whether it mattered if these datasets
+had timestamps on them that were later than the final full run of the derived
+dataset build. Having later timestamps "looked bad" as it might indicate
+that something had changed in the derived datasets. But the titles and
+protocol dataset are nothing to do with the derived datasets -- they are
+datasets only because it is convenient and more efficient to store them
+as datasets. They would be better off kept away from the derived datasets
+to avoid this confusion so I changed the scripts and macros to allow the
+user to reroute these datasets to another library. Some sort of "utility"
+library would be better. The libref you keep them in is then defined to
+the global macro variable <b>_ptlibref_</b> and you have to edit the allocation
+macros that Spectre uses, to assign this value of a libref to <b>_ptlibref_</b>
+in the macros <a href="macros/allocr.sas" target="_blank">%allocr</a> and
+<a href="macros/allocw.sas" target="_blank">%allocw</a>. You would typically
+set these two macros up in the study and increment macro library. If you
+have a "utility" directory as part of your study library structure then
+I would recommend you route them to there. They should be held at the lowest
+level so that they clearly go with your programs at the study and increment
+you are working on and not with some previous increment or other study.
+<h2>
+autoexec.sas</h2>
+<b>Spectre expects to be able to find all the macros that it needs without
+you doing further allocations</b>. This means the allocation of macro libraries
+should be done in the autoexec member. You may have a high-level version
+or a low level version. A low-level version would reside in the current
+directory but since your derived dataset programs and reporting programs
+might be in different directories then it might be tidier to use a high
+level autoexec.sas member that can detect which study library you are in
+and assign the macro libraries to sasautos accordingly. It might not be
+possible to do it this way, though. It depends on your site standards.
+Another method could be to "link" to it from the derived dataset and reporting
+programs folders so that you only referenced the one copy. You will have
+to learn what your site standards are for this and follow it, but if you
+are using Spectre, then you must comply with its need to <b>have all macros
+libraries correctly assigned at sas invocation</b>. On my PC I keep this
+at the highest level and assign macro libraries depending on which study
+area I am in. You can view it (best viewed as "source") <a href="macros/autoexec.sas" target="_blank">here</a>.
+<h2>
+the client titles macro</h2>
+The <b>client titles macro</b> is where you will be doing some serious
+sas work. This is the macro that displays selected information put in <b>protocol.txt</b>
+in header lines and perhaps a footer line as well according to the client's
+needs. You will need one of these macros for each client. Maybe multiple
+macros for each client if their different regional offices you are doing
+work for, require different layout styles. The %xytitles macro, which is
+there for demonstration purposes only, is an example of a client titles
+macro with a particularly demanding layout style in that "appendix" outputs
+have their "populations" displayed in one of the header lines, instead
+of one of the user-defined titles, in order to save a line of text so that
+more data can be fitted on the report. Where the macro is simpler than
+it could be is that it does not put out a standard "footnote line" that
+would typically state what program was running along with the name of the
+output file it created. Most clients will want this. This macro is already
+adequately covered on its own page <a href="xytitles.html" target="_blank">here</a>.
+<h2>
+Conclusion</h2>
+How you would typically amend Spectre to fit in with your site standards
+has been explained in this document.
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+</html>

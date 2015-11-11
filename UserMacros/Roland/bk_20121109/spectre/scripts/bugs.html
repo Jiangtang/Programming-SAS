@@ -1,0 +1,280 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="Spectre Bugs">
+   <meta name="KeyWords" content="Spectre bugs">
+   <title>Spectre Bugs</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Spectre (Clinical) bugs and changes log</h1></center>
+<b><font color="#3333FF">Note: If you arrived at this page directly using
+a search engine such as Google then this may not be the "Spectre" you are
+looking for. There are a few software packages of this name. This "Spectre"
+is to do with clinical trials reporting.</font></b>
+<h2>
+Introduction</h2>
+Bugs, changes and releases will be listed in descending date order in the
+next section. Macro names will be preceded by a "%" and scripts not.
+<h2>
+<a NAME="log"></a>Bugs and changes log</h2>
+
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>%unistats: 15Feb08: Paired stats spaces now controlled by "^" character
+in the delimiter which will be translated into a space
+<p>%unistats: 10Feb08: mincolw= parameter added
+<p>%unicatrep: 10Feb08: Column layout bug fixed
+<p>%unicatrep and %unistats: 09Feb08: compskip=no is now the default
+<p>%unicatrep and %unistats: 03Feb08: More byrow*= parameters added
+<p>%unicatrep: 02Feb08: byrow*= parameters added plus other changes
+<p>%unistats: 02Feb08: Paired stats labels such as "Min;Max" allowed and
+other parameters added for this v5.0 release
+<p>%xl2sas: 02Feb08: New macro added for reading html spreadsheets
+<p>%unimap: 27Jan08: Upgraded to handle "paired" stats labels such as Min;Max
+<p>%npcttab: 27Jan08: print=no logic changed so that other ods outputs
+are still available
+<p>%unistats, %unipvals and %npcttab: 27Jan08: trtlabel= set to null by
+default and odshtmlcss= and odscsv= parameters added
+<p>%unistats: 26Jan08: Bug fixed for handling formats such as $3. in %cat
+call
+<p>%unipvals: 26Jan08: Wrong p-value displayed for centre effect bug fixed
+and Fisher or chisq settings now override adjcntrvar=
+<p>%removew: 26Jan08: compbl bug fixed where string is null
+<p>%unistats: 20Jan08: Decimal places shown for kurtosis and skewness made
+the same as for STD.
+<p>%unistats and %unipvals; 19Jan08: All variables in input dataset are
+kept and passed to %unipvals
+<p>%unipvals and %unistats: 19Jan08: GLM override parameter values can
+be enclosed in single quotes to reference macro variables such as &amp;trtvar
+(will resolve to the treatment variable) and &amp;respvar (will resolve
+to the response variable)
+<p>%unistats and %unipvals: 14Jan08: GLM override parameters added (more
+to do)
+<p>%unistats and %unipvals: 13Jan08: CMH processing added for categorical
+variables to compensate for centre effects
+<p>%unistats and %unipvals: 13Jan08: cntrwarn=processing changed
+<p>%unistats and %unipvals: 08Jan08: Added parameters for warning of centre
+effects
+<p>%unistats and %unipvals: 07Jan08: Added parameters to test for the homogeneity
+of variances and to use the Welch test
+<p>%unistats and %unipvals: 06Jan08: Added parameters errortype= , modelform=
+and dsmodelanova= for adjustment for centre effects
+<p>%unistats and %unipvals: 06Jan08: Added parameters adjcntrvar= and glmopdest=
+for adjustment for centre effects for t-test and F-test calculations
+<p>%unistats: 05Jan08: Decimal point alignment bug fixed in "fillstr:"
+routine
+<p>%unistats: 31Dec07: Bug with NMISS format where decimal points adjusted
+by variable "/--" modification fixed
+<p>%unistats: 31Dec07: Mapping of statistic labels to keywords and formats
+displayed in log. All keywords starting STD will have the stdfmt= format
+applied.
+<p>%unimap: 31Dec07: Extended list of statistics keywords to match all
+those listed in sas v9.1.3 documentation
+<p>%unimap: 30Dec07: Added "MISSING" to map to NMISS keyword
+<p>%unistats: 30Dec07: NMISS now uses the same format used by N
+<p>%unistats: 30Dec07: Bug with _popfmt_ always being used as a label for
+transposed treatment arm variable fixed.
+<p>%npcttab: 10Nov07: Bug in handling non-user formats (such as $200.)
+assigned to level variables fixed
+<p>%unistats and %npcttab: 30Sep07: Default changed to topline=no to suit
+ODS output
+<p>%unistats: 24Sep07: Added parameters tfmacro= and pvalues=yes to allow
+user to define a macro to create titles and footnotes able to use the p-values
+set up in global macro variables.
+<p>%unistats and %unicatrep: 21Sep07: Added parameters odsrtf=, odshtml=,
+odspdf= and odsother= parameters to pass through ODS statements to the
+"proc report" step.
+<p>%unistats: 18Sep07: Added unicatstyle= parameter so that when unicatstyle=2
+you get a column report rather than an indented report plus a varw= parameter
+to define width of the first column for this style of report
+<p>%unistats and %unicat2word: 16Sep07: New macro %unicat2word added plus
+added wordtabdest= and wordtabdlim= parameters in %unistats for creating
+cell tables for inclusion into a word processor to be converted into in-text
+tables
+<p>%unistats and %npcttab: 16Sep07: Added out= parameter to allow keeping
+the output dataset created by "proc report"
+<p>%now: 07Sep07: Simple macro added that returns the current timestamp
+added
+<p>%unistats and %npcttab: 01Sep07: pctwarn= parameter added to check for
+percentages > 100.01
+<p>%removew: 10Aug07: New macro added
+<p>many macros added: 31Jul07: All macros have been consolidated into the
+macro library stored on the Spectre web site
+<p>many macros: 30Jul07: Header tidy and commercial macro versions now
+free versions
+<p>alltitles: 29Jul07: Explanation of how to edit it to fit your program
+naming conventions added
+<p>%dosfileinfo, %dosfilesize: 22Jul07: Two sasautos macros added for extracting
+DOS file information
+<p>prefix: 22Jul07: New script added to prefix all the items in a list.
+Works the same way as the script "suffix"
+<p>crtitlesds, crtitlesds_win: 20Jul07: Added calls to "lisremap" and "lisremap_win"
+<p>lisremap, lisremap_win: 20Jul07: New scripts added to list the output
+file name remapping specified in "lisfile:" .titles entries
+<p>alltitles: 20Jul07: If there are no *.titles files then assume ALL.TITLES
+was created by another means and exit
+<p>crtitlestmpl: 20Jul07: Mention "label:" and "lisfile:" in the generated
+header for the titles template
+<p>%closerep: 19Jul07: Fixed the free version 4.0 of %closerep so it can
+pick up different donelist temporary file names as set up in "makerun"
+and "makexrun" by reading the environment variable DONELIST
+<p>makerun, makexrun: 19Jul07: Set up system environment variable DONELIST
+to contain the name of the donelist temporary file so that %closerep can
+use it
+<p>%crtitlesds, %proginfo, %closerep: 19Jul07: Added handling for the lisfile
+output lis name
+<p>alltitles: 19Jul07: Updated to copy across "lisfile:" lines in titles
+members to ALL.TITLES
+<p>showtitles, showtitles_win: 19Jul07: Updated to display lisfile name
+as stored in titles dataset otherwise as derived if "lisfile" variable
+is blank or missing
+<p>makerun, makexrun, makemyrun: 19Jul07: Updated to use the "intitlis"
+script instead of the "intitlabels" script
+<p>intitlis, intitlis_win: 19Jul07: New scripts added to replace "intitlabels"
+and "intitlabels_win"
+<p>makexrun, bigxps, bigxlis: 15Jul07: New scripts added to handle "extra
+analysis" program run and output collection
+<p>makerun, alltitles: 15Jul07: Added ability to store titles of "extra
+analysis" programs that start with "x" in the titles dataset but to exclude
+them from the script "runreports" created by "makerun".
+<p>%lcralign: 01Jul07: New macro added
+<p>crprottmpl: 25Jun07: Extra "Pagemac : pagexofy" line added to define
+the macro used to add "Page x of Y" labels
+<p>%crprotds, %protinfo, %closerep: 25Jun07: Allows you to define a replacement
+for the %pagexofy macro for special handling of the output file to enable
+you to add extra titles and footnotes and so break the 10 titles, 10 footnotes
+limit.
+<p>%unistats: 28May07: Version 4.6 Allows you to define variable labels
+to the varlist= parameter and allows you to force numeric processing on
+numeric variables with a user format applied by specifying the /n flag.
+<p>%noquotes, %quotescan and %quotecnt: 28May07: Added to macro library
+for %unistats variable label processing
+<p>26MAY2007 - SPECTRE 2.2 RELEASED
+<p>%npcttab and %unistats: 17May07: further checking of pctfmt= value added
+<p>pagexofy: 16May07: "A0"x and not "FE"x substituted with a space
+<p>%unicatrep and %pagexofy: 16May07: "FE"x no longer treated as a space
+<p>%npcttab and %unistats: 16May07: pctfmt=5.1 added so percent format
+can be changed
+<p>%windex: 10May07: added break-loop-on-match processing
+<p>%npcttab: 03May07: pctsign=no added so display of percent sign can be
+forced
+<p>%unistats: 02May07: pctsign=no added so display of percent sign can
+be forced
+<p>%popfmt: 02May07: brackets=yes parameter added so users can suppress
+(N=xxx) round brackets
+<p>%npcttab: 30Mar07: Bug fixed in handling trtlabel and toplabel
+<p>24MAR2007 - SPECTRE 2.1 RELEASED (THE WINDOWS UPDATE RELEASE)
+<p>%unistats, %unicatrep and %pagexofy: 24Mar07: "A0"x used instead of
+"FE"x for decimal point alignment so no more "&thorn;" characters will
+appear in %unistats output.
+<p>%unistats and %unicatrep: 23Mar07: Removed 3 character limit for catnfmt=
+so that a category "n" of thousands or greater can be used
+<p>%npcttab: 21Mar07: Added support for the "nocenter" option
+<p>%unicatrep: 21Mar07: Added support for the "nocenter" option
+<p>%unipvals: 21Mar07: Updated to cancel format attached to the _pvalue
+variable
+<p>%unimap: 21Mar907: Added mapping of S.E.M. (standard error of the mean)
+<p>%unistats: 21Mar07: Fixed "extra line" problem of merging pvalues on
+top of categories plus added support for S.E.M. (standard error of the
+mean)
+<p>%unistats: 20Mar07: Handling of character treatment arms debugged
+<p>%popfmt: 20Mar07: Creation of _nX_ variables dropped as being too messy
+<p>%pagexofy: 19Mar07: macro now allows for two part page labels such as
+"Seite x" and "(SEITE X)"
+<p>%unistats: 19Mar07: parameter dpalign=yes added to make it possible
+to disable the addition of the special character that the macro uses for
+decimal point alignment
+<p>19Mar07: %mkformat, %hasvars, %match, %hasvarsc and %hasvarsn added
+to macro library in preparation for CDISC reporting
+<p>%pagexofy: 15Mar07: Now checks to make sure "Page x of Y" style has
+4 parts
+<p>showme: 15Mar07: Made a bit more Wordpad friendly
+<p>%unistats: 12Mar07: Default now pctcalc=pop instead of pctcalc=cat due
+to the macro's strong connection with %popfmt
+<p>10MAR2007 - SPECTRE 2.0 RELEASED (THE WINDOWS RELEASE)
+<p>pagexofy: 07Mar07: This script has now been replaced by the %pagexofy
+macro so is now just a utility script
+<p>getfields: 04Mar07: This script added to display client/office/drug/study/increment
+that must be tailored for each site
+<p>All: 02Mar07: many scripts and macros changed so that "der." is replaced
+by "&amp;_ptlibref_.." _ptlibref_ must be set up in the allocation macros
+to say which libref the "protocol" and "titles" datasets are located. This
+makes the installation process for both Unix and Windows easier as edits
+are avoided.
+<p>makerun: 27Feb07: Cygwin emailing fixed (ssmtp must be installed)&nbsp;
+<p>SPECTRE ON WINDOWS: 25Feb07: Initial release. Uses Cygwin. PDF creation
+and emailing from Spectre scripts not done yet.
+<p>makerun: 25Feb07: generation of "runreports" script changed to use "rm"
+for deleting report program output instead of the safer "rem" to look for
+group permission before deletion.
+<p>%proginfo: 21Feb07: made Windows compliant
+<p>%layout2lsps: 21Feb07: new macro added for Windows compliancy
+<p>dirtree: 18Feb07: new script to display directory structure with indents
+from current directory downwards
+<p>sasb: 17Feb07: Made Windows compliant and now calls "scanlogs" instead
+of "sc" due to Cygwin command conflict
+<p>sc: 17Feb07: "sc" has been renamed to "scanlogs" due to Cygwin command
+conflict
+<p>%openrep: 16Feb07: Made Windows compliant
+<p>%closerep: 16Feb07: Now writes to "donelist.tmp" rather than "donelist.txt".
+Made Windows compliant
+<p>makerun: 16Feb07: "donelist.tmp" processing added and updated for "donepages"
+script
+<p>donepages: 16Feb07: Changed to take a donelist file as the first parameter
+<p>%jobinfo: 13Feb2007: Made Windows compliant.
+<p>All Macros: 13Feb2007: "MACRO CALLED" messages added before macro definition
+for all sas macros to put name of macro called and the version of the macro
+in the sas log.
+<p>SPECTRE ON WINDOWS: 05Feb07: Start of project to port Spectre onto Windows
+Phase I (uses Cygwin Linux emulator).
+<p>ddiff: 24Nov2006: A check was added to make sure a file of the same
+name exists in the target directory and no comparison will be done unless
+that is the case. Fixed on 24Nov2006.
+<p>ddiff: 13Nov2006: File permissions can prevent temporary files from
+being overwritten so these are now deleted at end of every iteration. Fixed
+on 13Nov2006
+<p>%unistats: 09Oct2006: Problem detected with fmtord. not found messages.
+Fixed on 09Oct2006
+<p>%unipvals and %unistats: Sometimes a p-value can not be calculated due
+to unusual circumstances and to avoid macro crashes if these datasets are
+not found then %unipvals now sets up dummy p-value datasets. %unistats
+has a pvalmisstxt=" n/a" added so that missing p-values from the dummy
+datasets can be given a suitable text form. Updated 23Sep06
+<p>%unistats: 26Aug2006: nopctcatlist= parameter added. Version incremented
+from 3.0 to 3.1
+<p>%unistats: 21July2006: bug associated with lowercasing _statlabel when
+set to &amp;misstxt. Fixed on 22Jul06&nbsp;
+<p>%unistats: 11July2006: _statord=1 instead of _statord=5 used to match
+p-value to category. Search for "RRB002" in the code to see where change
+was made. Fixed on 11Jul06&nbsp;
+<p>%unipvals: 10Jul06: "missing" option added to "proc freq" tables statements
+so it could calculate p-values based on missing values passed to it by
+the %unistats macro.&nbsp;
+<p>%unistats: 10Jul06: misspct=yes was having its displayed percentage
+blanked out. Fixed on 10Jul06.&nbsp;
+<p>%unistats: 06Jul06: catn= setting caused macro to crash. Fixed on 07Jul06.&nbsp;
+<p>16MAY2006 - SPECTRE RELEASED</td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+This concludes the list of bugs found and changes made to Spectre.
+<br><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript"
+ src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+</html>

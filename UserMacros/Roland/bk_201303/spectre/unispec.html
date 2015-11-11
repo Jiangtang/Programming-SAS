@@ -1,0 +1,116 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="%unistats design specification">
+   <meta name="Description" content="%unistats design specification">
+   <title>%unistats design specification</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+%unistats design specification</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 03 Jun 2006)</b></center>
+
+<h2>
+Introduction</h2>
+This document specifies the programming design for the %unistats macro.
+An overview of what the macro does is on the page you linked from. If you
+want to see the macro dependencies then click <a href="macdep.html#unistats" target="_blank">here</a>.
+<h2>
+Design specification</h2>
+
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Initial processing on macro invocation:</tt>
+<br><tt>&nbsp;&nbsp; Declare local macro variables</tt>
+<br><tt>&nbsp;&nbsp; Declare global macro variables and set</tt>
+<br><tt>&nbsp;&nbsp; Store linesize</tt>
+<p><tt>Check for enough parameters set:</tt>
+<br><tt>&nbsp;&nbsp; (Check all parameters for specification mistakes and
+report findings and abort at end of checking if an error is found).</tt>
+<p><tt>Check stats labels map to keywords:</tt>
+<br><tt>&nbsp;&nbsp; (Make a call to %unimap to make sure any stats labels
+specified to the stats= parameter can be matched with a statistics keyword
+known to "proc univariate").</tt>
+<p><tt>Pair stats keywords with their display format:</tt>
+<br><tt>&nbsp;&nbsp; (For each stats keyword, pair it with a format defined
+to the format parameters).</tt>
+<p><tt>Prepare dataset and check that all variables are present:</tt>
+<br><tt>&nbsp;&nbsp; Create work dataset from dsin= specification</tt>
+<br><tt>&nbsp;&nbsp; Generate total for all treatment arms of requested</tt>
+<br><tt>&nbsp;&nbsp; Check that each variable requested is present in the
+resulting work dataset and exit after checks have completed if an exception
+was found.</tt>
+<p><tt>Define macro %cat for processing categorical variables (an internal
+macro)</tt>
+<p><tt>Define macro %num for processing numeric variables (an internal
+macro)</tt>
+<p><tt>Create required formats:</tt>
+<br><tt>&nbsp;&nbsp; Create formats for p-value representation</tt>
+<br><tt>&nbsp;&nbsp; Create informat to map stats keyword to order position</tt>
+<br><tt>&nbsp;&nbsp; Create format that maps stats keywords to the stats
+labels used when the macro was called.</tt>
+<p><tt>Start processing the data:</tt>
+<br><tt>&nbsp;&nbsp; Sort into &amp;byvars &amp;trtvar order</tt>
+<br><tt>&nbsp;&nbsp; Remove append dataset defined to dsout= if it exists</tt>
+<p><tt>&nbsp;&nbsp; For each variable, call %num or %cat macro:</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (depending whether the variable
+is character and (therefore call %cat) or numeric with a user format applied
+(therefore call %cat) or pure numeric (therefore call %num).</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %cat processing:</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Call %unipvals
+to calculate p-values if requested for that variable</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Sum the categories</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Merge on top of
+zero counts for categories if all format values requested</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Calculate percentages
+based on category total or population total depending on pctcalc= setting</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Append to the
+dsout= dataset</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Tidy up by deleting
+unwanted datasets</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %num processing:</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Call %unipvals
+to calculate p-values if requested for that variable</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Call "proc transpose"
+to calculate summary statistics</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Transpose to turn
+statistic keyword values into observations</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Append to the
+dsout= dataset</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Tidy up by deleting
+unwanted datasets</tt>
+<p><tt>Add extra info to p-values dataset:</tt>
+<br><tt>&nbsp;&nbsp; Categorical variable p-values are given a _statord=1
+value so they can be shown on the top line whereas numeric variable p-values
+are likely related to the MEAN value so assign _statord accordingly.</tt>
+<p><tt>Sort output dataset into suitable order:</tt>
+<br><tt>&nbsp;&nbsp; Sort order will be defined in macro header. P-value
+dataset will be sorted in the same order.</tt>
+<p><tt>Transpose output dataset by statistic name if requested:</tt>
+<br><tt>&nbsp;&nbsp; If dstranstat= set then transpose with _statname as
+the ID into output dataset</tt>
+<p>&nbsp;<tt>Transpose output dataset by treatment arm if requested:</tt>
+<br><tt>&nbsp;&nbsp; If dstrantrt= set then transpose with &amp;trtvar
+as the ID into output dataset</tt>
+<br><tt>&nbsp;&nbsp; Plug the gaps with zeroes but spaces where the treatment
+total is zero for a treatment arm</tt>
+<p><tt>Call the %unicatrep macro if requested:</tt>
+<br><tt>&nbsp;&nbsp; Call the macro to print the dataset defined to dstrantrt=
+passing through parameters defined to %unistats when called</tt>
+<p><tt>Exit the %unistats macro</tt></td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+This concludes the programming design specification for the %unistats macro.
+<br>&nbsp;
+</body>
+</html>

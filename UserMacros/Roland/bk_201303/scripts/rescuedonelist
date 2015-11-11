@@ -1,0 +1,46 @@
+#!/bin/bash
+#<pre><b>
+# Script     : rescuedonelist
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 20-Jun-2005
+# Purpose    : To rescue a deleted donelist.txt file
+# SubScripts : getitles opsortkey donepages
+# Notes      : This needs an input file and this must be the output from a
+#              "ls -lt *.lis" with just the newly created files left in.
+#              This utility will probably take several minutes to complete.
+# Usage      : rescuedonelist filelist.txt
+#              
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   File containing ls -lt *.lis output with just the files of interest in
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+
+if [ $# -lt 1 ] ; then
+  echo "Usage: rescuedonelist filelist.txt" 1>&2
+  exit 1
+fi
+
+rm -f donelist.tmp
+
+for file in $(cat "$1" | gawk '{print $9}') ; do
+  title1=$(getitles -1 "$file")
+  ref=$(echo $title1 | cut -d" " -f2)
+  sortkey=$(echo $ref | opsortkey)
+  echo "$sortkey $file" >> donelist.tmp
+done
+
+sort donelist.tmp > donelist.txt
+
+donepages > donelist.tmp
+
+mv donelist.tmp donelist.txt

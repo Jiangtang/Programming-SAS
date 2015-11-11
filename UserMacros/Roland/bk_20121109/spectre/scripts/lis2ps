@@ -1,0 +1,355 @@
+#!/bin/bash
+#<pre><b>
+# Script     : lis2ps
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 02-Mar-2007
+# Purpose    : Production script to convert a .lis file to postscript and 
+#              optionally route it to a printer.
+# SubScripts : getlayout getitles lptops pages badlines badchars pstolp filesize
+# Notes      : If not routed to a printer, output goes to the terminal, so to
+#              keep the output you must redirect to a file. Information about
+#              the print layout is got from the protocol and titles datasets
+#              using the "getlayout" script. For the layout of validation 
+#              listings, the start "v" or "v_" is ignored and a match is sought
+#              in the titles dataset from what remains.
+# Usage      : lis2ps filename.lis > filename.ps
+#              lis2ps -1 filename.lis > filename.ps
+#              lis2ps -p john filename.lis
+#              lis2ps -p john vt_patdem*.lis
+#              lis2ps -p john ´myfiles *.lis´
+#              lis2ps -p john -b 2 -e 4 filename.lis
+#===============================================================================
+# OPTIONS:
+#-opt- -------------------------------description-------------------------------
+#  1   (switch) extract 1 title only for PDF bookmark
+#  r   (switch) reference number only for PDF bookmark
+#  p   (value)  printer: john, mika       
+#  b   (value)  begin page (defaults to 1)
+#  e   (value)  end page (defaults to a very high number)                        
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   file name(s)
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  02Mar07         Header tidy
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+# Define give-usage-message-then-exit function. 
+usage () {
+  echo "Usage: lis2ps -p <printer: john, mika> -b <begin page> -e <end page> filename.lis" 1>&2
+  exit 1
+}
+
+
+# Default values
+valuep=                          # Default value for printer is blank
+valueb=1                         # Default value for the begin page
+valuee=9999999                   # Default value for the end page
+switch1=0                        # Default switch=off for extract one title only
+switchr=0                        # Default switch=off for reference number only
+
+
+# "case" statement for action to take on selected options
+while getopts "1rp:b:e:" param ; do
+  case $param in
+   "?") # bad option supplied
+        usage
+        ;;
+   "1") # extract one title only
+        switch1=1
+        ;;
+   "r") # extract refernce number only
+        switchr=1
+        ;;
+   "p") # (value) printer
+        # Check that a valid value was entered
+        OK=0
+        case $OPTARG in
+          "john")
+                valuep=$OPTARG
+                OK=1
+                ;;
+          "mika")
+                valuep=$OPTARG
+                OK=1
+                ;;
+        esac
+        if [ $OK -eq 0 ] ; then 
+          echo "Error: Invalid value supplied to option -p" 1>&2
+          usage
+        fi
+        ;;
+   "b") # (value) begin page
+        valueb=$OPTARG
+        ;;
+   "e") # (value) begin page
+        valuee=$OPTARG
+        ;;    
+  esac
+done
+
+
+# shift to bring first parameter to position 1
+shift $(($OPTIND - 1))
+
+
+# extract one title only
+onet=
+if [ $switch1 -eq 1 ] ; then
+  onet=-1
+fi
+
+
+# reference number only
+refonly=
+if [ $switchr -eq 1 ] ; then
+  refonly=-r
+fi
+
+             #=====================================#
+             #=====================================#
+             #     LOOP THROUGH ALL THE FILES      #
+             #=====================================#
+             #=====================================#
+
+for file in "$@" ; do
+
+
+                #=====================================#
+                #          Check on file name         #
+                #=====================================#
+
+
+   # Make sure the file exists
+   if [ ! -f "$file" ] ; then
+     echo "Error: (lis2ps) File \"$file\" does not exist" 1>&2
+     continue
+   fi
+
+
+                #=====================================#
+                #              Get layout             #
+                #=====================================#
+
+
+   # get layout
+   lookfor=$(echo "$file" | gawk '{sub(/^v_?/,"");print}')
+   layout=$(getlayout $lookfor)
+
+   # set up paper
+   paper=$(echo "$layout" | gawk -F' ' '{print $1}')
+
+
+   # set margins
+   left=$(echo "$layout" | gawk -F' ' '{print $2}')
+   right=$(echo "$layout" | gawk -F' ' '{print $3}')
+   top=$(echo "$layout" | gawk -F' ' '{print $4}')
+   bottom=$(echo "$layout" | gawk -F' ' '{print $5}')
+
+
+   # extract format
+   format=$(echo "$layout" | gawk -F' ' '{print $6}')
+
+   # make sure we have got a format and skip rest of loop if not
+   if [ -z "$format" ] ; then
+     echo "Error: (lis2ps) No matching layout for \"$lookfor\" in the titles dataset" 1>&2
+     continue
+   fi
+
+
+   # set orientation to nothing or -landscape
+   orient=
+   if [[ "$format" == [lL]* ]] ; then
+     orient=-landscape
+     holdt=$top
+     holdb=$bottom
+     top=$left
+     bottom=$right
+     left=$holdb
+     right=$holdt
+   fi
+
+
+   # set up point size
+   points=$(echo $format | sed 's%[LPWCT]%%g')
+
+
+
+                #=====================================#
+                #            Extract titles           #
+                #=====================================#
+
+
+   # do not bother extracting titles if going to a printer
+   if [ -z "$valuep" ] ; then
+
+     # get the titles for the pdf bookmark and put in brackets
+     btitles=$(getitles $onet $refonly -b "$file")
+
+     # set titles to null if nothing recognised
+     if [ "$btitles" == "()" ] ; then 
+       btitles=
+     fi
+     
+   fi
+
+
+
+                #=====================================#
+                #          lptops preparation         #
+                #=====================================#
+
+   # set full font name
+   #fontname=mnc37__a
+   fontname=BaseMonNarThi.iso8859-1
+
+
+   # set up font
+   font=C
+   if [[ "$format" == *C* ]] ; then
+     font=N
+   fi
+
+
+   # set up linespace
+   if [[ "$format" == *T* ]] ; then
+     mult=1.0
+   elif [[ "$format" == *W* ]] ; then
+     mult=1.2
+   else
+     mult=1.1
+   fi
+   linespace=$(echo "$points * $mult" | bc -l)
+
+
+   # uncomment out the following two lines for debugging
+   #echo "lptops -y=${linespace}pt -p=${points}pt -paper=$paper $orient -top=${top}in -bottom=${bottom}in \
+#-left=${left}in -right=${right}in -font=$font" 1>&2
+
+
+
+                #=====================================#
+                #           lptops processing         #
+                #=====================================#
+
+   # path for lptops to find afm (Adobe font metric) files
+  
+AFMPATH=/usr/lib/X11/fonts:/usr/openwin/lib/X11/fonts/Type1/afm:/usr/lib/X11/fonts/fromttf:\
+/usr/openwin/lib/X11/fonts/Type1/sun/afm
+   export AFMPATH
+
+
+   # Use "pages" to create temporary file
+   pages -b $valueb -e $valuee "$file" > ~/afterpages_$$.tmp
+   
+   # run "lptops" on the file coming out of "pages"
+   lptops -y=${linespace}pt -p=${points}pt -paper=$paper $orient -top=${top}in -bottom=${bottom}in \
+   -left=${left}in -right=${right}in -font=$font -quiet  ~/afterpages_$$.tmp > ~/lis2ps_$$.tmp
+
+
+   # this is now the working temporary file
+   tempfile=~/lis2ps_$$.tmp
+
+
+
+                #=====================================#
+                #  check the lptops postscript file   #
+                #=====================================#
+
+   # lptops might put four byte integers from the overflowed page_table[] array into the output postscript
+   # file if the MAXPAGE value is exceeded. The original limit is 1024 but the setting can be changed in
+   # the C code (try 4096) and the code recompiled to remove this limitation. C code does not check the
+   # bounds of arrays so the next step will search for non-7-bit characters in the postscript file and
+   # so will catch the first byte of the integer since it will be hex 0, 1 or 2.
+   
+   badlines ~/lis2ps_$$.tmp | badchars > ~/pscheck_$$.tmp
+   
+   if [ -s ~/pscheck_$$.tmp ] ; then
+     echo " " 1>&2
+     echo "The postscript file created by \"lptops\" run on input file $file is corrupted." 1>&2
+     echo "This is usually due to the MAXPAGE limit set in \"lptops\" being less than the"  1>&2
+     echo "number of pages in the input file. The postscript file line number and the line" 1>&2
+     echo "with hex characters shown in angle brackets <> follows." 1>&2
+     cat ~/pscheck_$$.tmp 1>&2
+     echo " " 1>&2
+   else
+     pstolp ~/lis2ps_$$.tmp > ~/checkps_$$.tmp
+     lissize=$(filesize ~/afterpages_$$.tmp)
+     chksize=$(filesize ~/checkps_$$.tmp)
+     if [ $lissize -ne $chksize ] ; then
+       echo " " 1>&2
+       echo "The extracted text from the postscript file does not match the original file size" 1>&2
+       echo "so something might have gone wrong with the postscript conversion done by \"lptops\"." 1>&2
+       echo "Size of file \"$file\" is $lissize, size of extracted text file is $chksize" 1>&2
+       echo " " 1>&2
+     else
+       diff ~/afterpages_$$.tmp ~/checkps_$$.tmp > ~/diffps_$$.tmp
+       if [ -s ~/diffps_$$.tmp ] ; then
+         echo " " 1>&2
+         echo "The text extracted from the postscript file \">\" does not match the original file" 1>&2
+         echo "\"$file\" \"<\" as follows. Strange hex values will be shown in angle brackets if detected. " 1>&2
+         cat ~/diffps_$$.tmp | badchars 1>&2
+         echo " " 1>&2
+       fi
+     fi
+   fi
+   
+
+                #=====================================#
+                #         Edit postscript file        #
+                #=====================================#
+
+   # if title recognised then add the postscript code to ignore bookmarks and add title bookmark
+   # but do not do this if being sent to the printer
+   if [ -n "$btitles" -a -z "$valuep" ] ; then
+     gawk '{
+     if ($0 == "%%BeginProlog")
+     {
+     print $0
+     print "/pdfmark where\n{pop} {userdict /pdfmark /cleartomark load put} ifelse"
+     }
+     else 
+       if ($0 == "%%BeginSetup")
+       {
+       print $0
+       print "[ /Title " btitles "\n  /OUT pdfmark"
+       }
+       else print $0
+     }' btitles="${btitles//\\\\/\\\\}" ~/lis2ps_$$.tmp > ~/lis2ps_$$.tmp2
+     tempfile=~/lis2ps_$$.tmp2
+   fi
+
+
+
+                #=====================================#
+                #           Print or display          #
+                #=====================================#
+
+   # Pipe to a printer (if specified) or copy to standard output.
+   # If sent to a printer then substitute a narrow font with the resident printer narrow font.
+   # If not sent to a printer then give the narrow font name a .pfb extension so that ghostscript can find it.
+   if [ -n "$valuep" ] ; then
+     gawk '{gsub("'$fontname'","LetterGothic-Bold");print $0}' $tempfile | lpr -h -P $valuep
+   else
+     gawk '{gsub("/'$fontname' findfont","/'$fontname'.pfb findfont");print $0}' $tempfile
+   fi
+
+
+
+                #=====================================#
+                #           Tidy up and exit          #
+                #=====================================#
+
+   # delete the temporary files now we are finished
+   rm -f ~/lis2ps_$$.tmp ~/lis2ps_$$.tmp2 ~/afterpages_$$.tmp ~/pscheck_$$.tmp ~/checkps_$$.tmp ~/diffps_$$.tmp 
+
+
+
+
+done

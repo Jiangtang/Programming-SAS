@@ -1,0 +1,297 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="install Spectre">
+   <meta name="Description" content="Installing Spectre">
+   <title>Installing Spectre on Linux/Unix</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Installing Spectre (Clinical) on Linux or Unix</h1></center>
+
+<p><br><b><font color="#3333FF">Note: If you arrived at this page directly
+using a search engine such as Google then this may not be the "Spectre"
+you are looking for. There are a few software packages of this name. This
+"Spectre" is to do with clinical trials reporting.</font></b>
+<h2>
+Introduction</h2>
+<b>If you just want to use the %npcttab and %unistats macros but do not
+want to set up the whole of Spectre (Clinical) then installing it is easy.</b>
+All you need to do is download the macros and copy them to a directory
+that you then define to sasautos and then everything should work fine.
+The rest of the information you can read here is to do with a full Spectre
+(Clinical) install for those users planning to set up a full clinical reporting
+system. If this does not apply to you then skip the rest of this page.
+<p>There are a number of steps to installing Spectre. Some changes to the
+shell scripts are needed. Some of the changes are trivial, such as changing
+printer names. Other changes require a lot of thought, such as how to allocate
+libraries for your sas programs. I will be updating this page as I get
+feedback from users who have attempted to do this installation. There will
+be things I have missed out and places where I have given unclear instructions
+so please send me feedback by email on what is missing or what is wrong
+so that I can improve this page. There is a contact link for me at the
+bottom of this page.
+<p><b>If you are doing this installation yourself</b> and you have never
+done an installation like this before then use the following guidelines:
+<ul>
+<li>
+<b>Do not start the installation process until you have all the components
+available</b> such as bash, gawk 3.1.4 (or higher), ps2pdf and lptops.</li>
+
+<li>
+Read the installation instructions from beginning to end <b>before</b>
+you start the installation process to make sure you can do it <b>all</b>.
+You may have to arrange for people to help you. <b>Do not start it if you
+know you can not finish it the same day</b>.</li>
+
+<li>
+Print off this page and work from the hard copy.</li>
+
+<li>
+Work through the installation process in the order listed. <b>Do not skip
+anything or change the order</b>. Tick off processes when complete and
+make notes on your hard copy of any difficulties encountered.</li>
+
+<li>
+<b>Never amend anything</b> in Spectre to "get the installation to work"
+unless the installation instructions tell you to do so.</li>
+
+<li>
+Communicate unclear or missing installation instructions to the author
+after you have attempted the installation <b>assuming you carefully followed
+the guidelines given above</b> and yet still encountered problems.</li>
+</ul>
+
+<h2>
+Allocating macros and libraries</h2>
+If you are the installer and not a programmer then you should inform the
+senior programmer of the existence of the following page and tell them
+that they have to take action on it.
+<p><a href="alloc.html">Allocation of Libraries for Spectre</a>
+<h2>
+bash, gawk and ps2pdf</h2>
+All the scripts are <b>bash</b> scripts and some of the scripts require
+<b>gawk</b>
+so you need to make sure that these are available. The <b>ps2pdf</b> utility
+is required as well. The <b>gawk</b> version installed should be 3.1.4
+or higher.
+<h2>
+lptops</h2>
+Spectre requires "lptops" to convert text output to PostScript. An <b>edit
+and recompile</b> of the C code will be required. "<b># define MAXPAGE
+1024</b>" needs to be changed to "<b># define MAXPAGE 8192</b>". This is
+because the default value of 1024 is too low for clinical reporting. The
+latest version of this utility can be found here. The source code is included
+in the bundle.
+<p><a href="http://www.math.utah.edu/ftp/pub/lptops/" target="_blank">http://www.math.utah.edu/ftp/pub/lptops/</a>
+<h2>
+acroread</h2>
+It is a good idea to have a pdf reader on Unix/Linux so that people can
+check the results of conversions to pdf and I recommend "acroread" for
+this.
+<h2>
+Macros and scripts</h2>
+Spectre consists of three components; html documentation, macros and shell
+script. <b>Only the macros and shell scripts need to be downloaded and
+installed on Linux or Unix.</b> The macros and shell scripts must each
+have their own library. The shell script library will have to be added
+to the PATH system environment variable for users of Spectre at a point
+that is fairly early on the path so that Spectre shell scripts take precedence
+over possible duplicate shell script names on the system. What you need
+are the names of these two directories. The senior programmer will have
+to decide the naming of the macro library as it may have to fit in with
+their current naming conventions. The name of the shell script library
+will probably be less important but the senior programmer will still need
+to be consulted on this.
+<p>Once you know the names of the two libraries then you are ready to download.
+The first download should be to a Windows platform and when done, the macros
+and shell scripts should be <b>ftp'd across as text</b> to the Linux/Unix
+libraries. Both the <a href="macros.zip">macros</a> and <a href="scripts.zip">scripts</a>
+come as zip files and the links to download them are highlighted in this
+sentence. Some of the files are not wanted and you will be told which ones
+to delete after you have ftp'd them all across.
+<p>For the macros you should delete any html and text files so delete "<tt>*.<b>html</b></tt>"
+and "<b><tt>*.txt</tt></b>".
+<p>For the scripts you do not need any of the scripts for Windows nor html
+nor text files so delete "<b><tt>*.html</tt></b>", "<b><tt>*.txt</tt></b>"
+and "<b><tt>*_win</tt></b>" .
+<p>Note that the scripts have to be executable. The following command should
+make them so.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>chmod +x *</tt></td>
+</tr>
+</table>
+
+<h2>
+Editing some scripts</h2>
+The most trivial edits are the printer names. The two printer names in
+the supplied scripts are "<b>john</b>" and "<b>mika</b>" (lower case).
+At your site I presume you have at least two printers that are named. For
+one of these printers replace all instances of "john" and for the other
+replace all instances of "mika". This should be done in the script headers
+as well. If there are more than two printers available then these will
+have to be defined to the scripts in the case/esac blocks. If you see "john"
+or "mika" in quotes then this will be part of the option handling routine
+in the script (case $OPTARG in) and you must make sure all the available
+printers are listed in that case/esac block.
+<p>I have a number of scripts that generate program headers. They pick
+out the names of the client, office, drug, protocol and increment from
+the path name -- but based on <b>my own directory structure</b>. Your directory
+structure might be very different. In any case, you might not like my program
+headers and so will handle this yourself. But whatever, you will need to
+edit the script <a href="scripts/getfields" target="_blank">getfields</a>
+to display the client, office, drug, protocol and increment.
+<p><b>GS_LIB</b> gets assigned in the two scripts <b>a4ps2pdf</b> and <b>usps2pdf</b>.
+GS_LIB tells ghostscript where to find the fonts. You will most likely
+need the directories for this. It is possible that at your site there is
+no need to assign GS_LIB so these definitions could be removed.
+<p><b>AFMPATH</b> gets assigned in the scripts <b>lis2ps</b>, <b>a4ps</b>
+and <b>usps</b>. AFMPATH tells the lptops utility where to find the Adobe
+font metrics files. This will likely need amending. The scripts as supplied
+have a "fromttf" directory defined to AFMPATH. You probably don't have
+such a directory and won't need it.
+<h2>
+Creating @index.txt in the scripts and macros directory</h2>
+When you installed the macros and scripts you were asked to delete the
+file @index.txt and this was intentional. Now is the time to recreate these
+files and test the installation so far. Assuming the script directory is
+on your path and the scripts that call SAS software have been correctly
+changed then it should be possible to run the script <b>newix</b> in each
+of the scripts and macros directly and it should create the file @index.txt
+. Please try this. Make the directory the current directory and type in
+the command:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>newix</tt></td>
+</tr>
+</table>
+
+<p>What happened? This is the first hurdle to overcome in the installation
+process. The supplied @index.txt for macros looks like <a href="macros/@index.txt">this</a>
+and for scripts it looks like <a href="scripts/@index.txt">this</a>. Is
+that what you got? Did you get any file created? You might have got a script
+error, in which case you can probably fix it. If you got an error within
+the SAS software code that caused it to stop then there is no log file.
+The reason there is no log file is because it got re-routed to <b>/dev/null</b>
+in the <b>crindex</b> script it called. If needs be, do a temporary change
+to <b>crindex</b> in the line that invokes SAS software so that instead
+of "<b>2>/dev/null</b>" the standard error is routed to a file that you
+can look at. A programmer who uses SAS software may need to help you with
+this. Once it is working then do not forget to set it back to "2>/dev/null"
+if you made this change. When you have got over this hurdle then relax.
+Unless you are the senior programmer who uses SAS software, that is, as
+they have to jump the second hurdle.
+<h2>
+Getting "showfmts" and "showfmt" working</h2>
+The next hurdle to jump is for the senior programmer whi uses SAS software
+who is helping in the installation process. That is getting the scripts
+"<b>showfmts</b>" and "<b>showfmt</b>" working. These are the scripts that
+display a list of all formats and details of a specific format. Taking
+"showfmts" to start with, this will only work if the allocation macro reference
+has been changed and the new allocation macro is working (if any), that
+the Spectre macros are on the sasautos= path and that the correct formats
+are assigned to the fmtsearch= path within the new allocation macro (or
+correctly done in the autoexec member if an allocation macro is no longer
+required). Please take a look at the script. Note the "-stdio" option used
+when SAS software is invoked. This tells the SAS software to use standard
+input, standard output and standard error. Standard error has the file
+number 2. You will see in that line where SAS software is invoked "2>/dev/null".
+/dev/null is the Unix trash can. Anything routed to that trash can will
+disappear. Standard error is where the log created by SAS software gets
+written to. If you want to see what is in that log then you should route
+it to a file such as $HOME/showfmts.log instead. You may have to do this
+to see what is going wrong inside your SAS software code but if you do,
+do not forget to change it back after you get it working. Assuming you
+are in a study data directory then type in the command:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>showfmts</tt></td>
+</tr>
+</table>
+
+<p>What happened? If you got nothing then re-route the log "2>" to a file
+instead of /dev/null and look what is inside it. You may have to add the
+"mprint" option to the SAS software code in that script to help work out
+what is wrong.
+<p>When you get it working then try out the "showfmt" script as well on
+one of the formats listed out by the "showfmts" script. Character formats
+will need to have the dollar sign preceded by a "\" escape character to
+stop Unix assuming it is a Unix variable. Try showfmt on a numeric variable
+if need be. Does it work?
+<p>This is the second hurdle that the senior programmer who uses SAS software
+who is helping in the installation has to jump. Once this is done then
+the rest should be easy.
+<h2>
+Make the two directories read only</h2>
+Assuming everything is working so far then it is time to make the members
+of the scripts directory and macros directory read only. The following
+command should work:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>chmod g-w *</td>
+</tr>
+</table>
+
+<p>It would be a good idea if the directory itself had no update access
+for the users otherwise one of them might manage to delete one or two of
+the members.
+<h2>
+Conclusion</h2>
+If you have got this far then you should be ready to use Spectre but there
+is another script named "<b>getitles</b>" that will require further work.
+This is the script that reads the first ten lines of report output to extract
+the titles. But that is not part of the installation process. I am sure
+I have forgotten something that should be on this page and I am sure you
+will hit extra problems, though. You can always email me (contact link
+below) and I will try to help, even if you do not have a support contract.
+If the latter then I may not be able to give much of my time, it depends
+on my priorities, but I will do what I can and am interested in having
+feedback from people who have gone through this installation process.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+</body>
+</html>
