@@ -1,0 +1,36 @@
+#!/bin/bash
+#<pre<<b>
+# Script     : macrocalls
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 02-Aug-2004
+# Purpose    : To extract a list of macros called in a SAS log (assuming MLOGIC
+#              option is set).
+# SubScripts : none
+# Notes      : The MLOGIC option must be put in effect so that information on
+#              macros called is written to the log. Some of the macros listed
+#              might be internally defined. Macros will be listed one per line
+#              in lower case preceded by "%".
+# Usage      : macrocalls progname.log
+#              
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   Log file name (with extension)
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# One and only one log file name required
+if [ $# -ne 1 ] ; then
+  echo "Usage: macrocalls progname.log" 1>&2
+  exit 1
+fi
+
+grep '^MLOGIC(' $1 | gawk -F: '{print tolower($1)}' | sed 's/^mlogic(//' | \
+gawk -F\) '{print "%" $1}' | sort -u

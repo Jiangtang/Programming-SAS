@@ -1,0 +1,392 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="Spectre utility shell scripts">
+   <meta name="Description" content="Spectre utility shell scripts">
+   <title>Spectre Utility Scripts</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Utility Scripts</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 04 Apr 2011)</b></center>
+
+<h2>
+Introduction</h2>
+If you skipped reading about the "production scripts" then that is not
+a problem, but you should be aware of three of them, which are "<b>sasb</b>",
+"<b>sc</b>" and "<b>lis2ps</b>". You should always use "<b>sasb</b>" to
+run your sas program and this should always be done in batch. You can then
+use "<b>sc</b>" to scan your log for errors if any were detected by "sasb".
+You should always use "<b>lis2ps</b>" to print your output if your output
+was created with the reporting system.
+<p>To help you understand the purposes of the utility scripts, they will
+be split into sections. That way you will get an idea of <b><i>why</i></b>
+they were written and hopefully may give you an idea of when a script might
+be useful in a new setting.
+<p><i>(When you use your browser to view the scripts, you will probably
+see a first line like this "# !/bin/bash #". If you view the same script
+as "Source", from the "View" pull-down menu, you will see two lines instead.
+The first is "# !/bin/bash" and the second is "#&lt;pre>&lt;b>". I have
+inserted this second line so that your browser can correctly display the
+script from that point on. The "&lt;pre>" tells the browser that what follows
+is "pre-formatted" and the "&lt;b>" tells it to display it as "bold". This
+second line will not affect the operation of the script because any line
+(except the first) that starts with a "#" is treated as a comment).</i>
+<h2>
+Batch development</h2>
+Some of the scripts you use for developing your code in batch were introduced
+on this <a href="batch.html">page</a>. You should read that page before
+reading any further in this section. To briefly recap, you can set up a
+Unix variable named "prog" (that you export) and you set this to the name
+of the program you are working on (no extension). This makes a number of
+scripts available for you to use that emulates an interactive sas session.
+You have "pgm" to edit your code, "log" to look at the log, "lst" to look
+at the ".lst" file and "lis" to look at the ".lis" or ".lis*" output files.
+These scripts can be viewed below.
+<br><a href="scripts/pgm" target="_blank">pgm</a>
+<br><a href="scripts/log" target="_blank">log</a>
+<br><a href="scripts/lst" target="_blank">lst</a>
+<br><a href="scripts/lis" target="_blank">lis</a>
+<p>There are a few scripts very much like these for when you are doing
+validation programming. Your validation program name should start with
+a "v" and the rest of the name should match the program you are validating.
+If you stick with this naming convention then you can use some script to
+look at the "original" listing, program and titles member. These are below.
+<br><a href="scripts/opgm" target="_blank">opgm</a>
+<br><a href="scripts/olis" target="_blank">olis</a>
+<br><a href="scripts/otitles" target="_blank">otitles</a>
+<h2>
+SAS program and script headers</h2>
+There are a number of scripts available to create a sas program header
+or a script header but you should only use these scripts if the headers
+they create comply with your site standards. There are usually no site
+standards for script headers but there is likely to be one for sas program
+headers and sas macro headers. For the scripts there is "shdr" and "sohdr".
+The first is for simple scripts and the second is for scripts that use
+options. The second one will ask you a lot of questions about what options
+your script uses and what default values apply so you should not use it
+unless you know what you are doing. These are below.
+<br><a href="scripts/shdr" target="_blank">shdr</a>
+<br><a href="scripts/sohdr" target="_blank">sohdr</a>
+<p>For sas programs and sas macros, your site will already have its own
+standards so <b>you should not use the following scripts unless the headers
+they create comply with site standards</b>. Even if this is not the case,
+these scripts could be used as the basis for creating new scripts which
+comply with site standards. The first script, "ohdr", is for an "old" header
+that is a box style with characters on the right to form a right boundary.
+The scripts that follow it are for headers that do not have a right boundary.
+"hdr" is for an ordinary sas program header, "mhdr" is for a macro header
+and "lmhdr" is for a local macro header (i.e. a study-level macro). These
+scripts try to put in the drugname, protocol and increment by reading parts
+of the current directory name. They will probably need amending to make
+sure that this is done correctly.
+<br><a href="scripts/ohdr" target="_blank">ohdr</a>
+<br><a href="scripts/hdr" target="_blank">hdr</a>
+<br><a href="scripts/mhdr" target="_blank">mhdr</a>
+<br><a href="scripts/lmhdr" target="_blank">lmhdr</a>
+<p>All these scripts try to be polite by putting in your name and not just
+your Unix userid. It uses the following script for this. You can use it
+on its own to match a userid to a person's name.
+<br><a href="scripts/getname" target="_blank">getname</a>
+<h2>
+File renaming</h2>
+There is a utility called "<b>grename</b>" that you can use to rename your
+files. It will only work on files that you own. Sometimes file naming conventions
+will change while you are working on a study. You might have many programs
+and titles members that need to be renamed, so you can use this utility
+to do it. It would be wise to make a backup of all the files that may be
+affected before you run it. This is below.
+<br><a href="scripts/grename" target="_blank">grename</a>
+<p>Once you have renamed your files you will have a new problem. For titles
+files, the program name inside must match the file name. To find out which
+are wrong you can use the following script. Note the "-f" option that you
+can use to fix what is wrong.
+<br><a href="scripts/mybadtitlesprogs" target="_blank">mybadtitlesprogs</a>
+<p>If your sas program headers used the same convention as that created
+by "hdr", then there are more scripts you can use to fix wrong information
+in your program headers. These scripts are below. Again, note the "-f"
+option (which should have no effect if your headers do not match that convention).
+<br><a href="scripts/mybaddrug" target="_blank">mybaddrug</a>
+<br><a href="scripts/mybadprot" target="_blank">mybadprot</a>
+<br><a href="scripts/mybadinc" target="_blank">mybadinc</a>
+<h2>
+String search and replace</h2>
+Most Unix installations have a search and replace utility but you have
+got to be careful with it. There was one written especially for Spectre
+called "greplace" which is a lot safer in that it only acts on files that
+you own and will not update files where the target string is not found.
+<b>You
+might have "greplace" where you work but it might not be the same one so
+be careful</b>.
+<br><a href="scripts/greplace" target="_blank">greplace</a>
+<h2>
+antigrep</h2>
+You have hopefully heard of "grep" and used it to search your files for
+a character string or regular expression. But sometimes you need to know
+which of your files <b>do not</b> contain a string. Suppose you were working
+on a study, you might have copied programs for another study and used the
+code as the basis of your new program. But did you update the information
+in the header? Is the new protocol in there? You can find out with "antigrep".
+<br><a href="scripts/antigrep" target="_blank">antigrep</a>
+<h2>
+"fsv" scripts</h2>
+Since the emphasis in Spectre is to develop programs in batch, you might
+think you have been robbed of the ease of accessing and browsing datasets
+from your interactive sas session. Luckily, this is not the case. Everything
+you need has been covered by a script. That and more. The "fsv" scripts
+are for using "fsview" to browse sas datasets and there are a few of these.
+They have to be run from the same directory in which the datasets are stored.
+"fsv" will browse the dataset with user formats applied, "fsvraw" will
+browse a dataset with no user formats applied, "fsvdc" will show both unformatted
+values along with their formatted values. "fsvacct" will allow you to browse
+a dataset with fields from the acct dataset merged in that you specify.
+<br><a href="scripts/fsv" target="_blank">fsv</a>
+<br><a href="scripts/fsvraw" target="_blank">fsvraw</a>
+<br><a href="scripts/fsvdc" target="_blank">fsvdc</a>
+<br><a href="scripts/fsvacct" target="_blank">fsvacct</a>
+<h2>
+"contents" scripts</h2>
+You might have the need to look at the contents of a sas dataset while
+you are using batch. There are two scripts for this, an ordinary version
+and an "l" ("long") version. When using these scripts, you might want to
+pipe the output to "grep" to select only what you are interested in seeing.
+<br><a href="scripts/contents" target="_blank">contents</a>
+<br><a href="scripts/contentsl" target="_blank">contentsl</a>
+<h2>
+summary</h2>
+This is for running a "proc summary" on a dataset in the current directory
+and displaying the output in the terminal window. I use this a lot for
+identifying observations with strange or incorrect values which I then
+copy and paste into an email. You can apply a "where clause" to the dataset
+and to the output.
+<br><a href="scripts/summary" target="_blank">summary</a>
+<h2>
+Format viewing</h2>
+Sometimes you need to know what sas formats exist and what these formats
+contain. Sometimes these will be central formats and drug formats. Sometimes
+they will be for formats held in a <b><i>local </i></b>directory. There
+is no need to start an interactive sas session as there are scripts to
+do this. The first two might need amending to make sure they can find the
+central and drug formats. The last two, for local formats, should not have
+a problem.
+<br><a href="scripts/showfmts" target="_blank">showfmts</a>
+<br><a href="scripts/showfmt" target="_blank">showfmt</a>
+<br><a href="scripts/showlfmts" target="_blank">showlfmts</a>
+<br><a href="scripts/showlfmt" target="_blank">showlfmt</a>
+<h2>
+Printing other paginated output</h2>
+You should print out all reports created using the reporting system with
+"<b>lis2ps</b>" but if you need to print other paginated reports, which
+are nothing to do with the reporting system, then you can use the utilities
+"<b>a4ps</b>" or "<b>usps</b>" (for A4 paper or US Letter paper). These
+work like "lis2ps" does but do not look in the titles dataset. To send
+to a printer you use the "-p" option and follow it by the printer name,
+just like you do with "lis2ps". Please bear in mind that this is for<b><i>
+paginated </i></b>reports and that does not include sas programs or logs.
+In most cases it will be able to produce a report but not always. You can
+adjust margins using these scripts.
+<br><a href="scripts/a4ps" target="_blank">a4ps</a>
+<br><a href="scripts/usps" target="_blank">usps</a>
+<h2>
+Ad-hoc report line size and page size</h2>
+If you are working completely outside the reporting system, creating ad-hoc
+reports, you might want the layout to be similar to that coming out of
+Spectre but you will need to know what linesize and pagesize values to
+use. There are two scripts for this. You can specify the margins and it
+will give you the linesize and pagesize values for a few different font
+sizes.
+<br><a href="scripts/a4lsps" target="_blank">a4lsps</a>
+<br><a href="scripts/uslsps" target="_blank">uslsps</a>
+<h2>
+orphans</h2>
+"Orphans" are files that look as though they have been created by the reporting
+system but there is no entry in the titles dataset for them. Perhaps some
+programs have been renamed, leaving behind old .lis, .chk and .lst files.
+You can list these out for everybody or list out just your own using these
+two scripts.
+<br><a href="scripts/orphans" target="_blank">orphans</a>
+<br><a href="scripts/myorphans" target="_blank">myorphans</a>
+<h2>
+rescue</h2>
+Sometimes you might accidentally delete one of your sas programs (I deleted
+a whole library of them once). Rather than wait for them to be restored
+by the Unix administrator (which is the best option if you are sure there
+are up-to-date backups) then you might like to use "rescue" instead. You
+run this on your program log. If you use it, you will have to carefully
+check the code it creates. It will give any restored program the suffix
+"_rescue".
+<br><a href="scripts/rescue" target="_blank">rescue</a>
+<h2>
+timestamp</h2>
+You can create a timestamp that gets written to your home directory using
+the "<b>timestamp</b>" script. After you have done this, you can get a
+list of all the .lis, programs and titles files you have created since
+then to remind you of what you have been working on.
+<br><a href="scripts/timestamp" target="_blank">timestamp</a>
+<br><a href="scripts/mynewprogs" target="_blank">mynewprogs</a>
+<br><a href="scripts/mynewtitles" target="_blank">mynewtitles</a>
+<br><a href="scripts/mynewlis" target="_blank">mynewlis</a>
+<h2>
+myfiles</h2>
+If you want a list of your own files you can use the "myfiles" script but
+note that it uses the owner as seen by the "ls -l" command. You can use
+this to give you a list of files owned by other users as well. This is
+a very useful script that you will use often if you copy your files from
+one directory to another.
+<br><a href="scripts/myfiles" target="_blank">myfiles</a>
+<p>You have to know a little about Unix commands to get the best out of
+this utility. Suppose you wanted to copy all your titles files from one
+directory to another, you could first see the list with this command:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<caption><tbody>
+<br></tbody></caption>
+
+<tr>
+<td><tt>myfiles *.titles</tt></td>
+</tr>
+</table>
+
+<p>...and then you could copy all these to another directory using a command
+like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<caption><tbody>
+<br></tbody></caption>
+
+<tr>
+<td><tt>cp -p $(myfiles *.titles) /a/new/directory</tt></td>
+</tr>
+</table>
+
+<h2>
+wt</h2>
+"wt" is short for "which titles file". If you know a table or appendix
+reference number (that is the number that follows "Table" or "Appendix")
+then you can find out the titles member and hence the program name using
+the "<b>wt</b>" script. I use it a lot and&nbsp; that is why I made it
+only two characters long. It saves typing.
+<br><a href="scripts/wt" target="_blank">wt</a>
+<h2>
+whosgot</h2>
+Sometimes you will be trying to create a new sas dataset but you will get
+an error message saying that someone else has a "lock" on it. To find out
+the userid of this person then use the "whosgot" script. You can use the
+script "getname" to match the userid to the person's name.
+<br><a href="scripts/whosgot" target="_blank">whosgot</a>
+<h2>
+makemyrun</h2>
+There is an equivalent to the production "makerun" script that you can
+use. That is "makemyrun". It creates shell scripts with your userid as
+part of the name so you can run your own programs.
+<br><a href="scripts/makemyrun" target="_blank">makemyrun</a>
+<h2>
+Cygwin users</h2>
+I have Cygwin on my PC at home. Most of the scripts on this web site should
+work with Cygwin <b>but not the ones that call SAS</b>, assuming you have
+SAS installed on Windows. The scripts that call SAS rely on the use of
+the option "-stdio" which is not available with Windows SAS. Also Windows
+SAS will complain about Unix-style file names. So if you are trying to
+install this reporting system on Cygwin and get it working then you are
+going to be disappointed. But if you are determined to get some of the
+scripts that call SAS working, then I have converted a few to use Cygwin
+that you can maybe use as a guide. One more thing - if you have SAS Learning
+Edition installed then you will not be able to use "proc printto" as this
+very simple procedure was not included in the package. One of the scripts
+I converted to run on Cygwin was "summary" (below) but although I converted
+it it still will not work due to its reliance on "proc printto".
+<br><a href="scripts/crindex_win" target="_blank">crindex_win</a>
+<br><a href="scripts/contents_win" target="_blank">contents_win</a>
+<br><a href="scripts/contentsl_win" target="_blank">contentsl_win</a>
+<br><a href="scripts/summary_win" target="_blank">summary_win</a>
+<h2>
+An "I wrote a script today" story</h2>
+I mentioned somewhere else that it is often quicker to write a script to
+help you with a repetitive task than it is to do it by hand. That's if
+you know how to write scripts, of course. I am a self-taught script writer
+but I think if I had been sent on courses then I would have learned five
+times faster and my script writing skills would be better than they are
+now. But I manage and can write scripts that work in a fairly short time.
+I spent weeks writing scripts trying to get bookmarked PDFs to work so
+I have had plenty of practice. So today I wrote a script and I will tell
+you the story of why and how. Are you sitting comfortably? Right, then
+I'll begin:
+<p>I am working on a study using Spectre, so of course I have hundreds
+of programs producing output. Somebody points out that all tables and listings
+should have a solid footnote at the bottom of the page, whether there is
+footnote information or not, and some of my outputs lack that solid footnote.
+Looking through these hundreds of outputs and fixing them will take all
+day. So I know I have a script called "<b>pages</b>" that I can use to
+extract the first page of output. The solid footnote line might not be
+near the bottom of the page but will be in the last ten non-blank lines.
+I know I can drop blank lines using "<b>grep -v</b>". I know I can pick
+out the last ten lines using "<b>tail -10"</b>. I know there is a version
+of "grep" that can be used in "quiet" mode that will just tell me whether
+it found what I was looking for or not from the return code. I can't remember
+where it is, but "<b>man grep</b>" will tell me. I can't remember how to
+loop through a list of input files but I can do a search on "<b>for file
+in</b>" in the script library and get the correct syntax. Once I know these
+things, I decide to call the new utility "<b>nofootline</b>" and the "<b>shdr</b>"
+script will write a nice script header for me to start with. So I do this
+and after fifteen minutes of messing about, I have my script and it seems
+to work OK. Not only does it save me time but it is applicable to other
+studies as well so other people can usefully use it. I have saved time
+for myself and potentially saved time for other people in the future. This
+script can now become a QC tool. <b>This is "Unix" for you</b>. Once you
+reach this stage of being able to "think scripts" and "write scripts" you
+will not want to work on a different platform. Here is the script I wrote.
+<br><a href="scripts/nofootline" target="_blank">nofootline</a>
+<h2>
+Yet another "I wrote a script today" story</h2>
+Five days after I wrote the above script, an announcement went round for
+another study that all occurences of "study medication" in any mixture
+of case needed to be changed to "study drug" in all the output. So what
+was needed was to search the ".lis" files for this literal string (in any
+mixture of case) and find out the owners of the corresponding ".titles"
+members (since the owner of the ".lis" file might be the person who ran
+the program suite and not the programmer who wrote the code). It took me
+less than fifteen minutes to write the script and you can see the script
+below. But this brings me to an important point and that is - Spectre is
+all about high efficiency with programmers maybe handling hundreds of programs
+at a time and so <b>Spectre needs the Unix/Linux platform to achieve high
+efficiency</b>. There is no point in trying to port Spectre to another
+platform, though it is possible, since high efficiency would not be possible
+on a non Unix/Linux platform.
+<br><a href="scripts/lis2owner" target="_blank">lis2owner</a>
+<h2>
+Conclusion</h2>
+You have been introduced to a number of utility scripts on this page. There
+are others not shown here. To see the full list you can always use the
+command "<b>showme scripts</b>" and then you can browse the headers of
+any of these scripts by using "showme xyz" (where "xyz" is the script name).
+If you know these scripts exist then they should be able to speed your
+work. If "showme scripts" is not set up to work then you can see what it
+would produce below.
+<br><a href="scripts/@index.txt" target="_blank">@index.txt</a>
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript"
+ src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="../contact.html">contact the author</a></center>
+
+<p><br>
+</body>
+</html>

@@ -1,0 +1,81 @@
+#!/bin/bash
+#<pre><b>
+# Script     : idiff
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 21-Oct-2004
+# Purpose    : To compare files with "diff" but saying which lines to ignore
+# SubScripts : none
+# Notes      : Refer to documentation on diff (man diff). Note that this utility
+#              has pattern matching and substitution in it to mask lines you
+#              wish not to compare. You need to supply this to the -i option.
+#              You should supply a regular expression and this would normally
+#              start with the ^ character signifying the beginning of a line.
+#              The rest of the line will be automatically ignored. See usage
+#              notes.
+# Usage      : idiff -i "^OUTPUT" file1.ext file2.ext > differ.txt
+#              idiff -i "^Report No" file1.ext file2.ext > differ.txt
+#===============================================================================
+# OPTIONS:
+#-opt- -------------------------------description-------------------------------
+#  i   (value)  Ignore lines matching this regular expression
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   First file to compare
+#  2   Second file to compare
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+usage () {
+  echo "Usage: idiff -i <regular expression for lines to ignore> file1.ext file2.ext" 1>&2
+  exit 1
+}
+
+# Default value for Ignore lines regular expression
+valuei=
+
+
+# "case" statement for action to take on selected options
+while getopts "i:" param ; do
+  case $param in
+   "?") # bad option supplied
+        usage
+        ;;
+   "i") # (value) Ignore these lines
+        valuei=$OPTARG
+        ;;
+  esac
+done
+
+
+# shift to bring first parameter to position 1
+shift $(($OPTIND - 1))
+
+
+if [ $# -ne 2 ] ; then
+  echo "Error: (idiff) You must specify two files to compare" 1>&2
+  usage
+fi
+
+
+echo 
+echo '============================================================================================='
+echo " < = $1    > = $2"
+echo '============================================================================================='
+if [ -n "$valuei" ] ; then
+  sed "s/${valuei}.*//"    $1 > ~/file1_$$.tmp
+  sed "s/${valuei}.*//"    $2 > ~/file2_$$.tmp
+else
+  cp    $1 ~/file1_$$.tmp
+  cp    $2 ~/file2_$$.tmp
+fi
+diff -b ~/file1_$$.tmp ~/file2_$$.tmp
+
+rm -f ~/file1_$$.tmp ~/file2_$$.tmp

@@ -1,0 +1,71 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="Spectre Release">
+   <meta name="Description" content="Spectre Release">
+   <title>Spectre Release</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+<b>SPECTRE (CLINICAL) RELEASE LEVEL</b>
+<br><b>=================================</b>
+<p>Read about the next planned release <a href="nextrel.html" target="_blank">here</a>.
+<p><b><u>RELEASE 2.2 - 25 MAY 2007</u></b>
+<p>Changed %popfmt to allow the dropping of round brackets from the (N=xxx)
+population labels
+<p>Changed %unistats and %npcttab so that the percent sign can be forced
+to appear
+<p>Changed %unistats and %npcttab so that the percent format can be specified
+<br>&nbsp;
+<p><b><u>RELEASE 2.1 - 24 MARCH 2007</u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(THE WINDOWS UPDATE RELEASE)</b>
+<p>Changed %unistats to use "A0"x instead of "FE"x for decimal point alignment
+so that the "&thorn;" characters no longer appear
+<p>Two part page number labels such as "Seite x" are allowed in the %pagexofy
+macro
+<p>Added handling in %unistats for the S.E.M. (standard error of the mean)
+<p>"nocenter" option support added for %unistats and %npcttab
+<p>Allows for more than a three digit "n" for %unistats category counts
+<br>&nbsp;
+<p><b><u>RELEASE 2.0 - 10 MARCH 2007</u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(THE WINDOWS RELEASE)</b>
+<p>Made <b>Windows compliant</b> using Cygwin but PostScript and PDF creation
+not functional for Windows.
+<p>Made easier to install by minimizing macro and script edits.
+<p>Instructions for the Windows version installation added.
+<p>All macros put out their version number on first invocation so reruns
+done at a later date can be done using functionally identical macros.
+<p>The "protocol" and "titles" dataset libref location is now indicated
+by the global macro variable <b>_ptlibref_</b> set up in the allocation
+macros and all scripts and macros now refer to this variable to locate
+these datasets.
+<p>Document added to show Spectre reporting from empty directories all
+the way through to final report run plus show how Spectre can be a "push-button"
+reporting system.
+<p>New global macro variable <b>_popdone_</b> added to indicate to reporting
+macros whether or not the population label has already been included in
+the titles by the client titles macro.
+<p>%pagexofy macro written to replace the "pagexofy" script and allow more
+flexibility for the page label style.
+<p>%npcttab v5.0 allows user-formatted level variables.
+<p>%npcttab v6.0 adds the dsall= parameter so that it shows all categories
+in the dataset optionally assigned to it with zero counts or blanks if
+not in the input data.
+<br>&nbsp;
+<p><b><u>RELEASE 1.0 - 16 MAY 2006</u></b>
+<p>THIS IS THE FIRST RELEASE AND THE BASE RELEASE
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;
+</body>
+</html>

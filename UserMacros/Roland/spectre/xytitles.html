@@ -1,0 +1,456 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="%xytitles - an example client titles macro">
+   <meta name="KeyWords" content="client titles macro Spectre">
+   <title>xytitles - an example client titles macro</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+%xytitles - an example client titles macro</h1></center>
+
+<h2>
+Introduction</h2>
+Client titles macros are what the <b>%titles</b> macro calls to complete
+the work of creating title lines and perhaps some footnote lines in the
+client's style. How this should be done will vary from client to client
+and will be an established layout that the client uses that is not open
+to negotiation. Spectre imposes no layouts but instead relies on your having
+written a client titles macro to do the work. The style is specified in
+the <b>protocol.txt</b> file so if you set "<b>titlestyle: xy</b>" then
+the <b>%titles</b> macro will make a call to the macro <b>%xytitles</b>
+and it expects it to be there.
+<p>The <b>%xytitles</b> macro explained here is <b>not a recommendation</b>
+for setting out titles. It is an example client macro, and a fairly complex
+one at that, which is useful in showing you how to approach the task of
+writing such a macro. If you can understand how this macro works then you
+should be well prepared to cope with writing any client titles macro. The
+person whose job it is to write it may be the Spectre Administrator or
+it may be given to a programmer or it may be me. As for getting advice
+on writing this macro as part of the Spectre support contract then <b>this
+is the advice!!</b> By talking you through this macro, this is all the
+advice I can give you. However, if I do write a client style macro as part
+of the support contract, then it will be on the condition that I can web
+it here. Preference will be given to the client style macros of the major
+pharmaceutical companies. Your own donations in this regard would be welcome
+but I might rewrite it. I will build up a collection and web it.
+<h2>
+A word of caution</h2>
+I have come across a case where a client's in-house system adds header
+titles and a standard footnote to the final text report at the same time
+as adding "Page x of Y" labels. This allows programmers to use all 10 titles
+and footnotes as user-defined text -- the limit in SAS -- plus to add extra
+standard header lines and footnote lines done automatically by the reporting
+system. It is important that you establish with the client whether they
+expect to be able to use all 10 title and footnote lines as user-defined
+text and have the extra standard header lines and perhaps footnote lines
+added by the system. A big clue as to their using all 10 lines as user-defined
+text is the page number labels appearing on the same line as the first
+logical "user" title such as "<b>Table 12.1.3&nbsp; (Page 1 of 2)</b>"
+but you should not rely on clues alone.
+<p>Spectre will allow you to break the 10 titles 10 footnotes limit by
+calling an alternative to the %pagexofy macro, which you declare in the
+<b>protocol.txt</b>
+member, that could be called a "client pagexofy macro" and you can do this
+unusual adding of extra titles and footnotes in that macro plus anything
+else you need to do.
+<h2>
+%xytitles</h2>
+This is an example of a complex client titles macro. It is complex in that
+"<b>tables</b>" have one layout and "<b>appendices</b>" have a different
+layout. Whether it is a table or appendix is defined in the ".titles" member
+in the first title line such as "Table 1.2.1.1" or "Appendix 15.6.1.5"
+(there must always be this first title in the ".titles" member). This gets
+incorporated into the "titles" dataset and when these titles are read in
+by the %titles macro, the global macro variable <b>_reptype_</b> gets set
+to either "TABLE" or "APPENDIX" (without quotes) depending on the report
+type defined. Since appendices are expected to run to many pages, a layout
+is chosen to make use of every possible line on a page so the main title
+(e.g. "Appendix 15.6.1.5") will be shown at the extreme right in the second
+header line and the population (if selected on a population) will be shown
+underneath it on the third header line at the extreme right. Both will
+be shown in mixed case and no matter in what case the word "appendix" was
+entered in a titles member, it will be shown with the first letter capitalized
+and the rest in lower case to make sure it is consistent across the study.
+For "tables", on the other hand, the main title (e.g. "TABLE 1.2.1.1")
+will be shown in the centre of the report in capitals, will have a blank
+line underneath it, then follows the rest of the titles and the last title
+will be the population (again, capitalized). This is probably about as
+complicated as they come but if it isn't, it probably won't get much worse.
+You can open this macro in a new page by clicking on the link below.
+<br><a href="sysmacros/xytitles.sas" target="_blank">%xytitles</a>
+<p>Here is the start of the macro and an explanation:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%macro xytitles(program=,label=);</tt>
+<p><tt>%*- set up global macro variables -;</tt>
+<br><tt>%global _pagescript_ _tline2_ _tline3_ _tline4_ _figbkmark_;</tt>
+<br><tt>%let _pagescript_=pagexofy;</tt>
+<br><tt>%let _tline2_=;</tt>
+<br><tt>%let _tline3_=;</tt>
+<br><tt>%let _tline4_=;</tt>
+<br><tt>%let _figbkmark_=;</tt>
+<br>&nbsp;
+<p><tt>%*- set up needed local variables -;</tt>
+<br><tt>%local popalert tcount;</tt>
+<br>&nbsp;
+<p><tt>%*- Alert flag for when the population in the form &amp;_poplabel_
+has -;</tt>
+<br><tt>%*- been detected in one of the titles. If that is the case then
+for -;</tt>
+<br><tt>%*- a table, do not put out a following population title. -;</tt>
+<br><tt>%let popalert=0;</tt></td>
+</tr>
+</table>
+
+<p>In the code above, first some global macro variables are set up. _pagescript_
+is set to the name of the shell script, <a href="scripts/pagexofy" target="_blank">pagexofy</a>,
+that <a href="sysmacros/closerep.sas" target="_blank">%closerep</a> will
+call to add the "Page X of Y" titles as this might vary from client to
+client. Unix is case sensitive so you might have a capitalized version
+of pagexofy named PAGEXOFY that creates capitalized page labels like "PAGE
+X OF Y". _figbkmark_ will be set to a bookmark that might be used for figures
+and it will be made up of titles that will also be written to the global
+macro variable _tline1_ _tline2_ etc. The value of _figbkmark_ will be
+displayed in the log as well as all the other. <b>If you set up or possibly
+change a global macro variable then you must display these in the log </b>so
+that programmers know they have been set up and can use them if they wish.
+This is done in all other Spectre macros and you should follow this convention
+in the client titles macro.
+<p>After the global macro variables have been declared, you can see that
+two local ones have been declared. The "popalert" one is set to "0" and
+explained.
+<p>Now for the next chunk of code.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%*- For tables, make sure the word "TABLE" is in upper case in
+first title -;</tt>
+<br><tt>%*- and that the population label is also in upper case. -;</tt>
+<br><tt>%if "&amp;_reptype_" EQ "TABLE" %then %do;</tt>
+<br><tt>&nbsp; %let _repid_=%casestrmac(&amp;_repid_,TABLE);</tt>
+<br><tt>&nbsp; %let _poplabel_=%upcase(&amp;_poplabel_);</tt>
+<br><tt>%end;</tt>
+<br><tt>%else %if "&amp;_reptype_" EQ "ATTACHMENT" %then %do;</tt>
+<br><tt>&nbsp; %let _repid_=%casestrmac(&amp;_repid_,ATTACHMENT);</tt>
+<br><tt>&nbsp; %let _poplabel_=%upcase(&amp;_poplabel_);</tt>
+<br><tt>%end;</tt>
+<br><tt>%*- For non-tables, make sure the first letter is upper case and
+the rest lower case -;</tt>
+<br><tt>%else %do;</tt>
+<br><tt>&nbsp; %let _repid_=%casestrmac(&amp;_repid_,</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %substr(&amp;_reptype_,1,1)%lowcase(%substr(&amp;_reptype_,2)));</tt>
+<br><tt>%end;</tt></td>
+</tr>
+</table>
+
+<p>The three global macros variables <b>_reptype_</b> , <b>_repid_ </b>and
+<b>_poplabel_</b>
+are set in the <a href="sysmacros/proginfo.sas" target="_blank">%proginfo</a>
+macro that is called by <a href="sysmacros/titles.sas" target="_blank">%titles</a>
+before the client titles macro is called. Here, the type of report defined
+to <b>_reptype_</b> will be used to drive this client titles macro. The
+macro <a href="utilmacros/casestrmac.sas" target="_blank">%casestrmac</a>
+is used to force any mixed case form of a string to the one specified and
+you will see that for "TABLE" and "ATTACHMENT" (%proginfo sets _reptype_
+values to upper case) the case for that string is set to upper case but
+for others, the first character is capitalized and the rest set to lower
+case. The value of <b>_poplabel_</b> is set to upper case for "TABLE" and
+"ATTACHMENT" but is left as it is for other types of report. This value
+of <b>_poplabel_</b> is set in <b>protocol.txt</b> and is not something
+the user has supplied, so there will be no conflict of case for the population
+label for other types of reports.
+<p>Now for the next piece of code.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>*- set up and create the top three header lines of a standard report
+-;</tt>
+<br><tt>data _null_;</tt>
+<br><tt>&nbsp; length text $ &amp;_ls_ datestr $ 32;</tt>
+<br><tt>&nbsp; *- date string for draft report to add to the title -;</tt>
+<br><tt>&nbsp; datestr=put(date(),weekdate32.);</tt>
+<br><tt>&nbsp; datestr=substr(datestr,index(datestr,",")+2);</tt>
+<br><tt>&nbsp; text="&amp;_drugname_";</tt>
+<br><tt>&nbsp; substr(text,&amp;_ls_,1)='FF'x;</tt>
+<br><tt>&nbsp; call execute("title1"||' "'||text||'";');</tt>
+<br><tt>&nbsp; text="&amp;_protocol_";</tt>
+<br><tt>&nbsp; %if "&amp;_reptype_" NE "TABLE" and "&amp;_reptype_" NE
+"ATTACHMENT" %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; substr(text,%eval(&amp;_ls_-%length(&amp;_repid_)+1))="&amp;_repid_";</tt>
+<br><tt>&nbsp; %end;</tt>
+<br><tt>&nbsp; call execute("title2"||' "'||text||'";');</tt>
+<br><tt>&nbsp; text="&amp;_report_";</tt>
+<br><tt>&nbsp; if index(upcase(text),'DRAFT') then text=trim(text)||" "||datestr;</tt>
+<br><tt>&nbsp; %if %length(&amp;_poplabel_) %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %if "&amp;_reptype_" NE "TABLE" and "&amp;_reptype_"
+NE "ATTACHMENT" %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; substr(text,%eval(&amp;_ls_-%length(&amp;_poplabel_)+1))="&amp;_poplabel_";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp; %end;</tt>
+<br><tt>&nbsp; call execute("title3"||' "'||text||'";');</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>The three "header" lines are set up and executed in this next piece
+of code. These header lines will become title1, title2 and title3 as far
+as sas knows them. The content of each title line is set up in turn the
+variable "text".
+<p>You will see that for the first header line it is set to the value of
+<b>_drugname_</b>
+and the page label character, which must be <b>"FF"x</b> and nothing else,
+is put in the rightmost position that will fit on the page width by using
+the value of <b>_ls_</b> that also gets set in the
+<a href="sysmacros/proginfo.sas" target="_blank">%proginfo</a>
+macro. A call execute follows which will be activated after the data step
+ends.
+<p>The second header line has the value of <b>_protocol_</b> on the left
+and if <b>_reptype_</b> is not set to either "TABLE" or "ATTACHMENT" then
+the right is set to the value of <b>_repid_</b> that had its case adjusted
+in the previous code. Then follows the call execute to activate title2.
+<p>The third header line is set to the value of <b>_report_</b> that is
+set up in the <a href="sysmacros/protinfo.sas" target="_blank">%protinfo</a>
+macro called earlier by <a href="sysmacros/titles.sas" target="_blank">%titles</a>.
+If the word "draft" is detected in this string in any case then it will
+put the current date at the end that was set up in the variable "datestr"
+to tell you the date of the draft version of the output. If <b>_reptype_</b>
+is neither "TABLE" or "ATTACHMENT" then the population label defined to
+<b>_poplabel_</b>
+is put on the far right. Then follows the call execute to activate title3.
+<p>We have our three header lines now and they have been activated. They
+are done. More follows.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%*- For tables, throw a blank title line, put table title on -;</tt>
+<br><tt>%*- following line and then throw another blank title line. -;</tt>
+<br><tt>%*- For others, just throw a blank title line to leave a gap. -;</tt>
+<br><tt>%if "&amp;_reptype_" EQ "TABLE" or "&amp;_reptype_" EQ "ATTACHMENT"
+%then %do;</tt>
+<br><tt>&nbsp; title4 "&nbsp;&nbsp; ";</tt>
+<br><tt>&nbsp; title5 "&amp;_repid_";</tt>
+<br><tt>&nbsp; title6 "&nbsp;&nbsp; ";</tt>
+<br><tt>%end;</tt>
+<br><tt>%else %do;</tt>
+<br><tt>&nbsp; title4 "&nbsp; ";</tt>
+<br><tt>%end;</tt>
+<br>&nbsp;
+<p><tt>%*- do a quiet count of titles (i.e. do not display maximum values
+yet) -;</tt>
+<br><tt>%maxtitle(quiet)</tt>
+<br><tt>%let tcount=&amp;_maxtitle_;</tt></td>
+</tr>
+</table>
+
+<p>If <b>_reptype_</b> is "TABLE" or "ATTACHMENT" we have yet to put out
+the report reference or main title. It has already been done on the far
+right of the second header line for other types of report. This case of
+this has already been adjusted so title4 is set to blank, title5 is set
+to the main title and a blank title line put under it to conform with the
+client style. For other types of reports, a blank title4 is created. The
+number of title lines created is determined using the <a href="utilmacros/maxtitle.sas" target="_blank">%maxtitle(quiet)</a>
+call and the value assigned to the local macro variable "<b>tcount</b>"
+for use in further logic as follows.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>*- extract titles -;</tt>
+<br><tt>data _titles;</tt>
+<br><tt>&nbsp; set der.titles(where=(program="&amp;program" and label="&amp;label"));</tt>
+<br><tt>run;</tt>
+<br>&nbsp;
+<p><tt>%*- Only process the titles if there is more than one -;</tt>
+<br><tt>%*- since the first title has already been dealt with. -;</tt>
+<br><tt>%if %attrn(_titles,nobs) GT 1 %then %do;</tt>
+<p><tt>&nbsp; *- process the titles -;</tt>
+<br><tt>&nbsp; data _titles(keep=type number text);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; set _titles;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; *- drop this as we have already set up the first
+title -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if type="T" and number=1 then delete;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if type="T" and number=2 then call symput('_tline2_',trim(text));</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if type="T" and number=3 then call symput('_tline3_',trim(text));</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if type="T" and number=4 then call symput('_tline4_',trim(text));</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; *- increment the title number depending on how
+many titles already put out -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if type='T' then number=number-1+&amp;_maxtitle_;</tt>
+<br><b><tt>&nbsp;&nbsp;&nbsp; *- Replace "&amp;" character in titles and
+footnotes with a special character -;</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp; *- if not followed by an underscore so we
+do not get warning messages -;</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp; *- about unresolved macro variables. -;</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp; do while (index(text,'&amp;') and (index(text,'&amp;')
+NE index(text,'&amp;_')));</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; substr(text,index(text,'&amp;'),1)='FD'x;</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp; end;</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp; *- Replace "%" character in titles and footnotes
+with a special character -;</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp; *- if not followed by a space so we do not
+get warning messages about -;</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp; *- macros not resolved. -;</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp; do while (index(text,'%') and (index(text,'%')
+NE index(text,'% ')));</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; substr(text,index(text,'%'),1)='F8'x;</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp; end;</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp; *- Replace double quote character with a
+special character -;</tt></b>
+<br><b><tt>&nbsp;&nbsp;&nbsp; text=translate(text,'F0'x,'"');</tt></b>
+<br><tt>&nbsp;&nbsp;&nbsp; *- Set a flag to tell this macro not to add
+an extra titles population -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; *- line if it detects a call to _poplabel_ in
+one of the titles. -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if type='T' and index(upcase(text),'&amp;_POPLABEL_')
+then call symput('popalert',"1");</tt>
+<br><tt>&nbsp; run;</tt>
+<br>&nbsp;
+<p><tt>&nbsp; *- generate the extra titles from the extracted titles -;</tt>
+<br><tt>&nbsp; %titlegen(_titles)</tt>
+<p><tt>%end;</tt></td>
+</tr>
+</table>
+
+<p>In the first data step, all the titles (and footnotes) are extracted
+for that program from the titles dataset. If we only find one observation
+then this will be the table/appendix/whatever reference number and this
+has already been put out in a header line or in a title so we have nothing
+further to do. This is why the number of observations is checked using
+<a href="utilmacros/attrn.sas" target="_blank">%attrn(_titles,nobs)</a>
+and the following data step is executed only if the number of observations
+is greater than one.
+<p>Assuming more than one observation was found then the processing continues
+as follows. In the titles dataset, the title numbers start at 1 and are
+numbered sequentially. It knows nothing about what titles line you are
+<b><i>really
+</i></b>going
+to use. We have already handled the title numbered 1 and so this is dropped.
+The second, third and fourth title lines are written to global macro variables
+for information purposes only, in case the programmer needs to use this.
+Next the real number of the title line must be adjusted by the number of
+titles put out already that is in the global macro variable
+<b>_maxtitle_</b>.
+This is only done for titles and not for footnotes.
+<p>Next in the data step comes the translation of special characters. <b>You
+must use this same code in whatever client titles macro you write</b>.
+The lines of code you <b><i>must </i></b>use are shown in bold. Note the
+substitution for the ampersand "&amp;". It <b>will not substitute</b> if
+the ampersand is followed by an underscore. It allows for macro variables
+<b>starting
+with an underscore</b> to be substituted in titles and footnotes. If the
+underscore is not the first character in the macro variable name then it
+will show the ampersand as it is in the title or footnote. These characters
+will get substituted back to what they were originally in the script that
+adds the page labels which in this case is <a href="scripts/pagexofy" target="_blank">pagexofy</a>.
+<p>Note that the local macro variable "<b>popalert</b>" gets set if it
+sees "<b>&amp;_poplabel_</b>" in any of the titles in any case. This is
+to tell it not to add the population label later, if this has already been
+done.
+<p>Next comes the activation of these new titles and possibly footnotes.
+This is done using the <a href="sysmacros/titlegen.sas" target="_blank">%titlegen</a>
+macro.
+<p>Now we move on. For tables, the XY client wants the population label
+as the last title line so long as it has not been put out already, as detected
+by the "popalert" setting, so this code follows.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%*- For a table, put the population title as last title unless
+it is -;</tt>
+<br><tt>%*- blank or it has been detected in the title lines (i.e. &amp;popalert=1)
+-;</tt>
+<br><tt>%if "&amp;_reptype_" EQ "TABLE" and %length(&amp;_poplabel_) and
+(&amp;popalert EQ 0) %then %do;</tt>
+<br><tt>&nbsp; %maxtitle(quiet)</tt>
+<br><tt>&nbsp; %*- Only add this population title if some extra -;</tt>
+<br><tt>&nbsp; %*- titles were generated in the previous step. -;</tt>
+<br><tt>&nbsp; %if &amp;_maxtitle_ GT &amp;tcount %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; title%eval(&amp;_maxtitle_+1) "&amp;_poplabel_";</tt>
+<br><tt>&nbsp; %end;</tt>
+<br><tt>%end;</tt></td>
+</tr>
+</table>
+
+<p>Next comes the bookmark that <b><i>might </i></b>be used for figures.
+I stress "might" because this bookmark will be set up in the global macro
+variable <b>_figbkmark_</b> and will be used by default for figures but
+if the programmer doesn't like what is in it then they are free to change
+the value of <b>_figbkmark_</b> to whatever they want. t is calculated
+for all types of report but will only be used for figures. There is no
+particular reason why it is done for types of report other than figures
+but it just seems logical to do it anyway.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%let _figbkmark_=&amp;_repid_;</tt>
+<br><tt>%if %length(&amp;_tline2_) %then %do;</tt>
+<br><tt>&nbsp; %let _figbkmark_=%superq(_figbkmark_) %superq(_tline2_);</tt>
+<br><tt>&nbsp; %if %length(&amp;_tline3_) %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %let _figbkmark_=%superq(_figbkmark_) %superq(_tline3_);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %if %length(&amp;_tline4_) %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let _figbkmark_=%superq(_figbkmark_)
+%superq(_tline4_);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp; %end;</tt>
+<br><tt>%end;</tt>
+<br><tt>%let _figbkmark_=%superq(_figbkmark_) &amp;_poplabel_;</tt></td>
+</tr>
+</table>
+
+<p>Note that %superq is used above because there is no telling what is
+in _tline1_, _tline2_ etc. that might mess up the macro parser. With %superq
+you are always safe.
+<p>And now the last part. We display all the global macro variables we
+have set up and might have changed (you <b><i>must </i></b>do this) and
+after that we exit.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%put;</tt>
+<br><tt>%put MSG: (xytitles) The following global macro variables have
+been set;</tt>
+<br><tt>%put MSG: (xytitles) and can be used in your code. ;</tt>
+<br><tt>%put _repid_=&amp;_repid_;</tt>
+<br><tt>%put _poplabel_=&amp;_poplabel_;</tt>
+<br><tt>%put _tline2_=%superq(_tline2_);</tt>
+<br><tt>%put _tline3_=%superq(_tline3_);</tt>
+<br><tt>%put _tline4_=%superq(_tline4_);</tt>
+<br><tt>%put _figbkmark_=%superq(_figbkmark_);</tt>
+<p><tt>%put;</tt>
+<br>&nbsp;
+<p><tt>*- tidy up -;</tt>
+<br><tt>proc datasets nolist;</tt>
+<br><tt>&nbsp; delete _titles;</tt>
+<br><tt>&nbsp; run;</tt>
+<br><tt>quit;</tt></td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+An example of a complex client titles macro has been explained to you.
+Using what you have learned from this example, it is hoped that you will
+be able to code any required client titles macro.
+<br>&nbsp;
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+</html>

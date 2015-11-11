@@ -1,0 +1,1019 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="Low level macro test packs for Spectre">
+   <meta name="KeyWords" content="low level macro test packs Spectre">
+   <title>Low level macro test packs</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Low level macro test packs</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 10 Jun 2006)</b></center>
+
+<h2>
+Introduction</h2>
+This page contains test code for the low level macros used in Spectre.
+Those used by the two main reporting macros <b>%unistats</b> and <b>%npcttab</b>
+will be added first and others added as required. They appear in alphabetical
+order so that it is easier to find them. Another way to find them is to
+use the name of the macro (without the extension) as part of the address
+line such that <b>%zerogrid</b> can be got to by adding a "target" at the
+end of the page name displayed in the browser address line such as "lowlevtest.html<b>#zerogrid</b>".
+<p>These test packs do not test the macros thoroughly. They are there to
+give you a start for testing them yourself with an aim to validating the
+macros.
+<p>All the code members below assume that you have already assigned the
+Spectre macro library to your sasautos path.
+<h2>
+<a NAME="allfmtvals"></a>%allfmtvals</h2>
+<a href="macros/allfmtvals.sas" target="_blank">%allfmtvals</a> is used
+to create a dataset containing all format start values for a specified
+format and optionally the decoded form. It is used when you want to make
+sure that every occurence of a format value is present in your data, for
+example to have every race code represented in your data even if there
+are no subjects with a certain race code. It works for both numeric and
+character formats. For character formats the default length of the character
+field is 8 bytes unless you change it.
+<p><b>Test code:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>options nocenter ls=64 formdlim="_";</tt>
+<br><tt>proc format;</tt>
+<br><tt>&nbsp; value numfmt</tt>
+<br><tt>&nbsp; 1="One"</tt>
+<br><tt>&nbsp; 9="Nine"</tt>
+<br><tt>&nbsp; 6="Six"</tt>
+<br><tt>&nbsp; 3="Three"</tt>
+<br><tt>&nbsp; 12="Twelve"</tt>
+<br><tt>&nbsp; ;</tt>
+<br><tt>&nbsp; value $cntry</tt>
+<br><tt>&nbsp; "UK"="United Kingdom"</tt>
+<br><tt>&nbsp; "AU"="Australia"</tt>
+<br><tt>&nbsp; "NZ"="New Zealand"</tt>
+<br><tt>&nbsp; "NG"="New Guinea"</tt>
+<br><tt>&nbsp; ;</tt>
+<br><tt>run;</tt>
+<p><tt>%allfmtvals(fmt=numfmt.,dsout=dsnum1,var=num)</tt>
+<br><tt>proc print data=dsnum1;</tt>
+<br><tt>title "dsnum1 with format cancelled for num";</tt>
+<br><tt>format num;</tt>
+<br><tt>run;</tt>
+<br><tt>proc print data=dsnum1;</tt>
+<br><tt>title "dsnum1 with format applied to num";</tt>
+<br><tt>run;</tt>
+<p><tt>%allfmtvals(fmt=numfmt.,dsout=dsnum2,var=num,decodevar=numstr,decodelen=8)</tt>
+<br><tt>proc print data=dsnum2;</tt>
+<br><tt>title "dsnum2 with format applied to num";</tt>
+<br><tt>run;</tt>
+<p><tt>%allfmtvals(fmt=$cntry,dsout=cntry1,length=2,var=country)</tt>
+<br><tt>proc print data=cntry1;</tt>
+<br><tt>title "cntry1 with format cancelled for country";</tt>
+<br><tt>format country;</tt>
+<br><tt>run;</tt>
+<br><tt>proc print data=cntry1;</tt>
+<br><tt>title "cntry1 with format applied for country";</tt>
+<br><tt>run;</tt>
+<p><tt>%allfmtvals(fmt=$cntry,dsout=cntry2,length=2,var=country,decodevar=cntrystr,decodelen=6)</tt>
+<br><tt>proc print data=cntry2;</tt>
+<br><tt>title "cntry2 with format cancelled for country";</tt>
+<br><tt>format country;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p><b>lst:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>dsnum1 with format cancelled for num</tt>
+<p><tt>Obs&nbsp;&nbsp;&nbsp; num</tt>
+<p><tt>&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1</tt>
+<br><tt>&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3</tt>
+<br><tt>&nbsp;3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6</tt>
+<br><tt>&nbsp;4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9</tt>
+<br><tt>&nbsp;5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12</tt>
+<p><tt>__________________________________________________________________________________________________</tt>
+<p><tt>dsnum1 with format applied to num</tt>
+<p><tt>Obs&nbsp;&nbsp;&nbsp; num</tt>
+<p><tt>&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp; One</tt>
+<br><tt>&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp; Three</tt>
+<br><tt>&nbsp;3&nbsp;&nbsp;&nbsp;&nbsp; Six</tt>
+<br><tt>&nbsp;4&nbsp;&nbsp;&nbsp;&nbsp; Nine</tt>
+<br><tt>&nbsp;5&nbsp;&nbsp;&nbsp;&nbsp; Twelve</tt>
+<p><tt>__________________________________________________________________________________________________</tt>
+<p><tt>dsnum2 with format applied to num</tt>
+<p><tt>Obs&nbsp;&nbsp;&nbsp; numstr&nbsp;&nbsp;&nbsp; num</tt>
+<p><tt>&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp; One&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+One</tt>
+<br><tt>&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp; Three&nbsp;&nbsp;&nbsp;&nbsp; Three</tt>
+<br><tt>&nbsp;3&nbsp;&nbsp;&nbsp;&nbsp; Six&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Six</tt>
+<br><tt>&nbsp;4&nbsp;&nbsp;&nbsp;&nbsp; Nine&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Nine</tt>
+<br><tt>&nbsp;5&nbsp;&nbsp;&nbsp;&nbsp; Twelve&nbsp;&nbsp;&nbsp; Twelve</tt>
+<p><tt>__________________________________________________________________________________________________</tt>
+<p><tt>cntry1 with format cancelled for country</tt>
+<p><tt>Obs&nbsp;&nbsp;&nbsp; country</tt>
+<p><tt>&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; AU</tt>
+<br><tt>&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NG</tt>
+<br><tt>&nbsp;3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NZ</tt>
+<br><tt>&nbsp;4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UK</tt>
+<p><tt>__________________________________________________________________________________________________</tt>
+<p><tt>cntry1 with format applied for country</tt>
+<p><tt>Obs&nbsp;&nbsp;&nbsp; country</tt>
+<p><tt>&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp; Australia</tt>
+<br><tt>&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp; New Guinea</tt>
+<br><tt>&nbsp;3&nbsp;&nbsp;&nbsp;&nbsp; New Zealand</tt>
+<br><tt>&nbsp;4&nbsp;&nbsp;&nbsp;&nbsp; United Kingdom</tt>
+<p><tt>__________________________________________________________________________________________________</tt>
+<p><tt>cntry2 with format cancelled for country</tt>
+<p><tt>Obs&nbsp;&nbsp;&nbsp; cntrystr&nbsp;&nbsp;&nbsp; country</tt>
+<p><tt>&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Austra&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+AU</tt>
+<br><tt>&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; New Gu&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+NG</tt>
+<br><tt>&nbsp;3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; New Ze&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+NZ</tt>
+<br><tt>&nbsp;4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; United&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+UK</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<h2>
+<a NAME="attrn"></a>%attrn</h2>
+<a href="macros/attrn.sas" target="_blank">%attrn</a> is a very low level
+macro that uses SCL to extract numeric information about a dataset.
+<p><b>Test code:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data test;</tt>
+<br><tt>&nbsp; dummy='dummy';</tt>
+<br><tt>&nbsp; num=2;</tt>
+<br><tt>&nbsp; output;</tt>
+<br><tt>&nbsp; num=1;</tt>
+<br><tt>&nbsp; output;</tt>
+<br><tt>&nbsp; num=3;</tt>
+<br><tt>&nbsp; output;</tt>
+<br><tt>run;</tt>
+<p><tt>%put >>>> creation datetime stamp (should be just now) is "%sysfunc(putn(%attrn(test,crdte),datetime.))"
+>>>>;</tt>
+<br><tt>%put >>>> modification datetime stamp (should be just now) is "%sysfunc(putn(%attrn(test,modte),datetime.))"
+>>>>;</tt>
+<br><tt>%put >>>> number of observations (should be 3) is "%attrn(test,nobs)"
+>>>>;</tt>
+<br><tt>%put >>>> number of logical observations (should be 3) is "%attrn(test,nlobs)"
+>>>>;</tt>
+<br><tt>%put >>>> number of dataset variables (should be 2) is "%attrn(test,nvars)"
+>>>>;</tt></td>
+</tr>
+</table>
+
+<p><b>log:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>70</tt>
+<br><tt>71&nbsp;&nbsp;&nbsp; %put >>>> creation datetime stamp (should
+be just now) is</tt>
+<br><tt>71 ! "%sysfunc(putn(%attrn(test,crdte),datetime.))" >>>>;</tt>
+<br><tt>>>>> creation datetime stamp (should be just now) is "10MAY06:08:47:25"
+>>>></tt>
+<br><tt>72&nbsp;&nbsp;&nbsp; %put >>>> modification datetime stamp (should
+be just now) is</tt>
+<br><tt>72 ! "%sysfunc(putn(%attrn(test,modte),datetime.))" >>>>;</tt>
+<br><tt>>>>> modification datetime stamp (should be just now) is "10MAY06:08:47:25"
+>>>></tt>
+<br><tt>73&nbsp;&nbsp;&nbsp; %put >>>> number of observations (should be
+3) is "%attrn(test,nobs)" >>>>;</tt>
+<p><tt>>>>> number of observations (should be 3) is "3" >>>></tt>
+<br><tt>74&nbsp;&nbsp;&nbsp; %put >>>> number of logical observations (should
+be 3) is "%attrn(test,nlobs)" >>>>;</tt>
+<p><tt>>>>> number of logical observations (should be 3) is "3" >>>></tt>
+<br><tt>75&nbsp;&nbsp;&nbsp; %put >>>> number of dataset variables (should
+be 2) is "%attrn(test,nvars)" >>>>;</tt>
+<p><tt>>>>> number of dataset variables (should be 2) is "2" >>>></tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="attrv"></a>%attrv</h2>
+<a href="macros/attrv.sas" target="_blank">%attrv</a> is a very low level
+macro that uses SCL to extract information about a SAS&reg; software variable
+in a dataset.
+<p><b>Test code:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data test;</tt>
+<br><tt>&nbsp; length dummy $ 16;</tt>
+<br><tt>&nbsp; dummy='dummy';</tt>
+<br><tt>&nbsp; num=2;</tt>
+<br><tt>&nbsp; attrib dummy format=$char16. num format=5. informat=3. label='a
+number';</tt>
+<br><tt>run;</tt>
+<p><tt>%put >>>> type of "dummy" var (should be "C") is "%attrv(test,dummy,vartype)"
+>>>>;</tt>
+<br><tt>%put >>>> length of "dummy" var (should be "16") is "%attrv(test,dummy,varlen)"
+>>>>;</tt>
+<br><tt>%put >>>> label of "dummy" var (should be "") is "%attrv(test,dummy,varlabel)"
+>>>>;</tt>
+<br><tt>%put >>>> format of "dummy" var (should be "$CHAR16.") is "%attrv(test,dummy,varformat)"
+>>>>;</tt>
+<br><tt>%put >>>> informat of "dummy" var (should be "") is "%attrv(test,dummy,varinfmt)"
+>>>>;</tt>
+<p><tt>%put >>>> type of "num" var (should be "N") is "%attrv(test,num,vartype)"
+>>>>;</tt>
+<br><tt>%put >>>> length of "num" var (should be "8") is "%attrv(test,num,varlen)"
+>>>>;</tt>
+<br><tt>%put >>>> label of "num" var (should be "a number") is "%attrv(test,num,varlabel)"
+>>>>;</tt>
+<br><tt>%put >>>> format of "num" var (should be "5.") is "%attrv(test,num,varformat)"
+>>>>;</tt>
+<br><tt>%put >>>> informat of "num" var (should be "3.") is "%attrv(test,num,varinfmt)"
+>>>>;</tt></td>
+</tr>
+</table>
+
+<p><b>log:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>118</tt>
+<br><tt>119&nbsp;&nbsp; %put >>>> type of "dummy" var (should be "C") is
+"%attrv(test,dummy,vartype)" >>>>;</tt>
+<p><tt>>>>> type of "dummy" var (should be "C") is "C" >>>></tt>
+<br><tt>120&nbsp;&nbsp; %put >>>> length of "dummy" var (should be "16")
+is "%attrv(test,dummy,varlen)" >>>>;</tt>
+<p><tt>>>>> length of "dummy" var (should be "16") is "16" >>>></tt>
+<br><tt>121&nbsp;&nbsp; %put >>>> label of "dummy" var (should be "") is
+"%attrv(test,dummy,varlabel)" >>>>;</tt>
+<p><tt>>>>> label of "dummy" var (should be "") is "" >>>></tt>
+<br><tt>122&nbsp;&nbsp; %put >>>> format of "dummy" var (should be "$CHAR16.")
+is "%attrv(test,dummy,varformat)"</tt>
+<br><tt>122! >>>>;</tt>
+<br><tt>>>>> format of "dummy" var (should be "$CHAR16.") is "$CHAR16."
+>>>></tt>
+<br><tt>123&nbsp;&nbsp; %put >>>> informat of "dummy" var (should be "")
+is "%attrv(test,dummy,varinfmt)" >>>>;</tt>
+<p><tt>>>>> informat of "dummy" var (should be "") is "" >>>></tt>
+<br><tt>124</tt>
+<br><tt>125&nbsp;&nbsp; %put >>>> type of "num" var (should be "N") is
+"%attrv(test,num,vartype)" >>>>;</tt>
+<p><tt>>>>> type of "num" var (should be "N") is "N" >>>></tt>
+<br><tt>126&nbsp;&nbsp; %put >>>> length of "num" var (should be "8") is
+"%attrv(test,num,varlen)" >>>>;</tt>
+<p><tt>>>>> length of "num" var (should be "8") is "8" >>>></tt>
+<br><tt>127&nbsp;&nbsp; %put >>>> label of "num" var (should be "a number")
+is "%attrv(test,num,varlabel)" >>>>;</tt>
+<p><tt>>>>> label of "num" var (should be "a number") is "a number" >>>></tt>
+<br><tt>128&nbsp;&nbsp; %put >>>> format of "num" var (should be "5.")
+is "%attrv(test,num,varformat)" >>>>;</tt>
+<p><tt>>>>> format of "num" var (should be "5.") is "5." >>>></tt>
+<br><tt>129&nbsp;&nbsp; %put >>>> informat of "num" var (should be "3.")
+is "%attrv(test,num,varinfmt)" >>>>;</tt>
+<p><tt>>>>> informat of "num" var (should be "3.") is "3." >>>></tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="commas"></a>%commas</h2>
+<a href="macros/commas.sas" target="_blank">%commas</a> calls the <a href="macros/quotelst.sas" target="_blank">%quotelst</a>
+macro, setting the quote mark to null and the delimiter to a comma-space
+(", ") thus creating a comma delimited list instead of a quoted list. It
+is typically used in SQL calls inside macros to make sure your list of
+variables is delimited by commas for correct SQL syntax.
+<p><b>Test code:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%let varlist = aa bb cc_cc DD _eee f g;</tt>
+<br><tt>%put (should be >>>> aa, bb, cc_cc, DD, _eee, f, g >>>>);</tt>
+<br><tt>%put >>>> %commas(&amp;varlist) >>>>;</tt></td>
+</tr>
+</table>
+
+<p><b>log:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>130&nbsp; %let varlist = aa bb cc_cc DD _eee f g;</tt>
+<br><tt>131&nbsp;&nbsp; %put (should be >>>> aa, bb, cc_cc, DD, _eee, f,
+g >>>>);</tt>
+<br><tt>(should be >>>> aa, bb, cc_cc, DD, _eee, f, g >>>>)</tt>
+<br><tt>132&nbsp;&nbsp; %put >>>> %commas(&amp;varlist) >>>>;</tt>
+<br><tt>>>>> aa, bb, cc_cc, DD, _eee, f, g >>>></tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="fmtord"></a>%fmtord</h2>
+<a href="macros/fmtord.sas" target="_blank">%fmtord</a> is used to create
+an informat (default name "fmtord.") that maps format <b>labels</b> to
+the order number known to the format.when created. You can use this to
+ensure the <b>label</b> values are displayed in the correct order by assigning
+this order number to a numeric variable and then sorting using it as a
+key.
+<p><b>Test code:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>options nocenter formdlim="_";</tt>
+<br><tt>title1;</tt>
+<br><tt>proc format;</tt>
+<br><tt>&nbsp; value racecd</tt>
+<br><tt>&nbsp; 1="Caucasian"</tt>
+<br><tt>&nbsp; 2="Black"</tt>
+<br><tt>&nbsp; 3="Hispanic"</tt>
+<br><tt>&nbsp; 4="Asian"</tt>
+<br><tt>&nbsp; 5="Unknown"</tt>
+<br><tt>&nbsp; ;</tt>
+<br><tt>&nbsp; value $cntry</tt>
+<br><tt>&nbsp; "A"="United Kingdom"</tt>
+<br><tt>&nbsp; "B"="Australia"</tt>
+<br><tt>&nbsp; "C"="New Zealand"</tt>
+<br><tt>&nbsp; "D"="New Guinea"</tt>
+<br><tt>&nbsp; ;</tt>
+<br><tt>run;</tt>
+<p><tt>%fmtord(racecd)</tt>
+<p><tt>data test1;</tt>
+<br><tt>&nbsp; length race $ 20;</tt>
+<br><tt>&nbsp; race="Asian";ord=input(race,fmtord.);output;</tt>
+<br><tt>&nbsp; race="Black";ord=input(race,fmtord.);output;</tt>
+<br><tt>&nbsp; race="Caucasian";ord=input(race,fmtord.);output;</tt>
+<br><tt>&nbsp; race="Hispanic";ord=input(race,fmtord.);output;</tt>
+<br><tt>&nbsp; race="Other";ord=input(race,fmtord.);output;</tt>
+<br><tt>&nbsp; race="Unknown";ord=input(race,fmtord.);output;</tt>
+<br><tt>run;</tt>
+<br><tt>proc sort data=test1;</tt>
+<br><tt>&nbsp; by ord;</tt>
+<br><tt>run;</tt>
+<br><tt>proc print data=test1;</tt>
+<br><tt>run;</tt>
+<p><tt>%fmtord($cntry)</tt>
+<p><tt>data test2;</tt>
+<br><tt>&nbsp; length cntry $ 20;</tt>
+<br><tt>&nbsp; cntry="Australia";ord=input(cntry,fmtord.);output;</tt>
+<br><tt>&nbsp; cntry="New Guinea";ord=input(cntry,fmtord.);output;</tt>
+<br><tt>&nbsp; cntry="New Zealand";ord=input(cntry,fmtord.);output;</tt>
+<br><tt>&nbsp; cntry="United Kingdom";ord=input(cntry,fmtord.);output;</tt>
+<br><tt>&nbsp; cntry="No Such Country";ord=input(cntry,fmtord.);output;</tt>
+<br><tt>run;</tt>
+<br><tt>proc sort data=test2;</tt>
+<br><tt>&nbsp; by ord;</tt>
+<br><tt>run;</tt>
+<br><tt>proc print data=test2;</tt>
+<br><tt>run;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p><b>lst:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Obs&nbsp;&nbsp;&nbsp; race&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ord</tt>
+<p><tt>&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp; Other&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+.</tt>
+<br><tt>&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp; Caucasian&nbsp;&nbsp;&nbsp;&nbsp;
+1</tt>
+<br><tt>&nbsp;3&nbsp;&nbsp;&nbsp;&nbsp; Black&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2</tt>
+<br><tt>&nbsp;4&nbsp;&nbsp;&nbsp;&nbsp; Hispanic&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3</tt>
+<br><tt>&nbsp;5&nbsp;&nbsp;&nbsp;&nbsp; Asian&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4</tt>
+<br><tt>&nbsp;6&nbsp;&nbsp;&nbsp;&nbsp; Unknown&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5</tt>
+<p><tt>__________________________________________________________________________________________________</tt>
+<p><tt>Obs&nbsp;&nbsp;&nbsp; cntry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ord</tt>
+<p><tt>&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp; No Such Country&nbsp;&nbsp;&nbsp;&nbsp;
+.</tt>
+<br><tt>&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp; United Kingdom&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1</tt>
+<br><tt>&nbsp;3&nbsp;&nbsp;&nbsp;&nbsp; Australia&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2</tt>
+<br><tt>&nbsp;4&nbsp;&nbsp;&nbsp;&nbsp; New Zealand&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3</tt>
+<br><tt>&nbsp;5&nbsp;&nbsp;&nbsp;&nbsp; New Guinea&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<h2>
+<a NAME="fmtpath"></a>%fmtpath</h2>
+<a href="macros/fmtpath.sas" target="_blank">%fmtpath</a> gives you the
+list of catalogs (if they exist) in the order formats will be searched
+for as defined to <b>fmtsearch</b> including "LIBRARY" and "WORK".
+<p><b>Test code:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%put should be >>>> WORK.FORMATS LIBRARY.FORMATS >>>>;</tt>
+<br><tt>%put >>> %fmtpath >>>>;</tt>
+<p><tt>options fmtsearch=(one two work three);</tt>
+<br><tt>%put should be >>>> LIBRARY.FORMATS ONE.FORMATS TWO.FORMATS WORK.FORMATS
+THREE.FORMATS >>>>;</tt>
+<br><tt>%put >>>> %fmtpath >>>>;</tt>
+<p><tt>options fmtsearch=(one.fmtcat two);</tt>
+<br><tt>%put should be >>>> WORK.FORMATS LIBRARY.FORMATS ONE.FMTCAT TWO.FORMATS
+>>>>;</tt>
+<br><tt>%put >>>> %fmtpath >>>>;</tt>
+<p><tt>options fmtsearch=(local);</tt>
+<br><tt>%put should be >>>> WORK.FORMATS LIBRARY.FORMATS LOCAL.FORMATS
+>>>>;</tt>
+<br><tt>%put >>>> %fmtpath >>>>;</tt>
+<p><tt>options fmtsearch=(work);</tt>
+<br><tt>%put should be >>>> LIBRARY.FORMATS WORK.FORMATS >>>>;</tt>
+<br><tt>%put >>>> %fmtpath >>>>;</tt></td>
+</tr>
+</table>
+
+<p><b>log:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>1&nbsp;&nbsp;&nbsp; %put should be >>>> WORK.FORMATS LIBRARY.FORMATS
+>>>>;</tt>
+<br><tt>should be >>>> WORK.FORMATS LIBRARY.FORMATS >>>></tt>
+<br><tt>2&nbsp;&nbsp;&nbsp;&nbsp; %put >>> %fmtpath >>>>;</tt>
+<br><tt>>>> WORK.FORMATS LIBRARY.FORMATS >>>></tt>
+<br><tt>3</tt>
+<br><tt>4&nbsp;&nbsp;&nbsp;&nbsp; options fmtsearch=(one two work three);</tt>
+<br><tt>5&nbsp;&nbsp;&nbsp;&nbsp; %put should be >>>> LIBRARY.FORMATS ONE.FORMATS
+TWO.FORMATS WORK.FORMATS THREE.FORMATS >>>>;</tt>
+<p><tt>should be >>>> LIBRARY.FORMATS ONE.FORMATS TWO.FORMATS WORK.FORMATS
+THREE.FORMATS >>>></tt>
+<br><tt>6&nbsp;&nbsp;&nbsp;&nbsp; %put >>>> %fmtpath >>>>;</tt>
+<br><tt>>>>> LIBRARY.FORMATS ONE.FORMATS TWO.FORMATS WORK.FORMATS THREE.FORMATS
+>>>></tt>
+<br><tt>7</tt>
+<br><tt>8&nbsp;&nbsp;&nbsp;&nbsp; options fmtsearch=(one.fmtcat two);</tt>
+<br><tt>9&nbsp;&nbsp;&nbsp;&nbsp; %put should be >>>> WORK.FORMATS LIBRARY.FORMATS
+ONE.FMTCAT TWO.FORMATS >>>>;</tt>
+<p><tt>should be >>>> WORK.FORMATS LIBRARY.FORMATS ONE.FMTCAT TWO.FORMATS
+>>>></tt>
+<br><tt>10&nbsp;&nbsp;&nbsp; %put >>>> %fmtpath >>>>;</tt>
+<br><tt>>>>> WORK.FORMATS LIBRARY.FORMATS ONE.FMTCAT TWO.FORMATS >>>></tt>
+<br><tt>11</tt>
+<br><tt>12&nbsp;&nbsp;&nbsp; options fmtsearch=(local);</tt>
+<br><tt>13&nbsp;&nbsp;&nbsp; %put should be >>>> WORK.FORMATS LIBRARY.FORMATS
+LOCAL.FORMATS >>>>;</tt>
+<br><tt>should be >>>> WORK.FORMATS LIBRARY.FORMATS LOCAL.FORMATS >>>></tt>
+<br><tt>14&nbsp;&nbsp;&nbsp; %put >>>> %fmtpath >>>>;</tt>
+<br><tt>>>>> WORK.FORMATS LIBRARY.FORMATS LOCAL.FORMATS >>>></tt>
+<br><tt>15</tt>
+<br><tt>16&nbsp;&nbsp;&nbsp; options fmtsearch=(work);</tt>
+<br><tt>17&nbsp;&nbsp;&nbsp; %put should be >>>> LIBRARY.FORMATS WORK.FORMATS
+>>>>;</tt>
+<br><tt>should be >>>> LIBRARY.FORMATS WORK.FORMATS >>>></tt>
+<br><tt>18&nbsp;&nbsp;&nbsp; %put >>>> %fmtpath >>>>;</tt>
+<br><tt>>>>> LIBRARY.FORMATS WORK.FORMATS >>>></tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="quotelst"></a>%quotelst</h2>
+<a href="macros/quotelst.sas" target="_blank">%quotelst</a> put double
+quotes around each item in a space delimited list. You might use it inside
+a macro in a data step in() statement where you were looking for strings
+that match the list provided to a macro parameter. You might also use it
+in an %index() statement for matching a quoted string to a quoted list
+of values to avoid a possible match on a subset of characters.
+<p><b>Test code:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%let varlist=VARA VARB VARC;</tt>
+<p><tt>%put should be >>>> "VARA" "VARB" "VARC" >>>>;</tt>
+<br><tt>%put >>>> %quotelst(&amp;varlist) >>>>;</tt>
+<p><tt>%let varlist=;</tt>
+<p><tt>%put should be >>>>&nbsp; >>>>;</tt>
+<br><tt>%put >>>> %quotelst(&amp;varlist) >>>>;</tt></td>
+</tr>
+</table>
+
+<p><b>log:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>27&nbsp;&nbsp; %let varlist=VARA VARB VARC;</tt>
+<br><tt>28</tt>
+<br><tt>29&nbsp;&nbsp;&nbsp; %put should be >>>> "VARA" "VARB" "VARC" >>>>;</tt>
+<br><tt>should be >>>> "VARA" "VARB" "VARC" >>>></tt>
+<br><tt>30&nbsp;&nbsp;&nbsp; %put >>>> %quotelst(&amp;varlist) >>>>;</tt>
+<br><tt>>>>> "VARA" "VARB" "VARC" >>>></tt>
+<br><tt>31</tt>
+<br><tt>32&nbsp;&nbsp;&nbsp; %let varlist=;</tt>
+<br><tt>33</tt>
+<br><tt>34&nbsp;&nbsp;&nbsp; %put should be >>>>&nbsp; >>>>;</tt>
+<br><tt>should be >>>>&nbsp; >>>></tt>
+<br><tt>35&nbsp;&nbsp;&nbsp; %put >>>> %quotelst(&amp;varlist) >>>>;</tt>
+<br><tt>>>>>&nbsp; >>>></tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="remove"></a>%remove</h2>
+<a href="macros/remove.sas" target="_blank">%remove</a> will remove the
+specified string(s) from a target string (repeatedly) and return the results.
+By default it is not case sensitive but you can activate this if you wish.
+<p><b>Test code:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%let str=display flow 'Display' 'label' left;</tt>
+<p><tt>%put should be >>> display&nbsp; 'Display' 'label'&nbsp; >>;</tt>
+<br><tt>%put >>> %remove(&amp;str,left,Flow) >>;</tt>
+<p><tt>%put should be >>>&nbsp; flow '' 'label' left >>;</tt>
+<br><tt>%put >>> %remove(&amp;str,display) >>;</tt>
+<p><tt>%put should be >>> display flow '' 'label' left >>;</tt>
+<br><tt>%put >>> %remove(&amp;str,Display,casesens=yes) >>;</tt></td>
+</tr>
+</table>
+
+<p><b>log:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>107&nbsp; %let str=display flow 'Display' 'label' left;</tt>
+<br><tt>108</tt>
+<br><tt>109&nbsp;&nbsp; %put should be >>> display&nbsp; 'Display' 'label'&nbsp;
+>>;</tt>
+<br><tt>should be >>> display&nbsp; 'Display' 'label'&nbsp; >></tt>
+<br><tt>110&nbsp;&nbsp; %put >>> %remove(&amp;str,left,Flow) >>;</tt>
+<br><tt>>>> display&nbsp; 'Display' 'label'&nbsp; >></tt>
+<br><tt>111</tt>
+<br><tt>112&nbsp;&nbsp; %put should be >>>&nbsp; flow '' 'label' left >>;</tt>
+<br><tt>should be >>>&nbsp; flow '' 'label' left >></tt>
+<br><tt>113&nbsp;&nbsp; %put >>> %remove(&amp;str,display) >>;</tt>
+<br><tt>>>>&nbsp; flow '' 'label' left >></tt>
+<br><tt>114</tt>
+<br><tt>115&nbsp;&nbsp; %put should be >>> display flow '' 'label' left
+>>;</tt>
+<br><tt>should be >>> display flow '' 'label' left >></tt>
+<br><tt>116&nbsp;&nbsp; %put >>> %remove(&amp;str,Display,casesens=yes)
+>>;</tt>
+<br><tt>>>> display flow '' 'label' left >></tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="unimap"></a>%unimap</h2>
+<a href="macros/unimap.sas" target="_blank">%unimap</a> takes a list of
+free-form stats labels which might have trailing footnote symbols and tries
+to match them to the stats keywords known to the "proc univariate" procedure.
+This allows users to call macros to calculate stats using only the labels
+as they want them to appear on a report.
+<p><b>Test code:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%put should be MIN MEAN MAX STD MEDIAN ;</tt>
+<br><tt>%put %unimap(Minimum Mean&deg; Maximum S.D. Median*);</tt></td>
+</tr>
+</table>
+
+<p><b>log:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>38&nbsp;&nbsp; %put should be MIN MEAN MAX STD MEDIAN ;</tt>
+<br><tt>should be MIN MEAN MAX STD MEDIAN</tt>
+<br><tt>39&nbsp;&nbsp;&nbsp; %put %unimap(Minimum Mean&deg; Maximum S.D.
+Median*);</tt>
+<br><tt>MIN MEAN MAX STD MEDIAN</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="varfmt"></a>%varfmt</h2>
+<a href="macros/varfmt.sas" target="_blank">%varfmt</a> just calls <a href="macros/attrv.sas" target="_blank">%attrv</a>
+asking for a variable's format in a specified dataset..
+<p><b>Test code:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data test;</tt>
+<br><tt>&nbsp; length dummy $ 16;</tt>
+<br><tt>&nbsp; dummy='dummy';</tt>
+<br><tt>&nbsp; num=2;</tt>
+<br><tt>&nbsp; attrib dummy format=$char16. num format=5. informat=3. label='a
+number';</tt>
+<br><tt>run;</tt>
+<p><tt>%put >>>> format of "dummy" var (should be "$CHAR16.") is "%varfmt(test,dummy)"
+>>>>;</tt>
+<br><tt>%put >>>> format of "num" var (should be "5.") is "%varfmt(test,num)"
+>>>>;</tt></td>
+</tr>
+</table>
+
+<p><b>log:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>47&nbsp;&nbsp;&nbsp; %put >>>> format of "dummy" var (should be
+"$CHAR16.") is "%varfmt(test,dummy)" >>>>;</tt>
+<p><tt>>>>> format of "dummy" var (should be "$CHAR16.") is "$CHAR16."
+>>>></tt>
+<br><tt>48&nbsp;&nbsp;&nbsp; %put >>>> format of "num" var (should be "5.")
+is "%varfmt(test,num)" >>>>;</tt>
+<p><tt>>>>> format of "num" var (should be "5.") is "5." >>>></tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="varlen"></a>%varlen</h2>
+<a href="macros/varlen.sas" target="_blank">%varlen</a> calls <a href="macros/vartype.sas" target="_blank">%vartype</a>
+and <a href="macros/attrv.sas" target="_blank">%attrv</a> and returns the
+length of a variable in a specified dataset but with a dollar sign in front
+if it is a character variable to make it convenient to use in a data step
+"length" statement. The dollar sign can be suppressed by specifiying any
+string as the third positional parameter.
+<p><b>Test code:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data test;</tt>
+<br><tt>&nbsp; length dummy $ 16;</tt>
+<br><tt>&nbsp; dummy='dummy';</tt>
+<br><tt>&nbsp; num=2;</tt>
+<br><tt>&nbsp; attrib dummy format=$char16. num format=5. informat=3. label='a
+number';</tt>
+<br><tt>run;</tt>
+<p><tt>%put >>>> length of "dummy" var (should be "$ 16") is "%varlen(test,dummy)"
+>>>>;</tt>
+<br><tt>%put >>>> same again but no dollar (should be "16") is "%varlen(test,dummy,anything)"
+>>>>;</tt>
+<p><tt>%put >>>> length of "num" var (should be "8") is "%varlen(test,num)"
+>>>>;</tt>
+<br><tt>%put >>>> "nodollar" applied though not required (should be "8")
+is "%varlen(test,num,nodollar)" >>>>;</tt></td>
+</tr>
+</table>
+
+<p><b>log:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>56&nbsp;&nbsp;&nbsp; %put >>>> length of "dummy" var (should be
+"$ 16") is "%varlen(test,dummy)" >>>>;</tt>
+<p><tt>>>>> length of "dummy" var (should be "$ 16") is "$ 16" >>>></tt>
+<br><tt>57&nbsp;&nbsp;&nbsp; %put >>>> same again but no dollar (should
+be "16") is "%varlen(test,dummy,anything)" >>>>;</tt>
+<p><tt>>>>> same again but no dollar (should be "16") is "16" >>>></tt>
+<br><tt>58</tt>
+<br><tt>59&nbsp;&nbsp;&nbsp; %put >>>> length of "num" var (should be "8")
+is "%varlen(test,num)" >>>>;</tt>
+<p><tt>>>>> length of "num" var (should be "8") is "8" >>>></tt>
+<br><tt>60&nbsp;&nbsp;&nbsp; %put >>>> "nodollar" applied though not required
+(should be "8") is</tt>
+<br><tt>60 ! "%varlen(test,num,nodollar)" >>>>;</tt>
+<br><tt>>>>> "nodollar" applied though not required (should be "8") is
+"8" >>>></tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="varnum"></a>%varnum</h2>
+<a href="macros/varnum.sas" target="_blank">%varnum</a> uses SCL to find
+out what position a variable is in a dataset or returns 0 if not in the
+dataset.
+<p><b>Test code:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data test;</tt>
+<br><tt>&nbsp; length dummy $ 16;</tt>
+<br><tt>&nbsp; num=1;</tt>
+<br><tt>&nbsp; dummy='dummy';</tt>
+<br><tt>&nbsp; num2=2;</tt>
+<br><tt>&nbsp; char3='3';</tt>
+<br><tt>run;</tt>
+<p><tt>%put >>>> position of "dummy" var (should be 1) is %varnum(test,dummy)
+>>>>;</tt>
+<br><tt>%put >>>> position of "num" var (should be 2) is %varnum(test,num)
+>>>>;</tt>
+<br><tt>%put >>>> position of "num2" var (should be 3) is %varnum(test,num2)
+>>>>;</tt>
+<br><tt>%put >>>> position of "char3" var (should be 4) is %varnum(test,char3)
+>>>>;</tt>
+<br><tt>%put >>>> position of non-existent var "roland" (should be 0) is
+%varnum(test,roland) >>>;</tt>
+<br><tt>%put should be an error message next for non-existent dataset ;</tt>
+<br><tt>%put >>>> position of non-existent var "roland" in non-existent
+dataset "rat" is %varnum(rat,roland) >>>>;</tt></td>
+</tr>
+</table>
+
+<p><b>log:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>81&nbsp;&nbsp;&nbsp; %put >>>> position of "dummy" var (should
+be 1) is %varnum(test,dummy) >>>>;</tt>
+<p><tt>>>>> position of "dummy" var (should be 1) is 1 >>>></tt>
+<br><tt>82&nbsp;&nbsp;&nbsp; %put >>>> position of "num" var (should be
+2) is %varnum(test,num) >>>>;</tt>
+<br><tt>>>>> position of "num" var (should be 2) is 2 >>>></tt>
+<br><tt>83&nbsp;&nbsp;&nbsp; %put >>>> position of "num2" var (should be
+3) is %varnum(test,num2) >>>>;</tt>
+<p><tt>>>>> position of "num2" var (should be 3) is 3 >>>></tt>
+<br><tt>84&nbsp;&nbsp;&nbsp; %put >>>> position of "char3" var (should
+be 4) is %varnum(test,char3) >>>>;</tt>
+<p><tt>>>>> position of "char3" var (should be 4) is 4 >>>></tt>
+<br><tt>85&nbsp;&nbsp;&nbsp; %put >>>> position of non-existent var "roland"
+(should be 0) is %varnum(test,roland) >>>;</tt>
+<p><tt>>>>> position of non-existent var "roland" (should be 0) is 0 >>></tt>
+<br><tt>86&nbsp;&nbsp;&nbsp; %put should be an error message next for non-existent
+dataset ;</tt>
+<br><tt>should be an error message next for non-existent dataset</tt>
+<br><tt>87&nbsp;&nbsp;&nbsp; %put >>>> position of non-existent var "roland"
+in non-existent dataset "rat" is</tt>
+<br><tt>87 ! %varnum(rat,roland) >>>>;</tt>
+<br><tt>ERROR: (varnum) Dataset rat not opened due to the following reason:</tt>
+<br><tt>ERROR: File WORK.RAT.DATA does not exist.</tt>
+<br><tt>>>>> position of non-existent var "roland" in non-existent dataset
+"rat" is 0 >>>></tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="vartype"></a>%vartype</h2>
+<a href="macros/vartype.sas" target="_blank">%vartype</a> calls <a href="macros/attrv.sas" target="_blank">%attrv</a>
+asking for the type of a variable in a specified dataset.
+<p><b>Test code:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data test;</tt>
+<br><tt>&nbsp; length dummy $ 16;</tt>
+<br><tt>&nbsp; dummy='dummy';</tt>
+<br><tt>&nbsp; num=2;</tt>
+<br><tt>&nbsp; attrib dummy format=$char16. num format=5. informat=3. label='a
+number';</tt>
+<br><tt>run;</tt>
+<p><tt>%put >>>> type of "dummy" var (should be "C") is "%vartype(test,dummy)"
+>>>>;</tt>
+<br><tt>%put >>>> type of "num" var (should be "N") is "%vartype(test,num)"
+>>>>;</tt></td>
+</tr>
+</table>
+
+<p><b>log:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>95&nbsp;&nbsp;&nbsp; %put >>>> type of "dummy" var (should be "C")
+is "%vartype(test,dummy)" >>>>;</tt>
+<p><tt>>>>> type of "dummy" var (should be "C") is "C" >>>></tt>
+<br><tt>96&nbsp;&nbsp;&nbsp; %put >>>> type of "num" var (should be "N")
+is "%vartype(test,num)" >>>>;</tt>
+<p><tt>>>>> type of "num" var (should be "N") is "N" >>>></tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="verifyb"></a>%verifyb</h2>
+<a href="macros/verifyb.sas" target="_blank">%verifyb</a> is an alternate
+version of one of the SI supplied macros just in case you need total control
+over your sasautos library you are using for clinical reporting and do
+not want to put the SI supplied macros on the sasautos path. What it does
+is count <b>backwards</b> in a macro string until it detects a character
+that is not one of your target characters and returns the position that
+character was found at (counting from the front).
+<p><b>Test code:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%let str=%str(xyz&nbsp;&nbsp; aa bb ccx&nbsp;&nbsp;&nbsp;&nbsp;
+);</tt>
+<br><tt>%put >>> (should be 15) is %verifyb(&amp;str,%str( abc)) >>>;</tt>
+<p><tt>%let str=%str(bbccaa a b c );</tt>
+<br><tt>%put >>> (should be 0) is %verifyb(&amp;str,%str( abc)) >>>;</tt>
+<p><tt>%let str=;</tt>
+<br><tt>%put >>> (should ERROR) is %verifyb(&amp;str,%str( abc)) >>>;</tt>
+<p><tt>%let str=Z;</tt>
+<br><tt>%put >>> (should be 1) is %verifyb(&amp;str,%str( abc)) >>>;</tt></td>
+</tr>
+</table>
+
+<p><b>log:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>169&nbsp; %let str=%str(xyz&nbsp;&nbsp; aa bb ccx&nbsp;&nbsp;&nbsp;&nbsp;
+);</tt>
+<br><tt>170&nbsp;&nbsp; %put >>> (should be 15) is %verifyb(&amp;str,%str(
+abc)) >>>;</tt>
+<br><tt>>>> (should be 15) is 15 >>></tt>
+<br><tt>171</tt>
+<br><tt>172&nbsp;&nbsp; %let str=%str(bbccaa a b c );</tt>
+<br><tt>173&nbsp;&nbsp; %put >>> (should be 0) is %verifyb(&amp;str,%str(
+abc)) >>>;</tt>
+<br><tt>>>> (should be 0) is 0 >>></tt>
+<br><tt>174</tt>
+<br><tt>175&nbsp;&nbsp; %let str=;</tt>
+<br><tt>176&nbsp;&nbsp; %put >>> (should ERROR) is %verifyb(&amp;str,%str(
+abc)) >>>;</tt>
+<br><tt>ERROR: (verifyb) No text string supplied for verifyb to act on.</tt>
+<br><tt>ERROR: (verifyb) Leaving macro due to error(s) listed.</tt>
+<br><tt>>>> (should ERROR) is >>></tt>
+<br><tt>177</tt>
+<br><tt>178&nbsp;&nbsp; %let str=Z;</tt>
+<br><tt>179&nbsp;&nbsp; %put >>> (should be 1) is %verifyb(&amp;str,%str(
+abc)) >>>;</tt>
+<br><tt>>>> (should be 1) is 1 >>></tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="windex"></a>%windex</h2>
+<a href="macros/windex.sas" target="_blank">%windex</a> works like the
+SAS macro language function %index() except it works on words and not characters.
+<p><b>Test code:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%let days=sunday monday tuesday wednesday thursday;</tt>
+<p><tt>%put >>> (should be 3) %windex(&amp;days,tuesday) >>>;</tt>
+<br><tt>%put >>> (should be 0) %windex(&amp;days,TUESDAY) >>>;</tt>
+<br><tt>%put >>> (should be 0) %windex(&amp;days,tues) >>>;</tt>
+<br><tt>%put >>> (should be 0) %windex(&amp;days,ZZ) >>>;</tt></td>
+</tr>
+</table>
+
+<p><b>log:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>180&nbsp; %let days=sunday monday tuesday wednesday thursday;</tt>
+<br><tt>181</tt>
+<br><tt>182&nbsp;&nbsp; %put >>> (should be 3) %windex(&amp;days,tuesday)
+>>>;</tt>
+<br><tt>>>> (should be 3) 3 >>></tt>
+<br><tt>183&nbsp;&nbsp; %put >>> (should be 0) %windex(&amp;days,TUESDAY)
+>>>;</tt>
+<br><tt>>>> (should be 0) 0 >>></tt>
+<br><tt>184&nbsp;&nbsp; %put >>> (should be 0) %windex(&amp;days,tues)
+>>>;</tt>
+<br><tt>>>> (should be 0) 0 >>></tt>
+<br><tt>185&nbsp;&nbsp; %put >>> (should be 0) %windex(&amp;days,ZZ) >>>;</tt>
+<br><tt>>>> (should be 0) 0 >>></tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="words"></a>%words</h2>
+<a href="macros/words.sas" target="_blank">%words</a> counts the number
+of words in a macro string, assuming a space as delimiter.
+<p><b>Test code:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%let days=sunday monday tuesday wednesday thursday friday saturday;</tt>
+<br><tt>%put >>> Number of days (should be 7) is %words(&amp;days) >>>;</tt>
+<p><tt>%let null=;</tt>
+<br><tt>%put >>> Number of words in null string (should be 0) is %words(&amp;null)
+>>>;</tt>
+<p><tt>%let repeat=repeat repeat;</tt>
+<br><tt>%put >>> Number of words in repeat string (should be 2) is %words(&amp;repeat)
+>>>;</tt></td>
+</tr>
+</table>
+
+<p><b>log:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>117&nbsp; %let days=sunday monday tuesday wednesday thursday friday
+saturday;</tt>
+<br><tt>118&nbsp;&nbsp; %put >>> Number of days (should be 7) is %words(&amp;days)
+>>>;</tt>
+<br><tt>>>> Number of days (should be 7) is 7 >>></tt>
+<br><tt>119</tt>
+<br><tt>120&nbsp;&nbsp; %let null=;</tt>
+<br><tt>121&nbsp;&nbsp; %put >>> Number of words in null string (should
+be 0) is %words(&amp;null) >>>;</tt>
+<p><tt>>>> Number of words in null string (should be 0) is 0 >>></tt>
+<br><tt>122</tt>
+<br><tt>123&nbsp;&nbsp; %let repeat=repeat repeat;</tt>
+<br><tt>124&nbsp;&nbsp; %put >>> Number of words in repeat string (should
+be 2) is %words(&amp;repeat) >>>;</tt>
+<p><tt>>>> Number of words in repeat string (should be 2) is 2 >>></tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="zerogrid"></a>%zerogrid</h2>
+<a href="macros/zerogrid.sas" target="_blank">%zerogrid</a> allows you
+to combine unique values for single or matched variables from up to 9 datasets
+using a cartesian join and to set up a variable of your choice for all
+these combinations to zero (or something else). Use this when you want
+to make sure every possible combination of things that you want is in your
+dataset. You might need to use this after running <a href="macros/allfmtvals.sas" target="_blank">%allfmtvals</a>
+to make sure all possible format values are present and written to a dataset.
+<p><b>Test code:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>options nocenter formdlim="_" ls=64;</tt>
+<br><tt>title1;</tt>
+<p><tt>data tmt;</tt>
+<br><tt>&nbsp; tmtarm='A';output;</tt>
+<br><tt>&nbsp; tmtarm='B';output;</tt>
+<br><tt>&nbsp; tmtarm='C';output;</tt>
+<br><tt>run;</tt>
+<p><tt>data subj;</tt>
+<br><tt>&nbsp; subject=1234;output;</tt>
+<br><tt>&nbsp; subject=2345;output;</tt>
+<br><tt>&nbsp; subject=3456;output;</tt>
+<br><tt>run;</tt>
+<p><tt>%zerogrid(zerovar=count,var1=tmtarm,ds1=tmt,var2=subject,ds2=subj)</tt>
+<br><tt>proc print data=zerogrid;</tt>
+<br><tt>title "simple case that will be in tmtarm/subject order";</tt>
+<br><tt>run;</tt>
+<p><tt>%zerogrid(zerovar=count,var1=tmtarm,ds1=tmt,var2=subject,ds2=subj,</tt>
+<br><tt>sortby=subject tmtarm)</tt>
+<br><tt>proc print data=zerogrid;</tt>
+<br><tt>title "same again but output order changed to subject/tmtarm order";</tt>
+<br><tt>run;</tt>
+<p><tt>%zerogrid(zerovar=_str,zero="&nbsp; 0 (&nbsp; 0.0)",var1=tmtarm,ds1=tmt,var2=subject,ds2=subj,</tt>
+<br><tt>sortby=subject tmtarm)</tt>
+<br><tt>proc print data=zerogrid;</tt>
+<br><tt>title "same as before but zerovar and zero value changed";</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p><b>lst:</b>
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>simple case that will be in tmtarm/subject order</tt>
+<p><tt>Obs&nbsp;&nbsp;&nbsp; count&nbsp;&nbsp;&nbsp; tmtarm&nbsp;&nbsp;&nbsp;
+subject</tt>
+<p><tt>&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1234</tt>
+<br><tt>&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2345</tt>
+<br><tt>&nbsp;3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3456</tt>
+<br><tt>&nbsp;4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1234</tt>
+<br><tt>&nbsp;5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2345</tt>
+<br><tt>&nbsp;6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3456</tt>
+<br><tt>&nbsp;7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1234</tt>
+<br><tt>&nbsp;8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2345</tt>
+<br><tt>&nbsp;9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3456</tt>
+<p><tt>________________________________________________________________</tt>
+<p><tt>same again but output order changed to subject/tmtarm order</tt>
+<p><tt>Obs&nbsp;&nbsp;&nbsp; count&nbsp;&nbsp;&nbsp; tmtarm&nbsp;&nbsp;&nbsp;
+subject</tt>
+<p><tt>&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1234</tt>
+<br><tt>&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1234</tt>
+<br><tt>&nbsp;3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1234</tt>
+<br><tt>&nbsp;4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2345</tt>
+<br><tt>&nbsp;5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2345</tt>
+<br><tt>&nbsp;6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2345</tt>
+<br><tt>&nbsp;7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3456</tt>
+<br><tt>&nbsp;8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3456</tt>
+<br><tt>&nbsp;9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3456</tt>
+<p><tt>________________________________________________________________</tt>
+<p><tt>same as before but zerovar and zero value changed</tt>
+<p><tt>Obs&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _str&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+tmtarm&nbsp;&nbsp;&nbsp; subject</tt>
+<p><tt>&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp; 0 (&nbsp; 0.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1234</tt>
+<br><tt>&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp; 0 (&nbsp; 0.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1234</tt>
+<br><tt>&nbsp;3&nbsp;&nbsp;&nbsp;&nbsp; 0 (&nbsp; 0.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1234</tt>
+<br><tt>&nbsp;4&nbsp;&nbsp;&nbsp;&nbsp; 0 (&nbsp; 0.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2345</tt>
+<br><tt>&nbsp;5&nbsp;&nbsp;&nbsp;&nbsp; 0 (&nbsp; 0.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2345</tt>
+<br><tt>&nbsp;6&nbsp;&nbsp;&nbsp;&nbsp; 0 (&nbsp; 0.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2345</tt>
+<br><tt>&nbsp;7&nbsp;&nbsp;&nbsp;&nbsp; 0 (&nbsp; 0.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3456</tt>
+<br><tt>&nbsp;8&nbsp;&nbsp;&nbsp;&nbsp; 0 (&nbsp; 0.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3456</tt>
+<br><tt>&nbsp;9&nbsp;&nbsp;&nbsp;&nbsp; 0 (&nbsp; 0.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3456</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+</html>

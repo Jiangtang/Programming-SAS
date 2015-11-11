@@ -23,6 +23,7 @@ options mautosource sasautos=(sasautos,
 	"C:\Users\jhu\Documents\GitHub\Programming-SAS\utilities"
 ); 
 
+proc options option=config value; run;
 
 
 

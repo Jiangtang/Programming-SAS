@@ -1,0 +1,32 @@
+%macro saspairs_print_to_log(matrix);
+%* ----- print a matrix to the LOG file where it can be cut and pasted;
+	proc iml;
+		start print_to_log (matrix);
+			file log;
+			card = "Matrix &matrix";
+			put card $char80.;
+			do row = 1 to nrow(matrix);
+				card = " ";
+				do col = 1 to ncol(matrix);
+					element = char(matrix[row,col]);
+					card = concat(card, " ", element);
+				end;
+				card = left(card);
+				lencard = length(card);
+				do until (lencard < 80);
+					if lencard > 80 then 
+						thiscard = substr(card,1,80);
+					else
+						thiscard = card;
+					put thiscard $char80.;
+					if lencard > 80 then do;
+						card = substr(card, 81);
+						lencard = length(card);
+					end;
+				end;
+			end;
+		finish;
+		load &matrix;
+		call print_to_log(&matrix);
+	quit;
+%mend saspairs_print_to_log;

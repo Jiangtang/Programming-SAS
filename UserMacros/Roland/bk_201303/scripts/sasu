@@ -1,0 +1,185 @@
+#!/bin/bash
+#<pre><b>
+# Script     : sasu
+# Version    : 2.1
+# Author     : Roland Rashleigh-Berry
+# Date       : 17-Feb-2007
+# Purpose    : Production script to run sas in batch and give a completion
+#              message and a diagnostics .chk file.
+# SubScripts : scanlogs
+# Notes      : The number or errors and warnings will be counted and displayed
+#              after sas has run. Any other problems will be reported. "sc"
+#              (scanlogs) is run at the end any lines in the log detected of
+#              interest will be written to a file progname.chk (where "progname"
+#              is the program name).
+#
+#              If you have set up a system environmant variable named "prog"
+#              and exported it then calling this script with no parameters will
+#              assume you wish to run the program you defined to "prog".
+#
+# Usage      : sasu progname
+#              sasu progname.sas
+#              sasu
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   sas program you wish to run
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  11may06         set sasrc=2 if any errors detected
+# rrb  17Feb07         Made Windows compliant and calls "scanlogs" instead of 
+#                      "sc" due to Cygwin conflict.
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Edit the test below for the number of expected parameters and put out
+# a usage note if an incorrect number supplied. Remove if not required.
+if [ $# -eq 0 ] ; then
+  if [ -z "$prog" ] ; then
+    echo "Usage: sasb progname" 1>&2
+    exit 1
+  fi
+fi
+
+
+# default to what is in "prog" if set up
+progname=$1
+if [ -z "$progname" ] ; then
+  progname=$prog
+fi
+
+
+# drop ".sas" ending if it exists
+progname=${progname%.sas}
+
+
+# check the program file exists
+if [ ! -f "${progname}.sas" ] ; then
+  echo "ERROR: (sasb) Program file "${progname}.sas" does not exist" 1>&2
+  exit 2
+fi
+
+
+# run the program
+if [ -n "$CYGWIN" ] ; then
+  sas -nosplash -nologo -icon -sysin "$progname"
+  # keep the return code
+  sasrc=$?
+else
+  sas -sysin "$progname"
+  # keep the return code
+  sasrc=$?
+fi
+
+
+# Work out the name of the log file.
+# Drop any path prefix because the log will be in the current directory
+# and add ".log" at the end to give us the log file name
+log=${progname##*/}.log
+
+
+# run scanlogs and write output to the .chk file
+scanlogs $log > ${log%.*}.chk
+
+
+# count the warnings and left-align
+warnings=$(grep '^WARNING' $log | grep -v 'The length of data column ' | wc -l)
+let warnings=warnings
+
+
+# count the errors and left-align
+errors=$(grep '^ERROR' $log | wc -l)
+let errors=errors
+
+
+# count the data notes and left-align
+datanotes=$(grep '^DATANOTE' $log | wc -l)
+let datanotes=datanotes
+
+
+# count the data warnings and left-align
+datawarnings=$(grep '^DATAWARNING' $log | wc -l)
+let datawarnings=datawarnings
+
+
+# count the merge statement messages and left-align
+merges=$(grep '^NOTE: MERGE statement has more than one' $log | wc -l)
+let merges=merges
+
+
+# count the W.D format messages and left-align
+wds=$(fgrep 'W.D format' $log | wc -l)
+let wds=wds
+
+
+# count the truncated messages and left-align
+truncs=$(fgrep 'truncated ' $log | grep -v 'BY-line has been truncated' | wc -l)
+let truncs=truncs
+
+
+# count the zero obs messages and left-align
+zerobs=$(fgrep ' 0 observations and ' $log | wc -l)
+let zerobs=zerobs
+
+
+# count the outside axis range messages 
+axis=$(fgrep 'outside the axis range' $log | wc -l)
+let axis=axis
+
+
+# count the note invalid messages 
+invalids=$(grep '^NOTE: Invalid' $log | wc -l)
+let invalids=invalids
+
+
+# count the uninitialized messages 
+unins=$(fgrep ' is uninitialized.' $log | wc -l)
+let unins=unins
+
+
+# Subtract 1 from the total errors if > 1 
+# due to last error line repeat in the log
+if [ $errors -gt 0 ] ; then
+  sasrc=2
+  let errors=errors-1
+fi
+
+
+# Always give errors and warnings counts but only give
+# other counts if detected
+
+echo "sas program \"$progname\" ended with return code $sasrc:" 1>&2
+echo "$errors ERROR(s)" 1>&2
+echo "$warnings WARNING(s)" 1>&2
+if [ $datanotes -gt 0 ] ; then
+  echo "$datanotes Data Note(s)" 1>&2
+fi
+if [ $datawarnings -gt 0 ] ; then
+  echo "$datawarnings Data Warning(s)" 1>&2
+fi
+if [ $merges -gt 0 ] ; then
+  echo "$merges Bad merge(s)" 1>&2
+fi
+if [ $wds -gt 0 ] ; then
+  echo "$wds W.D format problem(s)" 1>&2
+fi
+if [ $truncs -gt 0 ] ; then
+  echo "$truncs Truncated value(s)" 1>&2
+fi
+if [ $zerobs -gt 0 ] ; then
+  echo "$zerobs Zero observations note(s)" 1>&2
+fi
+if [ $axis -gt 0 ] ; then
+  echo "$axis Outsde axis range(s)" 1>&2
+fi
+if [ $invalids -gt 0 ] ; then
+  echo "$invalids Invalid value(s)" 1>&2
+fi
+if [ $unins -gt 0 ] ; then
+  echo "$unins Uninitialized variable(s)" 1>&2
+fi
+
+exit $sasrc

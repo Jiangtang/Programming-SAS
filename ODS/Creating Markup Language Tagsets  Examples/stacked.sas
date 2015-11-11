@@ -1,0 +1,35 @@
+   proc template;
+      define table Base.Standard;
+         notes "Table definition for PROC Standard.";
+         column name (mean std) n label;
+         define name;
+            header="Name" varname="Name" style=RowHeader;
+         end;
+         define mean;
+            header="Mean/Std Dev" varname="Mean" format=D12.;
+         end;
+         define std;
+            header="/Standard/Deviation" varname="stdDev" format=D12.;
+         end;
+         define n;
+            header="N" format=best.;
+         end;
+         define label;
+            header="Label" varname="Label";
+         end;
+         byline wrap required_space=3;
+      end;
+   run;
+
+   proc template;
+      define tagset tagsets.myhtml;
+         parent=tagsets.phtml;
+         stacked_columns=no;
+      end;
+   run;
+
+   ods tagsets.myhtml file="not_stacked.html";
+   ods phtml file="stacked.html";
+   proc standard print data=sashelp.class;
+   run;
+   ods _all_ close;

@@ -1,0 +1,30 @@
+#!/bin/bash
+#<pre><b>
+# Script     : toupper
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 03-May-2004
+# Purpose    : Production script to convert lower case to upper case
+# SubScripts : none
+# Notes      : Upper case version of string is echoed to standard output
+# Usage      : toupper string
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   string to convert to upper case
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# One parameter (string) at least
+if [ $# -lt 1 ] ; then
+  echo "Usage: toupper string" 1>&2
+  exit 1
+fi
+
+echo $* | tr [:lower:] [:upper:]

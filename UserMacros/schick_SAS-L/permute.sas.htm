@@ -1,0 +1,153 @@
+<HTML>
+<HEAD>
+<TITLE>Re: Combination problem</TITLE>
+</HEAD>
+<body><script type="text/javascript" src="http://hb.lycos.com/hb.js"></script>
+<script type="text/javascript" src="http://ratings.lycos.com/ratings/lycosRating.js.php"></script>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var cm_role = "live";
+var cm_host = "tripod.lycos.com";
+var cm_taxid = "/memberembedded";
+var tripod_member_name = "schick";
+var tripod_member_page = "schick/permute.sas";
+var tripod_ratings_hash = "1247464052:6597f08b31027032a6382a5fdcad19d4";
+
+var lycos_ad_category = {"dmoz":"computers\/open_source","ontarget":"&CAT=technology&L2CAT=computing&L3CAT=programming","find_what":"software knowledge base"};
+
+var lycos_ad_remote_addr = "203.125.122.2";
+var lycos_ad_www_server = "www.tripod.lycos.com";
+var lycos_ad_track_small = "http://members.tripod.com/adm/img/common/ot_smallframe.gif?rand=746793";
+var lycos_ad_track_served = "http://members.tripod.com/adm/img/common/ot_adserved.gif?rand=746793";
+//--><!]]></script>
+<script type="text/javascript" src="http://scripts.lycos.com/catman/init.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-start.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-middle.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-end.js"></script>
+<noscript>
+ <img src="http://members.tripod.com/adm/img/common/ot_noscript.gif?rand=746793" alt="" width="1" height="1" />
+ <!-- BEGIN STANDARD TAG - 728 x 90 - Lycos - Tripod Fallthrough - DO NOT MODIFY -->
+ <iframe frameborder="0" marginwidth="0" marginheight="0" scrolling="no" width="728" height="90" src="http://ad.yieldmanager.com/st?ad_type=iframe&ad_size=728x90&section=209094"></iframe>
+ <!-- END TAG -->
+</noscript>
+
+<H1>Re: Combination problem</H1>
+<HR>
+<PRE>
+<strong>From          </strong> Greg Nelson &lt;<A HREF="mailto:greg_nelson@INTERNET.GALLUP.COM">greg_nelson@INTERNET.GALLUP.COM</A>&gt;
+<strong>Date          </strong> Wed, 10 Apr 1996 13:00:19 CST
+<strong>Newsgroups    </strong> <A HREF="news:comp.soft-sys.sas">comp.soft-sys.sas</A>
+<strong>Message-ID    </strong> &lt;9603108291.AA829166686@internet.gallup.com&gt;
+</PRE>
+<HR>
+<PRE>
+     Subject:       Combination problem
+     Summary:       Macro to obtain the combinations and permutations of n
+                    items taken k at a time.  Original source from SAS
+                    Communications.
+     Author:        mcgowan1@niehs.nih.gov at Internet
+     Respondent:    Greg Barnes Nelson &lt;gnelson@gallup.com
+
+
+
+     If I understand the problem correctly, you want all the possible
+     permutations of the 5 numbers (in thise case 5).  If this is tryuly
+     your problem, here is a macro that will help....taken from SAS
+     communications a long time ago...
+
+
+     --greg barnes nelson
+
+
+     /* Macro to get all the combinations or permutations of n items taken
+        k at a time....
+
+        greg barnes nelson gnelson@gallup.com
+
+     */
+
+
+     %macro permute(r) / parmbuff;      /* the parmbuff option assigns */
+       %let i=2;                /* the invocation parameter listto the */
+       %let things=;                       /* macro variable &amp;syspbuff */
+       %do %while (%scan(&amp;syspbuff,&amp;i) ne );      /* scan the syspbuff */
+         %let p&amp;i="%scan(&amp;syspbuff,&amp;i)";             /* to determine r */
+         %if &amp;i=2 %then %let things=&amp;&amp;p&amp;i;      /* and count thenumber */
+         %else %let things=&amp;things,&amp;&amp;p&amp;i;            /* of elements, n */
+         %let i=%eval(&amp;i+1);
+       %end;
+       %let n=%eval(&amp;i-2);
+
+       Data permute;
+          drop i j copy;
+          array check (*) $ 10 r1-r&amp;r;          /* create a total of r */
+           %do m=1 %to &amp;r;                   /* variables  for looping */
+             do r&amp;m = &amp;things;
+           %end;
+           copy=0;
+             do i=2 to &amp;r;                 /* look for duplicate items */
+               do j=1 to i-1;              /* and keep the unique ones */
+                 if check(j)=check(i) then copy+1;
+               end;
+             end;
+           if copy = 0 then output;        /* writes to a SAS dataset */
+           if copy = 0 then put r1-r&amp;r;        /* writes to the log   */
+           %do m=1 %to &amp;r;
+            end;                               /* end the r DO LOOPS  */
+           %end;
+         run;
+
+     Proc print uniform data=permute;
+             title "Permutations of &amp;n items taken &amp;r at a time";
+             run;
+      %mend permute;
+
+
+
+     %macro combo(r)/parmbuff;
+       %let i=2;
+       %let things=;
+       %do %while (%scan(&amp;syspbuff,&amp;i) ne );
+        %let p&amp;i="%scan(&amp;syspbuff,&amp;i)";
+         %if &amp;i=2 %then %let things=&amp;&amp;p&amp;i;
+        %else %let things=&amp;things,&amp;&amp;p&amp;i;
+         %let i=%eval(&amp;i+1);
+       %end;
+        %let n=%eval(&amp;i-2);
+      data combo;
+             keep v1-v&amp;r;
+             array word $8  w1-w&amp;n (&amp;things);
+             array rr (*) r1-r&amp;r;
+             array v $8  v1-v&amp;r;
+            %do i=1 %to &amp;r;                    /* create the DO LOOPS */
+              %if &amp;i=1 %then %do;
+                do r&amp;i=1 to &amp;n-(&amp;r-&amp;i);
+                %end;
+              %else %do;
+                do r&amp;i=r%eval(&amp;i-1)+1 to &amp;n-(&amp;r-&amp;i);
+                %end;
+              %end;
+                do k=1 to &amp;r;              /* select subscripted items */
+                v(k)=word (rr(k));               /* for a SAS dataset  */
+                put v(k)      '  ' @;                       /*for log  */
+                end;
+                put;                                  /* writes to log */
+                output;                    /* writes to a SAS dataset  */
+            %do i=1 %to &amp;r;
+              end;                     /* create ENDs for the DO LOOPS */
+              %end;
+             put;
+             run;
+     Proc print uniform data=combo;
+             title "Combinations of &amp;n items taken &amp;r at a time";
+             run;
+        %mend combo;
+
+
+     run;
+
+
+     %combo(5,1,2,3,4,5);
+     %permute(5,1,2,3,4,5);
+</PRE>
+</body>
+</HTML>

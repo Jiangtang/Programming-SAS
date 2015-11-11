@@ -1,0 +1,31 @@
+#!/bin/bash
+#<pre><b>
+# Script     : newix
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 02-Dec-2004
+# Purpose    : To run "crindex" to create a new index named @index.txt
+# SubScripts : crindex
+# Notes      : This just calls "crindex" and redirects output to @index.txt
+# Usage      : newix 
+#              
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not use parameters
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# No parameters needed
+if [ $# -gt 0 ] ; then
+  echo "Usage: newix (no parameters needed)" 1>&2
+  exit 1
+fi
+
+crindex * > @index.txt

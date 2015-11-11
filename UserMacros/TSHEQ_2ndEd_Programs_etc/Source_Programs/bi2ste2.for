@@ -1,0 +1,157 @@
+      PROGRAM BI2STE2
+      IMPLICIT REAL*16 (A-H,O-Z)
+      COMMON ALPHA,P1L,Q1L,P2L,Q2L,RHO0L,RHOAL,
+     1GAM(0:2000),POWC(0:2000),
+     2FAKL(0:2000), HYP0(-1:2000),HYPA(-1:2000),IC(0:2000)
+      OPEN(UNIT=5, STATUS='OLD', FILE='ste2_inp')
+      OPEN(UNIT=6, STATUS='UNKNOWN', FILE='ste2_out')
+      READ(5,9000) EPS,ALPHA,P1,P2,BETA,QLAMBD
+ 9000 FORMAT(F20.10)  
+      WRITE (6,1000) EPS,ALPHA,P1,P2,BETA,QLAMBD
+      RHO0L=QLOG(1-EPS)
+      P1L=QLOG(P1)
+      Q1L=QLOG(1-P1)
+      P2L=QLOG(P2)
+      Q2L=QLOG(1-P2)
+      RHOAL=P1L+Q2L-Q1L-P2L
+      FAKL(0)= 0
+      DO 1 I= 1,2000
+      QI= I
+    1 FAKL(I)= FAKL(I-1) + QLOG(QI)
+      N=5
+    2 QM=QLAMBD*N
+      M=QINT(QM)
+      M=M+.5*(1-QSIGN(1.Q0,M-QM))
+      ISE=M*P1+N*P2
+      IXL= MAX(0,ISE-N)
+      IXU= MIN(ISE,M)
+      HYP0(IXU)= 0
+      HYPA(IXU)= 0
+      OOML=FAKL(M+N)-FAKL(ISE)-FAKL(M+N-ISE)
+      DO 3 J=1,IXU-IXL+1
+      IX=IXU-J
+      HL= FAKL(M)-FAKL(IX+1)-FAKL(M-IX-1)+FAKL(N)-FAKL(ISE-IX-1)-
+     1FAKL(N-ISE+IX+1)
+      HYP0(IX)= QEXP(HL+(IX+1)*RHO0L-OOML)
+      HYPA(IX)= QEXP(HL+(IX+1)*RHOAL-OOML)
+      HYP0(IX)= HYP0(IX) + HYP0(IX+1)
+    3 HYPA(IX)= HYPA(IX) + HYPA(IX+1)
+      DO 4 IX=IXL, IXU-1
+      HYP0(IX)=HYP0(IX)/HYP0(IXL-1)
+    4 HYPA(IX)=HYPA(IX)/HYPA(IXL-1)
+      HYP0(IXL-1)=1
+      HYPA(IXL-1)=1
+      K=IXU+1
+    5 K=K-1
+      SIZE=HYP0(K)
+      IF (SIZE-ALPHA)5,5,6
+    6 ICE=K+1
+      GAME= (ALPHA-HYP0(ICE))/(HYP0(K)-HYP0(ICE))
+      POW = HYPA(ICE)*(1-GAME)+GAME*HYPA(K)
+      IF (POW-BETA) 7,7,10
+    7 N=N+5
+      IF ((1+QLAMBD)*N-2000)2,9,9
+    9 WRITE(6,999)
+  999 FORMAT('SUMME DER BENOETIGTEN STICHPROBENUMFAENGE >2000')
+      STOP
+   10 POW=PWEXACT(M,N)
+      IF (POW-BETA)11,20,16
+   11 N=N+5
+      IF ((1+QLAMBD)*N-2000)12,9,9
+   12 QM=QLAMBD*N
+      M=QINT(QM)
+      M=M+.5*(1-QSIGN(1.Q0,M-QM))
+      POW=PWEXACT(M,N)
+      IF (POW-BETA) 11,13,13
+   13 N=N-1
+      QM=QLAMBD*N
+      M=QINT(QM)
+      M=M+.5*(1-QSIGN(1.Q0,M-QM))
+      POW=PWEXACT(M,N)
+      IF (POW-BETA) 14,13,13
+   14 N=N+1
+      QM=QLAMBD*N
+      M=QINT(QM)
+      M=M+.5*(1-QSIGN(1.Q0,M-QM))
+      POW=PWEXACT(M,N)
+      GOTO 20
+   16 N=N-5
+      QM=QLAMBD*N
+      M=QINT(QM)
+      M=M+.5*(1-QSIGN(1.Q0,M-QM))
+      POW=PWEXACT(M,N)
+      IF (POW-BETA) 17,16,16
+   17 N=N+1
+      QM=QLAMBD*N
+      M=QINT(QM)
+      M=M+.5*(1-QSIGN(1.Q0,M-QM))
+      POW=PWEXACT(M,N)
+      IF (POW-BETA) 17,20,20
+   20 WRITE(6,2000) M,N,POW
+ 1000 FORMAT('EPS=  ',F6.4,8X,'ALPHA= ',F6.4/'P1=   ',F8.6,8X,'P2= ',
+     1F8.6/'BETA= ',F10.8,4X,'LAMBDA= ',F5.2//)
+ 2000 FORMAT('M= ',I4,5X,'N= ',I4,8X,'POW= ',F10.8)
+      STOP
+      END
+      REAL FUNCTION PWEXACT*16(M,N)
+      IMPLICIT REAL*16 (A-H,O-Z)
+      COMMON ALPHA,P1L,Q1L,P2L,Q2L,RHO0L,RHOAL,
+     1GAM(0:2000),POWC(0:2000),
+     2FAKL(0:2000), HYP0(-1:2000), HYPA(-1:2000),IC(0:2000)
+      NN= M+N
+      IS= 0
+      OOM0L=0
+      OOMAL=0
+      IC(IS)= 0
+      GAM(IS)= ALPHA
+      POWC(IS)= ALPHA
+      PROBS= QEXP(M*Q1L+N*Q2L)
+      POW= POWC(0)*PROBS
+      DO 9 IS= 1,NN-1
+      IXL= MAX(0,IS-N)
+      IXU= MIN(IS,M)
+      HYP0(IXU)= 0
+      HYPA(IXU)= 0
+      DO 2 J=1,IXU-IXL+1
+      IX=IXU-J
+      HL= FAKL(M)-FAKL(IX+1)-FAKL(M-IX-1)+FAKL(N)-FAKL(IS-IX-1)-
+     1FAKL(N-IS+IX+1)
+      HYP0(IX)= QEXP(HL+(IX+1)*RHO0L-OOM0L)
+      HYPA(IX)= QEXP(HL+(IX+1)*RHOAL-OOMAL)
+      HYP0(IX)= HYP0(IX) + HYP0(IX+1)
+    2 HYPA(IX)= HYPA(IX) + HYPA(IX+1)
+      OOM0L=OOM0L+QLOG(HYP0(IXL-1))
+      OOMAL=OOMAL+QLOG(HYPA(IXL-1))
+      DO 3 IX=IXL, IXU-1
+      HYP0(IX)=HYP0(IX)/HYP0(IXL-1)
+    3 HYPA(IX)=HYPA(IX)/HYPA(IXL-1)
+      HYP0(IXL-1)=1
+      HYPA(IXL-1)=1
+      K=IXU+1
+    4 K=K-1
+      SIZE=HYP0(K)
+      IF (SIZE-ALPHA)4,4,5
+    5 IC(IS)=K+1
+      GAM(IS)= (ALPHA-HYP0(IC(IS)))/(HYP0(K)-HYP0(IC(IS)))
+      POWC(IS)= HYPA(IC(IS))*(1-GAM(IS))+GAM(IS)*HYPA(K)
+      PROBS=0
+      DO 6 IX=IXL,IXU
+      BL= FAKL(N)-FAKL(IS-IX)-FAKL(N-IS+IX) +(IS-IX)*P2L+(N-IS+IX)
+     1*Q2L+FAKL(M)-FAKL(IX)-FAKL(M-IX)+IX*P1L+(M-IX)*Q1L
+    6 PROBS= PROBS+QEXP(BL)
+    9 POW= POW + POWC(IS)*PROBS
+      IC(NN)=N
+      GAM(NN)=ALPHA
+      POWC(NN)= ALPHA
+      PROBS= QEXP(M*P1L+N*P2L)
+      PWEXACT= POW + POWC(NN)*PROBS
+      RETURN
+      END
+
+
+
+
+
+
+
+

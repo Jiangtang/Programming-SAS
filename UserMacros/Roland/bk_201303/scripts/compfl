@@ -1,0 +1,55 @@
+#!/bin/bash
+#<pre><b>
+# Script     : compfl
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 03-Nov-2004
+# Purpose    : To compare two floating point numbers
+# SubScripts : none
+# Notes      : Will work with integers and also fractions and expressions.
+#              Returns GT, EQ or LT.
+#              It will calculate fractions or expressions to 9 decimal places
+# Usage      : compfl  1.2  3.4
+#              compfl 355/113 3.14159
+#              compfl 3*1.33  3.99
+#              if [ "$(compfl 1.2 3.4)" == "LT" ] ; then
+#                print "less than"
+#              fi 
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   First number (or expression) to compare
+#  2   Second number (or expression) to compare
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+if [ $# -ne 2 ] ; then
+  echo "Usage: compfl  6.67  4.45" 1>&2
+  exit 1
+fi
+
+
+# recalculate just in case they are fractions or expressions
+num1=$(echo "scale=9; $1 + 0" | bc -l)
+num2=$(echo "scale=9; $2 + 0" | bc -l)
+
+
+# compare within gawk
+echo | gawk '{
+if (num1 > num2)
+  print "GT"
+else
+  {
+  if (num1 == num2)
+    print "EQ"
+  else
+    print "LT"
+  }
+}' num1="$num1" num2="$num2"
+

@@ -1,0 +1,87 @@
+#!/bin/bash
+#<pre><b>
+# Script     : emailaddr
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 30-Nov-2004
+# Purpose    : Production script to create an email address out of a Unix userid
+# SubScripts : getname gethome
+# Notes      : You have to hope that the full name of the user as held in the
+#              passwd file matches the form used in the Lotus Notes database.
+#              If it does not then you need an .emailaddr file in the person's
+#              home directory and the first non-comment line with a '@' in it
+#              will be assumed to be the email address to send to.
+# Usage      : emailaddr userid
+#              emailaddr -i userid
+#              sendto=$(emailaddr userid)
+#===============================================================================
+# OPTIONS:
+#-opt- -------------------------------description--------------------------------
+#  i   (switch) ignore whatever is in .emailaddr                                 
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   userid
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Define give-usage-message-then-exit function
+usage () {
+  echo "Usage: emailaddr userid" 1>&2
+  exit 1
+}
+
+
+# defaults
+switchi=0
+
+
+# "case" statement for action to take on selected options
+while getopts "i" param ; do
+  case $param in
+   "?") # bad option supplied
+        usage
+        ;;
+   "i") # ignore .emailaddr file
+        switchi=1
+        ;;
+  esac
+done
+
+
+
+# shift to bring first parameter to position 1
+shift $(($OPTIND - 1))
+
+
+# One userid required
+if [ $# -ne 1 ] ; then
+  echo "Error: (emailaddr) One userid must be specified" 1>&2
+  usage
+fi
+
+
+emailaddr=
+
+# if ignore .emailaddr switch not set then try to find it
+if [ $switchi -eq 0 ] ; then
+  # file name in user's home area for the override email address if it exists
+  emailfile=$(gethome $1)/.emailaddr
+
+  # see if there is a suitable email address line in there
+  emailaddr=$(grep -v '^#' "$emailfile" 2>/dev/null | grep '@' | head -1)
+fi
+
+
+# echo the email address if found otherwise construct it
+if [ -n "$emailaddr" ] ; then
+  echo "$emailaddr"
+else
+  echo $(getname "$1" | tr ' ' '.')@xx.xxxxxxx.com
+fi

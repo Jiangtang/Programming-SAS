@@ -1,0 +1,41 @@
+#!/bin/bash
+#<pre><b>
+# Script     : getname
+# Version    : 1.1
+# Author     : Roland Rashleigh-Berry
+# Date       : 18-Feb-2007
+# Purpose    : Production script to return the name of a user, given a userid
+# SubScripts : none
+# Notes      : YOU WILL LIKELY HAVE TO EDIT THE sed TAILORING OF THE NAME STRING
+# Usage      : getname
+#              getname userid
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   (optional) Userid. Defaults to current user
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  18Feb07         sed tailoring edited for my PC
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+iam=$(whoami)
+
+
+# if no parameters set then use results of "whoami"
+if [ $# -lt 1 ]
+then
+  userid=$iam
+else
+  userid=$1
+fi
+
+
+# "getent" should be good for a few Linux systems
+#getent passwd "$userid" | awk -F: '{print $5}' | sed -e 's/^SAS //' -e 's/ (.*)$//'
+
+# if "getent" no good then try the "etc/passwd" file
+grep "^$userid:" /etc/passwd | awk -F: '{print $5}' | sed -e 's%^U-DELL1\\%%' -e 's/,.*$//'

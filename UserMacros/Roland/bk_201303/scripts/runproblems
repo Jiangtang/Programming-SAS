@@ -1,0 +1,39 @@
+#!/bin/bash
+#<pre><b>
+# Script     : runproblems
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 11-May-2006
+# Purpose    : Production script to check error files for run problems
+# SubScripts : none
+# Notes      : Only suitable for the saved error message logs coming out of the
+#              reporting system. It only shows the programs and the messages
+#              where some sort of problem occurred.
+# Usage      : runproblems runreports.err
+#              runproblems runderived.err
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   File name with the saved error messages such as "runreports.err"
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# One file required
+if [ $# -ne 1 ] ; then
+  echo "Usage: runproblems runreports.err" 1>&2
+  exit 1
+fi
+
+grep -v '^0 ' "$1" | gawk '{
+if (substr($0,1,3)!="sas" || (substr($0,1,3)=="sas" && substr(keep,1,3)!="sas")) 
+  print keep
+keep=$0
+}
+
+END { print $0 }'

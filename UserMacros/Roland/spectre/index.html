@@ -1,0 +1,539 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="Spectre Clinical Reporting System">
+   <meta name="KeyWords" content="clinical reporting system, clinical SAS macros, Spectre clinical">
+   <meta name="verify-v1" content="W7Sf9svudg/VNRVoaOj8PcH6Y5v6/m6DtOpT51p0K5M=">
+   <title>Spectre</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+<font size=+4>SPECTRE<br>
+</font><font size=+2>(CLINICAL)</font></h1></center>
+
+<center><font color="#000000"><b><font size=+4>S</font><font size=+2>pectre
+</font></b><font size=+2>-
+a
+</font><b><font size=+4>P</font></b><font size=+2>ractical and </font><b><font size=+4>E</font></b><font size=+2>ducational
+</font><b><font size=+4>C</font></b><font size=+2>linical
+</font><b><font size=+4>T</font></b><font size=+2>rials
+</font><b><font size=+4>R</font></b><font size=+2>eporting
+</font><b><font size=+4>E</font></b><font size=+2>ngine</font></font>
+<br>&nbsp;
+<a href="updates2.html" target="_blank">Latest Updates</a> ----
+<a href="bugs.html#log" target="_blank">Bugs+changes</a>
+----
+<a href="maclist2.html" target="_blank">Macro list</a> ----
+<a href="scrlist2.html" target="_blank">Script
+list</a> ----
+<a href="faq.html" target="_blank">F.A.Q.</a> ----
+<a href="download.html" target="_blank">Download</a></center>
+<font face="Arial,Helvetica"><font color="#000000"><font size=-2>&nbsp;
+Page Loads</font></font></font>
+<br><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=0; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code --><form ACTION="http://search.freefind.com/find.html" METHOD="GET" accept-charset="utf-8" target="_blank"><font face="arial,helvetica"><font size=-1>Search
+this site</font></font>
+<br><input TYPE="HIDDEN" NAME="id" VALUE="22397273"><input TYPE="HIDDEN" NAME="pageid" VALUE="r"><input TYPE="HIDDEN" NAME="mode" VALUE="ALL"><input type="HIDDEN" name="n" value="0"><input TYPE="HIDDEN" NAME="_charset_" VALUE=""><input TYPE="HIDDEN" NAME="bcd" VALUE="&#247;"><input TYPE="TEXT" NAME="query" SIZE="15"><input TYPE="SUBMIT" VALUE=" Find ">
+<br><font face="arial,helvetica"><font size=-2>powered by <a href="http://www.freefind.com">FreeFind</a></font></font></form>
+<p><b>Updated: 12 Jan 2012</b>
+<h2>
+Introduction</h2>
+This web site contains complete details and all components of a complete
+<b>clinical
+trials reporting engine</b> that uses <a href="http://www.sas.com" target="_blank">SAS&reg;</a>
+software. Spectre (Clinical) is composed of <b>two parts</b>: Spectre <b>Reporting
+Macros</b> and the Spectre <b>System</b> (the latter composed of both SAS
+macros and shell scripts). Spectre also has a <b>utility library</b> of
+macros that serves both these parts. The <b>Reporting</b> macros do both
+<b>safety
+and efficacy reporting</b> and run <b>independently</b> of the Spectre
+System. You can run the Reporting macros to create reports even if the
+Spectre System is not present. The Spectre <b>System</b> is a particular
+method for providing titles and footnotes to the Reporting macros, running
+reports and collecting together the output. If you provide your own titles
+and footnotes by an alternate method and run the programs and collect the
+output by an alternate method then this will work just fine with only the
+<b>Reporting
+Macros</b> part of Spectre. At the date of writing this, the Spectre<b>
+System is not in use</b> anywhere in the world whereas the Spectre Reporting
+Macros are.
+<p>The <b>Spectre System</b> is largely historical and remains there to
+give you an idea as to how to set up a titles and footnotes system for
+reporting macros and how to run suites of programs to create analysis datasets
+and to create the output reports and gather them together at the end. It
+was originally written to run on a <a href="linux.html" target="_blank">Linux</a>
+or
+<a href="http://dict.die.net/unix" target="_blank">Unix</a> platform
+but has since been ported over to Windows. Neither the original Unix system
+nor the Windows version are known to be in use at the time of writing.
+<p>Both Spectre Reporting Macros and the Spectre System are what is know
+as "<b>back end</b>" systems. It does the work<b> <i>behind the scenes
+</i></b>of
+a "front end" interface.
+<p>You will see the term "<b>reporting engine</b>" used, rather than the
+more familiar "reporting system", because what is found on this web site
+comprises the "core" of a reporting system and the engine underlying it.
+You could, perhaps, take an existing reporting system and replace its core
+macros with what is found here, without affecting the look and feel of
+the existing reporting system, just like you might be able to replace the
+engine of an automobile with an alternate engine.
+<p><b>If you have limited time and want the briefest possible summary of
+the Spectre reporting system then use the link below.</b>
+<br><a href="nutshell.html" target="_blank">Spectre in a Nutshell</a>
+<p><i>(If you landed on this page doing general web browsing and are not
+interested in clinical reporting systems then you might like to look at
+the sas macro page <a href="maclist2.html" target="_blank">here</a>. If
+you are looking for <b>clinical reporting macros</b> then there are two
+macros webbed here named <a href="unistats.html" target="_blank">%unistats</a>
+and <a href="npcttab.html" target="_blank">%npcttab</a>. %unistats has
+its own Powerpoint slide show
+<a href="unistats.pps" target="_blank">here</a>.
+There is a lot of practical Unix stuff that covers both Unix commands and
+shell scripting that you can link to <a href="learnunix.html" target="_blank">here</a>
+and there are a lot of shell script examples you can link to <a href="scripts/index.html" target="_blank">here</a>.
+Thanks for your visit)</i>
+<h2>
+Disclaimer</h2>
+All software comes with a disclaimer and the same is true for both parts
+of Spectre. When you install software you have to agree to the terms of
+using it to the effect that you should ensure the software is suitable
+for your purposes and that no liability is excepted if the software goes
+wrong. You are now expected to use the Spectre System - just the Reporting
+Macros. These macros are very stable but bugs are found in them from time
+to time. Also, you should be aware of what the macros are doing and be
+particularly careful abiout the statistical values you might choose to
+show that come out of these reporting macros. Check these values. If the
+value looks wrong then the chances it <b>is</b> wrong and this is likely
+due to it rerining the values in a way that you are now expecting. It is
+up to you to ensure what is being reported at least makes sense and looks
+reasonable. So first, <b>an important disclaimer, </b>and that is....
+<center>
+<p><b><font size=+1>DO NOT ASSUME THE CODE ON THIS WEB SITE IS "VALIDATED"
+FOR YOUR PURPOSES</font></b></center>
+
+<p>If you intend to use this code for clinical reporting purposes, rather
+than just for education, <b>then you can only treat what you find here
+as a validated system if you have validated it yourself, in accordance
+with industry regulations and your own </b><a href="http://en.wikipedia.org/wiki/Standard_Operating_Procedures#General_use" target="_blank">Standard
+Operating Procedures</a>. All of the reporting macros have been validated
+by one of the known users but they have validated it for their own particular
+mode of use. This does not make it validated for <b>your </b>purposes.
+Although I have a great deal of confidence in the code members webbed here,
+having used them for years, and knowing that most code members run live,
+you should not assume, without thorough checking, that they will work for
+you in the way you want or be suitable for your needs. To stress this point,
+every single code member will carry a disclaimer in the header to remind
+you of this. No code members should be used unless you fully understand
+and accept the disclaimer in the header.
+<h2>
+Download</h2>
+You can download the Spectre system from the page you can link to below
+(the "download" page) as a number of zip files. You will probably just
+be interested in the <b>clinical reporting macros</b> but these also rely
+on a library of macros that are the <b>utility macros</b> so if you are
+only interested in the Clinical Reporting macros then you must download
+the utility macros as well. You need to make <b>both libraries</b> available
+and place both libraries on your <b>sasautos path</b> for the Clinical
+reporting macros to work.
+<p><a href="download.html" target="_blank">download</a>
+<br>&nbsp;
+<h2>
+The origins of Spectre</h2>
+Spectre is based on an old Unix-based clinical reporting system that was
+once used at Glaxo Wellcome before they merged with SmithKline Beecham
+to form GSK. This old clinical reporting system was phased out after the
+merger and replaced with a new system. I was working at the company at
+the time. I preferred the older system because, by accident and not design,
+it was structured in a way that it was just a few steps short of achieving
+the ultimate goal of a reporting system, which is to be a "push button"
+reporting system (explained later). Because I liked this old system I rewrote
+it, simplifying and redesigning it, to put it in a better position to be
+a very high performance reporting system and possibly achieve the status
+of being a "push button" system.
+<h2>
+The components of a "reporting engine"</h2>
+For me, at least, a "reporting engine" has a few identifiable components.
+<ul>
+<li>
+On the <b>reporting</b> side, it should have the ability to handle the
+bulk of safety reporting, and that requires <b>two major macros</b> - one
+macro to calculate <b>summary statistics and category counts</b> with percentages
+and another macro to calculate <b>unique patient counts and percentages</b>
+(and optionally event counts). Most large pharmaceutical companies (and
+many smaller ones and CROs) have such macros (Spectre Reporting goes beyond
+this need by being able to do efficacy reporting as well).</li>
+
+<li>
+On the <b>system</b> side, a <b>"titles" (and footnotes) system</b> is
+required such that titles and footnotes can be stored outside sas code
+members and somehow get included into tables and listings.</li>
+
+<li>
+A means of <b>running all the programs</b> in the correct order to create
+the output.</li>
+
+<li>
+A means of <b>gathering all the outputs</b> produced in the correct order
+or at least telling a separate documentation system about it.</li>
+</ul>
+There are many things that could be added to the above list that people
+would think are essential but if they have these components in place then
+I would say they have a "reporting engine" and the "core" of a reporting
+system. A reporting "<b>system</b>" will have a fuller set of macros for
+producing reports and some of these macros will call one of the two core
+macros described above. Quite often, reporting systems have sophisticated,
+web-based front ends. There are no current plans to make a front end available
+as yet.
+<h2>
+Why you need a reporting system</h2>
+All pharmaceutical companies want to be efficient in producing clinical
+reports to save on costs. For the large pharmaceutical companies, perhaps
+with hundreds of programmers worldwide, they know that they can save a
+lot of programming time by having "standard macros" to do most of the reporting.
+Maybe 25% or more of programmer time can be saved. That comes to a lot
+of potential money saved, so the larger pharmaceutical companies will invest
+whatever it takes to build a reporting system. And if they have enough
+programmers to select from, they can find the skilled people to achieve
+this. It is not so easy for smaller companies or <a href="http://www.drugdevelopment-technology.com/glossary/contract-research-organisation.html" target="_blank">CROs</a>
+to create such a reporting system as they have fewer skilled programmers
+to choose from and whatever investment they make to build such a system
+will be a disproportionally higher proportion of their programming costs.
+<p>There are other reasons for having such a reporting system. Reporting
+systems can help with <b>presentation</b> in that they impose a consistency
+in layout style. They can help with <b>reliability and accuracy</b> of
+safety reporting using the two major reporting macros as described above,
+since these macros, through their thorough usage and careful monitoring
+and maintenance, will arrive at the point where they are completely trustworthy
+and so their output will require only minimal checking. A good system will
+ensure
+<b>all programs are run in the correct order</b> and that a record
+is kept of who ran what and when. Also, that a list of outputs created
+is recorded somewhere.
+<h2>
+The ultimate goal of a reporting system</h2>
+<b>The ultimate goal of a clinical reporting system is to produce reports
+automatically from clinical data</b>. Now if you thought that last sentence
+was clear, I'm going to disappoint you by qualifying what I mean by "clinical
+data". This "clinical data" might not be the same as the data collected
+for a clinical trial. The structure might have changed as well as the naming
+conventions and other values might have been derived and merged in with
+the data to make "<b>derived datasets</b>" or "<b>reporting-ready datasets</b>"
+and it is that to which I refer when I write "clinical data". If this data
+exists in a standard form (which might be the case in the future as a result
+of the <a href="http://www.cdisc.org" target="_blank">CDISC</a> project)
+and the type of analysis is decided in advance, then it should be possible
+to generate reports automatically - just by pushing a button, maybe. Achieving
+this might take many years from the date of my writing this and indeed,
+it may never be achieved, but if this goal is constantly striven for, greater
+efficiencies will be realized along the way. <b>Spectre embraces this ultimate
+goal of being a "push-button" reporting system</b>. Short calls to reporting
+macros can be held in the same place that titles and footnotes are defined
+and that can lay the foundation for an entirely automated reporting system.
+It has already been used in this way to generate all the tables for one
+clinical study except it fell short in that the macros it called to produce
+the reports were study specific, since the data structure and variable
+names varied from study to study. But when the data structures are harmonized
+then that ultimate goal should be achieved.
+<h2>
+Spectre "Extras"</h2>
+When Spectre was first implemented, the company was entering into a merger.
+It was a requirement that the reporting system could produce output in
+the current style as well as a future style (yet to be defined) and that
+both styles of reports would be recreatable. So the system had to have
+<b>the
+capability of producing output in more than one client style</b>. Though
+not written with <a href="http://www.drugdevelopment-technology.com/glossary/contract-research-organisation.html" target="_blank">CROs</a>
+in mind, this will be of obvious benefit to them since they work for multiple
+clients. It also makes Spectre a candidate for becoming a "standard" reporting
+engine for use across the industry.
+<h2>
+Safety vs. Efficacy Reporting</h2>
+The Spectre Reporting Macros do <b>both</b> safety and efficacy reporting
+in the same report in the way you specify. The reporting macros have powerful
+statistical capabilities and huge flexibility to allow you to include efficacy
+statistics into the report from whatever source and in any position you
+specify. You just have to know the "proc glm" or "proc freq" options to
+specify, what ods tables are created as a result and what variables in
+those ods tables to use and you can place them whereever you want without
+need for further programming. For simple p-values, it is a lot easier.
+<h2>
+The User Guides</h2>
+I hope you found the above introduction to Spectre interesting. Hopefully,
+you will have caught a glimpse that this is a reporting engine with purpose
+and direction. The next step is to read the User Guides that can be linked
+to below. Remember that the Reporting Macros are independent of the System
+macros. I have flagged the "<b>system</b>" topics below so that you can
+skip over them if you want to. You should read the pages in the order listed.
+<p><a href="derived.html">Building the derived datasets</a> (system)
+<p><a href="procflow.html" target="_blank">Study Reporting Process Flow</a>
+(system)
+<p><a href="batch.html">Working in batch and creating titles</a> (system)
+<p><a href="titles.html">%titles</a> (system)
+<p><a href="openrep.html">%openrep and %closerep</a> (system)
+<p><a href="popfmt.html">%popfmt</a>
+<p><a href="mkdsets.html">Creating Test Datasets</a>
+<p><a href="unistats.pps">%unistats PowerPoint demonstration</a>
+<p><a href="unistats.html">%unistats</a>
+<p><a href="freqsept.html">%unistats "freqsept" parameters for efficacy
+reporting</a>
+<p><a href="uniwithby.html">%unistats with "by" variables</a>
+<p><a href="unilab1.html">Using %unistats with Lab data (1)</a>
+<p><a href="unilab2.html">Using %unistats with Lab data (2)</a>
+<p><a href="unilab3.html">Using %unistats with Lab data (3)</a> (<b>new
+!!</b>)
+<p><a href="unilab4.html">Using %unistats with Lab data (4)</a> (<b>new
+!!</b>)
+<p><a href="npcttab.html">%npcttab</a>
+<p><a href="aetab.html">%aetab</a>
+<p><a href="tenfoot.html">More than Ten Footnotes</a>
+<p><a href="winusers.html">%unistats and %npcttab for MS Windows users</a>
+<p><a href="validate.html">Validation programming</a>
+<p><a href="quiz1.html" target="_blank">Spectre Fun Quiz 1</a>
+<p><a href="adhoc.html">Ad-hoc Reporting and PDFs</a> (system)
+<p><a href="legacy.html">Legacy systems and PDFs</a> (system)
+<p><a href="printing.html">Printing Reports</a> (system)
+<p><a href="power.html">Power Reporting using Spectre</a> (system)
+<p><a href="xytitles.html">%xytitles - an example client titles macro</a>
+(system)
+<p><a href="genstand.html">General Standards for Clinical Reports</a>
+<p><a href="repmacros.html">Writing Reporting Macros for Spectre</a>
+<h2>
+Spectre System Administration</h2>
+If you are a programmer then you will not need to know about Spectre administration.
+The administrator has extra tasks to do. Before you start working on a
+study, the administrator will have set up the file "protocol.txt" in your
+programs folder and they will have put the file "titles.template" there
+which you can copy and use as the template for your titles members. They
+will likely be the person to run the suite of programs and to create the
+PDFs using the utilities provided. If the suite of programs is large and
+the amount of output large then the administrator will have to split the
+file "donelist.txt" (the list of all output produced) into "donelist sections"
+and to create a PDF from each section. And when the PDFs have been created,
+they will be the person to run the "printpdfbookmarks" utility to extract
+the list of PDF bookmarks from the PDF files. If Spectre is being used
+to create the derived datasets then the administrator will check the naming
+convention of the programs to ensure that the suite of programs runs in
+the correct order and to ask programmers to rename some of the programs
+if this is not the case. They will likely check the naming convention used
+for the programs that produce output and sometimes programmers will be
+asked to rename their programs (there are utilities to help with this described
+on the "Utility Scripts" page). So if you are a programmer, read the administrators
+guide if you are interested, but you will find more to interest you in
+the "Scripts and Macros" section.
+<p><a href="admin.html">Spectre Administration</a>
+<h2>
+Scripts and Macros</h2>
+If you are a programmer using Spectre then after a while you will understand
+that it is aimed at increasing speed and efficiency. It is there to <b><i>remove
+</i></b>barriers
+to greater productivity, not to add them. Greater speed and efficiency
+means that single programmers will maybe end up with a hundred programs
+or more. But having a hundred programs or more has the potential of turning
+into an administrative nightmare. It would be like winning the technical
+battle of efficient coding only to be overwhelmed by sheer weight of numbers.
+That would be very stressful for a programmer but help is at hand. Spectre
+has many utility scripts to help the programmer manage his hundred or more
+programs written using SAS software and it is important for the programmer
+to be aware of these scripts and how they can help. Without knowledge of
+these scripts, a programmer will eventually hit the barrier caused by sheer
+weight of numbers. But knowing that these scripts exist and knowing how
+to use them, having hundreds of programs should not be a problem. It will
+take almost none of your time and concentration to deal with it.
+<p>Here is a typical example of having to divert your attention to work
+on one of your hundreds of&nbsp; programs and how you would cope with it.
+Suppose someone tells you that they would like the footnote to be changed
+for
+<b>Table 13.4.5.1</b> in <b>study XYZ</b>. There is no need to look
+up this table in a spreadsheet somewhere. You go to one of your terminal
+windows, you probably have variables set up in your ".bashrc" member (sometimes
+it is called ".bashrc_own") to help you jump to directories. So you type
+in the command "<b>cd $xyzp</b>" (or something like that) to take you to
+the study XYZ programs directory. You then type in the command "<b>wt 13.4.5.1</b>"
+to tell you what program it is. You then set "<b>prog</b>" equal to this
+program and then (assuming "prog" has already been "exported") you type
+in the command "<b>titles</b>" and you have the titles member opened in
+edit mode. You then change the footnote, recreate the titles members with
+the "<b>crtitlesds</b>" command (you may even have an alias for this that
+is shorter. I use "crt" as an alias for this). Then when this completes
+you type in "<b>sasb</b>". You see that there are no errors or warnings
+so you type in "<b>lis</b>" to look at the output. You see that the new
+footnote is fine so you close the window and reset the current directory
+to what it was before using the command "<b>cd -</b>", and it is done.
+You are back working on what you were doing before after only a few seconds
+have passed. You hardly noticed the intrusion and now you have even forgotten
+about it.
+<p>If you know these scripts well and are familiar with Unix commands then
+an interruption, such as the one described above, will not break your concentration
+and you will find it easy to cope with hundreds of programs. As for writing
+programs using SAS software, you will find many macros available to you,
+linked to from these pages, to do common difficult tasks. They will help
+you to write portable macros that can be used in multiple studies. After
+a while, you will find that you are writing less and less code and instead,
+copying macros and titles from study to study. There are scripts to help
+you do this. After you copy them across, there are scripts to fix the study,
+drug and increment names in the headers. There are scripts to help you
+do a mass renaming of files. There are scripts to help you tidy up your
+".log" and ".lst" files that get left over after a mass renaming has been
+done. If you take the trouble to learn about these scripts and macros then
+you will easily be able to cope with having hundreds of programs. Hopefully,
+you will you become one of the most highly productive clinical reporting
+programmers in the field and yet be stress free with it.
+<p>The most important macros are %titles, %openrep, %closerep, %popfmt,
+%unistats and %npcttab. These have their own pages that you can link to
+above and you should make sure you read them thoroughly. The "macros" page
+you can link to below just contains summary information about these important
+macros. As for the scripts, the ones the programmer will be most interested
+in are the "Utility Scripts", as those are the ones that will help speed
+and organize their work.
+<p><a href="scrindex.html">Scripts</a>
+<p><a href="macindex.html">Macros</a>
+<h2>
+Spectre at Work</h2>
+It is important to realise that Spectre is a very simple reporting system.
+It is minimilistic and intended that way. It makes available a huge amount
+of functionality (particularly with the reporting macros) without expanding
+its role and forcing you to change the way you work with it. Instead, it
+works for you. Used as a back-end system in the way described here, it
+is likely far simpler than any other reporting system currently in use
+at any major pharmaceutical company. Many front-end systems become over-complicated,
+difficult to use and slow over time, hugely reducing productivity. But
+Spectre will always remain as as a powerful, efficient and fast back-end
+system. It has a lot of components, as you will see if you look, but then
+so does any motorised utility that does something simple like help you
+cut your grass. Using Spectre is logical and simple. To help you realise
+that, you can link to the page below and see a very simple dummy study,
+with just two derived (dummy) datasets and two tables, reported from empty
+directories through to final report run, showing all the administrative
+tasks performed. Finally, the transformation to get it ready for a "push
+buttion" reporting system is demonstrated and explained. If you wanted
+to skip through it quickly, it might only take you a few minutes.
+<p><a href="atwork.html">Spectre at Work</a>
+<h2>
+Other clinical macros</h2>
+I have included three other topics with their own macros that were not
+part of the original Spectre as I am sure you will have a use for them
+occasionally.
+<p><a href="t2event.html">Time-to-Event analysis</a>
+<p><a href="dosemerge.html">Merging with a dose</a>
+<p><a href="locf.html">LOCF (Last Observation Carried Forward) processing</a>
+<h2>
+Some SAS techniques</h2>
+In creating Spectre, I have used some techniques with sas that not all
+sas programmers will be familiar with. Without using these techniques,
+I could never have written Spectre in the time I did. All the techniques,
+as they relate to writing a reporting system, will be explained in the
+following document you can link to.
+<p><a href="sastech.html">SAS techniques</a>
+<h2>
+Learning Unix</h2>
+As programmers using Spectre become more proficient, they can find that
+they are responsible for hundreds of programs at a time. Dealing with this
+many files is easier if you have a good knowledge of Unix commands and
+you know how to combine them. This is a higher level of skill than most
+sas programmers would have who work on a Unix platform so there are documents
+on this web site to help you increase your Unix skills.
+<p><a href="learnunix.html">Learning Unix</a>
+<h2>
+<a NAME="inst"></a>Installing Spectre</h2>
+<b>If you just want to use the %npcttab and %unistats macros but do not
+want to set up the whole of Spectre (Clinical) then installing it is easy.</b>
+All you need to do is download the <b>clinmacros</b> and <b>utilmacros</b>
+and put them in their own libraries defined to the sasautos path. The rest
+of the information you can read here is to do with a full Spectre System
+install for those users planning to set up a full clinical reporting system.
+<p>Spectre will work best on a Linux or Unix platform with a proper Linux
+or Unix version of SAS software (i.e. supporting the <b>-stdio</b> option).
+Although it has been ported over to Windows you will have to use the Cygwin
+Linux emulator to run the Spectre scripts. On a Windows platform the scripts
+to convert output to Postscript files and thence to PDFs will not work
+as to get this working would require a lot of disk space and a lot of work
+that is probably not needed. If you are a CRO then it is unlikely the client
+will ask for your output in PDF format. If they want it in that format
+then it is easier if the client accepts your text output files as deliverables
+and does the conversion to a PDF themselves. Apart from Postscript files
+and PDFs, the rest will work on a Windows platform with Cygwin installed.
+It will work fine with SAS Learning Edition 4.1 buth this will limit the
+number of observations you can read so you can not use them for production
+work.
+<p>The full installation of Spectre (Clinical) is quite complex so there
+are guides for this that you can link to below.
+<p><a href="install.html">Installing Spectre on Linux or Unix</a>
+<p><a href="installw.html">Installing Spectre on Windows</a>
+<h2>
+Key Components of Spectre System</h2>
+Spectre System has only a few key components. So long as those components
+are not changed, there is huge scope to tailor it so that it works in the
+way you want it to. I do not want to give the impression that Spectre System
+is a fixed system. It is not. What you see on this web site is more a full-blown
+example of what it can do. You can change Spectre System in many ways to
+suit, once you have a feel for what these key components are. This is explained
+on the following page.
+<p><a href="keycomp.html">Key Components of Spectre</a>
+<h2>
+Amending Spectre System</h2>
+Once you know the key components of Spectre System it should put you in
+a position of being able to amend Spectre to suit your site standards.
+This is explained on the following page.
+<p><a href="amending.html">Amending Spectre</a>
+<h2>
+Terms for Spectre Support</h2>
+The Spectre Clinical reporting macros require a licence for use as of 2012.
+The rest is unsupported and free. The licence fee is described on the download
+page. Further details are on the "terms" page you can link to below.
+<p>The philosophy of the licence fees is that those who contribute to Spectre
+are rewarded with the best deals. The Alpha site uses the macros for free
+indefinitely because they contributed to their development. The reason
+the macros are reliable is largely due to their work. They are a small
+CRO. The next few customers hoped for will be very large CROs and they
+will have to do a lot of work, along with myself, to bring the product
+up to a high standard. They will be rewarded for their efforts by the low
+initial licence fee maintained indefinitely for their licence block count.
+When the clinical reporting macros have finally achieved something near
+their finished state then the licence fee will be increased for new users
+to a commercial level, with annual increases to cover inflation and extra
+costs.
+<p><a href="terms.html" target="_blank">Terms for Spectre Support</a>
+<h2>
+Conclusion</h2>
+Everything you need to know about Spectre should be documented on this
+web site. A few unrelated topics are included in the FAQ which you can
+link to below. I hope you will find Spectre fast to learn, easy to use
+and that it will increase productivity several fold.
+<p><a href="faq.html" target="_blank">F.A.Q.</a>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+</body>
+</html>

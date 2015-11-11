@@ -1,0 +1,738 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="%unistats Spectre lab">
+   <meta name="Description" content="Spectre's %unistats macro used with lab data">
+   <title>Using unistats with Lab data (4)</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Using unistats with Lab data (4)</h1></center>
+<b>Last updated: 23 Jan 2012</b>
+<h2>
+Introduction</h2>
+This page is not about using %unistats with lab data. Instead, it is a
+page about how to <b>efficiently</b> extract your lab data and how to <b>efficiently</b>
+handle it before making your call to %unistats. Once you call %unistats
+then your performance problems are over because <b>%unistats is an extremely
+efficient macro</b> and can summarize huge lab datasets, usually in a matter
+of seconds. If you are using %unistats with lab data and your program runs
+slow then it will not be the fault of %unistats. It will be because you
+are not extracting and handling the lab data in the optimum way.
+<h2>
+The problem with lab data</h2>
+The problem with lab data, simply put, is that <b>it is too large for computers
+to handle easily</b>. There are<b> too many observations</b> and <b>too
+many variables</b> so it takes up too much space, making it slow to read
+in and too large to optimise computer speed by using the computer's working
+memory. Computers are limited devices. If a data source stored on a computer
+disk is very large then it has to be read directly off the disk magnetic
+media which is slow (about 40 Mbytes per second). Computers have communication
+channels which might be slow and shared among several users (maybe only
+125 Mbytes per second shared between all users). They have limited working
+memory for holding data. Because of the limited working memory, the data
+has to be shuffled back and forth to work disks which has the effect of
+delaying itself and in addition this could be happening in competition
+with other usersl. In this case, you could end up with the computer
+<a href="http://en.wikipedia.org/wiki/Thrashing_(computer_science)" target="_blank">"thrashing"</a>.
+<p>Computer are optimized to work with relatively small chunks of data
+and their performance is impressive in these circumstances. But once you
+go outside this comfortable limit, <b>things slow down a lot ! </b>The
+worst thing you can do with lab data is <b><i>to make it any larger than
+it already is</i></b>.
+<p>People can come up with many good reasons why lab data should have more
+variables added to it, for QC purposes, reference purposes or whatever,
+but the amount of data is already too large and adding more variables makes
+it more difficult for a computer to process the data.
+<p>The computer can cope with pure lab data for an average study but processing
+times <b>will increase in cubic proportions</b> once you get past a certain
+limit (approximately half a gigabyte). Double it and your processing can
+take eight times longer. Increase it five fold and your processing could
+take 125 times longer. If you have pooled study data and you add many variables
+to the lab data then<b> processing it could take days!</b> If you are processing
+pooled study lab data then you already have a problem. It is best not to
+make that problem worse.
+<p>"Derived" or "value added" datasets are popular and it is easier to
+produce tables from them but for lab data you have got to be very careful
+in adding extra variables because of the increase in processing time that
+will result.
+<p>Another problem comes from text variables being much larger than they
+need to be because somebody thought it would be a good idea to "standardise"
+them and may have increased the length of some character fields to 200
+bytes. If this is the case then you should explain the problem this causes
+and ask for them to be made smaller. Even if you are not keeping these
+variables you will still be inconvenienced because it will take longer
+to read the lab data.
+<h2>
+What is "slow" with lab data?</h2>
+If your lab dataset contains <b>one million observations</b> then to process
+it and summarize it should take <b>less than ten minutes</b> even in the
+most complex cases. If it takes longer then somebody is doing something
+wrong.
+<h2>
+What is "fast" with lab data?</h2>
+You are starting to get fast with lab data when you are processing 10,000
+lab records per second. If you get to a speed of processing 15,000 lab
+records per second then this is extremely good and you probably have the
+computer to thank for some of this speed.
+<h2>
+What is the Big Secret of efficient lab data handling?</h2>
+The <b>Big Secret</b> about handling lab data is mostly to do with <b>limiting
+the number of retained variables</b> , <b>keeping the SQL simple</b> and
+<b>sorting
+the data as infrequently as possible</b>
+<ul>
+<li>
+<b>Save only those variables you need</b>. You can access more if you need
+to derive some variables and you can do that in SQL but only keep the ones
+you need for future processing</li>
+
+<li>
+Create a useful lab datetime variable from the date and time variable (if
+not present) using "<b>dhms(labdt,0,0,labtm) as labdttm</b>" in your SQL
+and drop the data and time variables if possible. Even if you need to use
+<b>labdt</b>
+for a calculation of study day then you can use <b>datepart(labdttm)</b>
+instead.</li>
+
+<li>
+Before quitting SQL, sort the lab data into <b>study / patient / lab code
+/ visit number / repeat visit number</b> order using an "order by" statement</li>
+
+<li>
+Merge with your patient information (which should already be in
+<b>study
+/ patient</b> order) <b>in a data step using "merge" AFTER you leave SQL</b>
+so you know it will be done efficiently</li>
+
+<li>
+<b>NEVER sort your lab data after merging with patient information</b>
+unless you feel it is already nearly in the order you want</li>
+
+<li>
+<b>FLAG your lab observations</b> as much as you need to, such as those
+that are pre-treatment, on-treatment, post-treatment, repeat values, the
+baseline value and last-value-on-treatment</li>
+</ul>
+
+<h2>
+Extracting Patient and Lab data using SQL</h2>
+Keep patient data and lab data separate in your SQL. Do a final sort in
+<b>study
+/ patient / lab code / visit number / repeat visit number</b> order for
+lab data. Do a final sort for your patient data in <b>study / patient</b>
+order. Use "<b>left join</b>" a lot because it allows you to reference
+variables to derive other values but you don't have to keep them. When
+you do your final sort of lab data you should only keep those variables
+you need to reference in the future.
+<h2>
+Some efficient example SQL</h2>
+If you use SQL as shown below then your problems should be avoided or at
+least minimised. It will give you speed as well as flexibilty. It will
+work well for pooled study data. You will see that the SQL is very simple
+and I will be doing a lot of other work outside of SQL. It is not that
+I do not like using SQL. It is because it is hard to predict how SQL will
+behave when it is handling huge volumes of data. In those circumstances
+you at least know what is happening if you use data steps and the results
+will be predictable.
+<ul>
+<li>
+Look how the patient information is kept separate and is built up using
+"<b>left join</b>"s using "on" statements to link the study and patient
+information to the population information for each table</li>
+
+<li>
+Look how I am keeping two variables that are resolved by macro parameters
+<b>&amp;trtvar</b>
+and <b>&amp;trtdc</b>. These are the coded and decoded forms. The decoded
+form might be a long variables so we should not keep more of these variables
+than we need.</li>
+
+<li>
+Look how the very first table used in building the patient data is the
+<b>population
+table</b> so that with the following "left join" processing then only information
+for the desired patient population is kept</li>
+
+<li>
+Look how patinfo datetime variables are being created using date and time
+variables but <b>only the datetime variables</b> are kept</li>
+
+<li>
+After the patient table has been created then some useful information is
+extracted from this <b>relatively small</b> _patinfo table and stored in
+macro variables</li>
+
+<li>
+Look how the <b>lab grouping data has been kept separate</b>. It makes
+no sense to merge it with the lab data at this stage. It only makes sense
+to merge it <b>after</b> the lab data has been <b>summarized </b>and note
+that I have the<b> labnmx </b>(the label of the lab parameter) in here
+and not in the lab data to save space as I know the merge with this data
+will work</li>
+
+<li>
+Look how the lab data has been "<b>left join</b>"ed with some reference
+range data to calculate normalized values and that both these sets of <b>reference
+range variables are not kept</b></li>
+
+<li>
+Look how the lab data is sorted into <b>study / patient</b> order as the
+first two sort keys at the end for a later data step merge with the patient
+data</li>
+
+<li>
+Look how I am selecting <b>ALL the lab data</b> and not applying any patient
+population subsetting. This is because it is more efficient to do this
+at a later stage</li>
+</ul>
+
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp; proc sql noprint;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; create table _patinfo as (</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; select pop.study, pop.ptno, pop.popu,
+pop.popudc,</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; trt.analno, trt.anallbl,&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; trt.&amp;trtvar, trt.&amp;trtdc,&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dhms(pre.atrstdt,0,0,pre.atrsttm)
+format=datetime19. label="pre-treatment start"&nbsp; as predtst,</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dhms(trt.atrstdt,0,0,trt.atrsttm)
+format=datetime19. label="on-treatment start"&nbsp;&nbsp; as ontdtst,</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dhms(trt.atrspdt,0,0,trt.atrsptm)
+format=datetime19. label="on-treatment stop"&nbsp;&nbsp;&nbsp; as ontdtsp,</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dhms(pos.atrstdt,0,0,pos.atrsttm)
+format=datetime19. label="post-treatment start" as posdtst,</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dhms(pos.atrspdt,0,0,pos.atrsptm)
+format=datetime19. label="post-treatment stop"&nbsp; as posdtsp,</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dhms(pst.atrstdt,0,0,pst.atrsttm)
+format=datetime19. label="post-study start"&nbsp;&nbsp;&nbsp;&nbsp; as
+pstdtst,</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dhms(pst.atrspdt,0,0,pst.atrsptm)
+format=datetime19. label="post-study stop"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+as pstdtsp</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /*--- population ---*/</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; from &amp;inpopu(where=(popu="&amp;popu"
+and popuny=1)) as pop</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /*--- on treatment ---*/</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; left join &amp;intrt(where=(analno=&amp;analno))
+as trt</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; on pop.study=trt.study and pop.ptno=trt.ptno</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /*--- pre treatment ---*/</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; left join &amp;intrt(where=(analno=6))
+as pre</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; on pop.study=pre.study and pop.ptno=pre.ptno</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /*--- post treatment ---*/</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; left join &amp;intrt(where=(analno=1
+and atrcd="90000003")) as pos</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; on pop.study=pos.study and pop.ptno=pos.ptno</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /*--- post study ---*/</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; left join &amp;intrt(where=(analno=1
+and atrcd="90000011")) as pst</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; on pop.study=pst.study and pop.ptno=pst.ptno</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; ) order by study, ptno;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; select distinct(study)&nbsp;&nbsp; into: studies
+separated by " " from _patinfo;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; select distinct(popudc)&nbsp; into: popudc&nbsp;
+separated by " " from _patinfo;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; select distinct(anallbl) into: anallbl separated
+by " " from _patinfo;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; *- lab grouping variables -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; create table _labgrp as (</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; select labnm, labnmx, labgrp, labgrpx,
+labnmor from &amp;instds(where=(type='LG'))</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; );</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; *- lab values -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; create table _lab as (</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; select a.study, a.ptno, a.labnm,
+a.lab, a.labun, a.labstd, a.labstdu,</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; a.visno, a.cpevent, a.subevno, b.rounding,</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dhms(labdt,0,0,labtm) format=datetime19.
+label="lab datetime" as labdttm,</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; b.lln+(a.labstd-a.llc)*(b.uln-b.lln)/(a.ulc-a.llc)&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; label="Lab value norm"
+format=15.5 as labn</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; from &amp;inlab as a</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; left join &amp;instds(where=(type='RR'
+and version=5)) as b</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; on a.labnm=b.labnm</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; ) order by study, ptno, labnm, visno,
+subevno, labdttm;</tt>
+<p><tt>&nbsp; quit;</tt></td>
+</tr>
+</table>
+
+<h2>
+Post processing of patient data</h2>
+As soon as we leave SQL you can do some Postprocessing of the patient data.
+It is often clearer and easier to do it this way. And it can be a useful
+source for creating extra needed formats. Remember that this dataset is
+small so to process it is fast. See how I have added some variables and
+then used the original patient table as a source for creating more formats.
+<p>I don't need the two variables <b>anallbl</b> and <b>popudc</b> anymore
+because I wrote them to macro variables in the SQL step so I drop them
+here to save space. It's not very important because once we have the lab
+data in study / patient order then things run fast after that but every
+small thing helps.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/************************</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Extend patinfo</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+************************/</tt>
+<p><tt>&nbsp; data _patinfo2;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; set _patinfo;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; *- combine post-treatment and post-study start
+and stop -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; *- and make sure that the start is not before
+the&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; *- on-treatment stop datetime.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; cmbdtst=max(ontdtsp,min(posdtst,pstdtst));</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; cmbdtsp=max(posdtsp,pstdtsp);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; format cmbdtst cmbdtsp datetime19.;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; *- these two no longer needed -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; drop anallbl popudc;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; label cmbdtst="post-treatment/study start"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cmbdtsp="post-treatment/study
+stop"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+<br><tt>&nbsp; run;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/************************</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Create formats</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+************************/</tt>
+<p><tt>&nbsp; *- create a format to map treatment code to the decode label
+-;</tt>
+<br><tt>&nbsp; %mkformat(_patinfo,&amp;trtvar,&amp;trtdc,$atrfmt,indent=0);</tt>
+<p><tt>&nbsp; *- create a format for treatment arm totals -;</tt>
+<br><tt>&nbsp; %popfmt(dsin=_patinfo,trtvar=&amp;trtvar,trtfmt=$atrfmt.,uniqueid=study
+ptno,</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; split=%str(
+),msgs=no);</tt></td>
+</tr>
+</table>
+
+<h2>
+Merging patient data with lab data</h2>
+Remember that we already have the dataset in the correct order to merge
+by study patient because we "<b>order</b>"ed them in this way in the SQL.
+<p>See how I am adding flag variables and also only keeping lab values
+for that population by using "<b>if _a and _b</b>". This is the best time
+for dropping lab observations from patient populations we are not interested
+in. We know it will be done efficiently this way.
+<p>See how I sort it at the end with the variable "<b>_period</b>" added.
+This will not be a problem because the lab data is already nearly in this
+order so the sort step will not take long. The sort algorithms will detect
+this and use an efficient method.
+<p>You can see that I am creating three flag variables for the different
+time periods. This is inefficient but it was written as QC code and I need
+to do a "proc compare" against the original dataset. But what I have done
+is declare them a length of 3 to hopefully save space. If some of your
+text variables are too large then you should reduce the length of them
+at this stage so the following sort is faster.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/************************</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Add lab flags</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+************************/</tt>
+<p><tt>&nbsp; *- _period is used as a work variable which will be dropped
+-;</tt>
+<br><tt>&nbsp; *- from _linder and added again at a later stage. Only lab&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- values for the specified treatment population are kept.&nbsp;
+-;</tt>
+<br><tt>&nbsp; data _lab2;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; length _fgprev _fgontv _fgpostv 3;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; merge _patinfo2(in=_a) _lab(in=_b);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; by study ptno;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if _a and _b;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if labdttm&lt;=predtst then _period=0;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; else if predtst&lt;labdttm&lt;=ontdtst then
+do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _period=1;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _fgprev=1;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; else if ontdtst&lt;labdttm&lt;=ontdtsp then
+do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _period=2;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _fgontv=1;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; else if cmbdtst&lt;labdttm&lt;=cmbdtsp then
+do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _period=9;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _fgpostv=1;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; else _period=99;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; drop predtst ontdtst ontdtsp posdtst posdtsp</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pstdtst pstdtsp
+cmbdtst cmbdtsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; label _fgprev="Pre-treatment value flag"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _fgontv="On-treatment
+value flag"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _fgpostv="Post-treatment
+value flag"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; format _fgprev _fgontv _fgpostv 1.;</tt>
+<br><tt>&nbsp; run;</tt>
+<p><tt>&nbsp; proc sort data=_lab2;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; by study ptno labnm _period visno subevno;</tt>
+<br><tt>&nbsp; run;</tt></td>
+</tr>
+</table>
+
+<h2>
+Flagging REPEAT values</h2>
+If "repeat" values are to do with "visno" "FIRST." or "LAST." values then
+flagging these repeats is easy as the data is already in the order we need.
+These flag variables make it easy to visually QC the data to make sure
+the repeat values are being correctly selected.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/************************</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Flag REPEAT values</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+************************/</tt>
+<br><tt>&nbsp; data _lab3;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; length _fgrept 3;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; set _lab2;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; by study ptno labnm _period visno subevno;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; if _fgprev and not last.visno then _fgrept=&amp;reptval;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; if _period=99 and not last.visno then _fgrept=&amp;reptval;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; else if _period=2 and not &amp;repeat..visno
+then _fgrept=&amp;reptval;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; label _fgrept="Repeated Values";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; format _fgrept 4.;</tt>
+<br><tt>&nbsp; run;</tt></td>
+</tr>
+</table>
+
+<h2>
+Flagging Baseline and Last-value-on-treatment observations</h2>
+What you need to do to flag the Baseline and Last-value-on-treatment values
+is to extract the minimum number of variables to determine which observations
+these are and then to merge back in, keeping only the variables you are
+going to merge on and flag them. Note that I am only keeping in these datasets
+the variables that I will merge back in with the lab data (study ptno labnm
+_period). Because I am only keeping one value per study/ptno/labnm/_period
+then I have no need to do a sort before merging. It will already be in
+that order. The only sorting I do is on these small datasets with minimum
+variables in them and this will not take long.
+<p>The last data step is the merging back in and flagging using variables
+_fgbslv (baseline value) and _fglastv (last value). Again, these flag variables
+make it easy to visually QC the data to make sure the correct values are
+being selected. It is building a dataset with all the flags in it that
+can be optionally saved for QC purposes and later will be the source dataset
+for creating the final report.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/**********************************</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Baseline and Last Value Flag</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+**********************************/</tt>
+<p><tt>&nbsp; *- Sometimes this value is not in the correct visno order
+so it -;</tt>
+<br><tt>&nbsp; *- needs to be sorted in labdttm order. All values are used.&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; proc sort data=_lab3(keep=study ptno labnm _period visno
+subevno labdttm</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+where=(_period=1)) out=_bslval(drop=labdttm);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; by study ptno labnm _period labdttm;</tt>
+<br><tt>&nbsp; run;</tt>
+<p><tt>&nbsp; *- keep only the last -;</tt>
+<br><tt>&nbsp; data _bslval;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; set _bslval;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; by study ptno labnm _period;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if last.labnm;</tt>
+<br><tt>&nbsp; run;</tt>
+<br>&nbsp;
+<p><tt>&nbsp; *- Sometimes this value is not in the correct visno order
+so it -;</tt>
+<br><tt>&nbsp; *- needs to be sorted in labdttm order. Only non-repeats
+used.&nbsp; -;</tt>
+<br><tt>&nbsp; proc sort data=_lab3(keep=study ptno labnm _period visno
+subevno labdttm _fgrept</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+where=(_period=2 and not _fgrept))&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+out=_lastval(drop=labdttm _fgrept);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; by study ptno labnm _period labdttm;</tt>
+<br><tt>&nbsp; run;</tt>
+<p><tt>&nbsp; *- keep only the last -;</tt>
+<br><tt>&nbsp; data _lastval;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; set _lastval;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; by study ptno labnm _period;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if last.labnm;</tt>
+<br><tt>&nbsp; run;</tt>
+<br>&nbsp;
+<p><tt>&nbsp; *- merge and set flags -;</tt>
+<br><tt>&nbsp; data _lab4;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; length _fglastv _fgbslv 3;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; merge _bslval(in=_a) _lastval(in=_b) _lab3;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; by study ptno labnm _period visno subevno;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if _a then _fgbslv=1;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if _b then _fglastv=1;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; label _fglastv="Last Value Flag"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _fgbslv="Baseline
+Flag"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; format _fgbslv _fglastv 4.;</tt>
+<br><tt>&nbsp; run;</tt></td>
+</tr>
+</table>
+
+<h2>
+Do not sort before calling %unistats</h2>
+You should not sort your lab data before calling %unistats even if you
+are telling it the "byvars". It will do any needed sorts internally. Here
+is a call to %unistats after I have added some variables for help in getting
+the correct sort order plus a variable _phase for "skipping" lines in "proc
+report".
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/**************************</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Summarize</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+**************************/</tt>
+<p><tt>&nbsp; %let wherecls=and _hasbase=1 and _haslast=1;</tt>
+<br><tt>&nbsp; %if &amp;showmiss EQ Y %then %let wherecls=;</tt>
+<p><tt>&nbsp; *- Summarize and transpose by statistics name/_tp value using
+the&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- dpvar=rounding variable to control the number of decimal
+points&nbsp; -;</tt>
+<br><tt>&nbsp; *- shown in the output character variables. padmiss=yes
+is used to&nbsp; -;</tt>
+<br><tt>&nbsp; *- place non-breaking spaces after a missing value in the
+character -;</tt>
+<br><tt>&nbsp; *- variables to preserve decimal point alignment when proc
+report&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- right-aligns these character variables.&nbsp; -;</tt>
+<p><tt>&nbsp; %unistats(dsin=_laball3(where=((_fgprev or _fgontv or _fgpostv)
+&amp;wherecls and missing(_fgrept))),</tt>
+<br><tt>&nbsp; print=no,varlist=_val,msglevel=X,padmiss=yes,msgs=no,</tt>
+<br><tt>&nbsp; trtvar=_tp,trtfmt=tpfmt.,dpvar=rounding,trtvallist=1 2,</tt>
+<br><tt>&nbsp; byvars=&amp;trtvar labnm &amp;labunit _phase _period visno
+cpevent,</tt>
+<br><tt>&nbsp; nfmt=5.,stdfmt=5.,minfmt=5.,maxfmt=5.,meanfmt=5.,</tt>
+<br><tt>&nbsp; descstats=&amp;descstat,dstranstattrt=_transtat,leftstr=yes);</tt></td>
+</tr>
+</table>
+
+<h2>
+Finally, I add the lab ordering values</h2>
+If you remember, in the initial SQL I created a table named <b>_labgrp</b>
+that I did not "left join" with the lab data because I said it is better
+done <b>after</b> it had been summarized. Well now I have summarized it
+so it is time to merge it with the output dataset <b>_transtat. </b>Note
+that I am setting up a visit text variable here because if I did it earlier
+then it would make the lab dataset too large and would slow down the summarizing
+process. You will see that I kept <b>cpevent</b> by declaring it to be
+a "byvar" in the call to %unistats and I will use to to form the visit
+text. Now that we are handling summarized data we don't have to worry about
+the length of text variables so I set <b>_vistext</b> to 60 characters
+which is more than enough.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/**************************</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Add lab group order</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+**************************/</tt>
+<p><tt>&nbsp; *- add in the lab group info for proc report ordering -;</tt>
+<br><tt>&nbsp; proc sql noprint;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; create table _transtat2 as (</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; select a.*, b.labnmx, b.labgrp, b.labgrpx, b.labnmor,</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; case when _period=3 then "&nbsp; Min value on
+treatment"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; when _period=4
+then "&nbsp; Max value on treatment"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; when _period=5
+then "&nbsp; &amp;lastlbl"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else "&nbsp; "||cpevent</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; end length=60 as _vistext</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; from _transtat as a</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; left join _labgrp as b</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; on a.labnm=b.labnm</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; ) order by labgrp, labgrpx, labnmor, labnm,
+labnmx, &amp;labunit;</tt>
+<br><tt>&nbsp; quit;</tt></td>
+</tr>
+</table>
+
+<h2>
+It's "proc report" time !</h2>
+I already set up some titles and footnotes and now it is time to call "proc
+report" to produce our<b><i> lovely report !! </i></b>Note the use of %sysfunc(byte(131))
+for the top line of the report. Byte(131) is a mid line height long hyphen
+so repeat values will form a solid line that is mid line height. The solid
+line is better placed than it would be if repeating underscores were used.
+<p>Note that I have used "<b>order=internal</b>" for the order variables.
+This is always a good idea.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/**************************</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Produce report</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+**************************/</tt>
+<p><tt>&nbsp; *- adjust column width according to how many statistics we
+have in each group -;</tt>
+<br><tt>&nbsp; %let ncolw=8;</tt>
+<br><tt>&nbsp; %if %words(&amp;_statkeys_) GT 6 %then %let ncolw=6;</tt>
+<p><tt>&nbsp; *- for normalised values only show if we have a non-missing
+rounding variable value -;</tt>
+<br><tt>&nbsp; %let wherecls=;</tt>
+<br><tt>&nbsp; %if &amp;value EQ N %then %let wherecls=(where=(not missing(rounding)));</tt>
+<br>&nbsp;
+<p><tt>&nbsp; *- The _statkeys_ content is dynamically handled in the proc
+report call. -;</tt>
+<br><tt>&nbsp; *- If it flows onto the following page then _vistext will
+be shown at the -;</tt>
+<br><tt>&nbsp; *- start of the following page because it is defined as
+an "id" variable. -;</tt>
+<p><tt>&nbsp; proc report missing headline headskip nowd split="@" spacing=2
+data=_transtat2&amp;wherecls;&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; by labgrp labgrpx labnmor labnm labnmx &amp;labunit;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; columns ("%sysfunc(repeat(%sysfunc(byte(131)),%eval(&amp;repwidth-1)))"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&amp;trtvar _phase _period visno _vistext</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* NOTE: _statkeys_ contains a list of the transposed numeric */</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* variables but the character variables end in STR. Also the */</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* numbers 1 and 2 will precede STR since we transposed by&nbsp;&nbsp;&nbsp;
+*/</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* the _tp variable as well (see 1STR and 2STR below).&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+("_Value at visit_" %suffix(1STR,&amp;_statkeys_))&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+("_Difference from %lowcase(&amp;bslnlbl)_" %suffix(2STR,&amp;_statkeys_))</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+);&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; define &amp;trtvar / order order=internal noprint;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; define _phase&nbsp; / order order=internal noprint;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; define _period / order order=internal noprint;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; define visno&nbsp;&nbsp; / order order=internal
+noprint;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; define _vistext / id order width=26 "Treatment/"
+"&nbsp; Visit" spacing=0;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %do j=1 %to 2;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %do i=1 %to %words(&amp;_statkeys_);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let key=%scan(&amp;_statkeys_,&amp;i,%str(
+))&amp;j.STR;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let spac=;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %if &amp;i EQ 1 %then
+%let spac=spacing=&amp;gap;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; define &amp;key / display
+width=&amp;ncolw &amp;spac right;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; compute before &amp;trtvar;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *- _popfmt_ contains the identity
+of the -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *- format created by the %popfmt
+call&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; line @1 &amp;trtvar &amp;_popfmt_;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; endcompute;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; break after _phase / skip;</tt>
+<br><tt>&nbsp; run;&nbsp;</tt></td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+You have seen how best to extract and handle lab data to keep run times
+at a minimum when preparing your data for a call to %unistats.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+</body>
+</html>

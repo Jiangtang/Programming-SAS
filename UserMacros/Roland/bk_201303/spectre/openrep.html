@@ -1,0 +1,210 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="%openrep %closerep Spectre">
+   <meta name="Description" content="Spectre's %openrep and %closerep macros">
+   <title>openrep and closerep</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+%openrep and %closerep</h1></center>
+
+<center>
+<p><br><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 09 Jul 2006)</b></center>
+
+<h2>
+Introduction</h2>
+The macros <b>%openrep</b> and <b>%closerep</b> are used by the reporting
+system to route print output to a temporary file (using %openrep) and to
+read back the report from the temporary file and add page labels ("Page
+X of Y") using %closerep (page labels are not added for figures). These
+macros are both Unix and Spectre specific. Every output you create using
+Spectre must have %openrep called before the start and %closerep called
+at the end. This applies to all tables, listings and figures. These macros
+route the output to ".lis" files rather than to ".lst" files for tables
+and listings or to a PostScript file for figures. When the final run of
+the programs is done, these macros write a list of outputs created to a
+file named "<b>donelist.txt</b>" and this file is used as part of the process
+to create the final PDFs (writing to "donelist.txt" does not happen when
+you run your own programs either individually, using "sasb", or using the
+script created with "makemyrun").
+<p>These macros call other macros. To see a list of dependencies for these
+two macros then click <a href="macdep.html#openrep" target="_blank">here</a>.
+<p>You <b>should not use</b> these macros if you are not using Spectre
+or working on a non-Linux/Unix platform, although you can still use the
+Spectre reporting macros. How to do this is explained on the following
+pages.
+<br><a href="adhoc.html">Ad-hoc Reporting and PDFs</a>
+<br><a href="winusers.html">%unistats and %npcttab for MS Windows users</a>
+<h2>
+Calling the macros in your code</h2>
+Normally these macros are called without setting any parameters. What you
+have got to keep in mind that you call %openrep before a report starts
+and %closerep after you have finished creating your report. If your report
+involves making multiple calls to "proc report", you do not call %openrep
+and %closerep every time you use "proc report". Instead, you call %openrep
+before the first call to "proc report" and %closerep after the last call
+to "proc report". Simplified, the code looks like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%openrep</tt>
+<p><tt>proc report ......</tt>
+<br><tt>run;</tt>
+<p><tt>proc report....</tt>
+<br><tt>run;</tt>
+<p><tt>%closerep</tt></td>
+</tr>
+</table>
+
+<p>The file created by the two macros will have the extension ".lis" followed
+by the label defined to the %titles macro. This is covered on the page
+that describes the %titles macro which you can link to <a href="titles.html">here</a>.
+This label is nearly always blank so the file extension will be just ".lis".
+If the label were "a" then the file extension would be ".lisa".
+<h2>
+%openrep</h2>
+The %openrep macro does other things than just open a report, so it does
+more than its name suggests. It is bad practise to give a name to a macro
+that does not describe its function, so this is a small fault in the system.
+It has two system option parameters that have default settings that take
+effect when the macro is called and these are shown below.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>/ missing=' '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; By default, set
+missing option to a space. If you set this</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+to null then no action will be taken.</tt>
+<br><tt>/ formchar='|_---|+|---+=|-/\&lt;>*'&nbsp; By default, set formchar
+option so that</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+across spanning characters are underscores. If you set this</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+to null then no action will be taken.</tt></td>
+</tr>
+</table>
+
+<p>It sets the <b>missing </b>character to a space, so that numeric missing
+values are shown as spaces in a report rather than periods, and it resets
+the <b>formchar</b> so that spanning lines in "proc report" and other report
+procedures use an underscore rather than a minus sign. The underscore you
+can see as the second character in the formchar list shown above. You have
+to be aware of this since sometimes you will not want these options to
+take effect. To stop them taking effect you have to set the parameters
+to null, as it says above. Suppose you use "proc tabulate" then by default
+it draws boxes around your values. If you are not aware of what %openrep
+is doing then the spanning character of your boxes will be changed to an
+underscore and this will look strange. And you will wonder why it is happening
+unless you remember this hidden feature of %openrep.
+<p>If you are using SAS&reg; software interactively, %openrep will create
+a window and prompt you for the program name. Developing code in batch
+is the recommended method, but it still caters for interactive development.
+Once you tell it the program name it will remember it during your interactive
+session. The reason it must do this is because it is possible to work on
+more than one program during an interactive session and it has to be sure
+of the one you are intending to work on.
+<p>You can view the %openrep macro below.
+<br><a href="sysmacros/openrep.sas" target="_blank">%openrep</a>
+<h2>
+%closerep</h2>
+%closerep is simpler because it has no parameters to set. It reads in the
+temporary file set up by %openrep and routes the output to the ".lis" file
+after calling the "pagexofy" script to add "Page X of Y" labels.
+<p>If you are using SAS software interactively, %closerep will open the
+final output file in your SAS software session "Notepad" window. It will
+still be written to the output file, though. It just displays it for you
+in yout Notepad window for your own convenience.
+<p>You can view the %closerep macro below.
+<br><a href="sysmacros/closerep.sas" target="_blank">%closerep</a>
+<h2>
+Figure orientation</h2>
+For graphics output it would be helpful if you provided some orientation
+information so that when people are browsing a PDF then the landscape figures
+are offered to them with the correct orientation. It can be very annoying
+to have to stop at every landscape figure and change the orientation to
+view it and change it back again for the tables and listings. Getting the
+orientation right is quite difficult and I learned a trick for doing this.
+The trick is to write a hardware character somewhere in the graphics output
+using a "note" statement. Nearly all graphics procedures will allow you
+to do this. SAS software will not change the hardware character, so long
+as it is big enough, and so this single character alerts the PDF browser
+to the way you want the output aligned. It will then automatically align
+it for you. Here is the note statement I use:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>NOTE move=(98,88) pct font=HWPSL001 height=0.17 in c=white 'Z';</tt></td>
+</tr>
+</table>
+
+<p>Do not reduce the height of the character in the note statement or SAS
+software will replace it with a drawn character that the PDF browser can
+not see. The colour of the character is white so you will not see it in
+the final PDF. You can set it to black when testing to see where it is
+putting this character and you should do this to <b>be sure it is not overwriting
+any existing text or part of the figure</b>. If you use "gv" to view the
+postscript file then "gv" will be confused by this character and may not
+be able to display the figure but you will always be able to print it using
+"<b><tt>lpr -h -P printer-name myfigure.ps</tt></b>".
+<h2>
+Figure PDF Bookmarks</h2>
+When you call the %titles macro, the macro sets up a global macro variable
+named <b>_figbkmark_</b> with a pdf bookmark assigned to it based on the
+titles in the titles dataset. It echoes this macro variable to the log
+(all global macro variables that get set in Spectre macros are written
+to the log) so you can see its contents. If the contents are not correct
+then you have the option of changing it before you call the %closerep macro
+which will then use that global macro variable to create a bookmark for
+the PostScript file created. Just set it like you would any other macro
+variable in this way:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%let _figbkmark_=Whatever pdf bookmark text you want;</tt></td>
+</tr>
+</table>
+
+<p>This bookmark macro variable has no effect on tables and listings. Their
+bookmarks are created by the <b>getitles</b> script at a later stage. The
+reason it is done for figures is because a PostScript file is created directly
+and all the text in it, including all the titles, gets turned into drawing
+instructions (except for the hardware character as described in the previous
+section) so it is impossible to extract the titles at a later stage.
+<h2>
+Conclusion</h2>
+You have read how you must call %openrep before you create a report and
+to call %closerep afterwards and that this is required for tables, listings
+and figures.
+<br>&nbsp;
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+</html>

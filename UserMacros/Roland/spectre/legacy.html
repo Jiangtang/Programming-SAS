@@ -1,0 +1,155 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="Creating PDFs for Legacy Systems using Spectre">
+   <meta name="KeyWords" content="Legacy systems PDFs Spectre">
+   <title>Legacy Systems and PDFs</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Legacy Systems and PDFs</h1></center>
+
+<center>
+<p><br><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 10 Jun 2006)</b></center>
+
+<h2>
+Introduction</h2>
+Creating bookmarked PDFs for clinical study reporting has become a desirable
+goal over the past few years. The scripts that come with Spectre <b><i>might
+</i></b>be
+able to create PDFs for some legacy systems. They might even be able to
+create <b>bookmarked</b> PDFs if the "getitles" script is able to extract
+the titles from the reports of the legacy system. Two different types of
+legacy system will be described here where the scripts were successfully
+used to create bookmarked PDFs. Whether this will work on your own legacy
+systems is a matter of luck. For some it will work, for others not.
+<h2>
+Multi-output legacy systems</h2>
+If your legacy system produces multiple outputs, rather than having the
+output all in one file, then there is a chance the scripts can be used
+for creating PDFs, if not bookmarked PDFs. Many of these systems either
+create a list of output, all in the correct order, or a list is kept by
+hand and the programmers edit in their output file names at the correct
+point in the list to ensure the correct order. There is a good chance of
+creating a PDF in this situation. It is important to know what paper type
+the output was intended to be printed on (A4 or US Letter) and what the
+intended margins are as this affects what script will be needed and how
+the margins are specified to the script. There are two scripts named "a4ps"
+and "usps" that you can use to create a PostScript file. Which one you
+use depends on the intended paper size ("a4ps" for A4, "usps" for US Letter).
+<p>Suppose a legacy system, such as the one described, used <b>US Letter</b>
+paper with 1.0 inch margins all round and the list of output was in the
+file "<b>outlis.txt</b>" then the following command might be able to build
+the PostScript file. And if you have a good PostScript file, the rest is
+easy.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>usps -r 1.0 $(cat outlis.txt) > myfile.ps</tt></td>
+</tr>
+</table>
+
+<p>Both the "a4ps" and "usps" scripts, as supplied, default the margins
+to 1.0 inch for all except the right margin which is 0.75 inches (looking
+at the page in the "portrait" sense). So if any of the margins differ then
+they must be specified.
+<p>Once you have a PostScript file then you can turn it into a PDF using
+either "a4ps2pdf" or "usps2pdf" depending on the paper size. The script
+will create a file with the same name as the input file but with the extension
+".pdf" like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>usps2pdf myfile.ps</tt></td>
+</tr>
+</table>
+
+<p>Hopefully you will have a PDF and if you are lucky, it will be correctly
+bookmarked as well. It is the script "getitles" that tries to identify
+the titles in your output. Maybe it will need amending to do so correctly
+or maybe a special version of it will be required. It is not an easy script
+to maintain, though I have written it as best I can. You can link to it
+below as well as a simple SAS&reg; software version of it.
+<br><a href="scripts/getitles" target="_blank">getitles</a>
+<br><a href="scripts/getitles_sas" target="_blank">getitles_sas</a>
+<h2>
+Single-output legacy systems</h2>
+The simplest type of reporting system runs all the program code in sequence
+in a single program that "includes" each code member in the correct order.
+This single large listing will then be processed in some way to add "Page
+X of Y" labels and the results written out to a new file. Scripts "a4ps"
+and "usps" will require this file to be split into separate tables if they
+are to work. It might be easy to do this. For example, if the first line
+of the first page of a report contains the label "Page 1 of ", then it
+is an easy matter to look for that label and to create a new output when
+the label is encountered. And if the naming of the output files is alphabetical,
+so that "a4ps" and "usps" will automatically pick then up in the correct
+order, then it should be possible to create a PDF. There is a script named
+"splitbiglst" that you might be able to use as-is or amended to do this.
+This can be linked to below.
+<br><a href="scripts/splitbiglst" target="_blank">splitbiglst</a>
+<p>The above script will create files names file001.tmp, file002.tmp etc.
+so they will be in the correct order for input to "a4ps" or "usps". Again,
+you need to know what paper size the reports were intended for and what
+margins to leave as both "a4ps" and "usps", as supplied, assume a one inch
+margin all round except the right margin (in the "portrait" sense) which
+is 0.75 inches. Assuming the reports were intended for A4 paper with a
+one inch margin all round then once you had split the output using "splitbiglst"
+you could create the PostScript file like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>a4ps -r 1.0 file*.tmp > myfile.ps</tt></td>
+</tr>
+</table>
+
+<p>Once you have the postscript file, you can convert it to a PDF using
+either "a4ps2pdf" (for A4 paper) or "usps2pdf" (for US Letter). In the
+case of the above example you would use:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>a4ps2pdf myfile.ps</tt></td>
+</tr>
+</table>
+
+<p>The output PDF will have the same name as the input file but with the
+extension ".pdf".
+<h2>
+Conclusion</h2>
+You have seen how you <b><i>might </i></b>be able to create a bookmarked
+PDF for two types of legacy system. Whether it works or not is a matter
+of luck.
+<br>&nbsp;
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+
+<p><!-- Start of StatCounter Code --> 
+<script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a> 
+</noscript> 
+<!-- End of StatCounter Code -->
+
+</body>
+</html>

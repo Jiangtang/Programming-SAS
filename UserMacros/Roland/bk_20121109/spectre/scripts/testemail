@@ -1,0 +1,98 @@
+#!/bin/bash
+#<pre><b>
+# Script     : testemail
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 27-Feb-2007
+# Purpose    : To test the script email method to see if it can send you an email
+# SubScripts : gethome emailaddr getname
+# Notes      : Some scripts attempt to email the user to tell them that the
+#              script has ended using "mailx". This may not work. This script
+#              tests the "mailx" utility and gives instructions on what to do
+#              if it is not working.
+# Usage      : testemail 
+# 
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not use with parameters   
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  27Feb07         Use "ssmtp" for Cygwin
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+iam=$(whoami)
+
+# Use no parameters
+if [ $# -gt 0 ] ; then
+  echo "Usage: testemail (no parameters)" 1>&2
+  exit 1
+fi
+
+emailfile=$(gethome $iam)/.emailaddr
+emailaddr=$(grep -v '^#' "$emailfile" 2>/dev/null | grep '@' | head -1)
+
+
+if [ -f "$emailfile" ] ; then
+  echo "You have the file .emailaddr in your home directory"
+  if [ -n "$emailaddr" ] ; then
+    echo "and it contains the active email address $emailaddr"
+  else
+     echo "but there is no active email address inside so the email address"
+     echo "will be constructed out of your name which is assumed to be"
+     getname
+  fi
+else
+  echo "You have no .emailaddr file in your home directory so the email"
+  echo "address will be constructed out of your name which is assumed to be"
+  getname
+fi
+
+sendto=$(emailaddr $iam)
+echo "The email address to use is therefore $sendto"
+echo "Sending a test message now..."
+msg="This is a test message sent by the \"testemail\" script"
+
+# Use "ssmtp" for Cygwin and "mailx" for Unix
+if [ -n "$CYGWIN" ] ; then
+/usr/sbin/ssmtp -t << FINISH
+To: $sendto
+Subject: $msg
+
+$msg
+FINISH
+else
+  echo "$msg" | mailx -s "$msg" $sendto
+fi
+
+sleep 5
+echo
+echo "Message sent. Please refresh your inbox and check for the message."
+echo
+echo "If you did not get the message then check the following"
+echo
+echo "1) That your name was correctly displayed if you have no"
+echo "   .emailaddr file or no active email address inside it."
+echo "   If it is not correctly displayed then the \"getname\" "
+echo "   script may need to be amended."
+echo
+echo "2) If your name for your email system is different to the"
+echo "   generated email address or you are working remotely and"
+echo "   therefore use a different email address then set up the"
+echo "   file .emailaddr in your home directory with the correct"
+echo "   email address in it. If a line starts with a \"#\" in the"
+echo "   first column then it will be treated as a comment line."
+echo "   You should put the email address on a line on its own."
+echo
+echo "3) If everything looks correct and yet you did not get the"
+echo "   test email sent out then it could be that your email"
+echo "   address is blocked from receiving external emails. To"
+echo "   test if this is the case then get somebody to email you"
+echo "   from an external source (such as hotmail) and if you"
+echo "   are blocked then they will get an \"undelivered mail\" "
+echo "   message with the reason included."
+echo

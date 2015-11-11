@@ -1,0 +1,71 @@
+#!/bin/bash
+#<pre><b>
+# Script     : emailme
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 09-Dec-2004
+# Purpose    : To email a user the requested files
+# SubScripts : emailaddr catp
+# Notes      : none
+# Usage      : emailme t_xxx.lis
+#              emailme t_x*.lis
+#              emailme $(myfiles t*.lis)
+#              emailme -i $(myfiles t*.lis)
+#              emailme -u rrash $(myfiles t*.lis)
+#================================================================================
+# OPTIONS:
+#-opt- -------------------------------description--------------------------------
+#  u   (value)  userid if different to own                                 
+#  i   (switch) ignore whatever is in .emailaddr                                 
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   file(s) to email the requestor
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+
+# Define give-usage-message-then-exit function
+usage () {
+  echo "Usage: emailme file*.lis" 1>&2
+  exit 1
+}
+
+# defaults
+user=$(whoami)
+ignore=
+
+
+# "case" statement for action to take on selected options
+while getopts "iu:" param ; do
+  case $param in
+   "?") # bad option supplied
+        usage
+        ;;
+   "i") # ignore .emailaddr file
+        ignore=-i
+        ;;
+   "u") # (value) User
+        user=$OPTARG
+        ;;
+  esac
+done
+
+
+# shift to bring first parameter to position 1
+shift $(($OPTIND - 1))
+
+
+# Must be at least one file specified
+if [ $# -lt 1 ] ; then
+  echo "Error: (emailme) No file(s) to send specified" 1>&2
+  usage
+fi
+
+catp "$@" | mailx -s "\"emailme\" sent you: $*" $(emailaddr $ignore $user)

@@ -1,0 +1,134 @@
+#!/bin/bash
+#<pre><b>
+# Script     : sasunixskeleton
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 30 July 2003
+# Purpose    : To create a skeleton Unix shell script that runs SAS
+# SubScripts : none
+# Notes      : This utility generates a script to run SAS. It handles the Unix
+#              side so you can concentrate on your SAS code. When the script is
+#              generated you only need amend it where the word EDIT appears. You
+#              should search for it. It will appear at the top where a usage
+#              message it put out of the user does not supply enough parameters
+#              (if no parameters are allowed then you can delete this section).
+#
+#              The generated script is written to the current directory. You
+#              are advised to run this script from your home directory.
+#
+# Usage      : sasunixskeleton
+#              sasunixskeleton myscript
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   (optional) name of script
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+#
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+
+if [ $# -lt 1 ]
+then
+  echo -n "Enter script name: "
+  read progname
+else
+  progname=$1
+fi
+
+# make sure the file name has no extension
+progname=$(echo $progname | awk -F. '{print $1}')
+
+
+# if script already exists then put out a message and exit
+if [ -f $progname ]
+then
+  echo "$progname already exists in this directory. Please check on it and
+delete" 1>&2
+  echo "it if you do not need it. This utility will not overwrite it and will
+exit." 1>&2
+  exit
+fi
+
+
+# prompt for purpose of script
+echo "This utility will generate a script and store it in the current
+directory."
+echo
+echo -n "Enter purpose of script: "
+read purpose
+
+
+# get author and date
+author=$(getname)
+date=$(date '+%d-%b-%Y')
+
+
+outfile=\$HOME/${progname}.tmp
+
+
+cat > $progname << -----END-----
+#!/bin/bash
+# Script     : $progname
+# Version    : 1.0
+# Author     : $author
+# Date       : $date
+# Purpose    : $purpose
+# SubScripts : none
+# Notes      : EDIT
+# Usage      : $progname       EDIT
+#
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   First parameter (if any) description    EDIT EDIT EDIT
+#  2   Second parameter (if any) description   EDIT EDIT EDIT
+#  3   etc. or.....
+# N/A  Do not supply any parameters            EDIT EDIT EDIT
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+#
+#===============================================================================
+
+# Put out a usage message if not enough parameters supplied
+if [ \$# -lt 2 ] ; then
+  echo "Usage: $progname ............EDIT EDIT" 1>&2
+  exit 1
+fi
+
+
+# Feed SAS code into standard input
+sas -stdio -noautoexec -sasuser work 2>/dev/null << -----FINISH-----
+options validvarname=any nofmterr noovp nodate nonumber;
+libname here './' access=readonly;
+
+EDIT EDIT EDIT EDIT
+
+Put your code here. Use \$1 to resolve the first entered parameter.
+Use \$2 to resolve the second entered parameter.
+
+\$'s get treated like the &'s in front of macro variables by scripts.
+It will try to resolve a Unix variable if you use one in a format.
+To get round it you have to use a slash in front of the dollar like
+this "\\$" .
+
+Your final output should be written to normal print output or you
+could use a data _null_ step like the following to put the contents
+of a dataset out to stdout.
+
+data _null_;
+  file stdout;
+  set xxxxx;
+  put @1 xxxx;
+run;
+-----FINISH-----
+
+-----END-----
+
+echo "script \"$progname\" has been generated and stored in the current directory" 1>&2
+chmod +x $progname

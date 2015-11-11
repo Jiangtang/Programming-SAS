@@ -1,0 +1,203 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="Spectre programming infrastructure">
+   <meta name="Description" content="Programming Infrastructure for Clincial Reporting">
+   <title>A Programming Infrastructure for Clinical Reporting</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+A Programming Infrastructure for Clinical Reporting</h1></center>
+
+<h2>
+Introduction</h2>
+This document will attempt to explain what a "programming infrastructure"
+is, in the sense of the statistical reporting of clinical trials and why
+it is a desirable thing. This is very much the author's opinion rather
+than an agreed-upon, industry-held view.
+<h2>
+What a "programming infrastructure" means</h2>
+People normally associate the word "infrastructure" with physical things
+such as roads, water supply, a sewage system, drainage, power supply etc.
+-- the basic physical systems of a country's or community's population.
+This was its original definition but now its definition has spread beyond
+that to cover systems. In the case of the statistical reporting of clinical
+trials then a more fitting definition would be "an underlying base or foundation
+especially for an organization or system" (this definition is taken from
+the following <a href="http://www.answers.com/topic/infrastructure?cat=biz-fin" target="_blank">link</a>
+where the evolution of the meaning of the word is expanded upon).
+<p>If we use the definition of "<b>an underlying base or foundation for
+a system</b>" then we can think of this infrastructure as being ubiquitous,
+omnipresent or, in other words, "present everywhere at once". Just as the
+foundations of a building support us wherever we walk on the floors and
+no matter where we go in a city we expect there to be running water and
+electricity available, and to move anywhere in a city we use the roads
+and follow the one-way signs, then a programming infrastructure should
+have utilities we can tap into and a basic structure that gives us direction
+in any area we work in while doing statistical reporting.
+<p>What a programming infrastructure <b>is not</b> is a collection of systems
+that are independent of each other, even if this collection is expansive
+enough to cover all areas of reporting activity. Large pharmaceutical companies
+tend to buy or write a system for doing their "safety" reporting that is
+entirely separate from any consideration of "efficacy" reporting. The efficacy
+reporting function can not draw upon what is at the foundations of the
+safety reporting system in most cases, or if this is possible then it is
+not made obvious how to do it, so this is not an example of a <b>programming
+infrastructure</b>. If a true programming infrastructure were in place
+then both the safety reporting system and the efficacy function would draw
+from the same pool of utilities and follow the same methodology. A programming
+infrastructure would give cohesion to these two areas so they would have
+the same look and feel and work in a similar way and these two functions
+should be able to run together if the choice were made to do that.
+<h2>
+Components of a programming infrastructure</h2>
+Here I will attempt to list the components of a programming infrastructure
+as it applies to the statistical reporting of clinical trials with emphasis
+on what makes it part of an infrastructure. I will assume that there are
+four types of programs; safety programs, efficacy programs, "extra analysis"
+programs (programs that run on the same data that the safety and efficacy
+programs ran on but done at a later date) and ad-hoc reporting programs.
+<ul>
+<li>
+<b>Printing capabilities:</b> A method of printing or writing to a print-ready
+file (such as a PostScript file) producing correctly formatted reports
+with the right layout. This should work in the same way for efficacy reports,
+safety reports and "extra analysis" reports and perhaps for ad-hoc reports
+as well.</li>
+
+<li>
+<b>Titles and footnotes:</b> A method of storing titles and footnotes separately
+from program code so that they can be included into program output. This
+should work in the same way for both safety and efficacy reporting and
+any "extra analysis" reporting. For ad-hoc reporting you might not want
+to mix the titles with the others so these titles and footnotes might be
+hard-coded instead.</li>
+
+<li>
+<b>Programming standards:</b> A set of programming standards that is the
+same for all types of programs is required.</li>
+
+<li>
+<b>Utility macros:</b> A comprehensive set of utility macros useful in
+the field of clinical reporting with good documentation to back it up so
+that programmers know what is available to them and what those macros can
+do.</li>
+
+<li>
+<b>Standard reporting macros:</b> Both safety reports and efficacy reports
+tend to show counts and percentages so what is needed is a utility that
+produces counts and percentages that both safety and efficacy programs
+can call. The same goes for descriptive statistics so there should be two
+macros to handle this that can be called by all types of reporting programs.
+These two macros should be able to handle different numbers of treatment
+arms without extra coding being put in place.</li>
+
+<li>
+<b>Production scripts:</b> Scripts in whatever appropriate language to
+automate the processes</li>
+
+<li>
+<b>Utility scripts:</b> Utility scripts for extra tasks the programmer
+might need to do outside the normal programming field</li>
+
+<li>
+<b>Running the programs:</b> The same utility should run every individual
+program and give the same set of diagnostics at program conclusion whether
+safety, efficacy or ad-hoc reports.</li>
+
+<li>
+<b>Collection of outputs:</b> A utility is required to collect outputs
+in the correct order which will work in the same way for both safety and
+efficacy programs and any extra analysis programs that run on the same
+data as the efficacy and safety programs do. This will likely involve writing
+a list of outputs to a log so if an artificial log is created for ad-hoc
+report outputs then there should be the possibility of a similar utility
+for collecting these ad-hoc reports if required.</li>
+
+<li>
+<b>Running all reports:</b> The same utility should be able to run all
+safety reports, all efficacy reports or all of them together if required.
+This same utility should be able to run all the post-written "extra analysis"
+reports if any exist. Since such a system would probably rely on the titles
+and footnotes system to get a list of programs to run then it probably
+would not cover ad-hoc reporting.</li>
+
+<li>
+<b>Page number labels:</b> Clinical report output pages are usually numbered
+in the form "Page x of Y" so a utility is required to do this that will
+work on all types of reporting program text output.</li>
+</ul>
+
+<h2>
+Spectre and the infrastructure</h2>
+The background to my writing Spectre was that the biostatistics department
+I was writing it for intended to take back in-house the reporting function
+that was at that time largely farmed out to CROs. It was an attempt to
+save on costs as well as improving consistency and reliability. Before
+this could be done, there was an awareness that the department lacked an
+infrastructure to enable it to make a success of this with limited resources
+and so it was decided that an infrastructure needed to be put in place.
+Spectre was the solution -- but it is important to focus on the infrastructure
+that Spectre embodies. <b>Spectre is more infrastructure than reporting
+system</b>. If you are used to other larger reporting systems and you are
+wondering why Spectre does not seem as fully developed as the reporting
+systems you are used to then the reason for that, that you can hopefully
+now see, is that to overdevelop it would be to obscure its infrastructure
+which is the whole reason for its existence.
+<p>With Spectre putting the infrastructure in place, and with its two powerful
+reporting macros as described above, it then became possible to make efficient
+the programming function and add speed and consistency. With the two major
+reporting macros "validated", a lot of program validation can be avoided,
+further improving the efficiency of the programming function. These two
+"validated" macros could then lie at the core of other reporting macros
+which in turn become validated to cover most reporting needs.
+<p>An added advantage of Spectre is that its infrastructure covered being
+able to report in different client styles. The different styles are handled
+by a "client titles macro". CROs often never try to implement a programming
+infrastructure due to each client layout being different, but the Spectre
+infrastructure makes this possible.
+<p>I know that most people who look at Spectre will see it as a fixed reporting
+system that would cost money to amend to their way of working. And those
+same people will not have read this page that tries to explain it as an
+"infrastructure". But the only thing about Spectre that is <b>fixed </b>are
+its key components listed in the "Components of a programming infrastructure"
+section above. This is not to say they will never change, indeed it is
+likely that they will, but they are essential elements that will always
+be there fulfilling that role. They are the building blocks of Spectre
+and Spectre is really only that collection of building blocks. The actual
+implementation of a Spectre reporting system can be anything you like,
+subject to using those building blocks. It's like building a house (or
+whatever you like) out of "<a href="http://www.lego.com/en-US/default.aspx" target="_blank">Lego</a>".
+The building blocks don't change but the possible constructions are infinite.
+Just a hint, though. If you want to be able to tailor Spectre to fit your
+reporting needs, then you will have to learn shell scripting so you can
+link its components together. This can be a tough task for those who have
+never done shell scripting before but there is a lot on this web site to
+help you get up to speed with that. Once you get used to shell scripts
+you will discover that they are easy to write and maintain and you will
+be able to make Spectre work for you in a variety of situations.
+<h2>
+Conclusion</h2>
+This document has attempted to make clear what is meant by a "programming
+infrastructure" and has stressed that an infrastructure is not just a collection
+of systems but rather a set of utilities and methods that underlies the
+whole field of statistical reporting. It was explained that Spectre is
+more an infrastructure than a reporting system, that it is not a fixed
+reporting system and is capable of taking on a variety of forms once you
+learn to link its components together with shell scripts. The advantages
+of having an infrastructure in place were described.
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<br>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+</body>
+</html>

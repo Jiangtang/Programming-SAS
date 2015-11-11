@@ -1,0 +1,124 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="scripts Spectre">
+   <meta name="Description" content="Spectre shell scripts">
+   <title>Spectre Scripts</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Spectre (Clinical) Scripts</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 04 Apr 2011)</b>
+<p><a href="updates2.html#sc" target="_blank">Latest Updates</a></center>
+
+<h2>
+Introduction</h2>
+Spectre is unusual in that the number of Unix shell scripts that go with
+the system is very high. Most clinical reporting systems run on a Unix
+platform (at date of writing) but have only a fraction of the shell scripts
+that Spectre has. The root cause of this was the need for Spectre to produce
+bookmarked PDFs. This resulted in many weeks of work being spent to achieve
+this and most of this work was spent writing Unix shell scripts of a fairly
+complex nature. So the emphasis shifted away from programming using SAS&reg;
+software to shell script programming in the early phase of the project.
+And once shell script programming became easy and shell scripts fast to
+write, it became quicker to write a shell script to do a labour-intensive
+repetitive task than do it by hand. And since there are many repetitive
+tasks to do in the clinical reporting process, many scripts got written
+to do that work. Indeed, two scripts were written ("shdr" and "sohdr")
+to make writing scripts faster! You will be introduced to many examples
+of these, plus explanations.
+<h2>
+The Power of Unix</h2>
+When I find an opportune moment, I like to explain why the Unix platform
+is such a powerful one (actually, <a href="http://dict.die.net/unix/" target="_blank">Unix</a>
+is sometimes not "Unix" but "<a href="http://www.bellevuelinux.org/linuxdef.html" target="_blank">Linux</a>"
+instead but it works in the same way so many people still use the "Unix"
+label, as I do). <b>The power of Unix comes from the ability of simple
+utilities to pass information to each other for processing</b>. When you
+first encounter Unix, it is unimaginable how combining simple utilities
+can perform complex and useful tasks. When I first started working on Unix
+I bought a book about it to learn how to get the most out of Unix. I saw
+this point about the utilities emphasized and saw examples of these simple
+utilities combined. But they were artificial examples, used for demonstration
+purposes, and I could not work out how this would be relevant to me in
+the way I would be using Unix for clinical reporting, so I gave up on the
+idea at the time. Years later, with clinical reporting producing hundreds
+of reports and the repetitive tasks it gave rise to, I started writing
+Unix scripts to help me in my work. I also started to combine these utilities
+so I could achieve what I was trying to do and <b>then everything started
+to fit into place</b>. I understood, at last, what the author of that book
+was trying to tell me. And once you have grasped the concept and you have
+the skills to combine Unix utilities to achieve what you want, you will
+never want to work on a different platform. Once you become fairly expert
+with it you will find your work colleagues become aware of it and will
+often ask you to write shell scripts or enhance existing ones. A floodgate
+of ideas will open and you will be the person asked to turn these ideas
+into reality.
+<h2>
+Scripts vs. Report programs</h2>
+If you <b><i>do </i></b>learn to write shell scripts and you are working
+in a biostatistics department and your work colleagues ask you to write
+scripts for them, then there is a trap you must avoid from the outset.
+Because your work colleagues are used to formatted output written to files,
+they might expect the same from your shell scripts and they will know that
+you have the skills to do it this way. But you must refuse and instead
+follow the Unix Principle of Power which is "The power of Unix comes from
+the ability of simple utilities to pass information to each other for processing".
+These simple utilities expect simple input and they should produce simple
+output for the benefit of a utility that might receive that output. So
+this output should not be formatted like a report. It should be kept as
+simple as possible. Output should be written to "standard output" and not
+to a file so that the next utility to read in this information knows where
+to find it. So no script you write should write its output to a file. If
+output from the scripts needs to be stored, the output can always be "<b><i>redirected</i></b>"
+to a file. "Redirection" is a very simple and basic Unix technique. So
+writing scripts is nothing like writing report code. You do not format
+the output and you do not write to a file. The "customers" you are trying
+to please, when writing shell scripts, are not the people where you work.
+Your "customers" are other shell scripts, some of which haven't been written
+yet, and the way you please these customers is to write to "standard output"
+and to keep the formatting as simple as possible. Follow this principle
+and you will build powerful and useful applications that will improve the
+efficiency of your department. Fail to follow this principle and you will
+end up with an unholy mess.
+<h2>
+The scripts</h2>
+The scripts are split into "production scripts" and "utility scripts".
+Programmers will be more interested in the utility scripts as these are
+the ones that will help speed their work. There is too much to fit on one
+page, so click on the link you are interested in:
+<p><a href="scrprod.html">Production scripts</a>
+<p><a href="scrutil.html">Utility scripts</a>
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="../contact.html">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+</body>
+</html>

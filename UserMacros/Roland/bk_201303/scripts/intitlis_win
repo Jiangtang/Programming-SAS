@@ -1,0 +1,64 @@
+#!/bin/bash
+#<pre><b>
+# Script     : intitlis_win
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 19-Jul-2007
+# Purpose    : Production script to list all the programs in the titles dataset
+#              with output labels (uses SAS).
+# SubScripts : none
+# SubMacros  : %allocr
+# Notes      : WINDOWS VERSION
+#              There will be no .sas extension for the program name. There is
+#              one line per .lis file in the form:
+#              progname progname.lis
+# Usage      : intitlis_win
+#
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not supply any parameters
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# No parameters required
+if [ $# -gt 0 ] ; then
+  echo "Error: (intitlis_win) Do not supply any parameters" 1>&2
+  exit 2
+fi
+
+# Write SAS code to a temporary file
+cat > $HOME/intitlis_$$.sas << -----FINISH-----
+%allocr
+options validvarname=v7 nofmterr noovp nodate nonumber;
+filename _outfile "$HOMEW\intitlis_$$.tmp";
+proc sort nodupkey data=&_ptlibref_..titles(where=(type='T' and number=1))
+                    out=_titles;
+  by program label;
+run;
+data _null_;
+  length lisfile $ 38;
+  file _outfile notitles noprint;
+  set _titles;
+  if lisfile=" " then lisfile=trim(program)||".lis"||left(label);
+  put @1 program lisfile;
+run;
+-----FINISH-----
+
+# run the code
+sas -nosplash -nologo -icon -log "$HOMEW" -sysin "$HOMEW\intitlis_$$.sas"
+
+# if output file exists then cat it and delete it
+if [ -f $HOME/intitlis_$$.tmp ] ; then
+  cat $HOME/intitlis_$$.tmp 
+  rm -f $HOME/intitlis_$$.tmp 
+fi
+
+# tidy up
+rm -f $HOME/intitlis_$$.sas $HOME/intitlis_$$.log

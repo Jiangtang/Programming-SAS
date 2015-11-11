@@ -1,0 +1,154 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="validation programming Spectre">
+   <meta name="Description" content="Spectre validation programming">
+   <title>Validation Programming</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Validation Programming</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 28 Apr 2006)</b></center>
+
+<h2>
+Introduction</h2>
+This is a good place to make suggestions as to how validation programming
+will fit in with the reporting system. The use of the reporting macros
+%unistats and %npcttab should greatly speed up the production of tables,
+once a programmer is used to using them. If no such macros were in place
+before, getting the table to "look right" would take up 50% of the programming
+time. But with the macros, the reports automatically look right - they
+even automatically fit the page. Before such macros, if each output were
+independently programmed, then the validation program would take less time
+to write than the actual program. With the macros in place, the validation
+programs will take <b><i>longer </i></b>to write than the actual programs,
+as a proportion of the time. As programmers use the system more, they will
+write their own macros (some of which might call %unistats or %npcttab).
+If they are well written macros, they will be reusable for other studies.
+Once that stage is reached, <b>validation programming will take maybe 75%
+of all programming time </b>if the method used stays the same.&nbsp; For
+the sake of efficiency, something must be done to avoid this situation
+occurring while, at the same time, ensuring that the outputs are correct.
+<p>The best approach to avoiding this validation bottleneck is to <b>validate
+the main reporting macros</b>. Those macros are %popfmt, %unistats and
+%npcttab and their sub macros, especially %unipvals and %npctpvals. Once
+you can be sure that these macros are correct, there should be no need
+to double program the output. The reporting system will never deliver its
+full potential until those macros are validated. Once it is done then validation
+programming time will reduce to being less than the time taken to produce
+the tables, as it is with most reporting systems, but the nature of the
+validation will have shifted in the direction of code checking and checking
+macro parameter settings. If reporting is done using macros, eventually
+the programmers will forget what code is in the macros and just call them
+without much thought. <b>Then the selection of data for the report will
+be the new problem area</b>. It was always there as a problem area, but
+before it was obscured by the work needed to code the tables and to validate
+them. With the coding of tables made efficient, problems associated with
+data selection will become obvious and it will be evident that a great
+deal of time is being wasted that could easily be avoided. For the sake
+of efficiency, this problem has to be addressed as well.
+<p>To avoid problems with data selection, the obvious thing to do is to
+<b>define
+how data is selected for each and every table</b>. This should be done
+precisely, using actual variable names and their required settings. The
+programmer can then use this data selection definition when coding or calling
+macros and the validation programmer can check it is being used correctly.
+When you have reached this stage, the reporting system will be working
+close to its maximum efficiency. <b>You should be saving at least 75% of
+table programming and validation time, compared to a situation where no
+standard reporting macros exist</b> (but note that this saving does not
+apply to listings).
+<p>The transformation will be made from an old situation where producing
+study output was a programmer intensive task to a new situation where hardly
+any new table programming code gets written and most of the work is done
+by the statistician in carefully defining how data is selected for each
+table. But there is nothing wrong with that. It should always have been
+that way. And it is in this carefully defining the selection of data that
+the key lies to creating a totally automated reporting system if this careful
+definition of the selection of data can somehow be passed on to the reporting
+macro.
+<h2>
+Validation programs</h2>
+If the reporting macros have not been validated and tables are being double
+programmed, then it should be obvious that the validation programs should
+not use the same reporting macros. Validation programs should have the
+same name as the program being validated but should start with the letter
+"<b>v</b>". <b>Validation programs do not have titles members and must
+not have entries in the titles dataset</b>. Instead, they can use the titles
+from the program being validated using the "program=" parameter in the
+%titles macro. You can read about using this parameter in the header.
+<br><a href="sysmacros/titles.sas" target="_blank">%titles</a>
+<p>If you use "lis2ps" to print your validation output then it will use
+the settings from the original program by dropping the "v" at the start
+of your program name and then looking for a matching layout definition.
+This is another reason why your validation program should have the same
+name as the program being validated, but with the "v" in front.
+<h2>
+Scripts that can help you</h2>
+There are a number of scripts that can help you if you are using batch.
+If your validation program is defined to the exported variable "prog" then
+you have scripts to view the <b>o</b>riginal titles, "lis" output and code.
+<br><a href="scripts/olis" target="_blank">olis</a>
+<br><a href="scripts/otitles" target="_blank">otitles</a>
+<br><a href="scripts/opgm" target="_blank">opgm</a>
+<h2>
+diff, idiff and ddiff</h2>
+You are going to have to check the numbers in your validation output against
+the numbers in the output you are validating. Maybe you print it out and
+then tick the figures you have checked and then hand in your ticked and
+signed copy. That is one way of doing it. Another way of doing it is not
+only to use the same titles and footnotes as the program being validated
+but to copy the layout as well. That way you can <b>compare the output
+files</b> against each other using the native "<b>diff</b>" utility or,
+better still, the "<b>idiff</b>" utility which allows you to define lines
+to ignore in the comparison. You can read about "idiff" below.
+<br><a href="scripts/idiff" target="_blank">idiff</a>
+<p>"ddiff" is like "idiff" but it works comparing multiple files in two
+directories. You can read about it below.
+<br><a href="scripts/ddiff" target="_blank">ddiff</a>
+<p>To read about the native "diff" utility, use the "man pages" (manual
+pages) that are stored on your system using the command "man diff". If
+you read those pages you will see the -b option mentioned. If you select
+that option it will treat multiple spaces as the same number of spaces.
+"idiff" and "ddiff" have this option set. If matching the layout is easy,
+then using "idiff" or "ddiff" will give you a fast and complete comparison
+which is much better than a time-consuming partial comparison done by hand
+where errors might be missed.
+<h2>
+Conclusion</h2>
+In the "Introduction" you will have read about how the validation process
+should shift from double-programming to code checking. This may be a long
+way off so you were also given some conventions for naming validation programs,
+some scripts that might help you and how comparison of outputs might be
+done.
+<br>&nbsp;
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+</html>

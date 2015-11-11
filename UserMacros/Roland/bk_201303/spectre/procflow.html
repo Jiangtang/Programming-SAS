@@ -1,0 +1,175 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="study reporting process flow Spectre">
+   <meta name="Description" content="Study Reporting Process Flow for Spectre">
+   <title>Study Reporting Process Flow</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Study Reporting Process Flow</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 01 Jul 2006)</b></center>
+
+<h2>
+Introduction</h2>
+This document will give an overview of the process flow for study reporting
+in Spectre.
+<h2>
+Study reporting process flow</h2>
+
+<blockquote>
+<h3>
+Set up study files</h3>
+The following tasks are done by the <b><i>Spectre administrator </i></b>to
+set up files in the programs directory before any programming commences
+<ul>
+<li>
+Run the script "<b>crprottmpl</b>" to create "<b>protocol.template</b>"</li>
+
+<li>
+Copy "<b>protocol.template</b>" to "<b>protocol.txt</b>"</li>
+
+<li>
+Edit "<b>protocol.txt</b>" to put in study specific details</li>
+
+<li>
+Run the script "<b>crtitlestmpl</b>" to create the titles template file
+"<b>titles.template</b>"</li>
+</ul>
+
+<h3>
+Develop report programs</h3>
+The following tasks to create the reports are done iteratively by each<b><i>
+programmer</i></b>
+<ul>
+<li>
+Define program name (without extension) to the exported Unix variable "<b>prog</b>"</li>
+
+<li>
+Run the script "<b>titles</b>" to edit the titles member to add titles
+and footnotes (one title needed but the others might be defined in the
+reporting code)</li>
+
+<li>
+Run the script "<b>crtitlesds</b>" to activate the changed titles member</li>
+
+<li>
+Develop the reporting code which will use the <b>%titles</b>, <b>%openrep</b>
+and <b>%closerep</b> macros</li>
+
+<li>
+Run the code in batch using the script "<b>sasb</b>"</li>
+
+<li>
+Check for errors and warnings alerted by "<b>sasb</b>" completion</li>
+
+<li>
+Check the report output which will have a "<b>.lis</b>" file extension</li>
+
+<li>
+Make code amendments if required</li>
+</ul>
+
+<h3>
+Run all the reports</h3>
+Running all the reports is done periodically and also finally by the <b><i>Spectre
+administrator</i></b>
+<ul>
+<li>
+Run the script "<b>makerun</b>" which will create the script "<b>runreports</b>"</li>
+
+<li>
+Run the script "<b>runreports</b>" using the command "<b>./runreports 2>runreports.err</b>"</li>
+
+<li>
+Alert the programmers that the run has completed and ask them to check
+the files "<b>runreports.err</b>" and "<b>runreports.chk</b>" (the latter
+using the script "<b>myrepchk</b>") to ensure their programs did not create
+unexpected error and warning messages</li>
+
+<li>
+Make a backup by creating a status directory for the run just done and
+copy (<b>cp -p</b>) the files <b>donelist.txt</b>, <b>runreports.err</b>,
+<b>runreports.chk,
+ALL.TITLES</b> and copy all outputs using "<b>cp -p $(donefiles)</b> "</li>
+
+<li>
+Run "<b>ddiff</b>" to compare the new outputs with the previous set of
+outputs (if not the first time outputs produced) and save results</li>
+</ul>
+
+<h3>
+Create the PDFs</h3>
+Creating PDFs of the collected reports is done periodically and also finally
+by the <b><i>Spectre administrator</i></b>. The description below assumes
+the output needs to be split into multiple PDFs where a single PDF would
+be too large for the documentation system. This might be done in the status
+directory containing the backup of the run just completed.
+<ul>
+<li>
+Copy and paste the file "<b>donelist.txt</b>" into donelist section files
+"<b>donesect1.txt</b>", "<b>donesect2.txt</b>" etc. using a text editor</li>
+
+<li>
+Run the script "<b>bigps</b>" on each donelist section file to create a
+PostScript file</li>
+
+<li>
+Convert each PostScript file to a PDF using the script "<b>a4ps2pdf</b>"
+(or "<b>usps2pdf</b>" for US Letter output)</li>
+
+<li>
+Run the script "<b>printpdfbookmarks</b>" on each PDF to create a table
+of contents for each PDF</li>
+
+<li>
+Run the script "<b>titlesvsbkmarks</b>" on the collection of PDFs to see
+if any table/reference numbers used in the .titles members are not present
+in the PDF bookmarks</li>
+
+<li>
+"<b>ftp</b>" the PDFs over to the Windows environment where the documentation
+system resides</li>
+</ul>
+
+<h3>
+QC the output</h3>
+The PDFs "ftp"ed to the Windows environment are recommended for use as
+the basis for QC'ing output since they are very late in the reporting chain
+and immediately precede submission to the documentation system. Not only
+programming faults but also potential defects in the conversion of report
+output to PDFs will be detected here.
+<p>The following tasks are done by the <b><i>QC programmer </i></b>and
+<b><i>project
+statistician</i></b>.
+<ul>
+<li>
+QC the output</li>
+
+<li>
+Sign off output if correct or report findings to the programmer</li>
+</ul>
+</blockquote>
+
+<h2>
+Conclusion</h2>
+This concludes the overview of the process flow for study reporting in
+Spectre.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+</html>

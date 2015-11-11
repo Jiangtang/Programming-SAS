@@ -1,0 +1,35 @@
+#!/bin/bash
+#<pre><b>
+# Script     : reflist2progs
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 24-Aug-2005
+# Purpose    : To turn a list of table/appendix reference numbers into their sas
+#              program name that creates them.
+# SubScripts : none
+# Notes      : It looks in the .titles members
+# Usage      : reflist2progs reflist.txt
+#              reflist2progs reflist.txt > newlist.txt
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   File containing the list of table/appendix reference numbers
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# One list file must be specified
+if [ $# -ne 1 ] ; then
+  echo "Usage: reflist2progs reflist.txt" 1>&2
+  exit 1
+fi
+
+for ref in $(cat "$1") ; do
+  tfile=$(grep "${ref} *$" *.titles | sed 's%\.titles.*$%%').sas
+  echo "$ref    $tfile"
+done

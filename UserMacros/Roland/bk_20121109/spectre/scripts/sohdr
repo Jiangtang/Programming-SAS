@@ -1,0 +1,413 @@
+#!/bin/bash
+#<pre><b>
+# Script     : sohdr
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 09-Feb-2003
+# Purpose    : To create a standard shell script (with options) header
+# SubScripts : getname
+# Notes      : This shell script generates a shell script header for a script
+#              in the current directory and places it at the top of the code if
+#              the script exists. If invoked without a following script name 
+#              then the user will be prompted to enter the name. 
+# Usage      : sohdr scriptname
+#              sohdr 
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   script file name (optional)
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+             #########################################
+             ##                                     ##
+             ##      PROMPT THE USER FOR INPUT      ##
+             ##                                     ##
+             #########################################
+
+echo
+echo "========== SHELL SCRIPT WITH OPTIONS HEADER UTILITY ============"
+echo "This utility will create a header for a script that uses OPTIONS"
+echo "as well as parameters. You will be asked to supply your list of"
+echo "options as SINGLE lower-case letters together as a string, "
+echo "identifying those parameters that require an argument by following"
+echo "the option letter with a colon. You will then be prompted for the"
+echo -n "purpose of each option. Do you want to continue? (y/n) : "
+
+read ans
+case "$ans" in [yY]*) ;; *) exit ;; esac
+
+# if no script name supplied then prompt for it
+if [ $# -lt 1 ]
+then
+  echo -n "Enter script file name: "
+  read scripname
+else
+  scripname=$1
+fi
+
+# make sure the file name has no extension
+scripname=${scripname%.*}
+
+# prompt for the purpose of the script
+echo -n "Enter script purpose: "
+read purpose
+
+# find out the name of the person invoking this script
+author=$(getname)
+
+# format today's date in the form DD-Mon-YYYY
+date=$(date '+%d-%b-%Y')
+
+echo
+echo "You will now be required to enter all your single-character options"
+echo "as a string joined together. Options that require an argument should"
+echo "be followed by a colon. You will also be prompted to give a brief "
+echo "description of each option. For example, if your options list was:"
+echo "                          ab:cd:e"
+echo "it would signify that there are 5 options, a, b, c, d and e and that"
+echo "options b and d require a value if selected."
+echo
+echo -n "Enter your option list now in the form as shown above: " 
+read optstr
+echo
+if [ ${#optstr} -eq 0 ] ; then
+  echo "You did not enter your option list. Goodbye"
+  exit
+fi
+
+
+# Declare arrays for the option names, type (switch or value),
+# purpose and default and other known discrete values.
+declare -a oname otype opurp ovals
+
+
+# Go through the option list using a "while" loop and prompt for the
+# meaning of each option. For options requiring an argument, also ask
+# for the default value and any other discrete values if known. Add
+# extra discrete values after the default value separated by a comma
+# and a space. This is useful for display and the presence of a comma
+# can easily be detected for programming purposes.
+pos=0
+ix=0
+while [ $pos -lt ${#optstr} ] ; do
+  oname[$ix]=${optstr:$pos:1}
+  let pos=pos+1
+  if [ "${optstr:$pos:1}" = ":" ] ; then
+    otype[$ix]='value'
+    let pos=pos+1
+    echo -n "Give a description of the values(s) supplied to option
+\"${oname[$ix]}\" ? "
+    read opurp[$ix]
+    echo -n "What default value do you want to assign for option
+\"${oname[$ix]}\" ? "
+    read ovals[$ix]
+    extra=XXXX;
+    until [ ${#extra} -eq 0 ] ; do
+      echo -n "Enter another allowed discrete value (if any) for option
+\"${oname[$ix]}\" ? "
+      read extra
+      if [ ${#extra} -gt 0 ] ; then
+        ovals[$ix]="${ovals[$ix]}, $extra"
+      fi
+    done
+  else
+    otype[$ix]='switch'
+    echo -n "What does selecting option \"${oname[$ix]}\" give you ? "
+    read opurp[$ix]
+  fi
+  let ix=ix+1
+done
+echo
+
+
+             #########################################
+             ##                                     ##
+             ##       GENERATE THE SCRIPT CODE      ##
+             ##                                     ##
+             #########################################
+
+
+# Route all following standard output to a file until 
+# restored to the terminal.
+
+# link file descriptor 5 with standard output to store it
+exec 5>&1
+
+# now route standard output to a file
+exec 1>$HOME/sohdr.tmp
+
+
+                  #----------------------------#
+                  #         The Header         #
+                  #----------------------------#
+
+# Start generating the header of the shell script with options
+echo "#!/bin/bash"
+echo "# Script     : $scripname"
+echo "# Version    : 1.0"
+echo "# Author     : $author"
+echo "# Date       : $date"
+echo "# Purpose    : $purpose"
+echo "# SubScripts : none"
+echo "# Notes      : none"
+echo "# Usage      : $scripname xxxxxxxx"
+echo "#              $scripname "
+echo
+"#==============================================================================="
+echo "# OPTIONS:"
+echo "#-opt-
+-------------------------------description-------------------------------"
+
+# Use a "while" loop to write the options into the header. If discrete values
+are
+# known for an option then list those values after the purpose.
+ix=0
+while [ $ix -lt ${#oname[@]} ] ; do
+  if [[ "${ovals[$ix]}" == *,* ]] ; then
+    printf "#  %-1s   %-8s %-80s\n" ${oname[$ix]}  "(${otype[$ix]})" \
+                                   "${opurp[$ix]}: ${ovals[$ix]}"
+  else
+    printf "#  %-1s   %-8s %-50s\n" ${oname[$ix]}  "(${otype[$ix]})" 
+"${opurp[$ix]}"
+  fi
+  let ix=ix+1
+done
+
+# continue generating the header
+echo
+"#==============================================================================="
+echo "# PARAMETERS:"
+echo "#-pos-
+-------------------------------description-------------------------------"
+echo "#  1   "
+echo
+"#==============================================================================="
+echo "# AMENDMENT HISTORY:"
+echo "# init --date-- mod-id
+----------------------description------------------------"
+echo "# "
+echo
+"#==============================================================================="
+echo
+
+
+                  #----------------------------#
+                  #     The Usage Function     #
+                  #----------------------------#
+
+# Header complete so generate usage function. This is in the form of a function
+# so it can be called at multiple points in the code. It gives out a usage
+message
+# and exits with a completion code of 1.
+
+echo "# Define give-usage-message-then-exit function. Edit to add any useful
+option"
+echo "# information, to change valid values of options and to add parameter
+values"
+echo "# (\"xxxxxx\" and onwards) if used. Split into multiple lines if required
+but"
+echo "# be sure to echo every line to error output using 1>&2."
+echo "usage () {"
+echo -n "  echo \"Usage: $scripname "
+
+# Use a "while" loop to put each option in the usage message. Options with an
+argument
+# will have their purpose shown and those with known discrete values will have
+their
+# values listed after the purpose, as was done in the header.
+ix=0
+while [ $ix -lt ${#oname[@]} ] ; do
+  echo -n "-${oname[$ix]} "
+  if [ "${otype[$ix]}" = "value" ] ; then 
+    if [[ "${ovals[$ix]}" == *,* ]] ; then
+      echo -n "<${opurp[$ix]}: ${ovals[$ix]}> "
+    else
+      echo -n "<${opurp[$ix]}> "
+    fi
+  fi
+  let ix=ix+1
+done
+echo "xxxxxx\" 1>&2"
+echo "  exit 1"
+echo "}"
+echo
+echo
+
+                  #----------------------------#
+                  #        The Variables       #
+                  #----------------------------#
+
+# For each option, set up a variable and assign default values. Those options
+# that do not require arguments will have a variable name that starts with 
+# "switch" and ends in the option letter. These will be set to zero.
+# For options requiring an argument then these variable names will start with
+# "value" and end with the option letter. The default value will be what
+# the user was prompted to enter.
+
+echo "# The following variable names and defaults have been generated for you"
+echo "# to help you start. You can rename the variables to something more "
+echo "# meaningful but be sure to change all occurrences of that name in the
+code."
+ix=0
+while [ $ix -lt ${#oname[@]} ] ; do
+  if [ "${otype[$ix]}" = "value" ] ; then 
+    printf "%-35s # Default value for %-50s\n"
+"value${oname[$ix]}=${ovals[$ix]%%,*}" "${opurp[$ix]}"
+  else 
+    printf "%-35s # Default switch=off for %-50s\n" "switch${oname[$ix]}=0" 
+"${opurp[$ix]}"
+  fi
+  let ix=ix+1
+done
+echo
+echo
+
+                  #----------------------------#
+                  #    The "getopts" Section   #
+                  #----------------------------#
+
+# Generate the "getopts" section. Handle the bad option result from getopts,
+# which sets (in this case) "param" to a "?" by calling the usage function
+# (note that the usage function forces an exit to the generated script).
+# For options requiring a value, then for those with known discrete values,
+# test for these specific values and if not matched then generate the error
+# code. For those without known discrete values then generate code to just
+# accept the $OPTARG value determined by "getopts". For options without
+# arguments (switches) set the variable to 1 if selected.
+
+
+echo "# \"case\" statement for action to take on selected options"
+echo "while getopts \"$optstr\" param ; do"
+echo "  case \$param in"
+echo "   \"?\") # bad option supplied"
+echo "        usage"
+echo "        ;;"
+ix=0
+while [ $ix -lt ${#oname[@]} ] ; do 
+  if [ "${otype[$ix]}" = "value" ]
+  then 
+    echo "   \"${oname[$ix]}\") # (value) ${opurp[$ix]}"
+    if [[ "${ovals[$ix]}" == *,* ]] ; then
+      echo "        # Check that a valid value was entered"
+      echo "        OK=0"
+      echo "        case \$OPTARG in"
+      while [ ${#ovals[$ix]} -gt 0 ] ; do
+        val=$(echo ${ovals[$ix]} | cut -d, -f1)
+        echo "          \"$val\")"
+        echo "                value${oname[$ix]}=\$OPTARG"
+        echo "                OK=1"
+        echo "                ;;"
+        ovals[$ix]=$(echo ${ovals[$ix]} | cut -s -d, -f2-)
+      done
+      echo "        esac"
+      echo "        if [ \$OK -eq 0 ] ; then "
+      echo "          echo \"Error: Invalid value supplied to option
+-${oname[$ix]}\" 1>&2"
+      echo "          usage"
+      echo "        fi"
+      echo "        ;;"
+    else
+      echo "        value${oname[$ix]}=\$OPTARG"
+      echo "        ;;"
+    fi
+  else
+   echo "   \"${oname[$ix]}\") # (switch) ${opurp[$ix]}"
+   echo "        switch${oname[$ix]}=1"
+   echo "        ;;"
+  fi
+  let ix=ix+1
+done
+echo "  esac"
+echo "done"
+echo
+echo
+
+                  #----------------------------#
+                  #       The "shift" Code     #
+                  #----------------------------#
+
+# Generate the code to shift the options aside and position the 
+# first "real" parameter at position 1.
+echo "# shift to bring first parameter to position 1"
+echo "shift \$((\$OPTIND - 1))"
+echo
+echo
+
+                  #----------------------------#
+                  #       Debugging Code       #
+                  #----------------------------#
+                  
+# Create some code that will be useful for debugging the
+# generated script.
+echo "# USE THIS CODE FOR DEBUGGING AND THEN REMOVE"
+echo "echo \"DEBUGGING option values: \" "
+ix=0
+while [ $ix -lt ${#oname[@]} ] ; do
+  if [ "${otype[$ix]}" = "value" ] ; then 
+    echo "echo value${oname[$ix]}=\$value${oname[$ix]}"
+  else 
+    echo "echo switch${oname[$ix]}=\$switch${oname[$ix]}"
+  fi
+  let ix=ix+1
+done
+echo "echo \"The first real parameter after the options is now: \$1\""
+echo "echo"
+echo
+echo
+
+                  #----------------------------#
+                  #  Expected Parameters Code  #
+                  #----------------------------#
+                  
+# Create some code for testing for the number of true parameters, as is
+# usual for a script.
+echo "# Edit the test below for the number of expected parameters and call"
+echo "# the give-usage-message-then-exit function if an incorrect number "
+echo "# supplied. Remove if parameters are optional."
+echo "if [ \$# -lt 1 ] ; then"
+echo "  echo \"Error: no parameters supplied\" 1>&2"
+echo "  usage"
+echo "fi"
+echo
+echo
+
+
+# Generated header finished so restore standard output to previous
+# stored in file descriptor 5 and then close file descriptor 5
+exec 1>&5 5>&-
+
+
+
+             #########################################
+             ##                                     ##
+             ##       CREATE THE FINAL SCRIPT       ##
+             ##                                     ##
+             #########################################
+
+
+# If the script already exists then add the header to the top,
+# otherwise create the script out of the generated header
+# and set it to be an executable file.
+if [ -f $scripname ]
+then
+  cat $HOME/sohdr.tmp $scripname > $HOME/sohdr2.tmp
+  rm -f $scripname
+  cat $HOME/sohdr2.tmp > $scripname
+  rm -f $HOME/sohdr2.tmp
+else
+  cat $HOME/sohdr.tmp > $scripname
+  echo "created $scripname"
+  echo
+fi
+
+chmod +x $scripname
+
+# delete the temporary file
+rm -f $HOME/sohdr.tmp

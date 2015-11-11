@@ -66,7 +66,7 @@ if sas.fileexist("foo") then
    local c = "";
    while sas.fread(fid) == 0 do
       c = sas.fileget(fid, 200)
-   s = s .. c
+      s = s .. c
    end
    rc = sas.fclose(fid)
    decoded = json.decode(s)

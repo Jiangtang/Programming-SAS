@@ -1,0 +1,405 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="Tuplets Spectre">
+   <meta name="KeyWords" content="Tuplets Spectre">
+   <title>Tuplet Processing</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Tuplet Processing</h1></center>
+<b>Updated: 03 April 2011</b>
+<h2>
+Introduction</h2>
+<b>"Tuplet" processing </b>is a name I have given to the method I use to
+insert values from SAS procedure ODS tables into the output report at specified
+positions. The word "<b>tuplet</b>" comes from the end of the words "sextuplet",
+"septuplet" etc. which refers to the number of segments. It is a very powerful
+way of extending a clinical safety reporting system so that it can do efficacy
+processing as well. This technique can be applied to any existing safety
+reporting system to give it efficacy reporting capabilities and thereby
+create a tool that will speed up the production of efficacy reports whilst
+at the same time maintaining the consistent output style of the current
+safety reporting system.
+<p>You may want to extend your own reporting system in this way due to
+the reporting advantages it can offer. Some organisations have made a considerable
+investment in their own reporting systems and it is not practical to replace
+them. Using this method you can add efficacy reporting capabilities into
+the existing system and thereby extend the power and longevity of the system
+and protect the investment made.
+<p>I believe this is the first time this technique has been applied to
+an existing safety reporting system and as such you should consider that
+it might therefore be the <b>intellectual property</b> of the author.
+<h2>
+How it works</h2>
+The idea behind "tuplet" processing is to pass the same dataset you are
+calculating description statistics for (or category counts and percentages)
+to a routine that will invoke the appropriate statistical procedure with
+the desired option to create an output ODS table and, knowing what variable
+names are present in the ODS table (either the raw table or a transposed
+version), to place the value (or two values if it is a range) in the output
+report in the desired statistics column at the desired statistics order
+position in the output ("statistics order position" means that if you were
+showing N, Min and Max on separate lines then the statistics order positions
+would be "1" for "N", "2" for "Min" and "3" for "Max" etc.).
+<p>The name of the statistics procedure required is implicit from the prefix
+of the "tuplet" name (e.g. freqsept= parameters call "proc freq", glmquad=
+parameters call "proc glm") and the number of segments is obvious from
+what follows the prefix (e.g. "quad" implies 4 segments, "sept" implies
+7 segments), the required option to generate the desired ODS table is provided
+as one of the segments, the ODS table name itself is supplied as a segment
+(prefixed by "Tr" if a transposed version is required) and may have a "where
+clause" attached as part of the name. Finally a "put statement" is required
+that formats the values(s) you require (or it might be plain text in some
+cases). A more detailed example of the coding will be given later.
+<h2>
+The redesign</h2>
+The Spectre clinical reporting macros had to be redesigned before the "tuplet"
+method could be implemented so that the columns in which the statistical
+values were displayed were numbered variables (STAT0, STAT1, STAT2 etc.)
+and the fields were all character. In this way the column name supplied
+to the "tuplet" call generates the appropriate stat column name (e.g. "3"
+will generate the column "STAT3"). If you intend to implement this method
+then you might have to redesign your reporting system along these lines,
+such that your stats columns are numbered in this way and to ensure they
+are character fields. Only then will your reporting code be in a position
+where you can add "tuplet" processing.
+<h2>
+Detailed code</h2>
+Detailed code for the "freqsept=" parameters will be described here. This
+is a relatively new and stable version of using this method and is the
+most easily described.
+<p>Firstly, this is a description of the freqsept= parameters and their
+segments as shown in the header of the main reporting macro <a href="clinmacros/unistats.sas">%unistats</a>
+:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+------------------------------------------------------------&nbsp;</tt>
+<br><tt>/ freqsept1-20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proc freq septuplet
+statements for the placement of values&nbsp;</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+from ods tables in the output report/dataset in the form:&nbsp;</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+varname(s)#keyword#missing#dset#column#statord#code&nbsp;</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+where "varname(s)" is the variable name or list of variable&nbsp;</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+names separated by spaces, "keyword" is the proc freq option&nbsp;</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+name, "missing" is "Y" or "N" for whether to include missing&nbsp;</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+values in the calculation, "dset" is the ods table name with&nbsp;</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+the attached where clause (if you prefix this table name&nbsp;</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+with "Tr" it will assume you want the table transposed,&nbsp;</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"column"=2-9 for the STAT column number, "statord" is the&nbsp;</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+order number in the list of descriptive statistics and&nbsp;</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"code" is the code to format the value(s) for variables in&nbsp;</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+that dataset.&nbsp;</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+------------------------------------------------------------&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>The seven segments of the freqsept parameters are as follows:
+<p>1) The variable name (a list of variables separated by spaces is allowed)
+<br>2) The keyword is the "proc freq" tables statement option
+<br>3) Missing is a "Y" or "N" to say whether missing values are to be
+included in the calculation
+<br>4) Dset is the ods table name produced as a result of using the keyword
+you specified. If you place "Tr" at the front of the name then it will
+make available a transposed version available.
+<br>5) Column is the stats column in which to place the output for the
+variable you specify. You can use columns 2 - 9 for this.
+<br>6) Statord in the order number of the statistic which will commonly
+be "1" (or "2" if you want to place another value underneath the first
+one)
+<br>7) Code is your put statement to format the results.
+<p>A check is made on the variable name(s) in the first segment and if
+the current variable matches that name then the routine is invoked.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>&nbsp;&nbsp;&nbsp; /*--------------------------------*</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Call the UNISEPT
+macro</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; *--------------------------------*/</tt>
+<p><tt>&nbsp; %do i=1 %to 20;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; %if %length(&amp;&amp;freqsept&amp;i) %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %if %sysfunc(indexw(%upcase(%scan(&amp;&amp;freqsept&amp;i,1,#)),&amp;varname))</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %then %unisept(&amp;&amp;freqsept&amp;i);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+<p><tt>&nbsp; %end;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>The %unisept macro called is not a standalone macro and is instead internally
+defined within the <a href="clinmacros/unipvals.sas">%unipvals</a> macro
+as follows:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>&nbsp;&nbsp;&nbsp; /*--------------------------------*</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Define UNISEPT
+macro</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; *--------------------------------*/&nbsp;</tt>
+<p><tt>%macro unisept(sept);</tt>
+<p><tt>&nbsp; %local statno odstab trodstab oneway usemiss keyword keyword2
+bytreat;</tt>
+<br><tt>&nbsp; %let statno=%scan(&amp;sept,5,#);</tt>
+<br><tt>&nbsp; %let usemiss=%upcase(%substr(%sysfunc(dequote(%scan(&amp;sept,3,#))),1,1));</tt>
+<br><tt>&nbsp; %let odstab=%scan(%scan(&amp;sept,4,#),1,%str( =%());</tt>
+<br><tt>&nbsp; %let trodstab=;</tt>
+<br><tt>&nbsp; %if "%upcase(%substr(&amp;odstab,1,2))" = "TR"&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; and "%upcase(%sysfunc(subpad(&amp;odstab,1,9)))" NE
+"TRENDTEST" %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %let trodstab=&amp;odstab;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %let odstab=%substr(&amp;odstab,3);</tt>
+<br><tt>&nbsp; %end;</tt>
+<br><tt>&nbsp; %let oneway=;</tt>
+<br><tt>&nbsp; %let bytreat=;</tt>
+<br><tt>&nbsp; %let keyword=%scan(&amp;sept,2,#);</tt>
+<br><tt>&nbsp; %let keyword2=%upcase(%scan(&amp;keyword,1,%str( =%()));</tt>
+<br><tt>&nbsp; %if %sysfunc(indexw(BINOMIAL TESTF TESTP,&amp;keyword2))</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %then %let oneway=Y;</tt>
+<br><tt>&nbsp; %if &amp;oneway = Y %then %let bytreat=&amp;trtvar;</tt>
+<p><tt>&nbsp; %if %length(&amp;bytreat) %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; proc sort data=_pvaldsin;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; by &amp;bytreat &amp;byvars &amp;byvars2;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; run;</tt>
+<br><tt>&nbsp; %end;</tt>
+<p><tt>&nbsp; ods output &amp;odstab=&amp;odstab;</tt>
+<p><tt>&nbsp; proc freq data=_pvaldsin;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; by &amp;bytreat &amp;byvars &amp;byvars2;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; where</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %if &amp;usemiss NE Y %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; not missing(&amp;respvar)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; ;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %if &amp;oneway = Y %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tables _statname / &amp;keyword;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %else %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tables &amp;trtvar*&amp;respvar
+/ &amp;keyword;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; format &amp;trtvar;</tt>
+<br><tt>&nbsp; run;</tt>
+<br>&nbsp;
+<p><tt>&nbsp; %if %length(&amp;trodstab) %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; proc sort data=&amp;odstab out=&amp;trodstab;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; by &amp;bytreat &amp;byvars &amp;byvars2;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; run;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; proc transpose data=&amp;trodstab(where=(Name1
+NE " ")) out=&amp;trodstab;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; by &amp;bytreat &amp;byvars &amp;byvars2;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; var nvalue1;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; id Name1;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; run;</tt>
+<br><tt>&nbsp; %end;</tt>
+<p><tt>&nbsp; data _uniquadupd;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; length STAT&amp;statno $ 30 _statord 8 _test
+$ 8;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; set %scan(&amp;sept,4,#);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; by &amp;bytreat &amp;byvars &amp;byvars2;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if not last.%scan(&amp;bytreat &amp;byvars &amp;byvars2,-1,%str(
+)) then do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put "ERROR: (unipvals) The unisept
+submacro has detected that you are trying";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put "&nbsp; to add more than one
+observation in each by group to the output for the";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put "&nbsp; by group: &amp;bytreat
+&amp;byvars &amp;byvars2.";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put "&nbsp; You need to select only
+one observation for this by use of a where clause";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put "&nbsp; in your 4th sept parameter
+dataset segment: %scan(&amp;sept,4,#)";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put (_all_) (=);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stop;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if _test=" " then _test=" ";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; _statord=%scan(&amp;sept,6,#);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; STAT&amp;statno=%scan(&amp;sept,7,#);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; KEEP &amp;byvars &amp;byvars2 _statord _test
+STAT&amp;statno;</tt>
+<br><tt>&nbsp; run;</tt>
+<p><tt>&nbsp; %if not %sysfunc(exist(&amp;dsout)) %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; data &amp;dsout;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set _uniquadupd;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; run;</tt>
+<br><tt>&nbsp; %end;</tt>
+<br><tt>&nbsp; %else %do;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; data &amp;dsout;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; update &amp;dsout _uniquadupd;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; by &amp;byvars &amp;byvars2 _statord;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; run;</tt>
+<br><tt>&nbsp; %end;</tt>
+<p><tt>&nbsp; proc datasets nolist memtype=data;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; delete _uniquadupd &amp;odstab &amp;trodstab;</tt>
+<br><tt>&nbsp; run;</tt>
+<br><tt>&nbsp; quit;</tt>
+<p><tt>%mend unisept;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>The above macro "updates" the &amp;dsout dataset which gets passed back
+to the <a href="clinmacros/unistats.sas">%unistats</a> macro where it gets
+concatenated with the collected dataset containing statistical values.
+It has to be concatenated using a "set" statement since the STAT variable
+created is dynamic and new occurences of this will be lost if "proc append"
+is used and it is not already present on the base dataset.
+<p>The macro <a href="clinmacros/unicatrep.sas">%unicatrep</a> that gets
+called to display the values in the output report has to detect which of
+the STAT variables are present in the dataset supplied to it and to display
+them accordingly. The processing for this is shown below where it is mostly
+calculating the report width.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>%do i=0 %to 9;</tt>
+<br><tt>&nbsp; %if %varnum(&amp;dsin,STAT&amp;i) %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %if &amp;i EQ 0 %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %if &amp;showstat0 EQ Y %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let trtwidth=%eval(&amp;trtwidth+&amp;trtspace+&amp;&amp;stat&amp;i.w);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let statvars=&amp;statvars
+STAT&amp;i;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %else %if &amp;i EQ 1 %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %if &amp;showstat1 EQ Y %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let trtwidth=%eval(&amp;trtwidth+&amp;trtspace+&amp;&amp;stat&amp;i.w);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let statvars=&amp;statvars
+STAT&amp;i;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %else %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let trtwidth=%eval(&amp;trtwidth+&amp;trtspace+&amp;&amp;stat&amp;i.w);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let statvars=&amp;statvars STAT&amp;i;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp; %end;</tt>
+<br><tt>%end;</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p>Later in the code, within the "proc report" step, the presence of these
+variables is again detected. Whether STAT0 (reserved for China's version
+of the FDA) or STAT1 are shown are controlled by special parameters "showstat0"
+and "showstat1" but for all other STAT variables detected, they will be
+displayed.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>&nbsp;&nbsp;&nbsp; %do i=0 %to 9;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %if %varnum(&amp;dsin,STAT&amp;i)
+%then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %if &amp;i EQ 0 %then
+%do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %if &amp;showstat0
+EQ Y %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+define STAT&amp;i / width=&amp;&amp;stat&amp;i.w &amp;&amp;STAT&amp;i.align
+&amp;&amp;STAT&amp;i.LBL display spacing=&amp;trtspace</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+%if %length(&amp;outputwidthpct) %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+%if &amp;PDF NE Y %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+style(COLUMN)=[cellwidth=%eval(45*(&amp;&amp;stat&amp;i.w+&amp;trtspace)/&amp;repwidth)%
+]</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+%end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+%end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %else %if &amp;i EQ
+1 %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %if &amp;showstat1
+EQ Y %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+define STAT&amp;i / width=&amp;&amp;stat&amp;i.w &amp;&amp;STAT&amp;i.align
+&amp;&amp;STAT&amp;i.LBL display spacing=&amp;trtspace</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+%if %length(&amp;outputwidthpct) %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+%if &amp;PDF NE Y %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+style(COLUMN)=[cellwidth=%eval(45*(&amp;&amp;stat&amp;i.w+&amp;trtspace)/&amp;repwidth)%
+]</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+%end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+%end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %else %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; define STAT&amp;i
+/ width=&amp;&amp;stat&amp;i.w &amp;&amp;STAT&amp;i.align &amp;&amp;STAT&amp;i.LBL
+display spacing=&amp;trtspace</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %if %length(&amp;outputwidthpct)
+%then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+%if &amp;PDF NE Y %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+style(COLUMN)=[cellwidth=%eval(45*(&amp;&amp;stat&amp;i.w+&amp;trtspace)/&amp;repwidth)%
+]</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+%end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p>For full details of the processing you should refer to the macros directly
+and search on "STAT" as a lot of minor details have been omitted so as
+not to obscure an understanding of the main processing behind the "tuplet"
+calls. For example, parameters exist for STAT column labels, widths and
+alignments as you would expect.
+<h2>
+Conclusion</h2>
+The mode of working of the "tuplet" processing has been described here
+as well as detailed coding for the freqsept= parameter processing explained.
+Please note that this method is quite likely the <b>intellectual property</b>
+of the author. You should not implement this method in your own existing
+reporting system without clarifying this issue.
+<br><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="Spectre.htm" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+</body>
+</html>

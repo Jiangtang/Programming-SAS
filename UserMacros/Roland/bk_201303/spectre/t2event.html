@@ -1,0 +1,165 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="time to event">
+   <meta name="Description" content="Time to Event analysis">
+   <title>Time to Event analysis</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Time to Event analysis</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 10 Jun 2006)</b></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<p>The easiest way to do time-to-event analysis is to "flatten" your data
+so that you have only one observation per "by group" (where this "by group"
+is usually a single variable such as "subject"). With your data all in
+one observation, also knowing how many observations belong to each by group,
+then you can use array processing to loop through your data. If you organise
+your data like that then it becomes a lot easier. Since multiple variables
+may need to be flattened, I wrote a macro named "flatten" to do all the
+"proc transpose"s on these variables and to count the number of observations
+per "by group" and add that to the output dataset. You can view the macro
+below.
+<br><a href="macros/flatten.sas" target="_blank">flatten</a>
+<p>Below is an extremely simple example of code to find the date at which
+a value rose above 1000. This is far simpler than anything you will need
+to do in reality but serves to show how the data is transformed with the
+flatten macro and to show how to loop through the data.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data test;</tt>
+<br><tt>&nbsp; subj=1000;</tt>
+<br><tt>&nbsp; dt='01jan03'd;val=0;output;</tt>
+<br><tt>&nbsp; dt='01feb03'd;val=500;output;</tt>
+<br><tt>&nbsp; dt='01mar03'd;val=1005;output;</tt>
+<br><tt>&nbsp; dt='01apr03'd;val=2005;output;</tt>
+<br><tt>&nbsp; subj=2000;</tt>
+<br><tt>&nbsp; dt='01jan03'd;val=100;output;</tt>
+<br><tt>&nbsp; dt='01feb03'd;val=100;output;</tt>
+<br><tt>&nbsp; dt='01mar03'd;val=100;output;</tt>
+<br><tt>&nbsp; subj=3000;</tt>
+<br><tt>&nbsp; dt='01jan03'd;val=100;output;</tt>
+<br><tt>&nbsp; dt='01feb03'd;val=1110;output;</tt>
+<br><tt>&nbsp; dt='01mar03'd;val=500;output;</tt>
+<br><tt>&nbsp; format dt date7.;</tt>
+<br><tt>run;</tt>
+<p><tt>%flatten(dsin=test,bygroup=subj,vars=dt val)</tt>
+<br><tt>%put ********* _maxn_=&amp;_maxn_;</tt>
+<p><tt>data t2event;</tt>
+<br><tt>&nbsp; set test;</tt>
+<br><tt>&nbsp; array dt {*} dt:;</tt>
+<br><tt>&nbsp; array val {*} val:;</tt>
+<br><tt>&nbsp; do i=1 to nobs;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if val(i)>1000 then do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; date=dt(i);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; i=nobs;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>&nbsp; format date date7.;</tt>
+<br><tt>&nbsp; drop i;</tt>
+<br><tt>run;</tt>
+<p><tt>data _null_;</tt>
+<br><tt>&nbsp; set t2event;</tt>
+<br><tt>&nbsp; put (_all_) (=);</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>And here is part of the log where you can see the "date" variable added
+that will be set to when the count exceeded 1000 (if at all).
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>92&nbsp;&nbsp;&nbsp; %put ********* _maxn_=&amp;_maxn_;</tt>
+<br><tt>********* _maxn_=4</tt>
+<br><tt>93</tt>
+<br><tt>94&nbsp;&nbsp;&nbsp; data t2event;</tt>
+<br><tt>95&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set test;</tt>
+<br><tt>96&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; array dt {*} dt:;</tt>
+<br><tt>97&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; array val {*} val:;</tt>
+<br><tt>98&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; do i=1 to nobs;</tt>
+<br><tt>99&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if val(i)>1000 then
+do;</tt>
+<br><tt>100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; date=dt(i);</tt>
+<br><tt>101&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; i=nobs;</tt>
+<br><tt>102&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>103&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>104&nbsp;&nbsp;&nbsp;&nbsp; format date date7.;</tt>
+<br><tt>105&nbsp;&nbsp;&nbsp;&nbsp; drop i;</tt>
+<br><tt>106&nbsp;&nbsp; run;</tt>
+<p><tt>NOTE: There were 3 observations read from the data set WORK.TEST.</tt>
+<br><tt>NOTE: The data set WORK.T2EVENT has 3 observations and 11 variables.</tt>
+<br><tt>NOTE: DATA statement used:</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.01 seconds</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.01 seconds</tt>
+<br>&nbsp;
+<p><tt>107</tt>
+<br><tt>108&nbsp;&nbsp; data _null_;</tt>
+<br><tt>109&nbsp;&nbsp;&nbsp;&nbsp; set t2event;</tt>
+<br><tt>110&nbsp;&nbsp;&nbsp;&nbsp; put (_all_) (=);</tt>
+<br><tt>111&nbsp;&nbsp; run;</tt>
+<p><tt>subj=1000 nobs=4 dt1=01JAN03 dt2=01FEB03 dt3=01MAR03 dt4=01APR03
+val1=0 val2=500 val3=1005</tt>
+<br><tt>val4=2005 date=01MAR03</tt>
+<br><tt>subj=2000 nobs=3 dt1=01JAN03 dt2=01FEB03 dt3=01MAR03 dt4=. val1=100
+val2=100 val3=100 val4=.</tt>
+<br><tt>date=.</tt>
+<br><tt>subj=3000 nobs=3 dt1=01JAN03 dt2=01FEB03 dt3=01MAR03 dt4=. val1=100
+val2=1110 val3=500 val4=.</tt>
+<br><tt>date=01FEB03</tt>
+<br><tt>NOTE: There were 3 observations read from the data set WORK.T2EVENT.</tt>
+<br><tt>NOTE: DATA statement used:</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.01 seconds</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.01 seconds</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>Some notes on the code. The maximum value of the number of observations
+per by group gets written out to the global macro variable _maxn_. You
+can use this in your array statement like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>array dt {*} dt1-dt&amp;_maxn_;&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>...but you usually do not need to reference this macro variable as you
+can refer to a list of variables using a colon trailer as was done in the
+code.
+<br>&nbsp;
+<p>Note that I am using a form of "put _all_" in the code that you might
+not be familiar with. I have used "put (_all_) (=)" to avoid putting out
+the automatic variables _N_ and _ERROR_. You can read more about this on
+the SAS technical support web site <a href="http://support.sas.com/sassamples/quicktips/printvar.html" target="_blank">here</a>.
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+</body>
+</html>

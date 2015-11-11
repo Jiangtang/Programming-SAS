@@ -1,0 +1,37 @@
+#!/bin/bash
+#<pre><b>
+# Script     : antigrep
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 27-Jul-2003
+# Purpose    : To list all files that DO NOT contain a specified string
+# SubScripts : none
+# Notes      : none
+# Usage      : antigrep 'FG_21_08' *.sas
+#
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+#  1   string
+#  2   file(s)
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+#
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+if [ $# -lt 2 ] ; then
+  echo "Usage: antigrep 'string' *.sas" 1>&2
+  exit 1
+fi
+
+string=$1
+shift
+
+# count with grep, select those with zero count and display without zero count
+grep -c "$string" "$@" | sed -n '/:0$/s///p'
+
+ 

@@ -1,0 +1,145 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="printing Spectre">
+   <meta name="Description" content="Printing reports using Spectre">
+   <title>Printing Reports</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Printing Reports</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 11 Jun 2006)</b></center>
+
+<h2>
+Introduction</h2>
+Spectre has a number of utilities for printing reports. By "reports" is
+meant paginated output, typically from "proc report". There are no utilities
+in Spectre to help you print unpaginated text files such as program listings
+or paginated log files. Use whatever is recommended at your site for these.
+<h2>
+PostScript printers</h2>
+Firstly an explanation is needed about how Spectre handles printing. All
+report printing in Spectre is done by converting a text file to a PostScript
+file and then sending that to the printer. Most printers connected to a
+Unix system are "<b>Postscript printers</b>" which means they understand
+PostScript files. Send them a PostScript file and they act like a computer
+and obey all the formatting instructions in the PostScript file. PostScript
+files contain a lot of formatting instructions, not just the text you want
+to print. The utilities Spectre uses for printing are exactly the same
+as the ones it uses to convert a file to PostScript that you would later
+convert to a PDF. The only difference is that when using these utilities
+for converting to PostScript, you specify a printer to the "<b>-p</b>"
+option and so the PostScript file produced is sent to a printer and not
+saved.
+<h2>
+lis2ps</h2>
+Use the "lis2ps" utility for all <b>text</b> reports (not graphics) that
+are <b>created by the reporting system</b>. These are reports that have
+a ".titles" member. This way the page layout and margins will get read
+from the protocol dataset and the font size and layout will get read from
+the titles dataset and your report will get printed in the exact way intended.
+You can specify a single file to print, multiple files or files matching
+a pattern or even output from a command using $(...) substitution. Here
+are some typical calls to "lis2ps", sending the output to the printer "john".
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>lis2ps -p john myfile.lis</tt>
+<p><tt>lis2ps -p john myfile1.lis myfile2.lis</tt>
+<p><tt>lis2ps -p john myfile.lis t_myfile*.lis</tt>
+<p><tt>lis2ps -p john $(myfiles t_*.lis)</tt>
+<p><tt>lis2ps -p john $(oporder t*fadu*.lis)</tt></td>
+</tr>
+</table>
+
+<p>If you want to print output from a validation program, then so long
+as your output is identical in layout to the output being QC'ed and you
+have followed the naming convention such that your validation program has
+the same name but with a "v" at the start then you can use lis2ps to print
+it as well. What it then does is ignore the starting "v" character in your
+file name and print as normal.
+<p>For more information about "lis2ps", consult the header which you can
+link to below.
+<br><a href="scripts/lis2ps" target="_blank">lis2ps</a>
+<h2>
+lpr -h</h2>
+For <b>graphics</b> output <b>produced by the reporting system</b> you
+have to use the native printer utility "lpr" with the "-h" option (for
+"no header"). This graphics output is <b>already a PostScript file</b>
+so you would not use a utility that converts to PostScript. Instead, you
+need to send this file directly to a printer using "lpr". Note also that
+the "lpr" utility uses the option "<b>-P</b>" (capital "P") for the printer
+option whereas all the Spectre scripts use "-p" (small "p") for the printer
+option. The reason you specify "-h" to prevent the header being produced
+is because if you do not use this option, the file printed will be the
+<b><i>raw
+</i></b>PostScript
+file with all the postscript formatting instruction in it. So here is how
+you would send a graphics report to the printer "john".
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>lpr -h -P john g_myfile.ps</tt></td>
+</tr>
+</table>
+
+<p>For more information about the "lpr" utility, use the command "<b>man
+lpr</b>".
+<h2>
+a4ps and usps</h2>
+For <b><i>paginated </i></b>text reports that were not produced by the
+reporting system, such as ad-hoc reports, use the utility "a4ps" (for A4)
+or "usps" (for US Letter). You use these utilities in the same way as "lis2ps"
+as shown above. For these two utilities to work, your line size and page
+size settings, when you created the output, have to be realistic for a
+normal landscape or portrait layout. These utilities will try to fit your
+report on the page based on the line size and page size as best as it can
+but it will not be able to handle absurd values for these.
+<p>Neither "a4ps" or "usps" know what margins to leave around the paper
+edges so a default of 1.0 inches is used for all but the right margin (in
+the portrait sense) where 0.75 inches is used. You can override these values
+using the -l, -r, -t,&nbsp; -b options (left, right, top, bottom). For
+example, if you wanted your right margin to be 1.0 inches as well then
+you could call the script like this.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>a4ps -r 1.0 -p john myfile.lst</tt></td>
+</tr>
+</table>
+
+<p>For more information about the scripts, consult the headers which you
+can link to below.
+<br><a href="scripts/a4ps" target="_blank">a4ps</a>
+<br><a href="scripts/usps" target="_blank">usps</a>
+<h2>
+PDF printing</h2>
+If your file is a PDF then you should use the pull down menus in the PDF
+reading software to do the printing. Do not use any of the utilities listed
+above.
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+</html>

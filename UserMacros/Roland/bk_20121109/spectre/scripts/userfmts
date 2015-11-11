@@ -1,0 +1,86 @@
+#!/bin/bash
+#<pre><b>
+# Script     : userfmts
+# Version    : 2.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 20-Feb-2007
+# Purpose    : To list variables with a user format assigned (uses SAS)
+# SubScripts : userfmts_win
+# Notes      : Must be run with data directory as current directory. Dataset
+#              file extensions will be ignored.
+# Usage      : userfmts adv
+#              userfmts adv acct
+#              userfmts    # all datasets are listed
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   one or more datasets (optional - will work on whole library by default)
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  11Feb07         Call userfmts_win for Windows configurations
+# rrb  20Feb07         Remove allocation of Spectre macros
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# if a Windows config then call userfmts_win and exit on return
+if [ -n "$CYGWIN" ] ; then
+  userfmts_win "$@"
+  exit $?
+fi
+
+if [ $# -lt 1 ]
+then
+
+###### no datasets specified so do for the whole library #####
+
+# Feed SAS code into standard input
+sas -stdio -sasuser work 2>/dev/null << -----FINISH-----
+options validvarname=any nofmterr;
+libname here './' access=readonly;
+proc contents noprint data=here._all_ mtype=data out=contents;
+proc sort data=contents;
+  by memname varnum;
+data contents;
+  set contents;
+  if format in (" " %sysfmtlist) then delete;
+data _null_;
+  file stdout ;
+  set contents;
+  put @1 memname @10 name @21 format @30;
+run;
+-----FINISH-----
+
+
+else
+
+########### one or more dataset specified so do for each #########
+
+for dataset in "$@" ; do
+
+dset=$(echo $dataset | cut -d. -f1)
+
+# Feed SAS code into standard input
+sas -stdio -sasuser work 2>/dev/null << -----FINISH-----
+options validvarname=any nofmterr;
+libname here './' access=readonly;
+proc contents noprint data=here.$dset mtype=data out=contents;
+proc sort data=contents;
+  by memname varnum;
+data contents;
+  set contents;
+  if format in (" " %sysfmtlist) then delete;
+data _null_;
+  file stdout ;
+  set contents;
+  put @1 memname @10 name @21 format @30;
+run;
+-----FINISH-----
+
+done
+
+
+
+fi

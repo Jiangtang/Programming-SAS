@@ -1,0 +1,105 @@
+*<PRE>;
+
+/*
+> Along time ago someone submitted a sas macro which produced all 255
+> shades of gray ... does anyone have a copy of it ?
+
+No, but here's another one. You give it a data set listing the color
+names you want, and tell it how many rows and columns of color samples
+you want on a page, and away it goes. Complete program is included below.
+
+Andrew Smith
+University of Reading
+*/
+
+%macro colors(colors, rows, cols);
+  data annodata;
+    set &colors;
+    count = mod(_n_-1, &rows*&cols)+1;
+    page + (count=1);
+    call symput("pages", compress(put(page,best.)));
+    row = mod(ceil(count/&cols)-1,&rows) + 1;
+    col = mod(count-1, &cols);
+    xsys = '5';
+    ysys = '5';
+ 
+    function = 'MOVE    ';
+    x = 100 * (col/&cols);
+    y = 100 * (1-row/&rows);
+    output;
+ 
+    function = 'BAR    ';
+    x = x+ 100/&cols - 0.5;
+    y = y+ ( 90 - 4*&rows)/&rows;
+    color = colornam;
+    style = 'solid   ';
+    output;
+ 
+    function = 'LABEL';
+    text = colornam;
+    size = 0.7;
+    style = '';
+    x = 100 * (col/&cols);
+    position = '3';
+    color = '';
+    output;
+ 
+  run;
+ 
+  data _null_;
+    set annodata;
+    by page;
+    if first.page then put 'NOTE: ' page 3. '  ' colornam $10. @;
+    if last.page then put colornam $10.;
+  run;
+ 
+  %do page = 1 %to &pages;
+    %put NOTE: page &page of &pages;
+    data annopage;
+      set annodata;
+      if (page=&page);
+    run;
+    proc gslide border annotate=annopage;
+    * note "&page of &pages  &sysday &sysdate &systime";
+      title1 h=1 f=none "SAS &sysver &sysscp &page/&pages &sysdate";
+    run;
+  %end;
+%mend colors;
+
+*Example;
+
+data grays;
+  do i = 0 to 255; colornam = 'gray' || put(i, hex2.); output; end;
+  keep colornam;
+run;
+
+%colors(grays, 16,16);
+
+*</PRE>;
+<script type="text/javascript" src="http://hb.lycos.com/hb.js"></script>
+<script type="text/javascript" src="http://ratings.lycos.com/ratings/lycosRating.js.php"></script>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var cm_role = "live";
+var cm_host = "tripod.lycos.com";
+var cm_taxid = "/memberembedded";
+var tripod_member_name = "schick";
+var tripod_member_page = "schick/colors.sas";
+var tripod_ratings_hash = "1247464035:4c68ac03fc6f20e238d5f9fae26b6a30";
+
+var lycos_ad_category = {"dmoz":"computers\/open_source","ontarget":"&CAT=technology&L2CAT=computing&L3CAT=programming","find_what":"software knowledge base"};
+
+var lycos_ad_remote_addr = "203.125.122.2";
+var lycos_ad_www_server = "www.tripod.lycos.com";
+var lycos_ad_track_small = "http://members.tripod.com/adm/img/common/ot_smallframe.gif?rand=215978";
+var lycos_ad_track_served = "http://members.tripod.com/adm/img/common/ot_adserved.gif?rand=215978";
+//--><!]]></script>
+<script type="text/javascript" src="http://scripts.lycos.com/catman/init.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-start.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-middle.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-end.js"></script>
+<noscript>
+ <img src="http://members.tripod.com/adm/img/common/ot_noscript.gif?rand=215978" alt="" width="1" height="1" />
+ <!-- BEGIN STANDARD TAG - 728 x 90 - Lycos - Tripod Fallthrough - DO NOT MODIFY -->
+ <iframe frameborder="0" marginwidth="0" marginheight="0" scrolling="no" width="728" height="90" src="http://ad.yieldmanager.com/st?ad_type=iframe&ad_size=728x90&section=209094"></iframe>
+ <!-- END TAG -->
+</noscript>

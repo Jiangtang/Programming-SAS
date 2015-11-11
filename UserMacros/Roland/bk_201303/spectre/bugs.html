@@ -1,0 +1,718 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="Spectre Bugs">
+   <meta name="KeyWords" content="Spectre bugs">
+   <title>Spectre Bugs</title>
+<!-- saved from url=(0060)http://www.datasavantconsulting.com/roland/Spectre/bugs.html -->
+<!-- saved from url=(0052)http://www.datasavantconsulting.com/roland/bugs.html -->
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Spectre (Clinical) bugs and changes log</h1></center>
+<b><font color="#3333FF">Note: If you arrived at this page directly using
+a search engine such as Google then this may not be the "Spectre" you are
+looking for. There are a few software packages of this name. This "Spectre"
+is to do with Clinical Trials Reporting.</font></b>
+<h2>
+Introduction</h2>
+Bugs, changes and releases will be listed in descending date order in the
+next section. Macro names will be preceded by a "%" and scripts not.
+<h2>
+List of outstanding bugs</h2>
+
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>none</td>
+</tr>
+</table>
+
+<h2>
+<a NAME="log"></a>Bugs and changes log</h2>
+
+<table BORDER COLS=1 WIDTH="99%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>%unistats: 20Jan12: When ---STR character variables are created then
+rounding to the tenth decimal place will be applied
+<p>%lstlbls: 19Jan12: New utility macro to list variables with their labels
+to the log
+<p>%missvars: 19Jan12: NOTEs suppressed and a character field that is just
+a period when left aligned is also regarded as missing
+<p>%splitvar: 14Jan12: Commas additionally regarded as split points and
+work variable length increased to 8040
+<p>%unistats, %unimap: 10Jan12: msgs= processing added
+<p>%unistats: 10Jan12: misspad= processing added
+<p>%popfmt: 04Jan12: msgs= processing added
+<p>%unistats: 03Jan12: trtvallist= parameter added plus minor bug fixed
+with dpvar=
+<p>%unistats: 02Jan12: Bug with decimal place adjustment fixed and leftstr=
+processing added
+<p>%adjfmt, %mkformat: 02Jan12: NOTEs suppressed
+<p>%aetab, %npcttab, %popfmt, %unistats: 30Dec11: msglevel= processing
+changed to not show Notes by default
+<p>%popfmt: 30Dec11: _trtvallist_ added which is a list of treatment arm
+values unquoted
+<p>%unistats: 29Dec11: Major enhancement to add character variables ending
+in STR corresponding to transposed numeric variables with optional decimal
+places adjustment
+<p>%rgpp_old: 27Dec11: Removed from clinmacros as historic and no longer
+useful
+<p>%splitvar, %comblvls, %aetab: 26Dec11: Headers updated to explain that
+these macros currently only support Western character sets
+<p>%adjfmt: 21Dec11: new utility macro added to allow you to create a new
+format based on an existing format by adding leading spaces or a leading
+and a trailing underscore
+<p>%mkformat: 21Dec11: Enhanced to add underscore= processing
+<p>%lowcase: 18Dec11: Removed from the utility macro library as it is already
+there in the SI supplied autocall library
+<p>%npcttab: 12Dec11: Bug with setting style 3 label fixed
+<p>%popfmt: 12Dec11: indent= processing added
+<p>%unicatrep: 12Dec11: Used &amp;startcol to position pageline and endline
+<p>%labncfb: 05Dec11: (was %rxlab) An example macro that uses %unistats
+to print lab (normalized) change from baseline added to the clinical reporting
+macros
+<p>%qleft, %qtrim: 05Dec11: Both removed from the utility macro library
+as they are already there in the SI supplied autocall library
+<p>%unistats: 04Dec11: _unidsin temporary dataset now deleted at the end
+of the macro
+<p>%popfmt: 01Dec11: underscore= processing added
+<p>%mkformat: 30Nov11: indent= processing added
+<p>%qdequote: 16Nov11: Bug when str="" fixed
+<p>%npctpvals: 16Nov11: "BY line truncated" messages minimised
+<p>%unistats: 16Nov11: (default=6) added to p63val format definition
+<p>%dosfdasize: 15Nov11: new macro to test sas dataset size for FDA submissions
+<p>%dosfilesize: 15Nov11: updated to cope with one or two level dataset
+names
+<p>%aetab: 14Nov11: Bug in handling p-values fixed where there were zero
+counts in a treatment arm&nbsp;
+<p>%aetab: 08Nov11: filtercode= and extmacro= processing added
+<p>%unistats, %unipvals: 05Nov11: Updated for the ttest and Satterthwaite
+approximation
+<p>%npcttab: 03Nov11: Numeric formats automatically adjusted for maximum
+value and bug with character variable treatment arm handling fixed
+<p>%aetab, %prntlvls: 02Nov11: pvalue processing added
+<p>%clashvars, %clashlibs: 02Nov11: Notes in the log suppressed
+<p>%aetab, %trnslvls: 31Oct11: Updated to automatically correct too small
+formats for nfmt= and evfmt=&nbsp;
+<p>%npcttab: 30Oct11: style3lbl= value now automatically generated if left
+blank
+<p>%aetab: 28Oct11: New clinical macro for multi-level AE reporting of
+patient counts, percentages and optional event counts
+<p>%splitvar: 28Oct11: Bug with "lenvar" fixed
+<p>%npcttab: 28Oct11: hindent= default value changed from 1 to 0
+<p>%freqlvls, %trnslvls, %comblvls, %prntlvls: 27Oct11: New clinical reporting
+component macros added
+<p>%mkordinfmt: 26Oct11: New utility macro added
+<p>%npcttab: 24Oct11: Bug with positioning of compute block line fixed
+<p>%splitvar: 19Oct11: Bug with __minw fixed
+<p>%sas2tabdlm: 15Oct11: New utility macro added
+<p>%npcttab: 13Oct11: Now odsescapechar="&deg;" to match %unistats
+<p>%unistats, %unipvals: 10Oct11: Both macros changed to allow other procedures
+to replace "proc glm". Work on this is ongoing and during this time the
+%unipvals macro is unstable.
+<p>%npcttab: 06Oct11: midskip= and highskip= parameters added to control
+spacing between groupings
+<p>%unistats: 27Sep11: Variable length of 30 used where it used to be &amp;strlen
+<p>%unipvals: 26Sep11: freqsept and glmquad processing changed to allow
+stats values to be placed in treatment columns
+<p>%xlblocks: 24Sep11: Logic for detecting blocks rewritten
+<p>%gettitles: 19Sep11: New utility macro to read the titles of an LST
+file and write them to the global macro variable _titles_
+<p>%scanfile: 19Sep11: changed to use EMPTY to signify an empty file in
+keeping with the %gettitles macro
+<p>%unistats, %unicatrep: 17Sep11: nodata= processing added
+<p>%scanfile: 17Sep11: New utility macro added to scan a file for a string
+or RE and return a count of the number of lines that contain the string
+or match the RE
+<p>%var2mvar: 09Sep11: New utility macro to write a variable's contents
+to a global macro variable
+<p>%lstattrib: 30Aug11: Enhanced version that initialises all the variables
+<p>%unistatlabel: 28Aug11: Added mapping for confidence limits for the
+spread of values
+<p>%unimap: 28Aug11: Map statistics label S.D. to the STD keyword
+<p>%unistats: 28Aug11: Default descriptive statistcs changed and bug fixed
+in decimal places adjustment
+<p>%npcttab: 19Aug11: Changed call to %splitvar due to parameter renaming
+<p>%splitvar: 19Aug11: New version that treats colons as an indentation
+marker
+<p>%md5sum: 12Aug11: Utility macro added to run the "md5sum" checksum utility
+on a dataset held on the remote server
+<p>%rcmd2log, %rcmd2ds, %rcmd2mvar: 12Aug11: New utility macros added to
+run Unix commands on the remote server
+<p>%scanlog: 31Jul11: New version 3.0 for better handling of interactive
+sas sessions log windows plus "rules file" use, multiple log files and
+Perl Regular Expression processing
+<p>%unistats, %unicatrep: 26Jul11: trtw= and trtsp= parameter count increased
+from 15 to 19
+<p>%killsess, %killsas: 26Jul11: Utility macros added to kill of bad SAS
+sessions on Citrix
+<p>%env2ds, %env2dsw7: 25Jul11: Test for missing value added
+<p>%unistats, %unicatrep: 23Jul11: spacing= and trtsp1-15= parameters added
+<p>%npcttab: 23Jul11: Bug in alllowlvl=yes handling fixed
+<p>%npcttab: 22Jul11: Improved handling of dsall= data to fill missing
+higher level variables and alllowlvl= and dsallonly= processing added
+<p>%npcttab: 17Jul11: Flow of ascii text for style=3 reports improved using
+%splitvar macro plus 3-level reports allowed for style=3
+<p>%splitvar: 14Jul11: New version to maintain indents when flowing and
+to add an optional "hanging indent"
+<p>%unistats, %unicatrep, %npcttab: 12Jul11: trtalign= parameter added
+<p>%hexchars: 02Jul11: Added check for input file existence
+<p>%dlm2sas: 02Jul11: Improved parameter checking
+<p>%dlm2sas: 01Jul11: Utility macro added to read delimited files into
+a sas dataset
+<p>%clashlibs: 30Jun11: Utility macro added to check for dataset variable
+inconsistencies across different assigned libraries
+<p>%clashvars: 30Jun11: route output to log by default and allow to route
+to print output as well as a file as before
+<p>%ls, %lsfpq, %dir, %dirfpq, %xlblocks, %xl2sas, %xlsheets: 26Jun11:
+Changed to tolerate unexpected file name quoting
+<p>%asciinonp, %hexchars: 25Jun11: %asciinonp removed as %hexchars does
+the same job and now enhanced to optionally route output to the log or
+print output and made more friendly about file quoting
+<p>%npcttab: 23Jun11: anywhen=after processing bug fixed
+<p>%savopts: 14Jun11: New function-style utility macros added to save sas
+options for later restoring that will compensate for badly formed expressions
+for missing=" " and formdlim=" "
+<p>%dirfpq, %lsfpq: 12Jun11: New function-style utility macros added for
+passing the contents of a directory on Windows or Unix as full-path quoted
+file names to a macro variable
+<p>quotelst: 12Jun11: Script added for quoting arguments. Especially useful
+for quoting a list of files whose names can contain spaces
+<p>%prefix, %suffix: 12Jun11: New function-style utility macros added for
+prefixing and suffixing items in a list
+<p>%dir, %ls: 12Jun11: New function-style utility macros added for passing
+the contents of a directory on Windows or Unix&nbsp; to a macro variable
+<p>%unistats: 09Jun11: Macro parameter statlabelmacro=unistatlabel added
+to allow users to change the macro that changes statistics labels to suit
+sponsor preferences
+<p>%doallitem: 09Jun11: Macro parameter "list" renamed to "__dolist"
+<p>%rinclude: 09Jun11: New utility macro to submit local sas code members
+on the remote host
+<p>%unistatlabel, %unistats: 08Jun11: %tr_statlabel renamed to %unistatlabel
+and will be automatically called by %unistats
+<p>%npcttab: 05Jun11: pagevar= parameter removed as not used and superseded
+by pageon= parameter
+<p>%unicatrep: 01Jun11: Minor bug in pageline handling fixed
+<p>%npcttab: 31May11: Bug with pageline processing fixed
+<p>%npcttab: 27May11: pageline= parameters and endline= parameters added
+as used in %unistats
+<p>%popfmt: 26May11: Check for missing treatment variable format
+<p>%npcttab: 26May11: Event counts retained in output dataset and double=
+parameter added
+<p>%unipvals: 26May11: Merging of dummy p-value datasets made more efficient
+with less use of point= dataset option
+<p>%unistats, %unicatrep: 25May11: pageline= and endline= parameters extended
+to 15 (was 9) and pagemacro= and endmacro= parameters added
+<p>%unistats: 24May11: msglevel=N processing added
+<p>%npcttab: 24May11: filtercode= , extmacro= and msglevel=N processing
+added
+<p>%unistats: 23May11: Bug with "print=yes" declared twice in macro definition
+fixed
+<p>%unistats, %npcttab: 17May11: Name-Value "tall" parameter datasets allowed
+in addition to "flat" parameter datasets to assist in the metadata-driven
+use of these macros
+<p>%unistats: 16May11: unicatrep=no changed to print=yes and unicatrep=
+parameter removed plus some "code tidy" damage fixed
+<p>%popfmt: 16May11: Changed to avoid numeric to character conversion notes
+<p>%rgpp: 15May11: RGPP v4.0 source code for the graphical patient profiles
+software released
+<p>%getfmts: 12May11: Enhanced version released of macro to extract information
+on formats
+<p>%----: 08May11: All the macros that needed it received a code tidy to
+indent the code and to avoid the words "ERROR" and "WARNING" in the code
+<p>%match: 01May11: Code restructured and missing list allowed
+<p>%rcmd: 15Apr11: Utility macro added for running commands in the remote
+session
+<p>%complibs: 15Apr11: dslist= paremeter added
+<p>%getfmts: 13Apr11: Utility macro added to extract information on formats
+<p>%delifexist: 05Apr11: Utility macro added to delete a dataset if it
+exists
+<p>%unistats, %unipvals: 28Mar11: Fix bug where missing pvalues are not
+shown as "n/a"
+<p>%unistats, %unipvals: 21Mar11: freqsept1-20= parameters added so that
+proc freq statistics can be placed anywhere on the output report
+<p>%unistats, %unipvals, %unicatrep: 13Mar11: Major changes
+<p>%rename8: 12Feb11: New macro added to shorten variable names to eight
+characters
+<p>%checkv6: 07Feb11: New macro added to check the Version 6 compatibility
+of a later version dataset before conversion to a transport file
+<p>%unistats: 06Feb11: allcat=yes is now the default
+<p>%npcttab: 06Feb11: Bug with unresolved pvalue macro variable fixed
+<p>%sas2xpt, %xpt2sas: 02Feb11: New macros to convert sas datasets to V6
+transport files and vice versa
+<p>%prxnames: 01Feb11: New macro to create a pearl regular expression for
+use in a prxmatch() function from sas dataset or variables names using
+the end colon notation
+<p>%complibs: 30Jan11: titlenum= parameter added to control where the internal
+title is positioned
+<p>%mkformat: 19Jan11: dataset modifiers allowed
+<p>%xlblocks: 09Jan11: New macro to read in an Excel spreadsheet sheet
+with separated blocks of information in it and to output each block as
+a numbered dataset
+<p>%xl2sas: 01Jan11: xlisopen= parameter added to tell macro if the spreadsheet
+is already opened in Excel
+<p>%xlsheets, %xl2sas: 20Dec10: Further enhancements
+<p>%dequote: 18Dec10: Added a&nbsp; version of %qdequote without macro
+quoting
+<p>%xlsheets: 17Dec10: Changed to write sheet names to a global macro variable
+<p>%xlsheets, %xl2sas: 16 Dec10: Uses %sysexec so that file names with
+spaces in them work OK
+<p>%unipvals: 07Dec10: Bug handling by variables for npar1way fixed
+<p>%popfmt, %unistats, %unipvals, %unicatrep, %uniquad (new): 21Nov10:
+Major updates to allow the free placement and formatting of ods table values
+in the output report
+<p>%npcttab: 18Nov10: npctord= parameter added to allow for the reversal
+of N and PCT display order
+<p>%unistats, %unicatrep: 16Nov10: extmacro= parameter added to %unistats
+for major external manipulation of output dataset and tfmacro= no longer
+to be used for output dataset manipulation
+<p>%tr_statlabel: 10Nov10: Example macro added to clinical macros collection
+to show how best to translate _statlabel values like "Probt" to "Prob >
+|t|" when using %unistats
+<p>%unistats; 09Nov10: Bug in displaying paired confidence intervals fixed
+<p>%unimap: 09Nov10: More confidence limit alpha values added and mismatch
+diagnostics improved
+<p>%unistats, %unimap, %unicatrep: 07Nov10: Ability to show confidence
+limits added and odsescapechar changed to "&sect;"&nbsp;
+<p>%popfmt, %unistats, %unipvals, %unicatrep: 01Nov10: Updated to keep
+and optionally display the statistics value to go with the p-value
+<p>%clashvars: 01Oct10: Enhanced version v3.0 released that allows bypassing
+use of sashelp.vcolumn
+<p>%wordsq, %scanq: 19Sep10: New macros to return the number of items in
+a list (space-delimited strings or string in quotes) and return a specific
+numbered delimited item
+<p>%clashvars: 16Sep10: Enhanced version v2.0 released
+<p>%xlsheets: 12Sep10: New macro uses DDE to write Excel sheet names (topics)
+to a sas dataset
+<p>%nodata: 12Sep10: Added option to keep footnotes
+<p>%xl2sas: 31Aug10: Bug fixed so it now closes sheet after reading and
+optionally quits Excel
+<p>%qdosfileinfow7, %dosfilesizew7: 08Aug10: New utiltity macros added
+that work with Windows 7
+<p>%env2ds, %env2dsw7: 06Aug10: New utility macros added that write environment
+variables and their values to a dataset
+<p>%npcttab: 24Jan10: compskip= and associated parameters added from %unicatrep
+<p>%npcttab, %unicatrep: 24Jan10: PDF output created separately due to
+problems with column width control&nbsp;
+<p>%npcttab: 24Jan10: Variable _combtext2 added for better style=3 ODS
+indentation of the combined categories&nbsp;
+<p>%unicatrep: 23Jan10: ODS column width adjusted and font_face_stats changed
+to Times&nbsp;
+<p>%npcttab: 23Jan10: A few %unistats ODS parameters now implemented in
+%npcttab&nbsp;
+<p>%unistats: 23Jan10: font_face_stats changed to Times
+<p>%unicatrep: 13Jan10: Call to tfmacro made earlier in the macro so that
+the addition of a pvalue variable can be detected
+<p>%fixnames: 24Nov09: New macro added to fix UTF-8 characters in peoples
+names&nbsp;
+<p>%vwlist, %liblist: 24Nov09: New macros to list views in a library and
+to list libraries added
+<p>%npcttab: 15Nov09: Warning message about BY variable length avoided
+and truncation of high level term avoided for ODS output&nbsp;
+<p>%compvars: 14Nov09: New macro added to report on the differences between
+the presence of variables in two datasets&nbsp;
+<p>%missvars: 11Nov09: Global macro variable names for list of variables
+now fixed as _nmiss_ and _nonmiss_&nbsp;
+<p>%npcttab: 08Nov09: New parameter pageon= added to allow paging to be
+incremented based on the highest level variable and its values&nbsp;
+<p>%unistats: 07Nov09: New parameter pageon= added to allow paging to be
+incremented based on byrowvar= values&nbsp;
+<p>%unistats, %unicatrep: 04Nov09: odsdpalign= parameter added such that
+ODS non-listing output no longer aligned on the decimal point.. Stats font
+changed to Arial from Courier&nbsp;
+<p>%unistats: 03Nov09: Paging now achieved using &lt;p> or &lt;pg> in variable
+list. Parameters page1vars-page9vars removed.&nbsp;
+<p>%lstattrib: 24Oct09: New utility macro added that writes the attributes
+of a dataset as LENGTH and ATTRIB code&nbsp;
+<p>%dosfilesize: 12Oct09: Macro %qdosfileinfo called instead of %dosfileinfo&nbsp;
+<p>%unistats, %unipvals, %scanlog,%pagexofy, %npcttab, %openrep, %closerep:
+12Oct09: Calls to %dequote changed to calls to %qdequote due to macro renaming&nbsp;
+<p>%proginfo, %jobinfo, %openrep, %closerep: 12Oct09: Call to %readpipe
+changed to call to %qreadpipe due to macro renaming&nbsp;
+<p>%qdosfileinfo: 12Oct09: Name changed from %dosfileinfo to %qdosfileinfo&nbsp;
+<p>%qreadpipe: 12Oct09: Name changed from %readpipe to %qreadpipe&nbsp;
+<p>%qgetenv: 12Oct09: Name changed from %getenv to %qgetenv&nbsp;
+<p>%qdequote: 12Oct09: Name changed from %dequote to %qdequote&nbsp;
+<p>%unicatrep: 10Sep09: asis=on put into effect for columns
+<p>%unistats, %npcttab: 10Sep09: %unquote() used with %dequote()&nbsp;
+<p>%words: 01Sep09: Use of countw() function discontinued
+<p>%npcttab, %unistats, %unicatrep: 30Aug09: odsescapechar= parameter added&nbsp;
+<p>%unistats, %unicatrep: 27Aug09: statstfmacro= and odstrtvarlist= parameters
+added. compskip=yes is now the default (for ascii output compskip=no is
+enforced)&nbsp;
+<p>%unistats, %unipvals: 23Aug09: statsopdest= processing changed to ODS
+style, moved into %unistats and removed from %unipvals
+<p>%unipvals: 21Aug09: Bug while using missing character response variables
+with CHI/Fisher test fixed&nbsp;
+<p>%unistats, %unicatrep: 02Aug09: pvalcolw=8 parameter added&nbsp;
+<p>%unipvals: 15Jul09: If total treatment arms for a by group is less than
+two then do not calculate p-values
+<p>%unistats, %npcttab: 13Jul09: New parameter listallparams= added&nbsp;
+<p>%unistats, %npcttab: 12Jul09: New parameter dsparam= added&nbsp;
+<p>%npcttab, %unistats, %unicatrep: 11Jul09: odstfmacro= parameter added
+<p>%unipvals: 10Jul09: Bug with CHI/Fisher test selection in case when
+missing values are present fixed
+<p>%unicatrep: 10Jul09: topline=yes now activated in macro code if not
+specified&nbsp;
+<p>%npcttab: 10Jul09: Ascii output always created separately from ODS output
+and new parameter odstrtlabel= added. prerepcode= and postrepcode= renamed
+to odsprerepcode= and odspostrepcode=&nbsp;
+<p>%unipvals, %unistats: 06Jul09: Bug with misspct=no not being passed
+through to %unipvals for correct handling fixed&nbsp;
+<p>%unicatrep, %unistats: 04Jul09: New parameter odstrtlabel= added&nbsp;
+<p>%unicatrep: 03Jul09: Ascii output always created separately from ODS
+output&nbsp;
+<p>%unistats, %unicatrep: 22Jun09: prerepcode= and postrepcode= renamed
+to odsprerepcode= and odspostrepcode=
+<p>%unicatrep: 22Jun09: topline processing changed&nbsp;
+<p>%npcttab: 18Jun09: tfmacro= parameter added&nbsp;
+<p>%unistats, %unipvals: 18Jun09: tfmacro= parameter now passed through
+to %unicatrep if called&nbsp;
+<p>%unipvals: 17Jun09: Stats procs now not called if treatment arm count
+&lt; 2 in all cases&nbsp;
+<p>%unipvals: 12Jun09: Incorrect variables in _dummypval&nbsp; fixed
+<p>%mvarvalues: 11Jun09: New macro to accept a list of macro variable names
+and to display each with its resolved value on a separate line in the log&nbsp;
+<p>%mvarlist: 11Jun09: New macro to return a list of macro variables with
+a given scope&nbsp;
+<p>%globlist: 10Jun09: Changed to a shell macro&nbsp;
+<p>%unistats, %unicatrep: 01Jun09: prerepcode= and postrepcode= parameters
+added&nbsp;
+<p>%npcttab: 11May09: prerepcode= and postrepcode= parameters added
+<p>%unistats, %unipvals: 05Mar09: Changes made to avoid "uninitialized"
+messages&nbsp;
+<p>%unistats, %unipvals: 03Mar09: glmlsmeans= and odstblname= parameters
+added&nbsp;
+<p>%rannomac: 02Jan09: All filled-shape macros now do a two pass draw and
+%box now works like the other filled-shape macros for version 2.0&nbsp;
+<p>%scanlog: 01Jan09: %unquote() the %dequote()ed filename&nbsp;
+<p>%dequote: 01Jan09: Use %qtrim() instead of %quote()&nbsp;
+<p>%rannomac: 01Jan09: %text macro changed to allow a sas variable name
+for the font= parameter&nbsp;
+<p>%npcttab: 16Nov08: Default style changed from 3 to 1 and some variables
+increased in length. Truncation of terms for style=3 bug fixed.&nbsp;
+<p>%getenv: 01Nov08: New macro added to get contents of environment variable&nbsp;
+<p>%readpipe: 31Oct08: Major update for version 2.0&nbsp;
+<p>%unistats, %unicat2word: 12Oct08: _varlabel and _tempstr2 length increased
+to 256
+<p>%words: 26Sep08: Sysfunc call to "countw" used for sas version 9 or
+later&nbsp;
+<p>%npcttab: 11Sep08: Bug with font parameters not being resolved fixed&nbsp;
+<p>%unicatrep: 11Sep08: font_weight_stats=medium is now the default set
+in the code&nbsp;
+<p>%unistats, %unicatrep: 03Aug08: font_weight_stats=medium is now the
+default&nbsp;
+<p>%unicatrep: 31Jul08: Checking added for font weights, font style and
+rules value&nbsp;
+<p>%complibs: 15Jul08: Major enhancement to allow full comparison of text
+field differences&nbsp;
+<p>%partialdates: 07Jul08: New macro added for handling partial dates
+<p>%agedec, %mtype: 06Jun08: New macros added&nbsp;
+<p>%unistats, %unicatrep: 02Jun08: spanrows= parameter added&nbsp;
+<p>%unistats, %unicatrep: 18May08: Extra compskip= parameters added&nbsp;
+<p>%unicatrep: 14May08: cellwidth applied to "indent" column&nbsp;
+<p>%unistats, %unicatrep: 13May08: More ODS parameters added&nbsp;
+<p>%unipvals: 12May08: Syntax error in "ods listing close" fixed&nbsp;
+<p>%unipvals, %unistats: 12May08: byvars2= parameter added
+<p>%unistats, %unicatrep: 12May08: More ODS parameters added
+<p>%unistats, %unicatrep: 11May08: More ODS parameters added&nbsp;
+<p>%unistats, %unicatrep, %npcttab: 09May08: font=face_stats=, font_face_other=
+and font_weight_other= parameters added&nbsp;
+<p>%unistats: 07May08: filtercode= parameter added&nbsp;
+<p>%nobs and %nlobs: 07May08: A where clause modifier is now accepted and
+%nobs and %nlobs will now work on views
+<p>%npcttab: 02May08: dsdenom= , denomshow= , pctcompress= and byrow= parameters
+added for v8.0&nbsp;
+<p>%popfmt: 02May08: Variable name "total" changed to "_total"&nbsp;
+<p>%unistats: 02May08: dsdenom= and denomshow= parameters added and glmopdest=
+replaced by statsopdest=
+<p>%npcttab: 26Apr08: Duplicate style 3 label parameter removed
+<p>%popfmt: 26Apr08: freesuff= parameter added&nbsp;
+<p>%unicatrep: 26Apr08: "flow" option added to byrow columns&nbsp;
+<p>%npcttab: 26Apr08: A new style (style=3) has been added and this is
+now the default&nbsp;
+<p>%scanlog: 20Apr08: New macro added
+<p>%unistats: 20Mar08: Where paired stats are both missing then change
+to a space and show no delimiters&nbsp;
+<p>%nodata: 19Mar08: "nowd" option added to "proc report" call&nbsp;
+<p>%unistats and %unicatrep: 19Mar08:&nbsp; trtvarlist= parameter added&nbsp;
+<p>%unistats, %unicatrep, %npcttab: 15Mar08: odslisting= parameter added
+to allow user to specify file=
+<p>%unistats: 13Mar08: Mispelling of SKEWNESS corrected in code&nbsp;
+<p>%rannomac: 11Mar08: New annotate macro %fillbar added
+<p>%rannomac: 06Mar08: New annotate macros %drawline and %bigbox added
+<p>%rannomac: 05Mar08: Defaults changed to font=' ', color=' ' and height=.
+for %text macro&nbsp;
+<p>%rannomac: 04Mar08: Keep list added to %dclannovars macro&nbsp;
+<p>%rannomac: 01Mar08: New macro added that works like %annomac but suitable
+for patient profiles&nbsp;
+<p>%unistats: 24Feb08: byvars= list generated if this is null yet byrow*=
+parameters used. Numeric pvalue merged on the first of a paired stat rather
+than the second&nbsp;
+<p>%unistats: 15Feb08: Paired stats spaces now controlled by "^" character
+in the delimiter which will be translated into a space&nbsp;
+<p>%unistats: 10Feb08: mincolw= parameter added&nbsp;
+<p>%unicatrep: 10Feb08: Column layout bug fixed&nbsp;
+<p>%unicatrep and %unistats: 09Feb08: compskip=no is now the default
+<p>%unicatrep and %unistats: 03Feb08: More byrow*= parameters added
+<p>%unicatrep: 02Feb08: byrow*= parameters added plus other changes&nbsp;
+<p>%unistats: 02Feb08: Paired stats labels such as "Min;Max" allowed and
+other parameters added for this v5.0 release&nbsp;
+<p>%xl2sas: 02Feb08: New macro added for reading html spreadsheets&nbsp;
+<p>%unimap: 27Jan08: Upgraded to handle "paired" stats labels such as Min;Max
+<p>%npcttab: 27Jan08: print=no logic changed so that other ods outputs
+are still available&nbsp;
+<p>%unistats, %unipvals and %npcttab: 27Jan08: trtlabel= set to null by
+default and odshtmlcss= and odscsv= parameters added&nbsp;
+<p>%unistats: 26Jan08: Bug fixed for handling formats such as $3. in %cat
+call&nbsp;
+<p>%unipvals: 26Jan08: Wrong p-value displayed for centre effect bug fixed
+and Fisher or chisq settings now override adjcntrvar=&nbsp;
+<p>%removew: 26Jan08: compbl bug fixed where string is null
+<p>%unistats: 20Jan08: Decimal places shown for kurtosis and skewness made
+the same as for STD.
+<p>%unistats and %unipvals; 19Jan08: All variables in input dataset are
+kept and passed to %unipvals
+<p>%unipvals and %unistats: 19Jan08: GLM override parameter values can
+be enclosed in single quotes to reference macro variables such as &amp;trtvar
+(will resolve to the treatment variable) and &amp;respvar (will resolve
+to the response variable)
+<p>%unistats and %unipvals: 14Jan08: GLM override parameters added (more
+to do)&nbsp;
+<p>%unistats and %unipvals: 13Jan08: CMH processing added for categorical
+variables to compensate for centre effects&nbsp;
+<p>%unistats and %unipvals: 13Jan08: cntrwarn=processing changed&nbsp;
+<p>%unistats and %unipvals: 08Jan08: Added parameters for warning of centre
+effects&nbsp;
+<p>%unistats and %unipvals: 07Jan08: Added parameters to test for the homogeneity
+of variances and to use the Welch test&nbsp;
+<p>%unistats and %unipvals: 06Jan08: Added parameters errortype= , modelform=
+and dsmodelanova= for adjustment for centre effects&nbsp;
+<p>%unistats and %unipvals: 06Jan08: Added parameters adjcntrvar= and glmopdest=
+for adjustment for centre effects for t-test and F-test calculations&nbsp;
+<p>%unistats: 05Jan08: Decimal point alignment bug fixed in "fillstr:"
+routine&nbsp;
+<p>%unistats: 31Dec07: Bug with NMISS format where decimal points adjusted
+by variable "/--" modification fixed&nbsp;
+<p>%unistats: 31Dec07: Mapping of statistic labels to keywords and formats
+displayed in log. All keywords starting STD will have the stdfmt= format
+applied.&nbsp;
+<p>%unimap: 31Dec07: Extended list of statistics keywords to match all
+those listed in sas v9.1.3 documentation&nbsp;
+<p>%unimap: 30Dec07: Added "MISSING" to map to NMISS keyword&nbsp;
+<p>%unistats: 30Dec07: NMISS now uses the same format used by N&nbsp;
+<p>%unistats: 30Dec07: Bug with _popfmt_ always being used as a label for
+transposed treatment arm variable fixed.&nbsp;
+<p>%npcttab: 10Nov07: Bug in handling non-user formats (such as $200.)
+assigned to level variables fixed
+<p>%unistats and %npcttab: 30Sep07: Default changed to topline=no to suit
+ODS output&nbsp;
+<p>%unistats: 24Sep07: Added parameters tfmacro= and pvalues=yes to allow
+user to define a macro to create titles and footnotes able to use the p-values
+set up in global macro variables.&nbsp;
+<p>%unistats and %unicatrep: 21Sep07: Added parameters odsrtf=, odshtml=,
+odspdf= and odsother= parameters to pass through ODS statements to the
+"proc report" step.&nbsp;
+<p>%unistats: 18Sep07: Added unicatstyle= parameter so that when unicatstyle=2
+you get a column report rather than an indented report plus a varw= parameter
+to define width of the first column for this style of report&nbsp;
+<p>%unistats and %unicat2word: 16Sep07: New macro %unicat2word added plus
+added wordtabdest= and wordtabdlim= parameters in %unistats for creating
+cell tables for inclusion into a word processor to be converted into in-text
+tables&nbsp;
+<p>%unistats and %npcttab: 16Sep07: Added out= parameter to allow keeping
+the output dataset created by "proc report"&nbsp;
+<p>%now: 07Sep07: Simple macro added that returns the current timestamp
+added&nbsp;
+<p>%unistats and %npcttab: 01Sep07: pctwarn= parameter added to check for
+percentages > 100.01&nbsp;
+<p>%removew: 10Aug07: New macro added&nbsp;
+<p>many macros added: 31Jul07: All macros have been consolidated into the
+macro library stored on the Spectre web site&nbsp;
+<p>many macros: 30Jul07: Header tidy and commercial macro versions now
+free versions&nbsp;
+<p>alltitles: 29Jul07: Explanation of how to edit it to fit your program
+naming conventions added&nbsp;
+<p>%dosfileinfo, %dosfilesize: 22Jul07: Two sasautos macros added for extracting
+DOS file information&nbsp;
+<p>prefix: 22Jul07: New script added to prefix all the items in a list.
+Works the same way as the script "suffix"&nbsp;
+<p>crtitlesds, crtitlesds_win: 20Jul07: Added calls to "lisremap" and "lisremap_win"&nbsp;
+<p>lisremap, lisremap_win: 20Jul07: New scripts added to list the output
+file name remapping specified in "lisfile:" .titles entries&nbsp;
+<p>alltitles: 20Jul07: If there are no *.titles files then assume ALL.TITLES
+was created by another means and exit
+<p>crtitlestmpl: 20Jul07: Mention "label:" and "lisfile:" in the generated
+header for the titles template&nbsp;
+<p>%closerep: 19Jul07: Fixed the free version 4.0 of %closerep so it can
+pick up different donelist temporary file names as set up in "makerun"
+and "makexrun" by reading the environment variable DONELIST&nbsp;
+<p>makerun, makexrun: 19Jul07: Set up system environment variable DONELIST
+to contain the name of the donelist temporary file so that %closerep can
+use it
+<p>%crtitlesds, %proginfo, %closerep: 19Jul07: Added handling for the lisfile
+output lis name&nbsp;
+<p>alltitles: 19Jul07: Updated to copy across "lisfile:" lines in titles
+members to ALL.TITLES&nbsp;
+<p>showtitles, showtitles_win: 19Jul07: Updated to display lisfile name
+as stored in titles dataset otherwise as derived if "lisfile" variable
+is blank or missing&nbsp;
+<p>makerun, makexrun, makemyrun: 19Jul07: Updated to use the "intitlis"
+script instead of the "intitlabels" script&nbsp;
+<p>intitlis, intitlis_win: 19Jul07: New scripts added to replace "intitlabels"
+and "intitlabels_win"&nbsp;
+<p>makexrun, bigxps, bigxlis: 15Jul07: New scripts added to handle "extra
+analysis" program run and output collection&nbsp;
+<p>makerun, alltitles: 15Jul07: Added ability to store titles of "extra
+analysis" programs that start with "x" in the titles dataset but to exclude
+them from the script "runreports" created by "makerun".
+<p>%lcralign: 01Jul07: New macro added&nbsp;
+<p>crprottmpl: 25Jun07: Extra "Pagemac : pagexofy" line added to define
+the macro used to add "Page x of Y" labels
+<p>%crprotds, %protinfo, %closerep: 25Jun07: Allows you to define a replacement
+for the %pagexofy macro for special handling of the output file to enable
+you to add extra titles and footnotes and so break the 10 titles, 10 footnotes
+limit.&nbsp;
+<p>%unistats: 28May07: Version 4.6 Allows you to define variable labels
+to the varlist= parameter and allows you to force numeric processing on
+numeric variables with a user format applied by specifying the /n flag.
+<p>%noquotes, %quotescan and %quotecnt: 28May07: Added to macro library
+for %unistats variable label processing&nbsp;
+<p>26MAY2007 - SPECTRE (CLINICAL) 2.2 RELEASED
+<p>%npcttab and %unistats: 17May07: further checking of pctfmt= value added&nbsp;
+<p>pagexofy: 16May07: "A0"x and not "FE"x substituted with a space&nbsp;
+<p>%unicatrep and %pagexofy: 16May07: "FE"x no longer treated as a space&nbsp;
+<p>%npcttab and %unistats: 16May07: pctfmt=5.1 added so percent format
+can be changed&nbsp;
+<p>%windex: 10May07: added break-loop-on-match processing
+<p>%npcttab: 03May07: pctsign=no added so display of percent sign can be
+forced&nbsp;
+<p>%unistats: 02May07: pctsign=no added so display of percent sign can
+be forced&nbsp;
+<p>%popfmt: 02May07: brackets=yes parameter added so users can suppress
+(N=xxx) round brackets&nbsp;
+<p>%npcttab: 30Mar07: Bug fixed in handling trtlabel and toplabel&nbsp;
+<p>24MAR2007 - SPECTRE (CLINICAL) 2.1 RELEASED (THE WINDOWS UPDATE RELEASE)&nbsp;
+<p>%unistats, %unicatrep and %pagexofy: 24Mar07: "A0"x used instead of
+"FE"x for decimal point alignment so no more "&thorn;" characters will
+appear in %unistats output.&nbsp;
+<p>%unistats and %unicatrep: 23Mar07: Removed 3 character limit for catnfmt=
+so that a category "n" of thousands or greater can be used&nbsp;
+<p>%npcttab: 21Mar07: Added support for the "nocenter" option&nbsp;
+<p>%unicatrep: 21Mar07: Added support for the "nocenter" option&nbsp;
+<p>%unipvals: 21Mar07: Updated to cancel format attached to the _pvalue
+variable&nbsp;
+<p>%unimap: 21Mar907: Added mapping of S.E.M. (standard error of the mean)&nbsp;
+<p>%unistats: 21Mar07: Fixed "extra line" problem of merging pvalues on
+top of categories plus added support for S.E.M. (standard error of the
+mean)&nbsp;
+<p>%unistats: 20Mar07: Handling of character treatment arms debugged&nbsp;
+<p>%popfmt: 20Mar07: Creation of _nX_ variables dropped as being too messy
+<p>%pagexofy: 19Mar07: macro now allows for two part page labels such as
+"Seite x" and "(SEITE X)"&nbsp;
+<p>%unistats: 19Mar07: parameter dpalign=yes added to make it possible
+to disable the addition of the special character that the macro uses for
+decimal point alignment&nbsp;
+<p>19Mar07: %mkformat, %hasvars, %match, %hasvarsc and %hasvarsn added
+to macro library in preparation for CDISC reporting&nbsp;
+<p>%pagexofy: 15Mar07: Now checks to make sure "Page x of Y" style has
+4 parts&nbsp;
+<p>showme: 15Mar07: Made a bit more Wordpad friendly
+<p>%unistats: 12Mar07: Default now pctcalc=pop instead of pctcalc=cat due
+to the macro's strong connection with %popfmt
+<p>10MAR2007 - SPECTRE (CLINICAL) 2.0 RELEASED (THE WINDOWS RELEASE)&nbsp;
+<p>pagexofy: 07Mar07: This script has now been replaced by the %pagexofy
+macro so is now just a utility script
+<p>getfields: 04Mar07: This script added to display client/office/drug/study/increment
+that must be tailored for each site&nbsp;
+<p>All: 02Mar07: many scripts and macros changed so that "der." is replaced
+by "&amp;_ptlibref_.." _ptlibref_ must be set up in the allocation macros
+to say which libref the "protocol" and "titles" datasets are located. This
+makes the installation process for both Unix and Windows easier as edits
+are avoided.&nbsp;
+<p>makerun: 27Feb07: Cygwin emailing fixed (ssmtp must be installed)
+<p>SPECTRE ON WINDOWS: 25Feb07: Initial release. Uses Cygwin. PDF creation
+and emailing from Spectre scripts not done yet.&nbsp;
+<p>makerun: 25Feb07: generation of "runreports" script changed to use "rm"
+for deleting report program output instead of the safer "rem" to look for
+group permission before deletion.&nbsp;
+<p>%proginfo: 21Feb07: made Windows compliant&nbsp;
+<p>%layout2lsps: 21Feb07: new macro added for Windows compliancy
+<p>dirtree: 18Feb07: new script to display directory structure with indents
+from current directory downwards
+<p>sasb: 17Feb07: Made Windows compliant and now calls "scanlogs" instead
+of "sc" due to Cygwin command conflict&nbsp;
+<p>sc: 17Feb07: "sc" has been renamed to "scanlogs" due to Cygwin command
+conflict&nbsp;
+<p>%openrep: 16Feb07: Made Windows compliant&nbsp;
+<p>%closerep: 16Feb07: Now writes to "donelist.tmp" rather than "donelist.txt".
+Made Windows compliant&nbsp;
+<p>makerun: 16Feb07: "donelist.tmp" processing added and updated for "donepages"
+script&nbsp;
+<p>donepages: 16Feb07: Changed to take a donelist file as the first parameter
+<p>%jobinfo: 13Feb2007: Made Windows compliant.&nbsp;
+<p>All Macros: 13Feb2007: "MACRO CALLED" messages added before macro definition
+for all sas macros to put name of macro called and the version of the macro
+in the sas log.&nbsp;
+<p>SPECTRE ON WINDOWS: 05Feb07: Start of project to port Spectre onto Windows
+Phase I (uses Cygwin Linux emulator).&nbsp;
+<p>ddiff: 24Nov2006: A check was added to make sure a file of the same
+name exists in the target directory and no comparison will be done unless
+that is the case. Fixed on 24Nov2006.&nbsp;
+<p>ddiff: 13Nov2006: File permissions can prevent temporary files from
+being overwritten so these are now deleted at end of every iteration. Fixed
+on 13Nov2006&nbsp;
+<p>%unistats: 09Oct2006: Problem detected with fmtord. not found messages.
+Fixed on 09Oct2006&nbsp;
+<p>%unipvals and %unistats: Sometimes a p-value can not be calculated due
+to unusual circumstances and to avoid macro crashes if these datasets are
+not found then %unipvals now sets up dummy p-value datasets. %unistats
+has a pvalmisstxt=" n/a" added so that missing p-values from the dummy
+datasets can be given a suitable text form. Updated 23Sep06&nbsp;
+<p>%unistats: 26Aug2006: nopctcatlist= parameter added. Version incremented
+from 3.0 to 3.1
+<p>%unistats: 21July2006: bug associated with lowercasing _statlabel when
+set to &amp;misstxt. Fixed on 22Jul06
+<p>%unistats: 11July2006: _statord=1 instead of _statord=5 used to match
+p-value to category. Search for "RRB002" in the code to see where change
+was made. Fixed on 11Jul06&nbsp;
+<p>%unipvals: 10Jul06: "missing" option added to "proc freq" tables statements
+so it could calculate p-values based on missing values passed to it by
+the %unistats macro.&nbsp;
+<p>%unistats: 10Jul06: misspct=yes was having its displayed percentage
+blanked out. Fixed on 10Jul06.&nbsp;
+<p>%unistats: 06Jul06: catn= setting caused macro to crash. Fixed on 07Jul06.&nbsp;
+<p>16MAY2006 - SPECTRE (CLINICAL) RELEASED</td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+This concludes the list of bugs found and changes made to Spectre.
+<br><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="Spectre.htm" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code --><!-- GoFTP Free Version Start -->
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<br>
+<center>
+<p><a href="http://www.answeranimal.com/" style="COLOR: #cccccc; FONT-SIZE: x-small; TEXT-DECORATION: none">Check
+here for added and further information concerning unistats</a>
+<br><a href="http://www.goftp.com/" style="COLOR: #cccccc; FONT-SIZE: x-small; TEXT-DECORATION: none">powered
+by Go FTP FREE Software</a></center>
+<!-- GoFTP Free Version End -->
+</body>
+</html>

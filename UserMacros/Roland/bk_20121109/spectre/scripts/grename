@@ -1,0 +1,54 @@
+#!/bin/bash
+#<pre><b>
+# Script     : grename
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 03-Dec-2004
+# Purpose    : To do a bulk rename of files replacing one name part with another
+#              for files owned by you.
+# SubScripts : none
+# Notes      : It will only work on files that you own and only those files
+#              names that match the target string will be affected.
+#              DO NOT USE A "." IN YOUR TARGET STRING.
+#              Make backups of your files in a directory of their own before
+#              running this utility.
+# Usage      : grename adult adu *.sas
+#              grename child ped *.sas *.titles
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   target string to replace in file name
+#  2   replacement string to go in new file name
+#  3   file(s)
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+iam=$(whoami)
+
+# Edit the test below for the number of expected parameters and put out
+# a usage note if an incorrect number supplied. Remove if not required.
+if [ $# -lt 3 ] ; then
+  echo "Usage: grename \"target\" \"replacement\" *.sas" 1>&2
+  exit 1
+fi
+
+target="$1"
+repl="$2"
+
+shift 2
+
+for file in "$@" ; do
+  owner=$(ls -ld "$file" | gawk '{print $3}')
+  if [ "$owner" == "$iam" ] ; then
+    newfile=$(echo "$file" | sed "s%$target%$repl%")
+    if [ "$newfile" != "$file" ] ; then
+      mv "$file" "$newfile"
+    fi
+  fi
+done

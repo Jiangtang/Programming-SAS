@@ -1,0 +1,483 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="Spectre updates">
+   <meta name="Description" content="Spectre updates">
+   <title>Spectre Updates</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Spectre (Clinical) Updates</h1></center>
+
+<center><b>(files shown in descending datetime order)</b></center>
+
+<p>Spectre <a href="bugs.html#log" target="_blank">bugs</a> log (this is
+kept <b>strictly</b> up to date - what you see below might be up to two
+days old)
+<p>Next release <a href="nextrel.html" target="_blank">details</a>
+<p>Alphabetical list of <b>all macros</b> and their <a href="macros/maclist2.html">purposes</a>
+<br>Alphabetical list of <b>all shell scripts</b> and their <a href="scripts/sclist2.html">purposes</a>
+<p>Shortcut to <b>macro</b> <a href="#ma">updates</a>
+<br>Shortcut to <b>script</b> <a href="#sc">updates</a>
+<h2>
+<a NAME="html"></a>html updates</h2>
+<tt>===========EDIT OUT THE FOLLOWING INSTRUCTIONS FROM updates2.html===========</tt>
+<br><tt>(create a list of html pages by using this command in the top directory)</tt>
+<br><tt>$ ls -lt *.html | gawk '{print substr($0,34)}' > htmlist.txt</tt>
+<br><tt>(create a list of macros by using this command in the macro directory)</tt>
+<br><tt>$ ls -lt *.sas | gawk '{print substr($0,33)}' > maclist.txt</tt>
+<br><tt>(create a list of scripts by using this command in the script directory)</tt>
+<br><tt>$ ls -lt * | fgrep -v . | gawk '{print substr($0,34)}' > sclist.txt</tt>
+<br><tt>(include these lists and convert updates.html to updates2.html
+by using this command)</tt>
+<br><tt>$ sed -e 's%\([0-9][0-9] \)\([a-z][a-z,0-9,_]*\.sas\)%\1&lt;a href="macros/\2"
+target="_blank">\2&lt;/a>%' \</tt>
+<br><tt>-e 's%\([0-9][0-9] \)\([a-z][a-z,0-9,_]*\.html\)%\1&lt;a href="\2"
+target="_blank">\2&lt;/a>%' \</tt>
+<br><tt>-e 's%\([0-9][0-9] \)\([a-z][a-z,0-9,_]*\)\(&lt;/tt>\)%\1&lt;a
+href="scripts/\2" target="_blank">\2&lt;/a>\3%' \</tt>
+<br><tt>updates.html > updates2.html</tt>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Feb 15 20:18 bugs.html</tt>
+<br><tt>Feb 10 10:26 unistats.html</tt>
+<br><tt>Feb 10 10:19 faq.html</tt>
+<br><tt>Dec 31 02:23 updates2.html</tt>
+<br><tt>Dec 31 02:22 updates.html</tt>
+<br><tt>Dec&nbsp; 4 13:11 unilab1.html</tt>
+<br><tt>Dec&nbsp; 2 15:17 index.html</tt>
+<br><tt>Oct&nbsp; 3 11:45 nextrel.html</tt>
+<br><tt>Sep&nbsp; 8 10:29 download.html</tt>
+<br><tt>Sep&nbsp; 6 07:59 clinvalid.html</tt>
+<br><tt>Aug 31 09:23 unixcom.html</tt>
+<br><tt>Aug 13&nbsp; 2007 triptest.html</tt>
+<br><tt>Aug&nbsp; 5&nbsp; 2007 validplan.html</tt>
+<br><tt>Aug&nbsp; 1&nbsp; 2007 xytitles.html</tt>
+<br><tt>Jul 31&nbsp; 2007 release.html</tt>
+<br><tt>Jul 31&nbsp; 2007 keycomp.html</tt>
+<br><tt>Jul 30&nbsp; 2007 amending.html</tt>
+<br><tt>Jul 22&nbsp; 2007 sastech.html</tt>
+<br><tt>Jul 20&nbsp; 2007 infra.html</tt>
+<br><tt>Jul 20&nbsp; 2007 yilike.html</tt>
+<br><tt>Jul 17&nbsp; 2007 contact.html</tt>
+<br><tt>Jul&nbsp; 8&nbsp; 2007 learnunix.html</tt>
+<br><tt>Jul&nbsp; 5&nbsp; 2007 terms.html</tt>
+<br><tt>Jun 29&nbsp; 2007 power.html</tt>
+<br><tt>Jun 29&nbsp; 2007 bashscr.html</tt>
+<br><tt>Jun 25&nbsp; 2007 installw.html</tt>
+<br><tt>Jun 25&nbsp; 2007 install.html</tt>
+<br><tt>May 18&nbsp; 2007 cdiscrep.html</tt>
+<br><tt>May&nbsp; 7&nbsp; 2007 conditions.html</tt>
+<br><tt>Apr&nbsp; 9&nbsp; 2007 batch.html</tt>
+<br><tt>Apr&nbsp; 6&nbsp; 2007 uniwithby.html</tt>
+<br><tt>Apr&nbsp; 3&nbsp; 2007 mkdsets.html</tt>
+<br><tt>Mar 30&nbsp; 2007 npcttab.html</tt>
+<br><tt>Mar 25&nbsp; 2007 winusers.html</tt>
+<br><tt>Mar 21&nbsp; 2007 adhoc.html</tt>
+<br><tt>Mar 21&nbsp; 2007 atwork.html</tt>
+<br><tt>Mar 21&nbsp; 2007 genstand.html</tt>
+<br><tt>Mar 21&nbsp; 2007 alloc.html</tt>
+<br><tt>Mar 14&nbsp; 2007 nutshell.html</tt>
+<br><tt>Mar 12&nbsp; 2007 macdep.html</tt>
+<br><tt>Mar&nbsp; 2&nbsp; 2007 admin.html</tt>
+<br><tt>Feb 17&nbsp; 2007 linux.html</tt>
+<br><tt>Feb&nbsp; 6&nbsp; 2007 gawk.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 validres.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 validate.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 unispec.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 titles.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 t2event.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 scrdep.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 sasscr.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 repmacros.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 procflow.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 printing.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 popfmt.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 openrep.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 npctspec.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 lowlevtest.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 locf.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 legacy.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 dosemerge.html</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 derived.html</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<h2>
+<a NAME="ma"></a>Macro updates</h2>
+
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Feb 15 20:15 unistats.sas</tt>
+<br><tt>Feb 10 15:31 unicatrep.sas</tt>
+<br><tt>Feb&nbsp; 3 02:55 xl2sas.sas</tt>
+<br><tt>Jan 27 09:09 unistats_sav.sas</tt>
+<br><tt>Jan 27 09:06 unicatrep_sav.sas</tt>
+<br><tt>Jan 27 08:57 unimap.sas</tt>
+<br><tt>Jan 27 07:46 npcttab.sas</tt>
+<br><tt>Jan 26 19:38 unipvals.sas</tt>
+<br><tt>Jan 26 09:21 removew.sas</tt>
+<br><tt>Jan 19 07:39 dequote.sas</tt>
+<br><tt>Dec 17 01:08 nlobs.sas</tt>
+<br><tt>Dec 17 01:06 nobs.sas</tt>
+<br><tt>Dec 17 01:05 attrc.sas</tt>
+<br><tt>Dec 17 01:05 attrv.sas</tt>
+<br><tt>Dec 17 00:59 attrn.sas</tt>
+<br><tt>Sep 17 05:39 unicat2word.sas</tt>
+<br><tt>Sep&nbsp; 7 09:53 sysfmtlist.sas</tt>
+<br><tt>Sep&nbsp; 7 09:53 splitvar.sas</tt>
+<br><tt>Sep&nbsp; 7 07:29 now.sas</tt>
+<br><tt>Aug 16&nbsp; 2007 testhdr.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 verify.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 varinfmt.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 therest.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 readfile.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 qtrim.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 qleft.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 qcompress.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 putvars.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 nodup.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 modte.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 ltgtm1.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 left.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 datanulldemo.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 globlist.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 globexist.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 fmts2fda.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 equals.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 duplvars.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 dtscale.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 dslabel.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 crdte.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 compress.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 clashvars.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 alluniq.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 aligndp.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 after.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 addautos.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 closerep.sas</tt>
+<br><tt>Jul 31&nbsp; 2007 xytitles.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 words.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 windex.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 verifyb.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 vartype.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 varnum.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 varlistn.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 varlen.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 varlist.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 varlistc.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 varlabel.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 varfmt.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 trim.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 titles.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 titlegen.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 substrw.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 splitmac.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 sortedby.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 rxmatch.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 remove.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 readpipe.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 quotescan.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 quotelst.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 quotecnt.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 protinfo.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 proginfo.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 popfmt.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 pagexofy.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 openrep.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 nvarsn.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 nvarsc.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 nvars.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 npctpvals.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 noquotes.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 mkformat.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 maxtitle.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 match.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 lowcase.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 layout2lsps.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 latitle.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 lafootnote.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 jobinfo.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 hasvarsn.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 hasvarsc.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 hasvars.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 getvalue.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 fmtpath.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 eqsuff.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 endwith.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 dosfilesize.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 dosfileinfo.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 ctitlepgmrk.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 crtitlesds.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 crprotds.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 complibs.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 commas.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 chompw.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 casestrvar.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 casestrmac.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 capvar.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 capmac.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 allocw.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 allocr.sas</tt>
+<br><tt>Jul 30&nbsp; 2007 age.sas</tt>
+<br><tt>Jul&nbsp; 1&nbsp; 2007 lcralign.sas</tt>
+<br><tt>Jul&nbsp; 1&nbsp; 2007 numchars.sas</tt>
+<br><tt>Mar 29&nbsp; 2007 asciinonp.sas</tt>
+<br><tt>Mar 29&nbsp; 2007 bydrop.sas</tt>
+<br><tt>Mar 29&nbsp; 2007 char2num.sas</tt>
+<br><tt>Mar 29&nbsp; 2007 clength.sas</tt>
+<br><tt>Mar 29&nbsp; 2007 delhex.sas</tt>
+<br><tt>Mar 29&nbsp; 2007 delzero.sas</tt>
+<br><tt>Mar 29&nbsp; 2007 doallitem.sas</tt>
+<br><tt>Mar 29&nbsp; 2007 dropvars.sas</tt>
+<br><tt>Mar 29&nbsp; 2007 dsattrib.sas</tt>
+<br><tt>Mar 29&nbsp; 2007 fixvars.sas</tt>
+<br><tt>Mar 29&nbsp; 2007 hexchars.sas</tt>
+<br><tt>Mar 29&nbsp; 2007 ljustify.sas</tt>
+<br><tt>Mar 29&nbsp; 2007 lrafootnote.sas</tt>
+<br><tt>Mar 29&nbsp; 2007 lratitle.sas</tt>
+<br><tt>Mar 29&nbsp; 2007 optlength.sas</tt>
+<br><tt>Mar 29&nbsp; 2007 printall.sas</tt>
+<br><tt>Mar 29&nbsp; 2007 rafootnote.sas</tt>
+<br><tt>Mar 29&nbsp; 2007 ratitle.sas</tt>
+<br><tt>Mar 29&nbsp; 2007 replhex.sas</tt>
+<br><tt>Mar 29&nbsp; 2007 round.sas</tt>
+<br><tt>Mar 29&nbsp; 2007 vaxis.sas</tt>
+<br><tt>Mar 29&nbsp; 2007 yrcutoff.sas</tt>
+<br><tt>Mar 21&nbsp; 2007 autoexec.sas</tt>
+<br><tt>Feb 13&nbsp; 2007 zerogrid.sas</tt>
+<br><tt>Feb 13&nbsp; 2007 titlelen.sas</tt>
+<br><tt>Feb 13&nbsp; 2007 supasort.sas</tt>
+<br><tt>Feb 13&nbsp; 2007 showhex.sas</tt>
+<br><tt>Feb 13&nbsp; 2007 nodupkey.sas</tt>
+<br><tt>Feb 13&nbsp; 2007 nodata.sas</tt>
+<br><tt>Feb 13&nbsp; 2007 missvars.sas</tt>
+<br><tt>Feb 13&nbsp; 2007 misscnt.sas</tt>
+<br><tt>Feb 13&nbsp; 2007 lookahead.sas</tt>
+<br><tt>Feb 13&nbsp; 2007 locf.sas</tt>
+<br><tt>Feb 13&nbsp; 2007 hexcnt.sas</tt>
+<br><tt>Feb 13&nbsp; 2007 fmtord.sas</tt>
+<br><tt>Feb 13&nbsp; 2007 flatten.sas</tt>
+<br><tt>Feb 13&nbsp; 2007 dslist.sas</tt>
+<br><tt>Feb 13&nbsp; 2007 dsall.sas</tt>
+<br><tt>Feb 13&nbsp; 2007 dosemerge.sas</tt>
+<br><tt>Feb 13&nbsp; 2007 chkuniq.sas</tt>
+<br><tt>Feb 13&nbsp; 2007 bytitle.sas</tt>
+<br><tt>Feb 13&nbsp; 2007 allfmtvals.sas</tt>
+<br><tt>Feb 13&nbsp; 2007 adddecodevars.sas</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<h2>
+<a NAME="sc"></a>Script updates</h2>
+
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Jul 29 13:11 alltitles</tt>
+<br><tt>Jul 22 17:57 prefix</tt>
+<br><tt>Jul 21 00:10 lisremap_win</tt>
+<br><tt>Jul 20 10:55 crtitlesds_win</tt>
+<br><tt>Jul 20 10:55 crtitlesds</tt>
+<br><tt>Jul 20 10:49 lisremap</tt>
+<br><tt>Jul 20 00:46 crtitlestmpl</tt>
+<br><tt>Jul 19 23:48 makexrun</tt>
+<br><tt>Jul 19 23:47 makerun</tt>
+<br><tt>Jul 19 23:43 makemyrun</tt>
+<br><tt>Jul 19 14:09 showtitles</tt>
+<br><tt>Jul 19 14:09 showtitles_win</tt>
+<br><tt>Jul 19 13:11 intitlis_win</tt>
+<br><tt>Jul 19 13:04 intitlis</tt>
+<br><tt>Jul 15 14:34 bigxps</tt>
+<br><tt>Jul 15 14:33 bigxlis</tt>
+<br><tt>Jun 25 18:57 crprottmpl</tt>
+<br><tt>May 16 10:56 pagexofy</tt>
+<br><tt>Mar 15 05:08 showme</tt>
+<br><tt>Mar 11 08:47 titles</tt>
+<br><tt>Mar 11 08:45 olis</tt>
+<br><tt>Mar 11 08:45 opgm</tt>
+<br><tt>Mar 11 08:45 log</tt>
+<br><tt>Mar 11 08:44 lst</tt>
+<br><tt>Mar 11 08:44 otitles</tt>
+<br><tt>Mar 11 08:43 lis</tt>
+<br><tt>Mar 11 08:20 myrepchk</tt>
+<br><tt>Mar 11 08:19 myderchk</tt>
+<br><tt>Mar 11 08:05 pgm</tt>
+<br><tt>Mar&nbsp; 7 16:42 showprot_win</tt>
+<br><tt>Mar&nbsp; 7 16:40 showprot</tt>
+<br><tt>Mar&nbsp; 4 19:51 getfields</tt>
+<br><tt>Mar&nbsp; 4 19:50 mybadprot</tt>
+<br><tt>Mar&nbsp; 4 19:46 badprot</tt>
+<br><tt>Mar&nbsp; 4 19:43 hdr</tt>
+<br><tt>Mar&nbsp; 4 19:41 ohdr</tt>
+<br><tt>Mar&nbsp; 4 19:36 lmhdr</tt>
+<br><tt>Mar&nbsp; 2 18:48 lis2ps</tt>
+<br><tt>Mar&nbsp; 2 18:46 intitlesds_win</tt>
+<br><tt>Mar&nbsp; 2 18:45 intitlesds</tt>
+<br><tt>Mar&nbsp; 2 18:44 intitlabels_win</tt>
+<br><tt>Mar&nbsp; 2 18:43 intitlabels</tt>
+<br><tt>Mar&nbsp; 2 18:42 getlayout_win</tt>
+<br><tt>Mar&nbsp; 2 18:40 getlayout</tt>
+<br><tt>Mar&nbsp; 2 18:28 checktitles_win</tt>
+<br><tt>Mar&nbsp; 2 18:26 checktitles</tt>
+<br><tt>Feb 27 07:30 testemail</tt>
+<br><tt>Feb 23 21:44 donepages</tt>
+<br><tt>Feb 23 21:42 getlsps</tt>
+<br><tt>Feb 22 18:27 showfmt_win</tt>
+<br><tt>Feb 22 18:25 showfmt</tt>
+<br><tt>Feb 22 18:20 showfmts_win</tt>
+<br><tt>Feb 21 19:43 layout2lsps</tt>
+<br><tt>Feb 20 17:54 userfmts_win</tt>
+<br><tt>Feb 20 17:52 userfmts</tt>
+<br><tt>Feb 20 17:43 showfmts</tt>
+<br><tt>Feb 20 17:38 missvars_win</tt>
+<br><tt>Feb 20 17:37 missvars</tt>
+<br><tt>Feb 20 17:36 misscnt_win</tt>
+<br><tt>Feb 20 17:34 misscnt</tt>
+<br><tt>Feb 20 17:33 linesize_win</tt>
+<br><tt>Feb 20 17:32 linesize</tt>
+<br><tt>Feb 20 17:26 hexcnt</tt>
+<br><tt>Feb 18 21:16 getname</tt>
+<br><tt>Feb 18 21:12 mhdr</tt>
+<br><tt>Feb 18 09:43 dirtree</tt>
+<br><tt>Feb 17 12:26 scanlogs</tt>
+<br><tt>Feb 17 11:44 sasb</tt>
+<br><tt>Feb 11 19:19 showlfmt_win</tt>
+<br><tt>Feb 11 19:15 showlfmts_win</tt>
+<br><tt>Feb 11 19:15 showlfmt</tt>
+<br><tt>Feb 11 19:09 showlfmts</tt>
+<br><tt>Feb 11 19:05 contentsl_win</tt>
+<br><tt>Feb 11 19:04 contents_win</tt>
+<br><tt>Feb 11 19:04 clash_win</tt>
+<br><tt>Feb 11 18:52 summary_win</tt>
+<br><tt>Feb 11 18:50 printall_win</tt>
+<br><tt>Feb 11 14:28 crindex_win</tt>
+<br><tt>Feb 11 14:28 crindex</tt>
+<br><tt>Feb 11 12:55 printall</tt>
+<br><tt>Feb 11 12:44 nobs_win</tt>
+<br><tt>Feb 11 12:41 nobs</tt>
+<br><tt>Feb 11 12:03 intnolis</tt>
+<br><tt>Feb 11 10:09 clash</tt>
+<br><tt>Feb 11 08:55 fsvdc</tt>
+<br><tt>Feb 11 08:55 fsvacct</tt>
+<br><tt>Feb 11 08:55 fsv</tt>
+<br><tt>Feb&nbsp; 7 19:29 summary</tt>
+<br><tt>Feb&nbsp; 7 19:23 contentsl</tt>
+<br><tt>Feb&nbsp; 7 19:20 contents</tt>
+<br><tt>Jan 15&nbsp; 2007 cmprc</tt>
+<br><tt>Nov 24&nbsp; 2006 ddiff</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 wt</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 whosgot</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 vtitles</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 vop</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 usps2pdf</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 usps</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 uslsps</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 toupper</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 toclis</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 titlesvsbkmarks</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 timestamp</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 suffix</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 splitbiglst</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 sortnpref</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 sohdr</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 slinks</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 shdr</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 sasunixskeleton</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 runproblems</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 ruler</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 rescuedonelist</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 rescue</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 rem</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 reflist2progs</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 reflist2lis</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 pstolp</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 printpdfbookmarks</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 pages</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 owner</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 orphans</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 opsortkey</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 oporder</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 oplist</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 numtest</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 not664</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 nofootline</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 nofile</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 newix</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 myps</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 myorphans</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 myop</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 mynewtitles</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 mynewprogs</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 mynewlis</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 myfiles</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 mydonefiles</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 mybadtitlesprogs</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 mybadprognames</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 mybadinc</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 mybaddrug</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 multilinks</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 macrocalls</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 listempty</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 lis2owner</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 justhdr</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 intnop</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 idiff</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 hexchars</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 greplace</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 grename</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 getitles_sas</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 getitles</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 gethome</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 fullrunsuite</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 fsvraw</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 filesize</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 fext</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 emailme</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 emailaddr</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 donesectchk</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 donefiles</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 digits2x</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 derprogs</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 derorder</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 dashes</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 compfl</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 compdirs</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 colonend</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 catp</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 bigps</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 biglis</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 badtitlesprogs</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 badprognames</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 badlines</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 badinc</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 baddrug</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 badchars</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 antigrep</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 a4ps2pdf</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 a4ps</tt>
+<br><tt>Nov&nbsp; 1&nbsp; 2006 a4lsps</tt>
+<br><tt>Feb 13&nbsp; 2006 pathscr</tt></td>
+</tr>
+</table>
+
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;
+</body>
+</html>

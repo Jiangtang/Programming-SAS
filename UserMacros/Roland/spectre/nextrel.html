@@ -1,0 +1,114 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="Spectre Next Release">
+   <meta name="KeyWords" content="Spectre Next Release">
+   <title>Spectre Next Release</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Spectre (Clinical) next Release</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 03 Oct 2007)</b></center>
+
+<h2>
+Introduction</h2>
+Releases tend to be "rolling releases" with updates available when ready
+with no strict release date unless it is helpful as a cutoff for stability
+purposes. The readiness of a new module will be indicated by the text "DONE"
+in the list below.
+<h2>
+Release 2.3&nbsp; --&nbsp; December 2007</h2>
+
+<ul>
+<li>
+Allow for variable labels to be attached to variable names in the %unistats
+call and add a switch so that numeric processing can be performed on numeric
+variables to override any user-defined format attached. <b>(DONE)</b></li>
+
+<li>
+Change %crprotds, %protinfo and %closerep so that the user can specify
+the %pagexofy macro to be used in <b>protocol.txt</b> to allow for customized
+handling of page labels plus other needed editing <b>(DONE)</b></li>
+
+<li>
+Allow for "extra analysis" programs to run after the "final run" so that
+their titles are stored in the titles dataset and they can be run as a
+suite and bookmarked PDFs can be created from their output in the same
+way as is done for normal tables and listings. <b>(DONE)</b></li>
+
+<li>
+Allow users to override the derived "lis file" names using a new "<b>lisfile:</b>"
+line in the .titles member and to alert users to lis file name remappings
+in the crtitlesds messages <b>(DONE)</b></li>
+
+<li>
+Change script "alltitles" so that it will accept when there are no <b>.titles</b>
+members and assume ALL.TITLES has been created by a different utility (such
+as spreadsheet extraction) <b>(DONE)</b></li>
+
+<li>
+Change %unistats and %npcttab so by default they put out warning messages
+when they encounter a percentage value > 100.01 <b>(DONE)</b></li>
+
+<li>
+Allow saving the "proc report" output dataset from %unistats and %npcttab
+<b>(DONE)</b></li>
+
+<li>
+Add facility to %unistats to create cell tables suitable for inclusion
+and conversion to a table in a word processor <b>(DONE)</b></li>
+
+<li>
+Add new style for output from %unistats to create a column report rather
+than an indented report <b>(DONE)</b></li>
+
+<li>
+Add an ODS statement pass-through facility to %unistats and %npcttab <b>(DONE)</b></li>
+
+<li>
+Add a titles and footnotes macro name facility to %unistats to activate
+titles and footnotes after p-values have been created so that they can
+be used in the titles and footnotes <b>(DONE)</b></li>
+
+<li>
+Enhance the %pagexofy macro so that for page target characters placed one
+character before the end of the line it will attempt to recenter the line
+after adding the "(Page x of Y)" label.</li>
+
+<li>
+Add appropriate error checking of "lis file" output file name overrides</li>
+
+<li>
+Enhance the %pagexofy macro so that it can optionally add up to 5 "pre
+title" lines and 5 "post footnote" lines to the final output so that the
+10 titles and 10 footnotes limit can be broken (allowing the programmer
+to use all 10 titles and footnotes as user-defined) and allow for the "Page
+x of Y" target character "FF"x to be present in one of these lines. This
+macro can then be called from the client %pagexofy macro defined in <b>protocol.txt</b>
+.</li>
+</ul>
+
+<h2>
+Conclusion</h2>
+The changes in the next release are listed above. Those changes not yet
+implemented are subject to change until the last day.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<center><a href="contact.html" target="_blank">contact the author</a></center>
+
+</body>
+</html>

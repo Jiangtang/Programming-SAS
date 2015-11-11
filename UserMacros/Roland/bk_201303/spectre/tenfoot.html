@@ -1,0 +1,696 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="More than ten footnotes">
+   <meta name="KeyWords" content="more than ten footnotes">
+   <title>More than Ten Footnotes</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+More than Ten Footnotes</h1></center>
+<b>Updated: 28 Sep 2011</b>
+<h2>
+Introduction</h2>
+It is common for reporting systems to need to deal with more than the ten
+footnotes sas will allow and this can be achieved using "compute blocks"
+in proc report. The Spectre reporting macros %npcttab and %unistats allow
+you to do this as well and you can say whether you want a line drawn before
+these and then you can list up to 15 footnotes manually or call an in-house
+macro to do this and then you can have more than 15 footnotes. Both %npcttab
+abd %unistats have identically named parameters to do this and they work
+in an identical way (all the code was copied from %unistats into %npcttab)
+so just <b>%npcttab</b> examples will be shown but the <b>same applies
+to %unistats</b>.
+<h2>
+Pageline= and Endline= parameters</h2>
+First of all I would like to make it clear that you do not<b><i> have</i></b>
+to use these parameters. If ten footnotes is enough for you and you do
+it the normal way using FOOTNOTE1 etc. then there is no problem. But if
+you need more than ten footnotes or your current system already uses "compute
+blocks" to do your footnotes then this is for you.
+<p>There is a <b>pageline=</b> parameter you set to "yes" or "no" (no quotes)
+to say if you want a line drawing above the footnotes and parameters <b>pageline1-pageline15</b>
+where you supply quoted text that you want displaying as footnotes. There
+is also a <b>pagemacro=</b> parameter that you can use <b><i>instead </i></b>of
+pageline1-pageline15 and you set this to the name of the macro you use
+to create footnotes in compute blocks. Whatever code this macro calls,
+either directly or indirectly, must not have any data step or procedure
+boundaries in it and what it should produce is syntactically correct code
+for proc report compute block processing.
+<p>There are "endline" equivalents of the "pageline" parameters and these
+are for when you just want to show footnotes at the end of a report and
+not on ever page. These parameters are named <b>endline=</b>, <b>endline1-endline15</b>
+and <b>endmacro=</b> as you would expect. Only the "pageline" parameters
+will be demonstrated on this page but the same applies to "endline" parameters.
+<h2>
+Normal use of the pageline parameters</h2>
+
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>/* Demonstrate %npcttab: program 1 */&nbsp;</tt>
+<br><tt>options noovp nodate nonumber center&nbsp;</tt>
+<br><tt>missing=" " formchar='|_---|+|---+=|-/\&lt;>*';&nbsp;</tt>
+<p><tt>options sasautos=("C:\spectre\macros" SASAUTOS);&nbsp;</tt>
+<p><tt>options ls=78 ps=63;&nbsp;</tt>
+<p><tt>title1;&nbsp;</tt>
+<p><tt>proc format;&nbsp;</tt>
+<br><tt>&nbsp; value racecd&nbsp;</tt>
+<br><tt>&nbsp; 1="CAUCASIAN"&nbsp;</tt>
+<br><tt>&nbsp; 2="BLACK"&nbsp;</tt>
+<br><tt>&nbsp; 3="ASIAN"&nbsp;</tt>
+<br><tt>&nbsp; 4="HISPANIC"&nbsp;</tt>
+<br><tt>&nbsp; 5="OTHER"&nbsp;</tt>
+<br><tt>&nbsp; ;&nbsp;</tt>
+<br><tt>&nbsp; value sexcd&nbsp;</tt>
+<br><tt>&nbsp; 1="MALE"&nbsp;</tt>
+<br><tt>&nbsp; 2="FEMALE"&nbsp;</tt>
+<br><tt>&nbsp; ;&nbsp;</tt>
+<br><tt>&nbsp; value trtcd&nbsp;&nbsp;</tt>
+<br><tt>&nbsp; 1="Ambident (1g/day)"&nbsp;&nbsp;</tt>
+<br><tt>&nbsp; 2="Betamax (500mg/day)"&nbsp;&nbsp;</tt>
+<br><tt>&nbsp; 3="No treatment"&nbsp;&nbsp;</tt>
+<br><tt>&nbsp; ;&nbsp;&nbsp;</tt>
+<br><tt>&nbsp; value trtnarr&nbsp;&nbsp;</tt>
+<br><tt>&nbsp; 1="Ambident@(1g/day)"&nbsp;&nbsp;</tt>
+<br><tt>&nbsp; 2="Betamax@(500mg/day)"&nbsp;&nbsp;</tt>
+<br><tt>&nbsp; 3="No@treatment"&nbsp;&nbsp;</tt>
+<br><tt>&nbsp; ;&nbsp;</tt>
+<br><tt>&nbsp; value NY&nbsp;</tt>
+<br><tt>&nbsp; 0="NO"&nbsp;</tt>
+<br><tt>&nbsp; 1="YES"&nbsp;</tt>
+<br><tt>&nbsp; ;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<br>&nbsp;
+<p><tt>proc sort data=sasuser.demog(where=(fascd=1))&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; out=demog(drop=fascd);&nbsp;</tt>
+<br><tt>&nbsp; by patno invid;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>%popfmt(demog,trtcd,uniqueid=patno invid)&nbsp;</tt>
+<p><tt>proc sort data=sasuser.adv&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; out=adv;&nbsp;</tt>
+<br><tt>&nbsp; by patno invid;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>data adv;&nbsp;</tt>
+<br><tt>&nbsp; merge demog(in=_dem keep=patno invid trtcd) adv(in=_adv);&nbsp;</tt>
+<br><tt>&nbsp; by patno invid;&nbsp;</tt>
+<br><tt>&nbsp; if _dem and _adv;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>%npcttab(dsin=adv,midlvl=amsoc,lowlvl=ampt,</tt>
+<br><b><tt>pageline=yes,pageline1="This is the first page line",pageline2="This
+is the second page line");</tt></b>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>Here is the report with the pageline drawn and the two footnotes.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>______________________________________________________________________________</tt><tt></tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Ambident (1g/day)&nbsp;&nbsp;&nbsp; Betamax (500mg/day)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Total</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=9)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=17)</tt>
+<br><tt>______________________________________________________________________________</tt><tt></tt>
+<p><tt>Gastrointestinal disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 77.8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8 (100.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 15 ( 88.2)</tt>
+<br><tt>&nbsp;&nbsp; Constipation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9 ( 52.9)</tt>
+<br><tt>&nbsp;&nbsp; Nausea&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9 ( 52.9)</tt>
+<br><tt>&nbsp;&nbsp; Abdominal pain NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8 ( 47.1)</tt>
+<br><tt>&nbsp;&nbsp; Diarrhoea NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8 ( 47.1)</tt>
+<br><tt>&nbsp;&nbsp; Vomiting NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 29.4)</tt><tt></tt>
+<p><tt>General disorders and administration site conditions</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 66.7)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 11 ( 64.7)</tt>
+<br><tt>&nbsp;&nbsp; Chest pain&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9 ( 52.9)</tt>
+<br><tt>&nbsp;&nbsp; Pain NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 29.4)</tt><tt></tt>
+<p><tt>Psychiatric disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 87.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 11 ( 64.7)</tt>
+<br><tt>&nbsp;&nbsp; Insomnia&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 87.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 11 ( 64.7)</tt>
+<br><tt>&nbsp;&nbsp; Anxiety&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 29.4)</tt><tt></tt>
+<p><tt>Musculoskeletal and connective tissue disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10 ( 58.8)</tt>
+<br><tt>&nbsp;&nbsp; Pain in extremity&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8 ( 47.1)</tt>
+<br><tt>&nbsp;&nbsp; Back pain&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7 ( 41.2)</tt><tt></tt>
+<p><tt>Respiratory, thoracic and mediastinal disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10 ( 58.8)</tt>
+<br><tt>&nbsp;&nbsp; Cough&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8 ( 47.1)</tt>
+<br><tt>&nbsp;&nbsp; Dyspnoea&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 ( 35.3)</tt><tt></tt>
+<p><tt>Vascular disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10 ( 58.8)</tt>
+<br><tt>&nbsp;&nbsp; Hypotension NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9 ( 52.9)</tt>
+<br><tt>&nbsp;&nbsp; Hypertension NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 25.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4 ( 23.5)</tt><tt></tt>
+<p><tt>Nervous system disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7 ( 41.2)</tt>
+<br><tt>&nbsp;&nbsp; Headache&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7 ( 41.2)</tt>
+<br><tt>&nbsp;&nbsp; Tremor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 25.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4 ( 23.5)</tt><tt></tt>
+<p><tt>______________________________________________________________________________</tt>
+<br><tt>This is the first page line</tt>
+<br><tt>This is the second page line</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>If the above report was two pages long or the page size small then you
+would get footnotes on each page but it might not break the page in a good
+place. Here is the same output again with a page size of 30 and rerun.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>options ps=30;</tt>
+<br><tt>%npcttab(dsin=adv,midlvl=amsoc,lowlvl=ampt,</tt>
+<br><tt>pageline=yes,pageline1="This is the first page line",pageline2="This
+is the second page line");</tt></td>
+</tr>
+</table>
+
+<p>You can see that the report has thrown a page at a bad place because
+it has split one of the groups.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>______________________________________________________________________________</tt><tt></tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Ambident (1g/day)&nbsp;&nbsp;&nbsp; Betamax (500mg/day)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Total</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=9)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=17)</tt>
+<br><tt>______________________________________________________________________________</tt><tt></tt>
+<p><tt>Gastrointestinal disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 77.8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8 (100.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 15 ( 88.2)</tt>
+<br><tt>&nbsp;&nbsp; Constipation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9 ( 52.9)</tt>
+<br><tt>&nbsp;&nbsp; Nausea&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9 ( 52.9)</tt>
+<br><tt>&nbsp;&nbsp; Abdominal pain NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8 ( 47.1)</tt>
+<br><tt>&nbsp;&nbsp; Diarrhoea NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8 ( 47.1)</tt>
+<br><tt>&nbsp;&nbsp; Vomiting NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 29.4)</tt><tt></tt>
+<p><tt>General disorders and administration site conditions</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 66.7)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 11 ( 64.7)</tt>
+<br><tt>&nbsp;&nbsp; Chest pain&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9 ( 52.9)</tt>
+<br><tt>&nbsp;&nbsp; Pain NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 29.4)</tt><tt></tt>
+<p><tt>Psychiatric disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 87.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 11 ( 64.7)</tt>
+<br><tt>&nbsp;&nbsp; Insomnia&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 87.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 11 ( 64.7)</tt>
+<br><tt>&nbsp;&nbsp; Anxiety&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 29.4)</tt><tt></tt>
+<p><tt>Musculoskeletal and connective tissue disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10 ( 58.8)</tt>
+<br><tt>&nbsp;&nbsp; Pain in extremity&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8 ( 47.1)</tt>
+<br><tt>______________________________________________________________________________</tt>
+<br><tt>This is the first page line</tt>
+<br><tt>This is the second page line</tt>
+<br><tt></tt>
+<br><tt>______________________________________________________________________________</tt><tt></tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Ambident (1g/day)&nbsp;&nbsp;&nbsp; Betamax (500mg/day)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Total</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=9)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=17)</tt>
+<br><tt>______________________________________________________________________________</tt><tt></tt>
+<p><tt>&nbsp;&nbsp; Back pain&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7 ( 41.2)</tt><tt></tt>
+<p><tt>Respiratory, thoracic and mediastinal disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10 ( 58.8)</tt>
+<br><tt>&nbsp;&nbsp; Cough&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8 ( 47.1)</tt>
+<br><tt>&nbsp;&nbsp; Dyspnoea&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 ( 35.3)</tt><tt></tt>
+<p><tt>Vascular disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10 ( 58.8)</tt>
+<br><tt>&nbsp;&nbsp; Hypotension NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9 ( 52.9)</tt>
+<br><tt>&nbsp;&nbsp; Hypertension NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 25.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4 ( 23.5)</tt><tt></tt>
+<p><tt>Nervous system disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7 ( 41.2)</tt>
+<br><tt>&nbsp;&nbsp; Headache&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7 ( 41.2)</tt>
+<br><tt>&nbsp;&nbsp; Tremor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 25.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4 ( 23.5)</tt>
+<br><tt></tt>&nbsp;
+<br><tt></tt>&nbsp;
+<br><tt></tt>&nbsp;
+<br><tt></tt>&nbsp;<tt></tt>
+<p><tt>______________________________________________________________________________</tt>
+<br><tt>This is the first page line</tt>
+<br><tt>This is the second page line</tt></td>
+</tr>
+</table>
+
+<p>It is better to force a page throw using the <b>pageon=</b> parameter
+which is a list of text items in quotes separated by spaces of the beginning
+value of text of the highest level term to force a page throw. If I used
+<b>pageon="Psych" "General"</b> then I would get a three page report.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>*- set page size back to original -;</tt>
+<br><tt>options ps=63;</tt>
+<br><tt>%npcttab(dsin=adv,midlvl=amsoc,lowlvl=ampt,<b>pageon="Psych" "General",</b></tt>
+<br><b><tt>pageline=yes,pageline1="This is the first page line",pageline2="This
+is the second page line");</tt></b></td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>______________________________________________________________________________</tt><tt></tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Ambident (1g/day)&nbsp;&nbsp;&nbsp; Betamax (500mg/day)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Total</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=9)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=17)</tt>
+<br><tt>______________________________________________________________________________</tt><tt></tt>
+<p><tt>Gastrointestinal disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 77.8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8 (100.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 15 ( 88.2)</tt>
+<br><tt>&nbsp;&nbsp; Constipation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9 ( 52.9)</tt>
+<br><tt>&nbsp;&nbsp; Nausea&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9 ( 52.9)</tt>
+<br><tt>&nbsp;&nbsp; Abdominal pain NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8 ( 47.1)</tt>
+<br><tt>&nbsp;&nbsp; Diarrhoea NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8 ( 47.1)</tt>
+<br><tt>&nbsp;&nbsp; Vomiting NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 29.4)</tt><tt></tt>
+<p><tt>______________________________________________________________________________</tt>
+<br><tt>This is the first page line</tt>
+<br><tt>This is the second page line</tt>
+<br><tt></tt>
+<br><tt>______________________________________________________________________________</tt><tt></tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Ambident (1g/day)&nbsp;&nbsp;&nbsp; Betamax (500mg/day)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Total</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=9)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=17)</tt>
+<br><tt>______________________________________________________________________________</tt><tt></tt>
+<p><tt>General disorders and administration site conditions</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 66.7)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 11 ( 64.7)</tt>
+<br><tt>&nbsp;&nbsp; Chest pain&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9 ( 52.9)</tt>
+<br><tt>&nbsp;&nbsp; Pain NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 29.4)</tt><tt></tt>
+<p><tt>______________________________________________________________________________</tt>
+<br><tt>This is the first page line</tt>
+<br><tt>This is the second page line</tt>
+<br><tt></tt>
+<br><tt>______________________________________________________________________________</tt><tt></tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Ambident (1g/day)&nbsp;&nbsp;&nbsp; Betamax (500mg/day)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Total</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=9)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=17)</tt>
+<br><tt>______________________________________________________________________________</tt><tt></tt>
+<p><tt>Psychiatric disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 87.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 11 ( 64.7)</tt>
+<br><tt>&nbsp;&nbsp; Insomnia&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 87.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 11 ( 64.7)</tt>
+<br><tt>&nbsp;&nbsp; Anxiety&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 29.4)</tt><tt></tt>
+<p><tt>Musculoskeletal and connective tissue disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10 ( 58.8)</tt>
+<br><tt>&nbsp;&nbsp; Pain in extremity&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8 ( 47.1)</tt>
+<br><tt>&nbsp;&nbsp; Back pain&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7 ( 41.2)</tt><tt></tt>
+<p><tt>Respiratory, thoracic and mediastinal disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10 ( 58.8)</tt>
+<br><tt>&nbsp;&nbsp; Cough&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8 ( 47.1)</tt>
+<br><tt>&nbsp;&nbsp; Dyspnoea&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 ( 35.3)</tt><tt></tt>
+<p><tt>Vascular disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10 ( 58.8)</tt>
+<br><tt>&nbsp;&nbsp; Hypotension NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9 ( 52.9)</tt>
+<br><tt>&nbsp;&nbsp; Hypertension NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 25.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4 ( 23.5)</tt><tt></tt>
+<p><tt>Nervous system disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7 ( 41.2)</tt>
+<br><tt>&nbsp;&nbsp; Headache&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7 ( 41.2)</tt>
+<br><tt>&nbsp;&nbsp; Tremor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 25.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4 ( 23.5)</tt><tt></tt>
+<p><tt>______________________________________________________________________________</tt>
+<br><tt>This is the first page line</tt>
+<br><tt>This is the second page line</tt></td>
+</tr>
+</table>
+
+<h2>
+Use of pagemacro=</h2>
+Use <b>pagemacro=</b> to tell it your footnotes macro if you need more
+that 15 footnotes. Your system might already work this way. Here I will
+define a macro that creates 18 footnotes. Remember that whatever this macro
+calls in its execution must not be code that contains a data step or procedure
+boundary and must produce syntax that is acceptable for use in a proc report
+compute block. This will probably be just "line" statements. There is also
+an <b>endmacro=</b> parameter when you want footnotes only at the end of
+the report rather than on every page.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%macro foot;</tt>
+<br><tt>&nbsp; %local i;</tt>
+<br><tt>&nbsp; %do i=1 %to 18;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; line @1 "Footnote line %sysfunc(putn(&amp;i,words.))";</tt>
+<br><tt>&nbsp; %end;</tt>
+<br><tt>%mend foot;</tt>
+<p><tt>%npcttab(dsin=adv,midlvl=amsoc,lowlvl=ampt,pageon="Psych" "General",</tt>
+<br><tt>pageline=yes,<b>pagemacro=foot</b>);</tt></td>
+</tr>
+</table>
+
+<p>And here are the results.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>______________________________________________________________________________</tt><tt></tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Ambident (1g/day)&nbsp;&nbsp;&nbsp; Betamax (500mg/day)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Total</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=9)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=17)</tt>
+<br><tt>______________________________________________________________________________</tt><tt></tt>
+<p><tt>Gastrointestinal disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 77.8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8 (100.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 15 ( 88.2)</tt>
+<br><tt>&nbsp;&nbsp; Constipation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9 ( 52.9)</tt>
+<br><tt>&nbsp;&nbsp; Nausea&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9 ( 52.9)</tt>
+<br><tt>&nbsp;&nbsp; Abdominal pain NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8 ( 47.1)</tt>
+<br><tt>&nbsp;&nbsp; Diarrhoea NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8 ( 47.1)</tt>
+<br><tt>&nbsp;&nbsp; Vomiting NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 29.4)</tt><tt></tt>
+<p><tt>______________________________________________________________________________</tt>
+<br><tt>Footnote line one</tt>
+<br><tt>Footnote line two</tt>
+<br><tt>Footnote line three</tt>
+<br><tt>Footnote line four</tt>
+<br><tt>Footnote line five</tt>
+<br><tt>Footnote line six</tt>
+<br><tt>Footnote line seven</tt>
+<br><tt>Footnote line eight</tt>
+<br><tt>Footnote line nine</tt>
+<br><tt>Footnote line ten</tt>
+<br><tt>Footnote line eleven</tt>
+<br><tt>Footnote line twelve</tt>
+<br><tt>Footnote line thirteen</tt>
+<br><tt>Footnote line fourteen</tt>
+<br><tt>Footnote line fifteen</tt>
+<br><tt>Footnote line sixteen</tt>
+<br><tt>Footnote line seventeen</tt>
+<br><tt>Footnote line eighteen</tt>
+<br><tt></tt>
+<br><tt>______________________________________________________________________________</tt><tt></tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Ambident (1g/day)&nbsp;&nbsp;&nbsp; Betamax (500mg/day)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Total</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=9)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=17)</tt>
+<br><tt>______________________________________________________________________________</tt><tt></tt>
+<p><tt>General disorders and administration site conditions</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 66.7)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 11 ( 64.7)</tt>
+<br><tt>&nbsp;&nbsp; Chest pain&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9 ( 52.9)</tt>
+<br><tt>&nbsp;&nbsp; Pain NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 29.4)</tt><tt></tt>
+<p><tt>______________________________________________________________________________</tt>
+<br><tt>Footnote line one</tt>
+<br><tt>Footnote line two</tt>
+<br><tt>Footnote line three</tt>
+<br><tt>Footnote line four</tt>
+<br><tt>Footnote line five</tt>
+<br><tt>Footnote line six</tt>
+<br><tt>Footnote line seven</tt>
+<br><tt>Footnote line eight</tt>
+<br><tt>Footnote line nine</tt>
+<br><tt>Footnote line ten</tt>
+<br><tt>Footnote line eleven</tt>
+<br><tt>Footnote line twelve</tt>
+<br><tt>Footnote line thirteen</tt>
+<br><tt>Footnote line fourteen</tt>
+<br><tt>Footnote line fifteen</tt>
+<br><tt>Footnote line sixteen</tt>
+<br><tt>Footnote line seventeen</tt>
+<br><tt>Footnote line eighteen</tt>
+<br><tt></tt>
+<br><tt>______________________________________________________________________________</tt><tt></tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Ambident (1g/day)&nbsp;&nbsp;&nbsp; Betamax (500mg/day)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Total</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=9)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=17)</tt>
+<br><tt>______________________________________________________________________________</tt><tt></tt>
+<p><tt>Psychiatric disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 87.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 11 ( 64.7)</tt>
+<br><tt>&nbsp;&nbsp; Insomnia&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 87.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 11 ( 64.7)</tt>
+<br><tt>&nbsp;&nbsp; Anxiety&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 29.4)</tt><tt></tt>
+<p><tt>Musculoskeletal and connective tissue disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 75.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10 ( 58.8)</tt>
+<br><tt>&nbsp;&nbsp; Pain in extremity&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8 ( 47.1)</tt>
+<br><tt>&nbsp;&nbsp; Back pain&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7 ( 41.2)</tt><tt></tt>
+<p><tt>Respiratory, thoracic and mediastinal disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10 ( 58.8)</tt>
+<br><tt>&nbsp;&nbsp; Cough&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 50.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8 ( 47.1)</tt>
+<br><tt>&nbsp;&nbsp; Dyspnoea&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 33.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 ( 35.3)</tt><tt></tt>
+<p><tt>Vascular disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10 ( 58.8)</tt>
+<br><tt>&nbsp;&nbsp; Hypotension NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9 ( 52.9)</tt>
+<br><tt>&nbsp;&nbsp; Hypertension NOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 25.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4 ( 23.5)</tt><tt></tt>
+<p><tt>Nervous system disorders</tt>
+<br><tt>&nbsp;&nbsp; ANY AE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7 ( 41.2)</tt>
+<br><tt>&nbsp;&nbsp; Headache&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7 ( 41.2)</tt>
+<br><tt>&nbsp;&nbsp; Tremor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 25.0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4 ( 23.5)</tt><tt></tt>
+<p><tt>______________________________________________________________________________</tt>
+<br><tt>Footnote line one</tt>
+<br><tt>Footnote line two</tt>
+<br><tt>Footnote line three</tt>
+<br><tt>Footnote line four</tt>
+<br><tt>Footnote line five</tt>
+<br><tt>Footnote line six</tt>
+<br><tt>Footnote line seven</tt>
+<br><tt>Footnote line eight</tt>
+<br><tt>Footnote line nine</tt>
+<br><tt>Footnote line ten</tt>
+<br><tt>Footnote line eleven</tt>
+<br><tt>Footnote line twelve</tt>
+<br><tt>Footnote line thirteen</tt>
+<br><tt>Footnote line fourteen</tt>
+<br><tt>Footnote line fifteen</tt>
+<br><tt>Footnote line sixteen</tt>
+<br><tt>Footnote line seventeen</tt>
+<br><tt>Footnote line eighteen</tt></td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+You have seen how to have more than ten footnotes using %npcttab and %unistats
+by use of <b>pageline=</b> and <b>endline=</b> parameters and how to declare
+your standard foormotes macro to <b>pagemacro=</b> or <b>endmacro=</b>
+.
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+</html>

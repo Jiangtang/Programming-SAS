@@ -1,0 +1,12 @@
+data test1; 
+	do i = 1 to 2 by .1 ; 
+		x= (5*i- 4*i)/i ;  *** x = 1  *** ; 
+		y=round(x,.001) ;   *** y = 1  *** ; 
+		a=0 ; b=0 ; 
+		if x=1 then a=1 ; 
+		if y=1 then b=1 ; 
+		z=x-1;
+		put x=32.30;
+		OUTPUT ;
+	end;
+run;

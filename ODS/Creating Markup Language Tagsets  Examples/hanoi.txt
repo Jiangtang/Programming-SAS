@@ -1,0 +1,15 @@
+Move from start to middle
+Move from start to finish
+Move from middle to finish
+Move from start to middle
+Move from finish to start
+Move from finish to middle
+Move from start to middle
+Move from start to finish
+Move from middle to finish
+Move from middle to start
+Move from finish to start
+Move from middle to finish
+Move from start to middle
+Move from start to finish
+Move from middle to finish

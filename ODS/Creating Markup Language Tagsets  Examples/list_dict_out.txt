@@ -1,0 +1,83 @@
+HELLO
+
+dogs['pola'] : was a nice dog
+dogs['arkas'] : is big for a puppy
+
+The dictionary, dogs Contains 2 Entries:
+Name: arkas    Value: is big for a puppy
+Name: pola    Value: was a nice dog
+
+mylist[1] : one
+mylist[2] : two
+
+The list, mylist Contains 3 Entries:
+    Value: one
+    Value: two
+    Value: pola
+
+junk is: pola
+mylist[3] is: pola
+
+dogs[$junk] is: was a nice dog
+dogs[$mylist[3]] is: was a nice dog
+Setting mylist[2] to something else
+
+The list, mylist Contains 3 Entries:
+    Value: one
+    Value: this is two
+    Value: pola
+
+Testing While loop indexing on a list
+Value of mylist[1] : one
+Value of mylist[2] : this is two
+Value of mylist[3] : pola
+
+Testing iterator on dictionary
+Key: pola Value: was a nice dog
+Key: arkas Value: is big for a puppy
+
+Negative indexes come back from the end of the list, -1 is the last one
+The last entry in mylist is, mylist[-1]: pola
+
+deleting mylist[3]
+
+mylist Now contains, 2 Entries
+    Value: one
+    Value: this is two
+
+deleting mylist[1]
+
+mylist Now contains, 1 Entries
+    Value: this is two
+
+mylist Now contains, 3 Entries
+    Value: this is two
+    Value: this is really two
+    Value: pola
+
+
+Where clauses - eval
+
+Test is the length of mylist + 1: 4
+
+Test substr(mylist[1],6) is: is two
+
+Test substr(dogs[mylist[3]],4) is:  a nice dog
+
+
+deleting mylist[-1]
+
+mylist Now contains, 2 Entries
+    Value: this is two
+    Value: this is really two
+
+deleting mylist
+
+mylist is gone:
+
+deleting dogs['pola']
+
+dogs Now contains, 1 Entries
+Name: arkas    Value: is big for a puppy
+
+GOODBYE

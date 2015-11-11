@@ -1,0 +1,39 @@
+#!/bin/bash
+#<pre><b>
+# Script     : gethome
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 30-Nov-2004
+# Purpose    : Production script to return the home directroy of a user, given
+#              a userid.
+# SubScripts : none
+# Notes      : none
+# Usage      : gethome
+#              gethome userid
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   (optional) Userid. Defaults to current user
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+#
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+iam=$(whoami)
+
+if [ $# -lt 1 ]
+then
+  userid=$iam
+else
+  userid=$1
+fi
+
+# "getent" should be good for a few Linux systems
+#getent passwd "$userid" | awk -F: '{print $6}'
+
+# if "getent" no good then try the /etc/passwd file
+grep "^$userid:" /etc/passwd | awk -F: '{print $6}'

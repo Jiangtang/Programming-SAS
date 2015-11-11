@@ -1,0 +1,33 @@
+data one ;
+	pvalue=0.05;
+	x1=0.0499495;
+	x2=0.04995;
+run;
+proc print;
+run;
+
+** ROUND function ** ;
+data two ;
+set one ;
+y1 = 0 ;
+y2 = 0 ;
+x1r = round(x1,.0001);
+x2r = round(x2,.0001);
+if x1r < pvalue then y1 = 1 ;
+if x2r < pvalue then y2 = 1 ;
+run ;
+proc print ;
+run ;
+
+** TRUNC function ** ;
+data three ;
+set one ;
+z1 = 0 ;
+z2 = 0 ;
+x1t = trunc(x1,3) ;
+x2t = trunc(x2,3) ;
+if trunc(x1t,4) < pvalue then z1 = 1 ;
+if trunc(x2t,4) < pvalue then z2 = 1 ;
+run ;
+proc print ;
+run ;

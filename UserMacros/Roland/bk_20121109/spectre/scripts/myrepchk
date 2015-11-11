@@ -1,0 +1,92 @@
+#!/bin/bash
+#<pre><b>
+# Script     : myrepchk
+# Version    : 1.1
+# Author     : Roland Rashleigh-Berry
+# Date       : 11-Mar-2007
+# Purpose    : Scans runreports.chk to show you details that belong to your
+#              own program's log files (based on .titles file ownership)
+# SubScripts : none
+# Notes      : none
+# Usage      : myrepchk
+#              myrepchk -u rrash
+#===============================================================================
+# OPTIONS:
+#-opt- -------------------------------description-------------------------------
+#  u   (value)  User                                              
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not supply any parameters
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  11Mar07         Use "less" as the viewer
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Define give-usage-message-then-exit function
+usage () {
+  echo "Usage: myrepchk" 1>&2
+  exit 1
+}
+
+
+valueu=$(whoami)                   # Default value for User                                              
+
+
+# "case" statement for action to take on selected options
+while getopts "u:" param ; do
+  case $param in
+   "?") # bad option supplied
+        usage
+        ;;
+   "u") # (value) User
+        valueu=$OPTARG
+        ;;
+  esac
+done
+
+
+# shift to bring first parameter to position 1
+shift $(($OPTIND - 1))
+
+
+
+# No parameters allowed
+if [ $# -ne 0 ] ; then
+  echo "Error: (myrepchk) No parameters needed" 1>&2
+  usage
+fi
+
+
+# Get the list of log files in runreports.chk owned by the user.
+# (the ownership of the corresponding .titles file is inspected)
+owner $(sed 's/\..*$/.titles/' runreports.chk | sort -u) | \
+  grep ^$valueu | sed -e "s/^$valueu //" -e 's/\.titles$/.log/' | \
+  sort > $HOME/myrepchk.tmp
+
+
+# sort runreports.chk ready for a join
+sort runreports.chk > $HOME/runreports.tmp
+
+
+# join the two files and save to a file
+join $HOME/myrepchk.tmp $HOME/runreports.tmp > $HOME/myrepchk.tmp2
+
+
+# delete the two files joined
+rm -f $HOME/myrepchk.tmp $HOME/runreports.tmp
+
+
+# if the final file contains something then view it
+if [ -s $HOME/myrepchk.tmp2 ] ; then
+  # view final file using "less"
+  less $HOME/myrepchk.tmp2
+  rm -f $HOME/myrepchk.tmp2
+else
+  echo "(myrepchk) No matching lines found in \"runreports.chk\"" 1>&2
+  rm -f $HOME/myrepchk.tmp2
+fi

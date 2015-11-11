@@ -1,0 +1,73 @@
+#!/bin/bash
+#<pre><b>
+# Script     : showfmt
+# Version    : 2.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 22-Feb-2007
+# Purpose    : To display the contents of a format that would be made available
+#              if a call %allocr were made (uses SAS).
+# SubScripts : showfmt_win
+# SubMacros  : %allocr %attrn
+# Notes      : The dollar sign of a character format name must be preceded by
+#              the escape character "\" otherwise the Unix command interpreter
+#              will think a Unix variable is being referred to.
+# Usage      : showfmt age
+#              showfmt \$cat
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   Format name. Character formats must have their dollar sign preceded by
+#      the escape character "\".
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  24Nov05         -stdio used for sas invocation
+# rrb  11Feb07         Call showfmt_win for Windows configurations
+# rrb  20Feb07         Call %allocr macro
+# rrb  22Feb07         Call %attrn macro instead of %nobs
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Put out a usage message if not enough parameters supplied
+if [ $# -lt 1 ] ; then
+  echo "Usage: showfmt age" 1>&2
+  echo 'Usage: showfmt \$age' 1>&2
+  exit 1
+fi
+
+# if a Windows config then call showfmt_win and exit on return
+if [ -n "$CYGWIN" ] ; then
+  showfmt_win "$@"
+  exit $?
+fi
+
+
+# Feed SAS code into standard input
+sas -stdio -sasuser work 2>/dev/null << -----FINISH-----
+%allocr
+%macro showfmt;
+  %local i fmtpath cat;
+  %let fmtpath=%fmtpath;
+  %do i=1 %to %words(&fmtpath);
+    %let cat=%scan(&fmtpath,&i,%str( ));
+    %if %sysfunc(cexist(&cat)) %then %do;
+      proc format lib=%scan(&cat,1,%str(,)) cntlout=out;
+        select $1;
+      run;
+      %if %attrn(out,nobs) %then %do;
+        %let i=999;
+        data _null_;
+          file stdout;
+          set out;
+          if start ne end then put @1 start @10 '-' @12 end @25 label;
+          else put @1 start @25 label;
+        run;
+      %end;  
+    %end;
+  %end;
+%mend;
+%showfmt;
+
+-----FINISH-----

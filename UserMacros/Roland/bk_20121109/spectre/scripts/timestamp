@@ -1,0 +1,27 @@
+#!/bin/bash
+#<pre><b>
+# Script     : timestamp
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 24-Nov-2004
+# Purpose    : To create a file in the home directory so it can be used as a
+#              time stamp for determining files created after it.
+# SubScripts : none
+# Notes      : none
+# Usage      : timestamp 
+#
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A 
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+rm -f $HOME/timestamp.tmp
+echo "this is a timestamp file created by the timestamp script" > $HOME/timestamp.tmp

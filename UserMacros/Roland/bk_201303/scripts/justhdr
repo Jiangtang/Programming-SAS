@@ -1,0 +1,36 @@
+#!/bin/bash
+#<pre><b>
+# Script     : justhdr
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 14-May-2004
+# Purpose    : To select just the header of a sas program or script
+# SubScripts : none
+# Notes      : Assumes header has ended when there is a blank line. This will
+#              run on multiple files.
+# Usage      : justhdr filename
+#              justhdr *.sas
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   filename
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+if [ $# -lt 1 ] ; then
+  echo "Usage: justhdr filename(s)" 1>&2
+  exit 1
+fi
+
+for file in $@ ; do
+  gawk '{
+  if ($0 ~ /^ *$/) exit
+  else print
+  }' "$file"
+done

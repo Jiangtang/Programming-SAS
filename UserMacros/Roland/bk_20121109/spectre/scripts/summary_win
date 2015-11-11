@@ -1,0 +1,73 @@
+#!/bin/bash
+#<pre><b>
+# Script     : summary_win
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 11-Feb-2007
+# Purpose    : To run "proc summary" on a dataset and display the output data
+#              set (uses SAS).
+# SubScripts : none
+# Notes      : WINDOWS VERSION
+#              SAS dataset file name extension .sas7bdat will be ignored. You
+#              can subset the output dataset. See usage notes.
+#              This is for Linux on Windows calling SAS installed on Windows.
+#              You need to set up and export a system environment variable in
+#              your .bashrc named HOMEW like this:
+#                    HOMEW=C:\\\cygwin\\\home\\\rrash
+#                    export HOMEW
+#              ...where "rrash" is your user id (it might be "Default")
+# Usage      : summary_win  sex acct
+#              summary_win 'sex agesub' acct
+#              summary_win 'sex agesub' 'acct(where=(fascd=1))'
+#              summary_win 'sex agesub' 'acct(where=(fas=1))' 'where _freq_>20'
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   Variable(s) to summarise. If more than one then enclose in single quotes
+#      and separate with spaces. See usage notes.
+#  2   Input dataset. Too add a "where" clause put in quotes. See usage notes.
+#  3   Subset clause on output dataset if required. See usage notes.
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+#
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Put out a usage message if not enough parameters supplied
+if [ $# -lt 2 ] ; then
+  echo "Usage: summary_win 'var1 var2' dataset 'where _freq_ GT 1'" 1>&2
+  exit 1
+fi
+
+
+dset=$(echo $2 | sed 's%\.sas7bdat$%%')
+
+
+# Write sas code to a temporary file
+cat > $HOME/summary_$$.sas << ----END----
+options validvarname=any nofmterr nocenter nodate nonumber;
+libname here './' access=readonly;
+filename _outfile "$HOMEW\summary_$$.tmp";
+proc summary nway missing data=here.$dset;
+  class $1;
+  output out=summary(drop=_type_);
+run;
+title;
+proc printto print=_outfile;
+run;
+proc print data=summary;
+$3;
+run;
+----END----
+
+sas -nosplash -nologo -icon -sasuser work -log "$HOMEW" -sysin "$HOMEW\summary_$$.sas"
+
+if [ -f $HOME/summary_$$.tmp ] ; then
+  cat   $HOME/summary_$$.tmp
+  rm -f $HOME/summary_$$.tmp
+fi
+
+rm -f $HOME/summary_$$.sas $HOME/summary_$$.log

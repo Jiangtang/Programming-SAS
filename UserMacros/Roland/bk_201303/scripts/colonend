@@ -1,0 +1,34 @@
+#!/bin/bash
+#<pre><b>
+# Script     : colonend
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 21-Feb-2005
+# Purpose    : To show lines that end with a colon
+# SubScripts : none
+# Notes      : It is easy to put a colon at the end of a line of sas code rather
+#              than a semi-colon so this checks for it.
+# Usage      : colonend *.sas
+#              
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   files to check for lines ending in a colon (plus following spaces)
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# must be at least one file
+if [ $# -lt 1 ] ; then
+  echo "Usage: colonend files(s)" 1>&2
+  exit 1
+fi
+
+
+grep ': *$' "$@" | grep -v '^.*:/ ' | grep -v '^.*:\* ' | \
+grep -v '^.*:/\* ' | grep ' .* *$'

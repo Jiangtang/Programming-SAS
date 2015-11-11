@@ -1,0 +1,22 @@
+*Creator/owner:  Owner.
+*Date: 9/17/2004.
+
+SET MXCELLS=AUTOMATIC .
+INCLUDE FILE="C:\Documents and Settings\Owner\My Documents\My SAS Files\9.1\SASPairs\SASPairs_Sproject\SPSStoSAS.sps".
+
+*Comments:.
+* .
+
+*Output Folder: C:\Documents and Settings\Owner\My Documents\My SAS Files\9.1\SASPairs\SASPairs_Sproject.
+*Export Chart Format: JPEG File.
+*Exported File Format: 0.
+*Export Objects: 3.
+*Output Type: 0.
+*Print output on completion: Off.
+
+*PublishToWeb Cfg GUID: .
+*PublishToWeb Objects: 6.
+*PublishToWeb Table: 1.
+*PublishToWeb UsrID: .
+*PublishToWeb Authetication: .
+

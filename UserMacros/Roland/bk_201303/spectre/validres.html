@@ -1,0 +1,209 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="Validation resources for Spectre">
+   <meta name="KeyWords" content="validation resources Spectre">
+   <title>Validation Resources</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Validation Resources</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 10 Jun 2006)</b></center>
+
+<h2>
+Introduction</h2>
+This page contain some resources for the validation of Spectre. Note the
+word <b><i>resources </i></b>is used. What you will find on this page is
+<b>not
+a recommendation</b> for how to validate Spectre. Instead you will find
+my thinking and some code that you may or may not wish to use as a basis
+for your validation effort. You should follow your own procedures to do
+the validation of Spectre. Hopefully you have <a href="http://en.wikipedia.org/wiki/Standard_Operating_Procedures" target="_blank">Standard
+Operating Procedures</a> to cover this activity. If you don't then you
+will have to create a validation plan and stick to it and provide full
+documentation to prove that this plan was carried out to successful conclusion.
+But again, I can not recommend how this should be done.
+<p>Spectre will only be able to deliver its full potential as a fast and
+efficient reporting system when it has been validated. Compared to a situation
+where no standard reporting macros exist, you should find that it greatly
+speeds up the production of tables. What it <b><i>does not speed up </i></b>is
+the validation of these tables. Validation of tables will become the new
+bottleneck once you have Spectre installed and running, until you can validate
+the system. But having a validated system will not save you <b><i>all </i></b>the
+validation work, the work will merely shift into parameter checking, data
+selection checking and perhaps code review. But this should be a lot faster
+than double programming table output.
+<h2>
+Validated vs. non-validated</h2>
+What I <b>will recommend</b> is that you <b>do </b>validate the system,
+in particular the two major reporting macros <b>%unistats</b> and
+<b>%npcttab</b>.
+I will give my reasoning here for your consideration.
+<ul>
+<li>
+If you can validate the <a href="macros/unistats.sas" target="_blank">%unistats</a>
+and <a href="macros/npcttab.sas" target="_blank">%npcttab</a> macros, then
+assuming these macros will feature heavily in table production, you would
+probably save QC time overall for a study than if you double programmed.
+Maybe the study budget could be used for the validation in such a case.</li>
+
+<li>
+You will maybe have different data cuts for a study. If so you might end
+up having to rerun your validation programs for each data cut and having
+to check the figures each time. But if the macros and data selection process
+were already validated then no extra work should be required for the additional
+data cuts if the data selection process had not changed.</li>
+
+<li>
+Assuming the macros you had validated were stable and could be used for
+other studies then a lot of validation effort would be saved for those
+other studies.</li>
+</ul>
+
+<h2>
+Testing vs. no testing</h2>
+Some of the components of Spectre are not on the critical path of producing
+output for submission to regulatory agencies. This applies to every utility
+script that is not flagged as being a "production" script in the header
+and it applies to some macros as well. For example, <a href="macros/complibs.sas" target="_blank">%complibs</a>
+is used to compare libraries of SAS&reg; datasets. It is not used in a
+production run to produce reports. It is itself a "validation" macro. Just
+as you don't validate your validation code you use to double program tables
+then I would suggest you do not need to validate a macro such as this.
+So my suggestion is to not bother to validate anything not flagged as being
+"production" in the header. Of course, this is a <b><i>suggestion </i></b>only
+and not a recommendation. For the scripts and macros marked "production",
+then there are two approaches you can take to testing them, as will be
+explained.
+<h2>
+Black box testing vs. white box testing</h2>
+If you test the functionality of a system without regards to the internals
+of a system then this is known as "functionality testing" or "<a href="http://www.webopedia.com/TERM/B/Black_Box_Testing.html" target="_blank">black
+box testing</a>". It is known as "black box" testing because you can't
+or don't look inside of it. If you know about the internals of a system
+and you test these internal components then this is known as "<a href="http://www.webopedia.com/TERM/W/White_Box_Testing.html" target="_blank">white
+box testing</a>", "glass box testing", "structural testing", "clear box
+testing", "open box testing" plus a number of other terms. With "white
+box" testing you <b><i>can </i></b>see inside of it, you know its structure,
+and you test the things you can see. My <b><i>suggestion </i></b>is that
+you <b><i>differentiate </i></b>between the <b>values</b> shown in reports
+(in the data area) and the running, layout, collection, conversion to PDFs
+and delivery of the reports themselves. For the <b>values</b> you see in
+reports (in the data area - not page numbers, for example) my suggestion
+is to use both "<b>white box testing</b>" and "<b>black box testing</b>".
+For things <b>not related</b> to the values in reports to use "<b>black
+box testing</b>" only. If you have used Spectre to report a study then
+you will soon know if Spectre is failing to run some programs it should
+have run or failed to incorporate all the reports it should have done in
+the PDF. The script "<a href="scripts/titlesvsbkmarks" target="_blank">titlesvsbkmarks</a>"
+is run against the collection of PDFs and it will identify any table/appendix
+reference numbers that are missing from the PDF bookmarks. So just by using
+Spectre to report a study and by people confirming that all the reports
+are present in the PDFs then some "black box" testing has been done even
+if you didn't realize it and you didn't document it. Perhaps checking this
+and documenting your findings could be part of the "black box" testing
+that would form part of your validation effort. But again, this is a suggestion
+and not a recommendation.
+<h2>
+Testing %unistats and %npcttab</h2>
+My suggestion<b><i> </i></b>for these two macros is to use both "<b>white
+box</b>" and "<b>black box</b>" testing. "Black Box" testing could be done
+along the lines as the demonstrations shown in the introductory pages for
+<a href="unistats.html" target="_blank">%unistats</a>
+and <a href="npcttab.html" target="_blank">%npcttab</a>. "White box" testing
+could be performed on these macros by testing the components of <a href="macdep.html#unistats" target="_blank">%unistats</a>
+and <a href="macdep.html#npcttab" target="_blank">%npcttab</a> to ensure
+those components are working as they should, and then perhaps more detailed
+testing could be done with those components working together. Of the two
+macros, %unistats will take longer to validate as it has far more functionality.
+If you decide to do "white box" testing of these two macros then you will
+need to test the low level sub macros they use. This is discussed in the
+next section.
+<h2>
+Low level macro testing</h2>
+This is a good point to explain how I go about writing macros such as %unistats
+and %npcttab because I think this reasoning should reflect on the way they
+are tested. When I think about writing a complex macro, I know that I will
+not be able to write it as a single macro. Large single macros are very
+difficult to write mainly because they are especially difficult to debug.
+The messages you get about macro errors often don't tell you much about
+where it is going wrong so debugging large complex macros can be nearly
+impossible. So what I do, when I know I have to write a complex macro,
+is to isolate sub tasks that could be usefully performed by macros, especially
+if these macros could be used in other complex macros not yet written.
+I then proceed to write these sub macros and ensure they are working and
+reliable and then I use these as building blocks in the more complex macros
+I am trying to write. This may not be the "correct" approach from a "project
+life cycle" methodology point of view but it is the only way I know of
+getting the job done. So what I have done over the course of many years
+(since 1986), is to collect a set of macros that might come in useful when
+writing more complex macros. You will find this collection on the "sasautos
+extensions" page of my old web site <a href="http://www.datasavantconsulting.com/roland/sasautos.html" target="_blank">here</a>.
+You will also see that most of these macros have simple test packs. These
+test packs are what I have used to convince myself that the macros are
+doing what they are supposed to do. So when it comes to testing the complex
+macros in Spectre, I think it makes sense to follow the same approach that
+I have taken and validate the sub macros first and the larger macros that
+call them after this has been done.
+<p>What I have done for the low level macro testing for %unistats and %npcttab
+is to copy the approach I have used on my "sasautos extensions" page and
+to have test packs for all the low level macros that you can run for yourself,
+copy and amend to create your own versions of the test code that you feel
+test the macros sufficiently for validation purposes. Again, this is a
+suggestion and not a recommendation. You must follow your own test plan
+and not something I suggest. What you will find on the page you can link
+to below are the low level macro test packs that I have used and the log
+or list output, arranged in alphabetical order.
+<p><a href="lowlevtest.html">Low level macro test packs</a>
+<h2>
+Further testing of %unistats and %npcttab</h2>
+The low level macros referred to in the last section do not cover the "partner"
+macros of %unistats and %npcttab. Each has a p-values macro named <a href="macros/unipvals.sas" target="_blank">%unipvals</a>
+and <a href="macros/npctpvals.sas" target="_blank">%npctpvals</a> so that
+the task of calculating p-values, that might change in the future, is kept
+separate from the more stable parts of the macro. The same applies to the
+"partner" macro to %unistats which does the printing in simple cases, named
+<a href="macros/unicatrep.sas" target="_blank">%unicatrep</a>.
+The intention is that the stable parts can be validated on their own without
+the "partner" macros. How you do this is up to you. Note that if %unistats
+is used to produce a dataset instead of a report then there will likely
+be data manipulation of the output dataset before the report is created,
+so even if the macro is fully validated you will still have some validation
+work left to do. You might like to consider validating the macros where
+this technique is used using "black box" testing and not bothering to validate
+the way %unistats creates output files in a similar way to the demonstrations
+given for these two macros.
+<h2>
+Conclusion</h2>
+This page introduced you to some ideas about how to validate Spectre. In
+the end, it is you who must decide how this is done, and I wish you every
+success in your endeavours.
+<br>&nbsp;
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+</html>

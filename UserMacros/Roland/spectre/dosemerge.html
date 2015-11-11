@@ -1,0 +1,91 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="merging with dose">
+   <meta name="Description" content="How to merge with a dose">
+   <title>Merging with a dose</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Merging with a dose</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 28 Apr 2006)</b></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<p>Sometimes you need to merge in dose data with adverse events so you
+know what dose a subject was on when they had the adverse event. This dose
+data may have gaps with no dose and maybe overlaps for the stop date and
+the following start date. How you handle overlaps may vary from compound
+to compound. I wrote a macro for this because merrging on date ranges requires
+a knowledge of SQL that not all programmers have. You can view the macro
+below.
+<br><a href="macros/dosemerge.sas" target="_blank">dosemerge</a>
+<p>Do not use this macro blindly. You need to be aware that I am using
+rules in the macro to handle overlaps that may not be correct for the drug
+you are working on.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data dose;</tt>
+<br><tt>&nbsp; subj=1;sdate='01jan2002'd;edate='05jan2002'd;dose=4;output;</tt>
+<br><tt>&nbsp; subj=1;sdate='07jan2002'd;edate='14jan2002'd;dose=6;output;</tt>
+<br><tt>&nbsp; subj=1;sdate='14jan2002'd;edate='21jan2002'd;dose=0;output;</tt>
+<br><tt>&nbsp; subj=2;sdate='14jan2002'd;edate='21jan2002'd;dose=5;output;</tt>
+<br><tt>&nbsp; format sdate edate date9.;</tt>
+<br><tt>run;</tt>
+<p><tt>data ae;</tt>
+<br><tt>&nbsp; subj=1;onset='14jan2002'd;output;</tt>
+<br><tt>&nbsp; subj=2;onset='20jan2002'd;output;</tt>
+<br><tt>&nbsp; format onset date9.;</tt>
+<br><tt>run;</tt>
+<p><tt>%dosemerge(dsin=ae,dsout=ae2,subject=subj,date=onset,</tt>
+<br><tt>dsdose=dose,dosestart=sdate,dosestop=edate,doselevel=dose,</tt>
+<br><tt>fixoverlaps=yes);</tt>
+<p><tt>data _null_;</tt>
+<br><tt>&nbsp; set ae2;</tt>
+<br><tt>&nbsp; put (_all_) (=);</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>Some of the log output is shown below. Note that because of the way
+the macro handles overlaps by reducing the stop date of the previous dose,
+then subj=1 is assigned a zero dose for 14JAN2002.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>18</tt>
+<br><tt>19&nbsp;&nbsp;&nbsp; data _null_;</tt>
+<br><tt>20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set ae2;</tt>
+<br><tt>21&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put (_all_) (=);</tt>
+<br><tt>22&nbsp;&nbsp;&nbsp; run;</tt>
+<p><tt>subj=1 onset=14JAN2002 dose=0</tt>
+<br><tt>subj=2 onset=20JAN2002 dose=5</tt>
+<br><tt>NOTE: There were 2 observations read from the data set WORK.AE2.</tt>
+<br><tt>NOTE: DATA statement used:</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.00 seconds</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.00 seconds</tt></td>
+</tr>
+</table>
+
+<br>&nbsp;
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+</body>
+</html>

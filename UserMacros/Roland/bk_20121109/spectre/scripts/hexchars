@@ -1,0 +1,62 @@
+#!/bin/bash
+#<pre><b>
+# Script     : hexchars
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 27-Oct-2004
+# Purpose    : To display hex characters in a text file (uses SAS)
+# SubScripts : none
+# Notes      : You should use this on text files where you suspect there are
+#              invisible non-printable characters.
+# Usage      : hexchars file.ext
+#              
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   File to check
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  24Nov05         -stdio used for sas invocation
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Put out a usage message if not enough parameters supplied
+if [ $# -lt 1 ] ; then
+  echo "Usage: hexchars file.ext" 1>&2
+  exit 1
+fi
+
+
+# Feed SAS code into standard input
+sas -stdio -noautoexec -sasuser work 2>/dev/null << -----FINISH-----
+options validvarname=any nofmterr noovp;
+data _null_;
+  length char $ 1;
+  retain outpos 0 ;
+  infile "$1";
+  file stdout;
+  input;
+  outpos=1;
+  if _infile_ ne ' ' then do;
+    _file_=repeat(' ',399);
+    do i=1 to length(_infile_);
+      char=substr(_infile_,i,1);
+      rank=rank(char);
+      if rank<0020x or (007Ex < rank < 00C0x) 
+      and rank not in (00B0x, 00B4x, 00B5x, 00AEx) then do;
+        substr(_file_,outpos,4)='<'||put(rank,hex2.)||'>';
+        outpos=outpos+4;
+      end;
+      else do;
+        substr(_file_,outpos,1)=char;
+        outpos=outpos+1;
+      end;
+    end;
+    _file_=trim(_file_);
+  end;
+  put;
+run;
+-----FINISH-----

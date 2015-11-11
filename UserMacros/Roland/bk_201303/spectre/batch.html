@@ -1,0 +1,503 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="Using Spectre in batch mode and creating titles">
+   <meta name="KeyWords" content="Spectre batch titles">
+   <title>Working in batch and creating titles</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Working in Batch and Creating Titles</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 09 Apr 2007)</b></center>
+
+<h2>
+Introduction</h2>
+This document advises on how to work with Spectre (Clinical) which is a
+"back end" batch system.
+<h2>
+Use the programs directory for development</h2>
+Before anything else, if you are using Spectre then <b>all your programs
+using SAS&reg; software must be developed in the programs directory for
+a study</b>. Do not develop programs in your home area. Whether you develop
+code interactively or in batch, this rule must be strictly observed. And
+now for&nbsp; the rest....
+<p>I guess most people develop their programs using SAS software interactively
+these days. Some, like me, have always done their development work in batch.
+I know habits are hard to break and changing from interactive development
+to batch development might take a long time, but the way Spectre is designed,
+it is much quicker to do all your development in batch. This is because
+there have been a lot of Unix shell scripts written that you will need
+to use and these are launched from the terminal window.
+<p><b>The final output run will be in batch so, for QC purposes, you should
+work as closely as possible to that method</b>. In the final output run,
+each program will be run using the script "<b>sasb"</b> which will give
+a count of error messages, warning and messages of interest such as zero
+observations. You will have to check all of these. Details of the messages
+can be displayed using the script "<b>sc"</b> (short for <b>sc</b>an logs).
+So even if you are editing your program using an interactive SAS session,
+you should run it from the terminal window using "sasb" and check the log
+messages using "sc". It should also be noted that in the final run, every
+program will be run independently using separate invocations of "sasb".
+This avoids any potential problem of one program affecting another and
+is the only sure way to know that the program that has passed its QC will
+work in an identical way for the final run.
+<h2>
+Batch for the final run</h2>
+It seems that any software company that creates clinical trials reporting
+systems assumes that the pharmaceutical companies want to see results interactively.
+Sometimes this is useful for when departments with no programmers want
+to see ad-hoc tables but when the final run is done to build datasets and
+produce output then all pharmaceutical companies I know of do this in batch.
+They need to keep complete records of who did what and when and this is
+difficult if a person is using an interactive system, so pure batch is
+preferred. <b>Spectre is most definitely a batch-based system with full
+logging of who launches the final run, when it starts and when it ends
+and it keeps the return codes that come out of "sasb" for every program
+run</b>.
+<h2>
+Emulating an interactive SAS&reg; session</h2>
+To make working in batch easier, I have written some scripts to emulate
+a SAS session. Before you can use it you have to set up a Unix system environment
+variable named "<b>prog</b>" that is set to the name of the program you
+are working on (but without the ".sas" extension). If your program is "t_fpatdem.sas"
+then you would define it to the Unix variable "prog" like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>prog=t_fpatdem</tt>
+<br><tt>export prog</tt></td>
+</tr>
+</table>
+
+<p>The "export prog" command has only to be done once per terminal window.
+It "promotes" the variable to being "global" so that other scripts you
+use can be aware that it is there (it is like declaring a SAS software
+macro variable as %global).
+<p>Once your program name has been assigned to "prog" and exported, then
+there are other scripts you can use to emulate a SAS interactive session.
+They call
+<b>dtpad</b> (or nedit) in either edit mode or browse mode. "<b>pgm</b>"
+will open up your ".sas" file in edit mode. "<b>log</b>" will open the
+log in browse mode. "<b>lst</b>" will open the .lst file in browse mode.
+"<b>lis</b>" will open up your .lis file (".lis" files are explained in
+another section - they are effectively .lst files with page number added).
+The abbreviations "pgm", "log" and "lst" are borrowed from interactive
+SAS sessions. If used on the command line then they will take you to those
+windows. So what I have done with these scripts is make interactive users
+of SAS software "feel at home" if they swap over to using batch.
+<p>(Note that I have introduced some scripts in the above paragraph. All
+scripts introduced on a page will be listed at the top of the page. If
+you look at the top of this page you will see these scripts listed plus
+some more).
+<h2>
+Setting up titles</h2>
+Before I go into how to create titles (and footnotes), I want to explain
+why titles are kept separate from program code. Maybe you are not used
+to this and have always put titles statements in with your reporting code.
+The reason titles are kept separate, with any reporting system, is because
+titles change from study to study but reporting macros should be reused,
+for the sake of efficiency. The main point of having a reporting system
+is to produce output efficiently. If you have to edit a reporting macro
+to change titles then this is not efficient and the macro is not reusable.
+If it is reusable then the macro should not be edited. It might even be
+"read only" in which case you would not be able to edit it. So since titles
+are changeable and you want reporting macros to remain stable, you put
+the changeable elements somewhere else. So the <b>changeable titles</b>
+are to go in a "titles" member, later to be read in by SAS software code
+and placed in a dataset. Notice that I highlighted "changeable titles"
+because not all titles change. Suppose you called a reporting macro for
+AEs and you set a flag that said you only wanted "serious" AEs. Then it
+might be better if the macro set up the term "serious AEs" in a title inside
+the macro. That way there is less chance of making a mistake. So you might
+have a changeable title with the label "Table 1.2.1" but have other non-changeable
+titles generated inside the macro. In this case you would only keep the
+"Table 1.2.1" separate because it is a changeable title. The same applies
+to the footnotes. If the footnotes are closely related to what the reporting
+macro is creating, then you would keep the footnotes in the macro code
+and not put them in the titles member.
+<p>So now we come to creating our <b><i>changeable</i></b> titles (and
+footnotes). Assuming you are working in batch mode, this is how to set
+up titles. Your titles file name will match your program name but have
+the extension ".titles". If you know another titles member that closely
+matches the program defined to "prog" then you can copy it across like
+this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>cp oldprog.titles $prog.titles</tt></td>
+</tr>
+</table>
+
+<p>But if you want to start with a fresh set of titles (or wish to edit
+the current titles) then just run the command "titles" like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>titles</tt></td>
+</tr>
+</table>
+
+<p>When you do this, an editor window is opened with your titles information.
+A fresh set of titles is shown below. It was created for the program "t_fpatdem"
+and you will see that this program name was added automatically. The header
+contains instructions on how to fill in the details. Right at the top of
+the header, in the second line, it says "You must only have ONE set of
+titles in this file". Certainly you will not be allowed to have multiple
+entries for different programs. But you <b><i>can</i></b> have multiple
+entries for the <b><i>same </i></b>program, though your site standards
+may strongly discourage this. But sometimes you have no choice, despite
+site standards. For example, if you use "proc lifetest" then you will probably
+create a table from the output dataset but you will need to put the output
+from the procedure into a listing. You should not have a separate program
+- one for the table and one for the procedure output - because you have
+to be sure the procedure output exactly matches the information in your
+table. So in this case, no matter what your site standards are, you will
+need two entries - one for the table and one for the listing. To add an
+extra entry, just copy the block where you enter information and place
+it below. You then have to add a "label" line and give the label a value
+like "a" like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>program: t_fpatdem</tt>
+<br><b><tt>label: a</tt></b></td>
+</tr>
+</table>
+
+<p>It is best to put the "label:" line under the "program:" line. Your
+output file will normally have the extension ".lis" (like a .lst file but
+with page numbers added) but if you use the label "a" then the extension
+will be ".lisa". The label suffixes the extension. And whereas the command
+"<b>lis</b>" (mentioned above) will open the output file with a ".lis"
+extension in a browser window, the command "<b>lis a</b>" will open the
+output file with a ".lisa" extension in a browser window.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><font face="Courier New,Courier"><font size=-2>#===========================================================================================================================================</font></font>
+<br><font face="Courier New,Courier"><font size=-2># Template for titles.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Make a copy of this to go with your sas program and give it the file extension
+.titles such as t_meds.titles</font></font>
+<br><font face="Courier New,Courier"><font size=-2>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+You must only have ONE set of titles in this file.</font></font>
+<br><font face="Courier New,Courier"><font size=-2>#</font></font>
+<br><font face="Courier New,Courier"><font size=-2># This member was generated
+by the script "crtitlestmpl" for:</font></font>
+<br><font face="Courier New,Courier"><font size=-2>#</font></font>
+<br><font face="Courier New,Courier"><font size=-2># DRUG: XXXXX_xxx</font></font>
+<br><font face="Courier New,Courier"><font size=-2>#</font></font>
+<br><font face="Courier New,Courier"><font size=-2># STUDY: xx_xx_xx</font></font>
+<br><font face="Courier New,Courier"><font size=-2>#</font></font>
+<br><font face="Courier New,Courier"><font size=-2># INC: xxx</font></font>
+<br><font face="Courier New,Courier"><font size=-2>#</font></font>
+<br><font face="Courier New,Courier"><font size=-2># DATE: 03-Feb-2006</font></font>
+<br><font face="Courier New,Courier"><font size=-2>#</font></font>
+<br><font face="Courier New,Courier"><font size=-2>#=====================
+THE LINES BELOW THAT START WITH A # ARE A GUIDE TO TELL YOU HOW TO FILL
+IN THE INFORMATION =========================</font></font>
+<br><font face="Courier New,Courier"><font size=-2>#</font></font>
+<br><font face="Courier New,Courier"><font size=-2># program: progname
+(put your program name here without the .sas extension. Case should match
+your program member name)</font></font>
+<br><font face="Courier New,Courier"><font size=-2>#</font></font>
+<br><font face="Courier New,Courier"><font size=-2># layout: Leave blank
+to use study default or set it to l/p (landscape/portrait) [t] (tight lines)
+f (font size)</font></font>
+<br><font face="Courier New,Courier"><font size=-2>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Here is a list of valid possible values: l8 l8.5 l9 l10 lt8 lt8.5 lt9 lt10
+p8 pc8 p9 pt9 p10 pt10 p11 pt11</font></font>
+<br><font face="Courier New,Courier"><font size=-2>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+The preference is for p10 (portrait 10 point). If your report will not
+fit on the page then try l10 (landscape 10 point)</font></font>
+<br><font face="Courier New,Courier"><font size=-2>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+but if it still will not fit then try l9 and if it still will not fit then
+try l8. You should not go lower than an 8 point</font></font>
+<br><font face="Courier New,Courier"><font size=-2>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+font without asking for permission to do so.</font></font>
+<br><font face="Courier New,Courier"><font size=-2>#</font></font>
+<br><font face="Courier New,Courier"><font size=-2># population: FAS, PPS,
+SEL etc. abbreviations. This must match one of the analysis set abbreviations
+in "protocol.txt".</font></font>
+<br><font face="Courier New,Courier"><font size=-2>#</font></font>
+<br><font face="Courier New,Courier"><font size=-2># sascode: If you set
+this to anything, the sas program will be generated and any corresponding
+program you have will be overwritten.</font></font>
+<br><font face="Courier New,Courier"><font size=-2>#</font></font>
+<br><font face="Courier New,Courier"><font size=-2># titles below: Put
+your titles BELOW this line. All titles will be CENTRED unless you start
+with a space in which case LEFT-ALIGNED.</font></font>
+<br><font face="Courier New,Courier"><font size=-2># Table 1.2.3</font></font>
+<br><font face="Courier New,Courier"><font size=-2># ANOTHER TITLE LINE</font></font>
+<br><font face="Courier New,Courier"><font size=-2>#&nbsp; A LEFT-ALIGNED
+TITLE - THE FIRST SPACE WILL BE DROPPED WHEN IT IS LEFT-ALIGNED BUT EXTRA
+SPACES WILL BE SHOWN</font></font>
+<br><font face="Courier New,Courier"><font size=-2># footnotes below: Put
+your footnotes BELOW this line. All footnotes will be LEFT-ALIGNED. Leading
+spaces are allowed.</font></font>
+<br><font face="Courier New,Courier"><font size=-2># First footnote</font></font>
+<br><font face="Courier New,Courier"><font size=-2># Second footnote</font></font>
+<br><font face="Courier New,Courier"><font size=-2>#&nbsp;&nbsp; Third
+footnote indented two spaces</font></font>
+<br><font face="Courier New,Courier"><font size=-2>#</font></font>
+<br><font face="Courier New,Courier"><font size=-2># endxxx: This line
+ends the titles entry. Do not specify anything after it.</font></font>
+<br><font face="Courier New,Courier"><font size=-2>#===========================================================================================================================================</font></font>
+<br><font face="Courier New,Courier"><font size=-2>program: t_fpatdem</font></font>
+<br><font face="Courier New,Courier"><font size=-2>layout:</font></font>
+<br><font face="Courier New,Courier"><font size=-2>population:</font></font>
+<br><font face="Courier New,Courier"><font size=-2>sascode:</font></font>
+<br><font face="Courier New,Courier"><font size=-2>####################
+Columns ruler for titles and footnotes -- do not exceed the maximum column
+for your layout ############################</font></font>
+<br><font face="Courier New,Courier"><font size=-2>#--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0---------1---------2---------3---------4</font></font>
+<br><font face="Courier New,Courier"><font size=-2>titles below:</font></font>
+<br><font face="Courier New,Courier"><font size=-2>footnotes below:</font></font>
+<br><font face="Courier New,Courier"><font size=-2>endxxx:</font></font>
+<br><font face="Courier New,Courier"><font size=-2>#--------1---------2---------3---------4---------5---------6---------7---------8---------9---------0---------1---------2---------3---------4</font></font></td>
+</tr>
+</table>
+
+<p>Below is shown details you might fill in for the program "t_fpatdem"
+(the header and column rulers are removed)<font face="Courier New,Courier">.</font>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><font face="Courier New,Courier">program: t_fpatdem</font>
+<br><font face="Courier New,Courier">layout: p10</font>
+<br><font face="Courier New,Courier">population: fas</font>
+<br><font face="Courier New,Courier">sascode: %inc alloc m_patdem; %m_patdem</font>
+<br><font face="Courier New,Courier">titles below:</font>
+<br><font face="Courier New,Courier">Table 13.2.1</font>
+<br><font face="Courier New,Courier">PATIENT DEMOGRAPHICS</font>
+<br><font face="Courier New,Courier">footnotes below:</font>
+<br><font face="Courier New,Courier">endxxx:</font></td>
+</tr>
+</table>
+
+<p>If you look at the entry above, you will see that I have chosen a portrait
+10 point font size layout. The population is "fas" and this will match
+one of the populations set up in the file "protocol.txt" by the administrator.
+The first title is "Table 13.2.1" and the second title is "PATIENT DEMOGRAPHICS".
+The first title is definitely a changeable title and so should go in this
+file but "Patient Demographics", at first sight, looks like it should go
+in the reporting macro because it is a stable title. But sometimes you
+have "subjects" in a study rather than "patients" (they may be healthy
+volunteers) so because this word might change I have put it in the titles
+file and left it out of the reporting macro. There are no footnotes defined
+above. There will be footnotes in the report but these are closely linked
+to what the reporting macro is doing.
+<p>Now take a look at the "sascode:" entry above. This will be explained
+further in the next section.
+<h2>
+Using sascode:</h2>
+In my titles member for t_fpatdem I defined some SAS software code to the
+"sascode:" line as follows:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>sascode: %inc alloc m_patdem; %m_patdem</tt></td>
+</tr>
+</table>
+
+<p>The above is real SAS software code that will be used to create the
+report. Because something is defined to "sascode:", a dummy program using
+SAS software code will be generated with this program code in - namely
+"<tt>%inc alloc m_patdem; %m_patdem</tt>".
+<b>Note that the dummy program
+generated will have the same name as your titles member but with the extension
+".sas" so do not both use sascode: and have a genuine program of that name
+as it will get overwritten</b>. This is a real example from a study I am
+working on at the moment. In an ideal world, the entry would simply be:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>sascode: %m_patdem</tt></td>
+</tr>
+</table>
+
+<p>...but I have to call a macro named "%alloc" to allocate libraries and
+since the study program library is not defined to the "sasautos" path,
+which contains the study specific macros I am using, then I have to <b>inc</b>lude
+the macro "m_patdem" before I can use it. In an ideal world, this allocation
+of libraries and adding all the macros you need to the "sasautos" path
+should be done when you invoke SAS software. Using "sascode:" like this,
+and putting calls to reporting macros in the titles member, is the <b><i>power
+of Spectre
+</i></b>and how it aims at the <b><i>ultimate goal of producing
+reports directly from the data</i></b>. This is why I wrote Spectre. It
+is intended to be used in this way for tables, at least. <b>You should
+aim to produce as many tables as you can using a short call to a reporting
+macro in the "sascode:" entry as shown above</b>.
+<h2>
+Special characters in titles and footnotes</h2>
+Sometimes it is a requirement to have a percent sign "<b>%</b>" or an ampersand
+sign "<b>&amp;</b>" in titles or footnotes. This can cause problems to
+SAS software as a percent sign can signal that a macro must be run and
+an ampersand sign can signal that a macro variable should be resolved.
+To get around this problem, these characters will be translated to something
+else and changed back later. But sometimes you will want to resolve some
+macro variables in your titles or footnotes. This might be a set of standard
+footnotes that you want all programmers to use. To allow you to do this,
+<b>macro
+variable references will be resolved only if the macro variable name start
+with an underscore</b>. But remember that global macro variables that both
+start and end with an underscore are reserved by the reporting system.
+You must not create them yourself. But you can create your own macro variables
+that only <b><i>start </i></b>with an underscore.
+<p>There are two global macro variables you will use in your titles or
+footnotes. <b>&amp;_poplabel_</b> is the population label. If the titles
+macro sees that defined to the titles in the titles member then it will
+resolve it and the client titles macro should not repeat it after the titles,
+if the macro works in that way. Another very common first footnote is <b>&amp;_longline_</b>
+which resolves to a line of underscores that is the same width as the page.
+It is traditional to have this as a footnote, even if it is the only one,
+as it gives the message to anyone reading the report that no lines of data
+have been accidentally missed off due to a truncated file (or the printer
+running out of toner/ink). The complete list of global macro variables
+set up is covered on the page that deals with the %titles macro, the next
+page to read (you can link to it <a href="titles.html">here</a>) but &amp;_poplabel_
+and &amp;_longline_ are the only ones you will need to remember for use
+in titles and footnotes. Here is an example of these being used in a titles
+member.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>titles below:</tt>
+<br><tt>TABLE 13.4.5.1</tt>
+<br><tt>PATIENT DEMOGRAPHICS - &amp;_poplabel_</tt>
+<br><tt>footnotes below:</tt>
+<br><tt>&amp;_longline_</tt>
+<br><tt>endxxx:</tt></td>
+</tr>
+</table>
+
+<h2>
+Creating the titles dataset</h2>
+Setting up a titles member will have no effect until you run the script
+"<b>crtitlesds</b>" which is short for (create titles dataset). When you
+invoke this script, SAS software will read in this file and put your titles
+in a "titles dataset". The script takes no arguments or parameters. You
+use it like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>crtitlesds</tt></td>
+</tr>
+</table>
+
+<p>When invoked it will run on <b><i>all titles members</i></b> owned by
+<b><i>all
+programmers</i></b> in that directory. It will do error checking to make
+sure the the table reference number is not already in use and it will check
+that the program name used in the titles member matches the file name of
+the titles member.
+<p>When you start using Spectre you will often forget to run the "crtitlesds"
+script after making changes. Even I forget, sometimes, and I have been
+using the system for two years. For example, you may need ot use more columns
+so you might change the layout to use a smaller font. You run your code
+again and nothing has changed. That is because you forgot to run "crtitlesds"
+to update the information in the titles dataset.
+<h2>
+The sascode: generated program</h2>
+If you define something to "sascode:" then a program will be automatically
+generated with that code in when you invoke the "crtitlesds" script. It
+will overwrite anything that is already there so you should take care you
+do not lose some code you want to keep. And it is no good editing the sas
+program generated, since it will get overwritten next time "crtitlesds"
+is invoked. In the case of "t_fpatdem" this is the sas code generated:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>/*</tt>
+<br><tt>/ Program&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : t_fpatdem.sas</tt>
+<br><tt>/ Author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Automatically generated
+by the "crtitlesds" script</tt>
+<br><tt>/ Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;
+8-Feb-2006 at 08:39:31</tt>
+<br><tt>/ Drug&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : XXXXX_xxx</tt>
+<br><tt>/ Protocol&nbsp;&nbsp;&nbsp;&nbsp; : xx_xx_xx</tt>
+<br><tt>/ Increment&nbsp;&nbsp;&nbsp; : xxx</tt>
+<br><tt>/ Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Do not edit
+this member as it will get overwritten next time</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"crtitlesds" is run. If you wish to change the code you must</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+change it in the .titles member.</tt>
+<br><tt>/==============================================================================*/</tt>
+<p><tt>%inc alloc m_patdem; %m_patdem</tt></td>
+</tr>
+</table>
+
+<h2>
+Browsing your titles entry</h2>
+If there are multiple programmers working on a study then the titles dataset
+will be updated every time one of the programmers invokes the "crtitlesds"
+script. For this they will need write access, so if anybody is browsing
+the dataset they will not be able to update it. For this reason I wrote
+the script "<b>showtitles</b>" that will display what is in the titles
+dataset in your terminal window. It reads the titles dataset in a fraction
+of a second and then releases it, so it does not stop other programmers
+from updating the titles dataset when they invoke "crtitlesds".
+<p>Here is what I get when I use it for t_fpatdem (which has been defined
+to the Unix variable "prog"):
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>showtitles $prog</tt>
+<p><tt>Program: t_fpatdem</tt>
+<br><tt>Label:</tt>
+<br><tt>Population: FAS</tt>
+<br><tt>Layout: P10</tt>
+<br><tt>Sascode: %inc alloc m_patdem; %m_patdem</tt>
+<br><tt>Titles below:</tt>
+<br><tt>Table 13.2.1</tt>
+<br><tt>PATIENT DEMOGRAPHICS</tt></td>
+</tr>
+</table>
+
+<p>You might think it is reading your titles member, but it is definitely
+reading the titles dataset. You will see, from the above, that the "label"
+is a blank and it does not show footnotes as there are none in the titles
+dataset.
+<p>Note that if you use the command "showtitles" it will show you <b><i>all
+</i></b>the
+titles entries. Not just for you but for the other programmers as well.
+<h2>
+Conclusion</h2>
+You have seen how to set up titles. How you call them into a program is
+explained on a different page. You have been introduced to a number of
+scripts, all of which are listed at the top of this page. It has also been
+explained to you how to use the full power of Spectre by using the "<b>sascode:</b>"
+entry to produce your table with a short call to a reporting macro.
+<br>&nbsp;
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+<br><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+</html>

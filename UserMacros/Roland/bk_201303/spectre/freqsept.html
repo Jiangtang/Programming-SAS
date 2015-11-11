@@ -1,0 +1,350 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="%unistats Spectre freqsept">
+   <meta name="Description" content="Spectre's %unistats freqsept parameters">
+   <title>Freqsept parameters</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Freqsept parameters in %unistats</h1></center>
+<b>Updated: 01 Oct 2011</b>
+<h2>
+Introduction</h2>
+The %unistats macro is <b>not just for safety reporting</b>. It is for
+<b>efficacy
+reporting</b> as well. It allows you to put whatever value(s) you want
+from ods tables created by "<b>proc freq</b>" or "<b>proc glm</b>" whereever
+you want (other procedures are due to be handled in the same way). It will
+run "proc freq" or "proc glm" internally for the variables you specify
+for the tests you want and will even transpose these tables to make the
+values more easy to use. You have complete flexibility over this. You can
+format the values however you like so that you can present the results
+in the way the client prefers. Examples for "proc freq" will be shown on
+this page.
+<p>What you need to know to use this feature are the "proc freq" <b>tables
+option names</b> and the <b>ods tables</b> that get created as a result.
+And you need to know the <b>name of the variable(s) </b>in these ods table
+that you require. To make it easier, if you start your ods table name with
+"<b>Tr</b>" it will <b>transpose</b> the table such that what is in "Name1"
+becomes the variable name and the value in "nvalue1" will be the value
+of that variable. You will see some examples of using the "Tr" prefix below.
+<p>If you know these table options and ods table names and what their values
+mean then you are probably a statistician. In which case you will be relieved
+to know that you no longer have to write code to call "proc freq" and to
+merge the values back in with the usual counts and percentages or to ask
+a SAS programmer to help you produce the table. It is done for you. This
+macro is as much a tool for the statistician as it is for the sas programmers
+in the trial reporting team.
+<p>Freqsept= parameters are part of the "tuplet" processing. You can add
+this feature to any existing safety reporting system. More details about
+"tuplet" processing can be linked to below.
+<p><a href="tuplets.html">Tuplet processing</a>
+<br>&nbsp;
+<h2>
+Freqsept parameters</h2>
+The "freqsept" parameters are so named because the values you supply get
+passed to "proc <b>freq</b>" and are in seven segments (<b>sept</b>uplets)
+separated by "#". Here is the description of the parameters in the macro
+header:
+<br>&nbsp;
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+------------------------------------------------------------</tt>
+<br><tt>/ freqsept1-20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Proc freq septuplet
+statements for the placement of values&nbsp;</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+from ods tables in the output report/dataset in the form:</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+varname(s)#keyword#missing#dset#statno#statord#code</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+where "varname(s)" is the variable name or list of variable</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+names separated by spaces,</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"keyword" is the proc freq option name,</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"missing" is "Y" or "N" for whether to include missing values</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+in the calculation,</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"dset" is the ods table name with the attached where clause</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(if you prefix this table name with "Tr" it will transpose</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+the table so that Name1 will become the variable name and</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Value1 its value),</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"statno"=1-9 for the STAT column number (you can also specify</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+a treatment arm such as TRT1, TRT2 etc.),</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"statord" is the order number in the list of descriptive</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+statistics and</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"code" is the code to format the value(s) for variables in</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+the ods table.</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+------------------------------------------------------------</tt></td>
+</tr>
+</table>
+
+<p>The seven segments of the freqsept parameters are as follows:
+<p><b>1)</b> The variable name (a list of variables separated by spaces
+is allowed)
+<br><b>2)</b> The keyword is the "proc freq" tables statement option
+<br><b>3)</b> Missing is a "Y" or "N" to say whether missing values are
+to be included in the calculation
+<br><b>4)</b> Dset is the ods table name produced as a result of using
+the keyword you specified. If you place "Tr" at the front of the name then
+it will make available a transposed version available.
+<br><b>5)</b> Statno is the stats column in which to place the output for
+the variable you specify. You can use columns 1 - 9 for this. Alternatively
+you can give the treatment arm variable such as TRT1, TRT2 etc..
+<br><b>6)</b> Statord in the order number of the statistic which will commonly
+be "1" (or "2" if you want to place another value underneath the first
+one)
+<br><b>7)</b> Code is your put statement to format the results.
+<br>&nbsp;
+<h2>
+Example Code</h2>
+
+<blockquote>
+<h3>
+Demo 1</h3>
+The first demonstration uses the <b>RISKDIFF</b> option which will generate
+the <b>RiskDiffCol1</b> table. We are interested in the "Difference" so
+we have to select on row="Difference" to obtain this value. It also uses
+the <b>BINOMIAL</b> option and here we use the table name "<b>TrBinomialProp</b>"
+so that the "Tr" start to the name will force a transpose of the "<b>BinomialProp</b>"
+table so that <b>XL_BIN</b> and <b>XU_BIN</b> become variable names instead
+of row values and so make it easier to reference more than one value.
+<p>Note that the column widths for the statistic columns STAT2, STAT3 and
+STAT4 have been set and labels supplied. The macro will calculate a p-value
+to show in the STAT1 column by default but as it is not desired in this
+case the variable is dropped using "filtercode=drop stat1".
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>/* Demonstrate %unistats freqsept parameters: demo 1 */&nbsp;</tt>
+<p><tt>options noovp nodate nonumber center&nbsp; ls=105</tt>
+<br><tt>missing=" " formchar='|_---|+|---+=|-/\&lt;>*';</tt>
+<p><tt>title1;&nbsp;</tt>
+<p><tt>proc format;&nbsp;</tt>
+<br><tt>&nbsp; value sexcd&nbsp;</tt>
+<br><tt>&nbsp; 1="MALE"&nbsp;</tt>
+<br><tt>&nbsp; 2="FEMALE"&nbsp;</tt>
+<br><tt>&nbsp; ;&nbsp;</tt>
+<br><tt>&nbsp; value trtnarr&nbsp;</tt>
+<br><tt>&nbsp; 1="Ambident@(1g/day)"&nbsp;</tt>
+<br><tt>&nbsp; 2="Betamax@(500mg/day)"&nbsp;</tt>
+<br><tt>&nbsp; 3="No@treatment"&nbsp;</tt>
+<br><tt>&nbsp; ;</tt>
+<br><tt>run;&nbsp;</tt>
+<br>&nbsp;
+<p><tt>proc sort data=sasuser.demog(where=(fascd=1))&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; out=demog(drop=fascd);&nbsp;</tt>
+<br><tt>&nbsp; by patno invid;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>data demog;&nbsp;</tt>
+<br><tt>&nbsp; set demog;&nbsp;</tt>
+<br><tt>&nbsp; format trtcd trtnarr.;</tt>
+<br><tt>&nbsp; label sexcd="Gender" ;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>%popfmt(demog,trtcd,uniqueid=patno invid)&nbsp;</tt>
+<br>&nbsp;
+<p><tt>%unistats(dsin=demog(where=(trtcd le 2)),total=yes,</tt>
+<br><tt>stat2w=13,stat3w=13,stat4w=13,</tt>
+<p><tt>stat2lbl="Difference of" "proportions" "[90% CI for" "difference]",</tt>
+<br><tt>stat3lbl="95% CI for Response category MALE and Treatment Ambident",</tt>
+<br><tt>stat4lbl="95% CI for Response category MALE and Treatment Betamax",</tt>
+<p><tt>freqsept1=sexcd#alpha=.1 RISKDIFF#N#RiskDiffCol1(where=(row='Difference'))#2#1#compress(put(risk,percent8.1)),</tt>
+<br><tt>freqsept2=sexcd#alpha=.1 RISKDIFF#N#RiskDiffCol1(where=(row='Difference'))#2#2#'['||compress(put(LowerCL*100,8.1))||';'||compress(put(UpperCL*100,8.1))||']',</tt>
+<br><tt>freqsept3=sexcd#binomial#N#TrBinomialProp(where=(trtcd=1))#3#1#'['||compress(put(XL_BIN*100,
+8.1))||'; '||compress(put(XU_BIN*100,8.1))||']',</tt>
+<br><tt>freqsept4=sexcd#binomial#N#TrBinomialProp(where=(trtcd=2))#4#1#'['||compress(put(XL_BIN*100,
+8.1))||'; '||compress(put(XU_BIN*100,8.1))||']',</tt>
+<p><tt>trtlabel="Number of Patients (%)" " ",&nbsp;</tt>
+<br><tt>lowcasevarlist=sexcd,indent=2,</tt>
+<br><tt>varlist=sexcd,</tt>
+<br><tt>statvarlist=sexcd,</tt>
+<br><tt>filtercode=drop stat1);</tt></td>
+</tr>
+</table>
+
+<p>Here is the output produced by the program above.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>_________________________________________________________________________________________________________</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+95% CI for&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 95% CI for</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Number of Patients (%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Response&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Response</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Difference of&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; category&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+category</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Ambident&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Betamax&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+proportions&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MALE and&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+MALE and</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(1g/day)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (500mg/day)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Total&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [90% CI for&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Treatment&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Treatment</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=9)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (N=8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=17)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; difference]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Ambident&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Betamax</tt>
+<br><tt>_________________________________________________________________________________________________________</tt>
+<p><tt>Gender</tt>
+<br><tt>&nbsp; Male&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4 (
+44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 41.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6.9%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[21.2; 86.3]&nbsp;&nbsp;&nbsp;&nbsp; [24.5; 91.5]</tt>
+<br><tt>&nbsp; Female&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp; 10 ( 58.8)&nbsp;&nbsp;&nbsp; [-32.2;46.1]</tt>
+<p>&nbsp;</td>
+</tr>
+</table>
+
+<h3>
+Demo 2</h3>
+Note that in the above output, the second and third stats columns correspond
+to the two treatment arms. It would be better to place those values in
+those treatment arms as the last item. This is what will be done next.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>/* Demonstrate %unistats freqsept parameters: demo 2 */&nbsp;</tt>
+<p><tt>options noovp nodate nonumber center&nbsp; ls=105&nbsp;</tt>
+<br><tt>missing=" " formchar='|_---|+|---+=|-/\&lt;>*';&nbsp;</tt>
+<p><tt>title1;&nbsp;</tt>
+<p><tt>proc format;&nbsp;</tt>
+<br><tt>&nbsp; value sexcd&nbsp;</tt>
+<br><tt>&nbsp; 1="MALE"&nbsp;</tt>
+<br><tt>&nbsp; 2="FEMALE"&nbsp;</tt>
+<br><tt>&nbsp; ;&nbsp;</tt>
+<br><tt>&nbsp; value trtnarr&nbsp;</tt>
+<br><tt>&nbsp; 1="Ambident@(1g/day)"&nbsp;</tt>
+<br><tt>&nbsp; 2="Betamax@(500mg/day)"&nbsp;</tt>
+<br><tt>&nbsp; 3="No@treatment"&nbsp;</tt>
+<br><tt>&nbsp; ;</tt>
+<br><tt>run;&nbsp;</tt>
+<br>&nbsp;
+<p><tt>proc sort data=sasuser.demog(where=(fascd=1))&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; out=demog(drop=fascd);&nbsp;</tt>
+<br><tt>&nbsp; by patno invid;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>data demog;&nbsp;</tt>
+<br><tt>&nbsp; set demog;&nbsp;</tt>
+<br><tt>&nbsp; format trtcd trtnarr.;&nbsp;</tt>
+<br><tt>&nbsp; label sexcd="Gender" ;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>%popfmt(demog,trtcd,uniqueid=patno invid)&nbsp;</tt>
+<br>&nbsp;
+<p><tt>%unistats(dsin=demog(where=(trtcd le 2)),total=yes,&nbsp;</tt>
+<br><tt>stat2w=13,stat3w=13,stat4w=13,&nbsp;</tt>
+<p><tt>stat2lbl="Difference of" "proportions" "[90% CI for" "difference]",&nbsp;</tt>
+<p><tt>freqsept1=sexcd#alpha=.1 RISKDIFF#N#RiskDiffCol1(where=(row='Difference'))#2#1#compress(put(risk,percent8.1)),&nbsp;</tt>
+<br><tt>freqsept2=sexcd#alpha=.1&nbsp;</tt>
+<br><tt>RISKDIFF#N#RiskDiffCol1(where=(row='Difference'))#2#2#'['||compress(put(LowerCL*100,8.1))||';'||compress(put(UpperCL*100,8.1))||']',&nbsp;</tt>
+<br><tt>freqsept3=sexcd#binomial#N#TrBinomialProp(where=(trtcd=1))<b>#TRT1#9#</b>'['||compress(put(XL_BIN*100,
+8.1))||</tt>
+<br><tt>'; '||compress(put(XU_BIN*100,8.1))||']',&nbsp;</tt>
+<br><tt>freqsept4=sexcd#binomial#N#TrBinomialProp(where=(trtcd=2))<b>#TRT2#9#</b>'['||compress(put(XL_BIN*100,
+8.1))||</tt>
+<br><tt>'; '||compress(put(XU_BIN*100,8.1))||']',&nbsp;</tt>
+<br><tt>trtlabel="Number of Patients (%)" " ",&nbsp;</tt>
+<br><tt>lowcasevarlist=sexcd,indent=2,&nbsp;</tt>
+<br><tt>varlist=sexcd,&nbsp;</tt>
+<br><tt>statvarlist=sexcd,</tt>
+<br><tt>mincolw=13,</tt>
+<br><b><tt>filtercode=</tt></b>
+<br><b><tt>drop stat1;</tt></b>
+<br><tt><b>if _statord=9 then _statlabel="95% CIs response category MALE"</b>);</tt></td>
+</tr>
+</table>
+
+<p>You see that the two stats values are now in the treatment columns.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>_________________________________________________________________________________________________________</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Number of Patients (%)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Difference of</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Ambident&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Betamax&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+proportions</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(1g/day)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (500mg/day)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Total&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [90% CI for</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=9)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (N=17)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+difference]</tt>
+<br><tt>_________________________________________________________________________________________________________</tt>
+<p><tt>Gender</tt>
+<br><tt>&nbsp; Male&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3 ( 37.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 41.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6.9%</tt>
+<br><tt>&nbsp; Female&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 ( 62.5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+10 ( 58.8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [-32.2;46.1]</tt>
+<br><tt>&nbsp; 95% CIs response category MALE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[21.2; 86.3]&nbsp;&nbsp;&nbsp;&nbsp; [24.5; 91.5]</tt>
+<p>&nbsp;</td>
+</tr>
+</table>
+</blockquote>
+
+<h2>
+Conclusion</h2>
+You have seen how you can use the "freqsept" parameters to place values
+from "proc freq" ods tables anywhere you choose in the output report.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+</body>
+</html>

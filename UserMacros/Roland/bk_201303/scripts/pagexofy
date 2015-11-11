@@ -1,0 +1,95 @@
+#!/bin/bash
+#<pre><b>
+# Script     : pagexofy
+# Version    : 1.2
+# Author     : Roland Rashleigh-Berry
+# Date       : 16-May-2007
+# Purpose    : Add "Page x of Y" labels to a file
+# SubScripts : none
+# Notes      : Output goes to standard output by default which is the terminal
+#              window. Redirect to a file as shown in the usage notes.
+#              If the target character is the first character then the label
+#              will start at column one. If the target character is the last
+#              character then the label will end at the last character.
+#
+#              All occurences of the hex character A0 will be replaced by
+#              a space so you can use this utility to help correct alignment
+#              in proc report output.
+#
+#              All occurences of the hex character FD will be replaced by
+#              a "&" so you can use this utility to help stop ampersands
+#              in titles generating an error message in sas code.
+#
+#              All occurences of the hex character F8 will be replaced by
+#              a "%" so you can use this utility to prevent "macro not found"
+#              messages.
+#
+#              All occurences of the hex character F0 will be replaced by
+#              a double quote character so you can use this utility to prevent
+#              unbalanced quote errors.
+#
+# Usage      : pagexofy infile > outfile
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   input file name
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  07Mar07         No longer a production script for Spectre which now uses
+#                      the %pagexofy macro instead for all platforms.
+# rrb  16May07         A0 and not FE substituted with a space
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# A single input file name must be specified
+if [ $# -ne 1 ] ; then
+  echo "Usage: pagexofy infile > outfile" 1>&2
+  exit 1
+fi
+
+
+# Count how many target character lines are in the file
+totpages=$(gawk '/\xff/' "$1" | wc -l)
+
+
+# trick to drop leading spaces
+let totpages=totpages
+
+
+# Use gawk to replace the target characters with a page count
+gawk '{
+
+
+# substitute with a space all occurences of the hex character A0
+gsub("\xa0"," ")
+
+# substitute with a "&" all occurences of the hex character FD
+gsub("\xfd","\\&")
+
+# substitute with a "%" all occurences of the hex character F8
+gsub("\xf8","%")
+
+# substitute with a double quote mark all occurences of the hex character F0
+gsub("\xf0","\"")
+
+
+if (index($0,"\xff")>0)
+  {
+  page++
+  str="Page " page " of " totpages
+  }
+
+# If the target character is found then add the label and print
+# otherwise just print.
+if (substr($0,1,1)=="\xff")
+  print str substr($0,length(str)+1)
+else
+  if (substr($0,length($0),1)=="\xff") 
+    print substr($0,1,length($0)-length(str)) str 
+  else
+    print $0
+
+}' totpages="$totpages" "$1"

@@ -1,0 +1,306 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="Spectre sas techniques">
+   <meta name="KeyWords" content="Spectre sas techniques">
+   <title>SAS techniques used in Spectre (clinical)</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+SAS&reg; coding techniques used in Spectre (Clinical)</h1></center>
+
+<h2>
+Introduction</h2>
+This page will describe some sas techniques that not all programmers will
+be familiar with. They might be of interest because these techniques I
+will describe here have helped me, in part, to write Spectre. Most sas
+programmers are at the level where they can write a single sas program
+well. They know sas syntax well enough, the many functions they can use
+and some programmers are fairly competent with sas macro language. However,
+very few sas programmers can even attempt to write a "reporting system"
+such as Spectre. To write a "reporting system" needs a good working knowledge
+of the platform, such as Windows or Unix, because a reporting system will
+surely need scripts or batch (.bat) files written to link components of
+the reporting system together, but there is more to be learned on the sas
+side to make a success of writing a reporting system.
+<h2>
+A "sasautos" library</h2>
+The SAS Institute supply what is known as a "sasautos" library. It has
+more than one hundred macros in it. Most sas programmers accept this as
+"a given" in the sense that they know that that is the sasautos library
+and "that is that!". The know they can add their own macro libraries to
+the sasautos path but they accept that the only source of sasautos-type
+macros is the one supplied by the SAS Institute. Actually, that need not
+be the case. For clinical reporting purposes, the supplied sasautos library
+is not very good, though it has some very useful macros in it. You would
+be better off creating your own collection of macros and regarding that
+as your working base. You would still want to have the SI supplied sasautos
+library there as the last library declared to the sasautos path, otherwise
+you would find that what you regarded as the sas macro functions %lowcase(),
+%trim() and %left() no longer worked because these are actually macros
+in the sasautos library and not sas macro inbuilt functions.
+<p>Over twenty years I have built up a huge collection of sas utility macros.
+Every time I think of a useful function or procedure to have in a macro
+or have come across such macros at my place of work, I remember what this
+macro does and I rewrite it at a later date in a way that fits in with
+all the other macros I have got. It has got to the stage where I rarely
+think of any more utility macros that I can usefully add. I say "usefully",
+as I could think of some more utility macro to write but for all these
+cases, %sysfunc() calls would get me close enough to what I am trying to
+do. In 2007 I only added one new macro to my collection. "But what has
+this got to do with Spectre?", you might be wondering. "How did it help
+me write Spectre?" I'll tell you. <b>The sas macros in Spectre nearly all
+came out of this collection of macros</b> and those that didn't were rewritten
+or amended based on macros in that collection. There was very little new
+in the Spectre macros. In most cases, as I realized I needed some of these
+macros, I just copied them across from my old web site. <b>That is how
+I developed Spectre so quickly</b>. The macros were already there! Many
+of those macros call other macros in that same collection so it is not
+a collection of unrelated macros. The other macro calls are listed in the
+headers. They are meant to be a sasautos library. Developing Spectre would
+have been impossible to do in the timescales without those macros being
+there.
+<p>You could build up your own collection of macros but my advice is not
+to bother because I have already done this for you. You can use my macros!
+I have put these in the public domain so that you can use them too. My
+big collection of macros can be found <a href="http://www.datasavantconsulting.com/roland/maclist2.html" target="_blank">here</a>
+and the subset of these macros I used for Spectre plus some Spectre-specific
+macros are webbed <a href="macros/maclist2.html" target="_blank">here</a>.
+You are free to download them and use them if you want to. You don't need
+to pay me a penny for their use and you don't need my permission either.
+But should you distribute a commercial product that uses these macros then
+you should make it clear to your customers which part of your product consists
+of these macros. You can't expect the customer to pay for something that
+you got for free!
+<h2>
+Function-style macros</h2>
+A lot of the simpler macros in my collection are "function-style" macros.&nbsp;
+In fact, I always try to write my macros as function-style macros where
+I think it is appropriate. Function-style macros, if they worked as functions
+in the strictest sense, would "return" a result. What function-style macros
+do is nearly that. They sort of "boil down" or "resolve" into the result
+so that the result is all that is left. In the macro code, this "result"
+will be a statement that lacks an ending semicolon. If you think of the
+SI supplied macro %lowcase() then you would use it like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%let newword=%lowcase(OLDWORD);</tt></td>
+</tr>
+</table>
+
+<p>What happens in this case is that %lowcase() acts on "OLDWORD" and changes
+it to "oldword" in lower case, with no ending semicolon, so that "%lowcase(OLDWORD)"
+<b>resolves</b>
+to the string "oldword" leaving you with:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%let newword=oldword;</tt></td>
+</tr>
+</table>
+
+<p>....so the value "oldword" gets assigned to the macro variable "newword".
+<p>The reason I use function-style macros where I can is because they are
+easier to call, they keep the code neater and effectively extend the power
+of the sas macro language by adding extra functions. You can not use function-style
+macros where your macro (or any submacro it calls either directly or indirectly)
+contains procedures or data steps. As for data steps, you can sometimes
+replace data steps with sas macro code that uses %sysfunc() calling SCL
+for dataset handling and doing so avoids the data step boundary and allows
+you to use it as a function-style macro. I have many macros of this type.
+<p>To illustrate the difference between function-style macros and others,
+consider the macro named %nobs(), that most sites possess, to give you
+the number of observations in a dataset. I have one named the same. This
+is the way most people implement it as an ordinary macro with a data step
+inside:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%let count=;</tt>
+<br><tt>%nobs(dset,count);</tt></td>
+</tr>
+</table>
+
+<p>My %nobs() is a function-style macro and I call it like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%let count=%nobs(dset);</tt></td>
+</tr>
+</table>
+
+<p>The above might not look like much of an advantage but then I can use
+my macro in the convenient form:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%if %nobs(dset) %then %do;</tt>
+<br><tt>..</tt>
+<br><tt>..</tt>
+<br><tt>%end;</tt></td>
+</tr>
+</table>
+
+<p>As I said, my %nobs() macro does not contain a data step (and nor does
+its submacro) and this allows me to use it as a function-style macro. Take
+a look at my %nobs() macro. It has a line in it with no semicolon at the
+end. This is deliberate and is how it "returns" its value. You can can
+link to it <a href="macros/nobs.sas" target="_blank">here</a> and you will
+see it calls another macro named %attrn(), again a function-style macro,
+which again has a line with no semicolon at the end, that uses %sysfunc()
+calls to SCL statements for handling datasets that you can link to <a href="macros/attrn.sas" target="_blank">here</a>.
+<p>Having function-style macros allows you to use them in data steps, even
+if they relate to other datasets and other dataset variables and their
+properties, which gives you an advantage when writing complicated macros.
+For an example of a complicated reporting macro where I have used a few
+function-style macros to make coding it easier, look at %unistats() <a href="macros/unistats.sas" target="_blank">here</a>.
+<h2>
+Macro version number messages</h2>
+It is a very good idea to write to your sas log what macros you called
+and what version numbers they are. Then if you have to recreate report
+output at a much later date you can hopefully track down copies of the
+macros of that same version number and then everything should work the
+same and give the same result. Version numbers can stay the same with macros
+until you get a non-backward compatible functional change or anything changes
+that opens up the possibility of the macro giving a different result. But
+<b>how
+you write the message to the log</b> is important. You only want to see
+this message <b>once for each macro</b>. If a macro is called multiple
+times then it might clog up you log if it wrote a message each time it
+was called. It is important to keep your logs as clean as possible so some
+clever trick is needed to only write the macro and its version number once
+to the log. The way that is done is to write to the log <b>outside the
+macro definition</b>. You write it as free macro code before you even declare
+the macro like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%put MACRO CALLED: crtitlesds v1.1;</tt>
+<p><tt>%macro crtitlesds(flatfile,dsout);</tt></td>
+</tr>
+</table>
+
+<p>Then when your macros is first invoked this message gets written to
+the log, your macro "compiled" and then when you call the macro again,
+this message is not part of the macro and so does not get written to the
+log. To see what I mean, take another look at the two macros you can link
+to in the previous section and see that their message that puts out the
+macro name and version is done <b>before</b> the macro is defined. Not
+many sas programmers are aware of this unusual feature. Even more unusual
+is that you can use the "%if" statement outside the macro definition in
+this way if you want to, so long as your macro is a sasautos macro. This
+is surprising as "%if" statements are not allowed in open code.
+<h2>
+"Communicating" with sas programs</h2>
+I have seen cases where somebody has tried to write a reporting system
+but because of their lack of knowledge in doing this, they usually opt
+to run all the programs in one sas call. This is a bad idea as there is
+the possibility that what is left over in one program can affect a following
+program. When they realize this then you might see some code added at the
+end of every program to clear out the work libraries and formats and reset
+the options to an agreed standard. It starts getting messy. If each program
+ran in a separate sas session then there would not be this problem <b>but</b>
+what sas programmers often realize is that they need to communicate some
+piece of information to all the sas programs and that this information
+is different for a full run of all programs rather than runs of individual
+programs as is typical during development. So they think that there is
+no alternative but to run all the programs in one sas session and set up
+these values at the start before the first program runs. There will be
+a block of code at the top of each program that is active for individual
+runs when the program is being developed but must be commented out for
+the collective run. Again, this is a bad idea, as there is no guarantee
+that the programmer will remember to do this. It is also very messy and
+to make it worse, after a program has been "validated", then the code must
+be changed slightly by commenting out this block before it can be run in
+"production". This introduces the chance of an error so by making this
+sort of edit you might have "invalidated" a "validated" program. This is
+a bad situation. This mess all comes from the mistaken belief that you
+can not "<b>communicate</b>" with sas programs independently of changing
+sas code or setting parameters. <b>You can</b>. One way to do this is to
+change sas code in the
+<b>autoexec.sas</b> member so that each program
+can pick it up and so each program can run independently in its own sas
+session. Although this is a much better way and avoids sas programs all
+running together, it is still changing sas code, if only in autoexec.sas.
+Sometimes this would be inconvenient due to the system setup. Luckily there
+is another and much better way to do this and this is by using "<b>system
+environment variables</b>". Most sas programmers have never heard of "system
+environment variables" because they have little knowledge of the platform
+they are working on, such as Windows and Unix, and what it can do. It is
+not the programmer's fault as SAS software claims to be platform independent
+and so programmers never bother to learn much about the platform it runs
+on. If you have a script or a batch (.bat) file to run your sas programs
+then you can set up an environment variable, give it a value and "<b>export</b>"
+it. This makes it available to all the sas programs run by the script if
+they know to look for it. In your sas code you can check to see what this
+environment variable is set to using <b>sysget()</b> in a data step or
+<b>%sysget()</b>
+as a sas macro function. You might want to look at the SAS documentation
+for these. <b>But there is a small problem</b>. Using %sysget() will cause
+a warning message to be written to your log if the environment variable
+does not exist, which will most likely be the case when you are developing
+your program and trying to read a system environment variable that will
+only be there for the final production run. It is best to avoid this warning
+message. To get round this I use a macro I wrote called %readpipe(), which
+reads the results of system commands, so that you can issue an "echo" command
+for the system environment variable. Doing it this way avoids the warning
+message. You can link to the %readpipe() macro
+<a href="macros/readpipe.sas" target="_blank">here</a>.
+<p>Spectre has a macro named <b>%closerep()</b> that closes a report. It
+looks at the system environment variable <b>OUTDIR</b> to determine which
+directory it should put the final output files in and one called <b>DONELIST</b>
+so it knows which "donelist" file to write an entry to (if OUTDIR is set)
+to say what output has been created. Take a look at the code and see how
+it is done. Note that for Windows (<b>&amp;sysscp EQ WIN</b>) it is done
+differently than for Unix. Note the <b>%readpipe()</b> call. You can link
+to the %closerep macro
+<a href="macros/closerep.sas" target="_blank">here</a>.
+<h2>
+Conclusion</h2>
+This document has described some of the sas techniques employed as they
+relate to the task of writing a clinical reporting system.
+<br>&nbsp;
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript"
+ src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+<br>&nbsp;
+</body>
+</html>

@@ -1,0 +1,78 @@
+#!/bin/bash
+#<pre><b>
+# Script     : showfmt_win
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 22-Feb-2007
+# Purpose    : To display the contents of a format that would be made available
+#              if a call %alloc were made (uses SAS).
+# SubScripts : showfmt_win
+# SubMacros  : %allocr %attrn
+# Notes      : WINDOWS VERSION
+#              The dollar sign of a character format name must be preceded by
+#              the escape character "\" otherwise the Unix command interpreter
+#              will think a Unix variable is being referred to.
+# Usage      : showfmt_win age
+#              showfmt_win \$cat
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   Format name. Character formats must have their dollar sign preceded by
+#      the escape character "\".
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  20Feb07         Call %allocr macro
+# rrb  22Feb07         Call %attrn macro instead of %nobs
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Put out a usage message if not enough parameters supplied
+if [ $# -lt 1 ] ; then
+  echo "Usage: showfmt age" 1>&2
+  echo 'Usage: showfmt \$age' 1>&2
+  exit 1
+fi
+
+# Write SAS code to a temporary file
+cat > $HOME/showfmt_$$.sas << -----FINISH-----
+filename _outfile "$HOMEW\showfmt_$$.tmp";
+%allocr
+%macro showfmt;
+  %local i fmtpath cat;
+  %let fmtpath=%fmtpath;
+  %do i=1 %to %words(&fmtpath);
+    %let cat=%scan(&fmtpath,&i,%str( ));
+    %if %sysfunc(cexist(&cat)) %then %do;
+      proc format lib=%scan(&cat,1,%str(,)) cntlout=out;
+        select $1;
+      run;
+      %if %attrn(out,nobs) %then %do;
+        %let i=999;
+        data _null_;
+          file _outfile notitles noprint;
+          set out;
+          if start ne end then put @1 start @10 '-' @12 end @25 label;
+          else put @1 start @25 label;
+        run;
+      %end;  
+    %end;
+  %end;
+%mend;
+%showfmt;
+
+-----FINISH-----
+
+# run the code
+sas -nosplash -nologo -icon -log "$HOMEW" -sysin "$HOMEW\showfmt_$$.sas"
+
+# if output file exists then cat it and delete it
+if [ -f $HOME/showfmt_$$.tmp ] ; then
+  cat $HOME/showfmt_$$.tmp 
+  rm -f $HOME/showfmt_$$.tmp 
+fi
+
+# tidy up
+rm -f $HOME/showfmt_$$.sas $HOME/showfmt_$$.log

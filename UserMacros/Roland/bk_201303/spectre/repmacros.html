@@ -1,0 +1,193 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="Writing Reporting Macros for Spectre">
+   <meta name="KeyWords" content="Writing Reporting Macros Spectre">
+   <title>Writing Reporting Macros for Spectre</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Writing Reporting Macros for Spectre</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 04 Jul 2006)</b></center>
+
+<h2>
+Introduction</h2>
+To my mind, there are <b>two pitfalls</b> waiting for you if you use the
+Spectre reporting system. The first pitfall is one I have mentioned in
+a few places on this web site, and that is <b>leaving Spectre unvalidated</b>,
+as by doing so you will severely limit the speed and efficiency of the
+system. The second pitfall, which I have not mentioned elsewhere, is the
+quality of the reporting macros that get written for use with Spectre.
+If these <b>reporting macros are poorly written</b> then progress with
+Spectre will be held back. I do not mean the macros supplied with Spectre
+but rather the extra macros that get written to do study reporting or that
+report on data types such as lab data. Some of these might call the two
+main reporting macros in Spectre - others not. These will hopefully be
+generic macros but if you do not have a standard data structure in place
+then they will be reporting macros that will get copied from study to study
+and amended. The ability to write good SAS macros is a rare skill. If you
+are using Spectre then you should select the person who writes the extra
+reporting macros with care. You will likely have to hire a specialist to
+do this and you should be aware that the rate you will likely have to pay
+for their services may be well in excess of what you normally pay for hiring
+a study reporting programmer. Maybe as much as 33% more. But if you find
+the right person then the extra money you will be paying this person should
+be more than compensated for by the higher quality and speed of their work
+and the future ease of using and maintaining the reporting macros that
+person has written for you.
+<h2>
+How to choose a macro writer</h2>
+Your safest bet for choosing a macro author is to find a specialist who
+has written many SAS macros as reflected by the work experience shown on
+their CV (Resume). They should have written these macros <b>for the pharmaceutical
+industry</b> as the way you write macros varies in different parts of the
+industry. Experience counts for everything in this field. Ideally, you
+need to see examples of this person's work, but this may not be possible
+since the macros will likely be owned by their former clients. You might
+be lucky in that somebody at your place of work knows the person and knows
+their work and can vouch for them to some degree. Failing that and lacking
+actual examples of their work, then you are going to have to find out from
+this person their approach to writing macros and the methods they use.
+<blockquote>
+<h3>
+What makes a good macro author?</h3>
+There are various views on what makes a good macro author. There are some
+"rules of thumb" in use that are misleading as they apply to one industry
+and not another. For example, a macro writer who knows that their end user
+is a non-programmer will put a lot of checking into the macro parameters
+so if something is wrong it will give a meaningful message to the user
+because
+otherwise the user will have no chance of understanding an error message
+in a log. But if the end user of the macro is another SAS programmer then
+much less parameter checking might be used. So approaches can differ and
+you should be aware of that. But apart from these different approaches,
+I would say that there is <b>one thing</b> that distinguishes a good macro
+author from a bad one and that is <b>their code is easy to follow even
+by junior SAS programmers</b>. There will be a simplicity and clarity that
+shines through their code such that even though the macro might be doing
+something complicated, the code you look at seems simple and easy to follow.
+Of course, in the code they might be calling macros the junior programmer
+has not heard of or using techniques the programmer has never seen before,
+but still the code will be understandable. So lacking actual examples of
+their work that demonstrate this simplicity and clarity then you need to
+find out from your prospective macro writer how they think people would
+react when reading their code. You want them to say that they think it
+would be easy for any other programmer to understand. You have to rely
+a little on their honesty for this.
+<h3>
+SQL or not SQL?</h3>
+"SQL or not SQL?" - that is the question! You will know whether yours is
+an SQL shop or not. Some pharmaceutical companies and CROs use it extensively
+while others do not. Some macro authors will readily put SQL in their code
+and some will not. It is not easy for a non SQL programmer&nbsp; to turn
+into an SQL programmer and nor is it easy for an SQL programmer to turn
+into a data step programmer so <b>choose a person that fits your SQL /
+no SQL standards the best</b>. But if it is a non SQL programmer you are
+after then the programmer should at least have used SQL as sometimes there
+is no alternative to using it (like merging a date with date ranges and
+cartesian joins) and a skilled programmer should be aware of this and be
+able to reach for SQL as a tool if they need it.</blockquote>
+
+<h2>
+Some further Macro Considerations</h2>
+If you are writing reporting macros for Spectre then there are some further
+considerations. Spectre aims to be a "push button" reporting system. Reporting
+macros can be called using the "sascode:" line in the ".titles" member.
+There is only one line and this is limited to about 200 characters so there
+is not much room for a macro call. This is not a fault in Spectre. It is
+a deliberate limitation that is there to force you to <b>write macros in
+a way such that most of the parameters will default</b> to useful settings.
+The idea is that you set as few parameters as possible and yet get out
+a perfectly formatted report. If this can be done well then Spectre has
+a chance of becoming a "push button" reporting system. The idea behind
+making the transformation over to a "push button" reporting system is that
+once you have all your reporting macros in place then the person setting
+up the titles and footnotes for a report will also specify which reporting
+macro to call and will set a very limited number of parameters and the
+report will come out without further programmer intervention. Whoever writes
+reporting macros needs to be aware of this.
+<blockquote>
+<h3>
+Know the Spectre reporting macros</h3>
+A macro author who is new to Spectre will see typical output from the two
+major reporting macros (<b>%npcttab</b> and <b>%unistats</b>) and will
+likely jump to conclusions about what the macros can and can not do. But
+these macros are more flexible than first meets the eye. It is important
+that the macro programmer knows the capabilities of these two macros well.
+<h3>
+Utility macros</h3>
+Avoid "reinventing the wheel" when writing reporting macros and learn to
+split tasks into identifiable chunks. This is more easily said than done
+and achieving it comes with practise. Many common useful tasks can be put
+into macros and<b> they already have been !!</b> Spectre contains a set
+of utility macros that you can call that will make writing reporting macros
+quicker and easier. And if these are validated macros then validating a
+reporting macro that calls them will be easier. So <b>be aware of what
+utility macros exist</b> within Spectre. If what you want isn't there then
+it should be on my old web site. You should never need to write a utility
+macro of a non-statistical nature because there is a 99% chance that it
+is already there.
+<p>You can see a full list of Spectre macros, including the utility macros,
+by clicking on this <a href="maclist2.html" target="_blank">link</a>.
+<p>A fuller set of utility macros can be found on my old web site by clicking
+<a href="http://www.datasavantconsulting.com/roland/sasautos.html" target="_blank">here</a>.
+Special attention should be paid to the function style macros that are
+listed first. Once you get used to using these, you will wonder how you
+ever managed without them. They can be used as a sort of meta-code when
+writing complex macros once you learn to think with them. An alphabetical
+list of macros can be linked to
+<a href="http://www.datasavantconsulting.com/roland/maclist2.html" target="_blank">here</a>.
+<h3>
+%popfmt</h3>
+The importance of the %popfmt macro can not be overstated. Any extra reporting
+macro that gets written will probably need to call the %popfmt macro. A
+macro author needs to be able to "think" with this macro in the way described
+on the page about it. The global macro variables that it sets can be very
+useful in allowing macro parameters to default. For example, you should
+never have to set column width parameters for treatment arms as what gets
+written into one of the global macro parameters is a list of column widths
+that you can use as defaults in any new reporting macro. You can link to
+a full description macro from the main page or link to it <a href="popfmt.html" target="_blank">here</a>.
+<h3>
+Reports fitting the page</h3>
+The two main reporting macros in Spectre will default to exactly fitting
+the output table to the page width. For an example of the logic look two
+thirds the way down the code of <a href="clinmacros/unicatrep.sas" target="_blank">%unicatrep</a>.
+The macro programmer should stick to this convention unless it conflicts
+with site standards.
+<h3>
+Other techniques</h3>
+The macros that come with Spectre employ techniques that you have maybe
+never seen before. You can learn more about this by reading the macro code.
+My old web site has a page "Tips on writing SAS macros" that might be of
+use. You can link to it <a href="http://www.datasavantconsulting.com/roland/macrotips.html" target="_blank">here</a>.</blockquote>
+
+<h2>
+Conclusion</h2>
+This concludes some thoughts on finding the right programmer to write reporting
+macros for you and further considerations on how this task should be approached.
+<br>&nbsp;
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+</html>

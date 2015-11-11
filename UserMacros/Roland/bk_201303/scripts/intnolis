@@ -1,0 +1,34 @@
+#!/bin/bash
+#<pre><b>
+# Script     : intnolis
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 11-Feb-2007
+# Purpose    : Production script to list outputs in the titles file with no
+#              corresponding .lis output in the current directory.
+# SubScripts : intitlabels nofile
+# Notes      : Must be run in the programs directory. "intnolis" is short for
+#              "in titles no .lis".
+# Usage      : intnolis  
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not supply any parameters
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# No parameters allowed
+if [ $# -gt 0 ] ; then
+  echo "Error: (intnolis) Do not supply any parameters" 1>&2
+  exit 1
+fi
+
+# Get a list of titles outputs complete with labels, add the .lis extension
+# and then call "nofile" to list those that do not exist.
+intitlabels | awk '{print $1 ".lis" $2}' | nofile

@@ -1,0 +1,25 @@
+#!/bin/bash
+#<pre><b>
+# Script     : fext
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 10-Dec-2003
+# Purpose    : list all unique file extensions in the current directory
+# SubScripts : none
+# Notes      : none
+# Usage      : fext 
+#
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not supply any parameters  
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+ls | awk -F. '{if (NF>1) {print $NF}}' | sort -u

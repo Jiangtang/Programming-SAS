@@ -1,0 +1,16 @@
+/* Copyright 1998-2006, PaperThin, Inc.  All Rights Reserved. */
+.cs_tab_inactive {padding: 2px; background-color: #C0C0C0; cursor: pointer; font-family: "MS Sans Serif", Verdana, Geneva, sans-serif}
+.cs_tab_active {padding: 2px; background-color: #FFFFFF; cursor: pointer; font-family: "MS Sans Serif", Verdana, Geneva, sans-serif; font-weight: bold; color: #004080}
+.cs_tab_background {padding: 2px; background-color: #FFFFFF; cursor: pointer; font-family: "MS Sans Serif", Verdana, Geneva, sans-serif; font-weight: bold; color: #004080}
+.cs_default_form {padding: 0; margin: 0}
+.CS_Default_GhostText {text-decoration: none; color: #808080; cursor: pointer; font-family: Verdana, Geneva, sans-serif; font-size: x-small}
+.CommonSpotMenu {padding-top: 7px; padding-left: 0; padding-bottom: 7px; text-align: left; position: absolute; z-index: 9; background-color: #C6C6C6}
+.CommonSpotMenu a {background-color: #C6C6C6}
+.CommonSpotMenu a:link { background-color: #C6C6C6}
+.CommonSpotMenu a:visited {background-color: #C6C6C6}
+.CommonSpotMenu a:hover {background-color: #C6C6C6}
+.CommonSpotMenu img {display: inline; border-style: none}
+.CommonSpotIcon {display: inline; border-style: none}
+.CommonSpotMenu hr {text-align: center; color: #808080; height: 1px; width: 90%; text-shadow: none}
+/* Style for the highlightDynamicElments URL parameter */
+.cs_sDebug_border {border-bottom: 1px solid #FFFF00; border-top: 1px solid #FFFF00; border-left: 1px solid #FFFF00; border-right: 1px solid #FFFF00; padding: 8px}

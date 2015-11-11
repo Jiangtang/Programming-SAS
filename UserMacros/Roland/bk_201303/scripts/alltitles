@@ -1,0 +1,132 @@
+#!/bin/bash
+#<pre><b>
+# Script     : alltitles
+# Version    : 1.4
+# Author     : Roland Rashleigh-Berry
+# Date       : 29-Jul-2007
+# Purpose    : Script to collect all the valid .titles files together and put
+#              them all in ALL.TITLES
+# SubScripts : none
+# Notes      : Catenates *.titles files removing rubbish lines and puts them
+#              all in the file ALL.TITLES so that titles data set can be created
+#              from it using the %crtitlesds macro.
+#              You can edit this member, as explained in the code, to match your
+#              site programming naming conventions for programs you wish to
+#              have titles stored in the titles dataset.
+# Usage      : alltitles 
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not supply any parameters
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  15Jul07         Allow for "x" extra analysis program titles members
+# rrb  19Jul07         Allow for "lisfile:" line
+# rrb  20Jul07         Exit if there are no .titles files and assume ALL.TITLES
+#                      has been set up using a different method.
+# rrb  29Jul07         Improve header documentation and mark in the code where
+#                      edits can be made and give an explanation of what is
+#                      being done in the code and how to use your own file
+#                      pattern.
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+
+# exit if no .titles members and assume ALL.TITLES created by another method
+ls *.titles 2>&1 1>/dev/null
+if [ $? -gt 0 ] ; then
+  exit 0
+fi
+
+
+# No parameters allowed
+if [ $# -gt 0 ] ; then
+  echo "Error: (alltitles) Do not supply any parameters" 1>&2
+  exit 2
+fi
+
+############################# EDIT THIS SECTION #############################
+
+## "ls -1 *.titles 2>/dev/null" creates a list of all files that end with  ##
+## ".titles", and puts any error or diagnostic messages in the Unix trash  ##
+## can /dev/null. "grep '^[^xgtl]'" selects on those that do NOT begin     ##
+## with the letters "x", "g", "t" or "l" (the first "^" means "begins      ##
+## with" and the "^" at the start in the square brackets means "not the    ##
+## following characters". "wc -l" counts the number of files that fit this ##
+## condition and this count is written in the variable "vtitles". What     ##
+## this is doing is if you have any ".titles" members that do not fit the  ##
+## expected pattern of starting with "x", "g", "t" or "l" then it will put ##
+## out diagnostics in the following step. If your program naming           ##
+## convention is different for programs you want to store titles for then  ##
+## you will have to change the three places where "xgtl" is found in       ##
+## square brackets below in the code in this edit section so that it       ##
+## matches the "file pattern" that fits your program naming convention.    ##
+## Note that "file pattern" matching is not the same thing as as "regular  ##
+## expressions". For example, the "grep" step uses the first "^" to mean   ##
+## "begins with" but this is good for "regular expressions" and is not     ##
+## used in "file pattern" matching. If your valid programs started with    ##
+## "l_", "t_" or "f_" then your file pattern would be: "[ltf]_*.titles"    ##
+
+vtitles=$(ls -1 *.titles 2>/dev/null | grep '^[^xgtl]' | wc -l)
+
+
+## If the value in "vtitles" is greater than 0 then put out a message to   ##
+## say that these .titles members will not be written to the titles        ##
+## dataset and list them along along with their owners. If your program    ##
+## naming conventions are different then you will have to change where     ##
+## "xgtl" is found in square brackets below.                               ##
+
+if [ $vtitles -gt 0 ] ; then
+  echo "Error: (alltitles) Only tables, listings, graphs and extra analysis programs " 1>&2
+  echo "Error: (alltitles) are allowed to have entries in the titles dataset." 1>&2
+  echo "Error: (alltitles) The following files will be ignored" 1>&2
+  echo "owner   -----file name-----" 1>&2
+  ls -1 *.titles | grep '^[^xgtl]' | owner 1>&2
+fi
+
+
+## Copy the valid .titles entries into a temporary file. If your program   ##
+## naming convention is different then you will have to change where       ##
+## "xgtl" is found in square brackets below.                               ##
+
+cat [xgtl]*.titles > ~/alltitles_$$.tmp
+
+############# END OF EDIT SECTION - DO NOT EDIT BELOW THIS LINE #############
+
+
+gawk '
+BEGIN {
+getall=0
+print "    ========== DO NOT EDIT THIS FILE =========\n"
+}
+
+{
+if (toupper($0) ~ /^POPULATION:/ || toupper($0) ~ /^LAYOUT:/ || toupper($0) ~ /^LABEL:/ \
+   || toupper($0) ~ /^LISFILE:/ || toupper($0) ~ /^SASCODE:/ )
+  print $0
+else
+  {
+  if (toupper($0) ~ /^PROGRAM:/ || toupper($0) ~ /^ENDXXX:/)
+    {
+    print $0
+    getall=0
+    if (toupper($0) ~ /^ENDXXX:/)
+      print "\n    ========== DO NOT EDIT THIS FILE =========\n"
+    }
+  else
+    {
+    if (toupper($0) ~ /^TITLES BELOW:/ || toupper($0) ~ /^FOOTNOTES BELOW:/)
+      {
+      print $0
+      getall=1
+      }
+    else
+      if (getall==1) print $0
+    }
+  }
+}' ~/alltitles_$$.tmp > ALL.TITLES
+
+rm -f ~/alltitles_$$.tmp

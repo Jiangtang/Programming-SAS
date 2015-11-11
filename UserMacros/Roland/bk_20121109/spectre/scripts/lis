@@ -1,0 +1,46 @@
+#!/bin/bash
+#<pre><b>
+# Script     : lis
+# Version    : 1.1
+# Author     : Roland Rashleigh-Berry
+# Date       : 11-Mar-2007
+# Purpose    : To view the .lis output file of the program defined to the
+#              exported variable "prog".
+# SubScripts : none
+# Notes      : You must have set up the system environment variable "prog"
+#              to your sas program name (no extension) and have exported it
+#              like this:
+#              $ prog=progname  # no extension
+#              $ export prog
+# Usage      : lis
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   (optional) letter suffix that follows .lis (if any)
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  22Feb07         "less" used as viewer
+# rrb  11Mar07         Whatever defined to VISUAL used as viewer else "less"
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+if [ -z $prog ] ; then
+  echo "You have to set \"prog\" equal to your sas program name and export it" 1>&2
+  exit 1
+fi
+
+if [ -n "$VISUAL" ] ; then
+  if [ "$VISUAL" == "less" ] || [ "$VISUAL" == "vi" ] ; then
+    # done in current terminal window for "less" and "vi"
+    $VISUAL ${prog%.*}.lis$1
+  else
+    # done as a background task
+    $VISUAL ${prog%.*}.lis$1 &
+  fi
+else
+  # default is to use "less" in current terminal window
+  less ${prog%.*}.lis$1
+fi

@@ -1,0 +1,167 @@
+#!/bin/bash
+#<pre><b>
+# Script     : printall_win
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 11-Feb-2007
+# Purpose    : To print all observations in datasets in the current directory
+#              that satisfy a condition (uses SAS).
+# SubScripts : none
+# Notes      : WINDOWS VERSION
+#              This script will attempt to correct type mismatches. If you use
+#              ">" or "<" for GT or LT then exclose in quotes otherwise Unix
+#              will interpret it as redirection. Note that two sets of quotes
+#              must be used for numeric dates.
+#
+#              Note that if you use the -i option (include datasets) then only
+#              those datasets are used. They will override anything you define
+#              to the -e options (exclude datasets).
+#
+# Usage      : printall_win patno="1234"
+#              printall_win patient=1234 > pat1234.txt
+#              printall_win -e labs patient=1234 > save.txt
+#              printall_win -i 'demog vit' patient=1234
+#              printall_win -e vit 'visitcd>9083'
+#              printall_win diagdt="'23sep2003'"d
+#===============================================================================
+# OPTIONS:
+#-opt- -------------------------------description-------------------------------
+#  i   (value)  "include" datasets                                   
+#  e   (value)  "exclude" datasets                                 
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   variable and condition
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Define give-usage-message-then-exit function
+usage () {
+  echo "Usage: printall -i <"include" datasets> -e <"exclude" datasets> varnum=1234" 1>&2  
+  exit 1
+}
+
+
+# Defaults
+valuei=                             # Default value for "include" datasets                                   
+valuee=                             # Default value for "exclude" datasets                                 
+
+
+# "case" statement for action to take on selected options
+while getopts "i:e:" param ; do
+  case $param in
+   "?") # bad option supplied
+        usage
+        ;;
+   "i") # (value) "include" datasets
+        valuei=$OPTARG
+        ;;
+   "e") # (value) "exclude" datasets
+        valuee=$OPTARG
+        ;;
+  esac
+done
+
+
+# shift to bring first parameter to position 1
+shift $(($OPTIND - 1))
+
+
+# Edit the test below for the number of expected parameters and call
+# the give-usage-message-then-exit function if an incorrect number 
+# supplied. Remove if parameters are optional.
+if [ $# -lt 1 ] ; then
+  echo "Error: (printall) no parameters supplied" 1>&2
+  usage
+fi
+
+
+# Write SAS code to a temporary file
+cat > $HOME/printall_$$.sas << -----FINISH-----
+options validvarname=v7 nofmterr formdlim='-' linesize=143 
+        macrogen spool noovp nodate nonumber center symbolgen;
+filename _outfile "$HOMEW\printall_$$.tmp";
+proc printto print=_outfile;
+%macro quotelst(str,quote=%str(%"),delim=%str( ));
+%local i quotelst;
+%let i=1;
+%do %while(%length(%scan(&str,&i,%str( ))) GT 0);
+  %if %length(&quotelst) EQ 0 %then %let quotelst=&quote.%scan(&str,&i,%str( ))&quote;
+  %else %let quotelst=&quotelst.&quote.%scan(&str,&i,%str( ))&quote;
+  %let i=%eval(&i + 1);
+  %if %length(%scan(&str,&i,%str( ))) GT 0 %then %let quotelst=&quotelst.&delim;
+%end;
+%unquote(&quotelst)
+%mend;
+
+libname here './' access=readonly;
+
+%let include=$valuei;
+%let exclude=$valuee;
+%let variable=%scan($1,1,^=<>);
+%put >>>>>> variable=&variable;
+%let value=%scan($1,2,^=<>:);
+%put >>>>>> value=&value;
+%let op=%substr($1,%sysfunc(indexc(%quote($1),^=<>)),%eval(%length($1)-%length(&variable)-%length(&value)));
+%put >>>>>> op=&op;
+
+%macro rep;
+%if %length(&include) %then %let include=%quotelst(%upcase(&include));
+%if %length(&exclude) %then %let exclude=%quotelst(%upcase(&exclude));
+
+proc sort nodupkey data=sashelp.vcolumn(keep=libname memtype name type memname
+                           where=(libname="HERE" and memtype="DATA" 
+                                %if %length(&include) %then %do;
+                                  and memname in (&include)
+                                %end;
+                                %else %if %length(&exclude) %then %do;
+                                  and memname not in (&exclude)
+                                %end;
+                                  and upcase(name)=upcase("&variable")))
+                    out=vartype(drop=libname memtype memname);
+  by name type;
+run;
+
+data _null_;
+  set vartype;
+  if _n_=1 then do;
+    if type="char" then call symput('value',"'"||"%trim(&value)"||"'");
+    stop;
+  end;
+run;
+
+%put >>>>>> value=&value;
+
+data _null_;
+  set sashelp.vcolumn(where=(libname="HERE" and memtype="DATA" 
+                                %if %length(&include) %then %do;
+                                  and memname in (&include)
+                                %end;
+                                %else %if %length(&exclude) %then %do;
+                                  and memname not in (&exclude)
+                                %end;
+                            and upcase(name)=upcase("&variable")));
+  call execute('proc print data='||trim(libname)||'.'||trim(memname)||"(where=(&variable.&op.&value));");
+  call execute('title1 "&variable.&op.&value - ALL DATA FOR DATASET '||trim(memname)||'";run;');
+run;
+%mend rep;
+%rep;
+-----FINISH-----
+
+# run the code
+sas -nosplash -nologo -icon -log "$HOMEW" -sysin "$HOMEW\printall_$$.sas"
+
+# if output file exists then cat it and delete it
+if [ -f $HOME/printall_$$.tmp ] ; then
+  cat $HOME/printall_$$.tmp 
+  rm -f $HOME/printall_$$.tmp 
+fi
+
+# tidy up
+rm -f $HOME/printall_$$.sas $HOME/printall_$$.log

@@ -1,0 +1,82 @@
+      PROGRAM BI2STE1
+      IMPLICIT REAL*16 (A-H,O-Z)
+      DIMENSION IC(0:2000),GAM(0:2000),POWNRC(0:2000),POWC(0:2000)
+      DIMENSION FAKL(0:2000), HYP0(-1:2000), HYPA(-1:2000)
+      OPEN(UNIT=5, STATUS='OLD', FILE='ste1_inp')
+      OPEN(UNIT=6, STATUS='UNKNOWN', FILE='ste1_out')
+      READ (5,9000) M,N,EPS,ALPHA,P1,P2
+ 9000 FORMAT(2(I5/),3(F10.5/),F10.5)
+      WRITE (6,1000) M,N,EPS,ALPHA,P1,P2
+      NN= M+N
+      RHO0L=QLOG(1-EPS)
+      P1L=QLOG(P1)
+      Q1L=QLOG(1-P1)
+      P2L=QLOG(P2)
+      Q2L=QLOG(1-P2)
+      RHOAL=P1L+Q2L-Q1L-P2L
+      FAKL(0)= 0
+      DO 1 I= 1,NN
+      QI= I
+    1 FAKL(I)= FAKL(I-1) + QLOG(QI)
+      IS= 0
+      OOM0L=0
+      OOMAL=0
+      IC(IS)= 0
+      GAM(IS)= ALPHA
+      POWNRC(IS)= 0
+      POWC(IS)= ALPHA
+      PROBS= QEXP(M*Q1L+N*Q2L)
+      POWNR= 0
+      POW= POWC(0)*PROBS
+      DO 9 IS= 1,NN-1
+      IXL= MAX(0,IS-N)
+      IXU= MIN(IS,M)
+      HYP0(IXU)= 0
+      HYPA(IXU)= 0
+      DO 2 J=1,IXU-IXL+1
+      IX=IXU-J
+      HL= FAKL(M)-FAKL(IX+1)-FAKL(M-IX-1)+FAKL(N)-FAKL(IS-IX-1)-
+     1FAKL(N-IS+IX+1)
+      HYP0(IX)= QEXP(HL+(IX+1)*RHO0L -OOM0L)
+      HYPA(IX)= QEXP(HL+(IX+1)*RHOAL -OOMAL)
+      HYP0(IX)= HYP0(IX) + HYP0(IX+1)
+    2 HYPA(IX)= HYPA(IX) + HYPA(IX+1)
+      OOM0L=OOM0L+QLOG(HYP0(IXL-1))
+      OOMAL=OOMAL+QLOG(HYPA(IXL-1))
+      DO 3 IX=IXL, IXU-1
+      HYP0(IX)=HYP0(IX)/HYP0(IXL-1)
+    3 HYPA(IX)=HYPA(IX)/HYPA(IXL-1)
+      HYP0(IXL-1)=1
+      HYPA(IXL-1)=1
+      K=IXU+1
+    4 K=K-1
+      SIZE=HYP0(K)
+      IF (SIZE-ALPHA)4,4,5
+    5 IC(IS)=K+1
+      GAM(IS)= (ALPHA-HYP0(IC(IS)))/(HYP0(K)-HYP0(IC(IS)))
+      POWNRC(IS) = HYPA(IC(IS))
+      POWC(IS)= POWNRC(IS)*(1-GAM(IS))+GAM(IS)*HYPA(K)
+      PROBS=0
+      DO 6 IX=IXL,IXU
+      BL= FAKL(N)-FAKL(IS-IX)-FAKL(N-IS+IX) +(IS-IX)*P2L+(N-IS+IX)
+     1*Q2L+FAKL(M)-FAKL(IX)-FAKL(M-IX)+IX*P1L+(M-IX)*Q1L
+    6 PROBS= PROBS+QEXP(BL)
+      POWNR= POWNR + POWNRC(IS)*PROBS
+    9 POW= POW + POWC(IS)*PROBS
+      IC(NN)=N
+      GAM(NN)=ALPHA
+      POWNRC(NN)=0
+      POWC(NN)= ALPHA
+      PROBS= QEXP(M*P1L+N*P2L)
+      POW= POW + POWC(NN)*PROBS
+      WRITE(6,2000) POWNR,POW
+ 1000 FORMAT('M= ',I4,3X,'N= ',I4,5X,'EPS= ',F6.4,5X,
+     1'ALPHA= ',F6.4/'P1= ',F8.6,5X,'P2= ',F8.6//)
+ 2000 FORMAT('POWNR= ',F10.8,10X,'POW= ',F10.8)
+      STOP
+      END
+
+
+
+
+

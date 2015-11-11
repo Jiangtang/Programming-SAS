@@ -1,0 +1,220 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="writing sas shell scripts Spectre">
+   <meta name="Description" content="Writing sas shell scripts for Spectre">
+   <title>Writing sas shell scripts</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Writing shell scripts that call SAS&reg; software</h1></center>
+
+<center>
+<p><br><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 26 Jun 2006)</b></center>
+
+<h2>
+Introduction</h2>
+You should limit shell scripts that call SAS software to those needing
+to get information from SAS software objects or those required to call
+SAS software procedures. This is because invoking SAS software in a script
+creates an overhead. For reading text, the language "<b>gawk</b>" is faster
+and better. You can read about how to use gawk <a href="gawk.html">here</a>.
+If your script combines information from a SAS software object with other
+tasks not related to SAS software objects, then you should learn how to
+split up your task into multiple scripts so that one script just acts on
+the SAS software object and then outputs this information to other scripts
+for further processing. Knowing how to split up tasks like this and the
+best way to do it comes with experience.
+<p>The reason you will want to write shell script that call SAS software
+is to avoid using an interactive SAS session. Spectre favours batch working
+so if programmers need information about SAS software objects or need to
+call a SAS software procedures to show them some simple output then it
+would help them if they could do this from the Unix command line. There
+are already some shell scripts that call SAS software in Spectre such as
+<a href="scripts/contentsl" target="_blank">contentsl</a>
+and <a href="scripts/summary" target="_blank">summary</a> for this but
+the list is not exhaustive. There will be times when you need to write
+your own shell script that call SAS software.
+<p>Writing shell scripts that call SAS software is very easy and to make
+it even easier there a utility to help you do this that you will be introduced
+to.
+<h2>
+Invoking SAS&reg; software with -stdio</h2>
+If you have a script then it is good practice to have all the code you
+are going to use in that script and not in an external file. The reason
+for this is to avoid the possibility of somebody changing that code while
+the script itself sits in a separate secure library. It is a matter of
+security. So the easiest way to include SAS software code in a script is
+to put it in a "<b>here document</b>", and if you have forgotten what that
+is then click <a href="bashscr.html#heredoc" target="_blank">here</a>.
+You also have to think about the user interrupting the script half way
+through. If they interrupt the script then it is better to not have a code
+member and a log member left over. One approach to get around this problem
+is to use the "here document" to write to a temporary code member, to execute
+that code member and write the output to a temporary file, next to delete
+the code member and the log and then to "cat" the temporary file to the
+user's terminal and lastly to delete that temporary file. That way, if
+the script gets interrupted, it will most likely get interrupted at the
+"cat" stage with the sas member and log already deleted. But there is an
+even neater way of doing it using the "<b>-stdio</b>" option. This way
+you can feed your code in the "here document" directly into SAS software
+with the log directed to the Unix dustbin <b>/dev/null</b> using "<b>2>/dev/null</b>"
+and you can route the output to <b>stdout</b> in your code. That way nothing
+gets left over if the script is interrupted.
+<h2>
+sasunixskeleton</h2>
+There is a script named "<b>sasunixskeleton</b>" to help you create a shell
+script that calls SAS software that uses the "<b>-stdio</b>" option. Here
+is an example with me creating a script named "dummy" in my home directory.
+I will use the script without an argument so "sasunixskeleton" will prompt
+me for a script name.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>$ sasunixskeleton</tt>
+<br><tt>Enter script name: dummy</tt>
+<br><tt>This utility will generate a script and store it in the current</tt>
+<br><tt>directory.</tt>
+<p><tt>Enter purpose of script: Just a demo</tt>
+<br><tt>script "dummy" has been generated and stored in the current directory</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>...and here is the script it created.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#!/bin/bash</tt>
+<br><tt># Script&nbsp;&nbsp;&nbsp;&nbsp; : dummy</tt>
+<br><tt># Version&nbsp;&nbsp;&nbsp; : 1.0</tt>
+<br><tt># Author&nbsp;&nbsp;&nbsp;&nbsp; : Roland Rashleigh-Berry</tt>
+<br><tt># Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 23-Apr-2006</tt>
+<br><tt># Purpose&nbsp;&nbsp;&nbsp; : Just a demo</tt>
+<br><tt># SubScripts : none</tt>
+<br><tt># Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : EDIT</tt>
+<br><tt># Usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : dummy&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+EDIT</tt>
+<br><tt>#</tt>
+<br><tt>#===============================================================================</tt>
+<br><tt># PARAMETERS:</tt>
+<br><tt>#-pos- -------------------------------description-------------------------------</tt>
+<br><tt>#&nbsp; 1&nbsp;&nbsp; First parameter (if any) description&nbsp;&nbsp;&nbsp;
+EDIT EDIT EDIT</tt>
+<br><tt>#&nbsp; 2&nbsp;&nbsp; Second parameter (if any) description&nbsp;&nbsp;
+EDIT EDIT EDIT</tt>
+<br><tt>#&nbsp; 3&nbsp;&nbsp; etc. or.....</tt>
+<br><tt># N/A&nbsp; Do not supply any parameters&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+EDIT EDIT EDIT</tt>
+<br><tt>#===============================================================================</tt>
+<br><tt># AMENDMENT HISTORY:</tt>
+<br><tt># init --date-- mod-id ----------------------description------------------------</tt>
+<br><tt>#</tt>
+<br><tt>#===============================================================================</tt>
+<p><tt># Put out a usage message if not enough parameters supplied</tt>
+<br><tt>if [ $# -lt 2 ] ; then</tt>
+<br><tt>&nbsp; echo "Usage: dummy ............EDIT EDIT" 1>&amp;2</tt>
+<br><tt>&nbsp; exit 1</tt>
+<br><tt>fi</tt>
+<br>&nbsp;
+<p><tt># Feed SAS code into standard input</tt>
+<br><tt>sas -stdio -noautoexec -sasuser work 2>/dev/null &lt;&lt; -----FINISH-----</tt>
+<br><tt>options validvarname=any nofmterr noovp nodate nonumber;</tt>
+<br><tt>libname here './' access=readonly;</tt>
+<p><tt>EDIT EDIT EDIT EDIT</tt>
+<p><tt>Put your code here. Use $1 to resolve the first entered parameter.</tt>
+<br><tt>Use $2 to resolve the second entered parameter.</tt>
+<p><tt>$'s get treated like the &amp;'s in front of macro variables by
+scripts.</tt>
+<br><tt>It will try to resolve a Unix variable if you use one in a format.</tt>
+<br><tt>To get round it you have to use a slash in front of the dollar
+like</tt>
+<br><tt>this "\$" .</tt>
+<p><tt>Your final output should be written to normal print output or you</tt>
+<br><tt>could use a data _null_ step like the following to put the contents</tt>
+<br><tt>of a dataset out to stdout.</tt>
+<p><tt>data _null_;</tt>
+<br><tt>&nbsp; file stdout;</tt>
+<br><tt>&nbsp; set xxxxx;</tt>
+<br><tt>&nbsp; put @1 xxxx;</tt>
+<br><tt>run;</tt>
+<br><tt>-----FINISH-----</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>The script it created is <b><i>skeleton </i></b>script code, hence the
+name of the utility "sasunixskeleton". You have to edit the script where
+you see "EDIT" and add your code to the "here document" which is ended
+by the string "-----FINISH-----" starting in the first column. Note the
+options used when invoking SAS software. "-stdio" is needed but you may
+need to change the default options "-noautoexec -sasuser work". With the
+"<b>-stdio</b>" option in effect, the log gets written to <b>stderr</b>
+(standard error) which has file handle "2" (standard output has file handle
+"1") so you see I have routed the log to the Unix dustbin using "<b>2>/dev/null</b>".
+If you are debugging the script then you will need to route the log to
+a file in your home directory so you can look at the log and see what the
+problem is. But don't forget to route the log back to <b>/dev/null</b>
+again when you have finished debugging.
+<p><b>The important thing you have to remember</b> is what happens to the
+"$" (dollar) sign in a script. Just like you reference a macro variable
+with a "&amp;" in front of it, scripts use the "$" sign to reference shell
+variables. So if you have a format like this "$200." then it will cause
+an error because it will look for a shell variable named "200". So to get
+round this in the here document you should put an escape character "\"
+in front of the "$" so you would write the same format as "\$200.". You
+need to remember this. However, this does not apply to the script parameter
+values "$1", "$2" etc..
+<p>If your script creates normal print output then it will automatically
+be written to <b>stdout</b> (standard output) which is what you want, as
+this will go to the user's terminal. But if you "put" the values then you
+must use "<b>file stdout</b>" so that the "put" values are written to standard
+output.
+<h2>
+Examples</h2>
+Here are some examples of shell scripts that call SAS software where the
+output is normal print output.
+<br><a href="scripts/summary" target="_blank">summary</a>
+<br><a href="scripts/printall" target="_blank">printall</a>
+<p>Here are some examples where "file stdout" is used.
+<br><a href="scripts/contentsl" target="_blank">contentsl</a>
+<br><a href="scripts/showlfmt" target="_blank">showlfmt</a>
+<h2>
+Conclusion</h2>
+Hopefully, you have seen how easy it is to create a shell script that calls
+SAS software. Using the information in this document then the only difficulty
+you should encounter is with the code itself, but then you should be an
+expert with that in any case.
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+<br>&nbsp;
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+</html>

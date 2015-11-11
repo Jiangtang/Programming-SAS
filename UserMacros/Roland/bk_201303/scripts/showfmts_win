@@ -1,0 +1,77 @@
+#!/bin/sh
+#<pre><b>
+# Script     : showfmts_win
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 22-Feb-2007
+# Purpose    : To display a list of all stored formats that would be available
+#              if a call to %allocr were made from the current directory 
+#              (uses SAS).
+# SubScripts : none
+# Notes      : WINDOWS VERSION
+# Usage      : showfmts_win
+#
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not supply any parameters
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  22Feb07         Call %allocr macro
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Write SAS code to a temporary file
+cat > $HOME/showfmts_$$.sas << -----FINISH-----
+filename _outfile "$HOMEW\showfmts_$$.tmp";
+%allocr
+%macro showfmts;
+  %local i fmtpath cat;
+  %let fmtpath=%fmtpath;
+  %put NOTE: fmtpath=&fmtpath;
+  %do i=1 %to %words(&fmtpath);
+    %let cat=%scan(&fmtpath,&i,%str( ));
+    %if %sysfunc(cexist(&cat)) %then %do;
+      proc format lib=%scan(&cat,1,%str(,)) cntlout=out(keep=fmtname type);
+      proc append data=out base=allout;
+      run;
+    %end;
+  %end;
+
+  data showfmts;
+    length name $ 8;
+    set allout;
+    if type in ('C','P','N');
+    if type='C' then name='$'||fmtname;
+    else name=fmtname;
+  run;
+
+  proc sort nodupkey data=showfmts;
+    by name;
+  run;
+
+  data _null_;
+    file _outfile notitles noprint;
+    set showfmts;
+    put @1 name;
+  run;
+
+%mend;
+%showfmts;
+
+-----FINISH-----
+
+# run the code
+sas -nosplash -nologo -icon -log "$HOMEW" -sysin "$HOMEW\showfmts_$$.sas"
+
+# if output file exists then cat it and delete it
+if [ -f $HOME/showfmts_$$.tmp ] ; then
+  cat $HOME/showfmts_$$.tmp 
+  rm -f $HOME/showfmts_$$.tmp 
+fi
+
+# tidy up
+rm -f $HOME/showfmts_$$.sas $HOME/showfmts_$$.log

@@ -11,6 +11,7 @@ Notes      :
 *******************************************************************************/
 
 %macro anyobs(data);
+%*http://www2.sas.com/proceedings/sugi26/p095-26.pdf;
 %* This macro returns 1 if there are any observations in a data set,
 0 if the data set is empty, or . if the data set does not exist or
 cannot be opened.

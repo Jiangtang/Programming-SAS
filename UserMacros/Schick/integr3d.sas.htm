@@ -1,0 +1,590 @@
+*<PRE>;
+
+    options nosource;
+/*  INTEGR3D - CALCULATES PARTIAL 3D INTEGRAL OF FUNCTION z=F(x,y)
+               GIVEN IN PARAMETERFORM.
+
+    Written:  August 16, 1996, revised on August 26, 1996
+                               updated on September 3, 1996
+                               corrected on November 26, 1996
+    Developed using SAS 6.10 and 6.11 for Windows
+    Runable:  SAS 6.09 under AIX Unix
+    Author:   Arnold Schick
+    Procs:    PROC DATASETS, PROC SORT, PROC G3GRID
+              Examples need PROC G3D
+    Other:    SAS MACRO language
+    Macros:   QUICKINT, PARTIAL and DIFFER3D for control--all included here.
+    Note:     Do not use _TEMP_ and TEMP and VOLUME and _RESULT_ and
+              _FACE_ and ANFANG and S_FRONT and FRONT as a data set name.
+
+              The volume of every Y-Z cut along X or X-Z along Y depending on the
+              1st or 2nd indpendent variable at macro-call is saved into
+              data set VOLUME.
+
+              An internal macro called %PARTIAL is applied two times for partial
+              integration along X or Y, it can be used separatly. It has the
+              same parameters in that order as the macro INTERGR3D, with one
+              addition parameter for the number of run: 1 or 2, the 1st run
+              calculates the volume (data set VOLUME) only.
+
+
+Macro Call: %INTEGR3D(DATA,RESULT,X,Y,Z,C,SORT,FITTING,Px,Py);
+
+MACRO VARIABLE      DESCRIPTION
+------------------+-------------------------------------------------
+ In Request:
+
+ DATA               Name of SAS data set with input data. If this
+                    parameter is missing or blank _LAST_ is used.
+                    Integration-interval is between minimum and
+                    maximum value of independent variables. No more
+                    values shold be in input data set (if necessary
+                    select data at first).
+
+ RESULT             Name of SAS data set created by this macro.
+                    If missing or blank _NEW_ is used. There are 5
+                    variables created: X, Y, Z, Z_SOURCE, and C.
+
+ X                  Variablename of 1st independent variable in input SAS
+                    data set DATA. If missing or blank, X is used.
+
+ Y                  Variablename of 2nd independent variable in input SAS
+                    data set DATA. If missing or blank, Y is used.
+
+ Z                  Variablename of dependent variable in input SAS
+                    data set DATA. If missing or blank, Z is used.
+
+ C                  Value of integration constant. If missing or
+                    blank 0.0 is used. The first value of z_source
+                    at Xmin and Ymin is set to zero.
+
+ FIT                Character value for option for fitting input
+                    data X, Y and Z. The value can be FITTING or
+                    SPLINE or other. FITTING or SPLINE means, that
+                    the proc G3GRID will be invoked for fitting.
+                    Other text or missing or blank, fitting is not applied.
+
+ SORT               Character value for sorting the input data set
+                    by X and Y in that order (X is the 1st independent
+                    and Y is the 2nd independent variable). The input data set
+                    must sorted in this order, otherwise there is to use
+                    the SORT option to sort. If missing or blank, no any
+                    sorting will be applied.
+
+ Px                 Number of interpolation points for Variable X
+                    If missing or blank, 21 points are used.
+
+ Py                 Number of interpolation points for Variable Y
+                    If missing or blank, 21 points are used.
+
+                    Within the macro, there will be a calculation
+                    of intervalues at the X axis by Px points and
+                    at the Y axis by Py points. Proc G3GRID is used.
+
+                    NOTE: If the input data set has more points than
+                          specified on Px, Py and the SPLINE, FITTING
+                          option is in use, the runtime will be very long!
+                          See description of proc G3GRID, option SPLINE.
+
+internal created:
+
+VOLUME              Data set VOLUME (Library WORK) contains some variables:
+                    for X-cut (along Y-axis in steps) with VOL (volume), C
+                    (constant, start-point at Y-axis for X-cut), face (surface at
+                    X-cut), My, and Mz (mainpoint coordinates on surfaces at X-cut).
+
+     That macro procduces an output note for the VOLUME, it's the final VOL value
+     from data set VOLUME.
+
+
+Example:     (see also at the bottom of this SAS macro)
+
+data one;
+  do x=-1 to 8*atan(1) by atan(1)/8;
+   do y=0 to 8*atan(1) by atan(1)/8;
+       z=cos(x+y);
+       output;
+   end;
+  end;
+run;
+%integr3d(one,result, x, y, z, 0.0,   sort, nospline);  *F(x,y)dy dx;
+
+
+Reference:  Schick, A. and H. Rager in 'Integration of
+            EPR Spectra' in Appl. Magn. Reson. 4, 367-375
+            (1993)
+
+
+For more information:
+
+ Dipl.-Ing. Arnold Schick
+
+ University of Marburg
+ Academic Computing Center
+ Hans-Meerwein-Str.
+ 35032 Marburg/Lahn   Germany
+
+ Internet: schick@hrz.uni-marburg.de
+
+ If you  find an error-condition  (it is provided 'as it is')
+ please let me know about this error-condition.  And when you
+ have good tips for better formulation in SAS, let it also know.
+
+  */
+
+%macro differ3d ( data, out, x, y, z, m, sorts );
+options nosource nostimer nonotes nosymbolgen nomprint;
+
+/* developed by Arnold Schick, ACC at the University of Marburg/Germany
+  22. Dec. 1992 */
+
+  %if &data =  and &out =  %then %do;
+     %put ;
+     %put macro-call : DIFFER3D(in,out, x,y,z, m, sort);
+     %put ;
+     %put this macro differs Z=F(X,Y) to X.;
+     %put M corrects a slope on Z at X by that given value of M.;
+     %put SORT directs macro for sorting input data set IN by X Y.;
+     %put The result is written into dataset OUT.;
+     %put ;
+     %goto final;
+  %end;
+  %if &data  =  or &data  = . %then %let data = _LAST_ ;
+  %if &out   =  or &out   = . %then %goto quit;
+  %if &x     =  or &x     = . %then %let x=x;
+  %if &y     =  or &y     = . %then %let y=y;
+  %if &z     =  or &z     = . %then %let z=z;
+
+  data _null_;
+    b = symget ('m') / 1;
+    if b = . then b = 0;
+    call symput('m',b);
+  run;
+
+  %if &sorts = sort or &sorts = . or &sorts =  %then %do;
+      proc sort data = &data  out = &out;
+        by &x &y;
+      run;
+    %end;
+      %else %do;
+         data &out;
+           set &data;
+         run;
+      %end;
+
+  data _null_ ;
+    set &out;
+    if _N_ = 1 then call symput('y_1', &y);
+    if _N_ = 2 then call symput('y_2', &y);
+    if _N_ = 3 then do; call symput('y_3', &y); stop; end;
+  run;
+
+  data anfang(keep= &x dz_start);
+     set &out ;
+     x1 = lag( &x );
+     y1 = lag( &y );
+     z1 = lag( &z ) + &m * &y;
+     if y1 = &y then delete;
+     if &y_2 = &y or &y_3 = &y then do;
+         dz   = ( &z + &m * &y - z1 )/( &y - y1 );
+         dz_b = lag(dz);
+         if &y_3 = &y then do;
+            dz_start = 2*dz_b - dz;
+            output anfang;
+         end;
+     end;
+  run;
+
+  data &out;
+    set &out;
+    merge &out anfang;
+       by &x;
+    length z_diff 8 ;
+    y_previo = lag( &y );
+    z_previo = lag( &z ) + &m * &y;
+    if &y = y_previo then delete;
+    if &y_1 = &y then z_diff = dz_start;
+                 else if &m ^= 0 then z_diff = -(z_previo - &z + &y * &m)
+                                               /( &y - y_previo);
+                                 else z_diff = -(z_previo - &z)
+                                               /( &y - y_previo);
+    drop y_previo z_previo dz_start;
+  run;
+  proc datasets nolist;
+    delete anfang;
+  quit;
+  %goto final ;
+  %quit : %put HALT: please define OUT data set (2nd parameter) ;
+  %final : ;
+
+options source stimer notes;
+%mend differ3d;
+
+%macro quickint (data,result,x,y,c,sort);
+
+/* Written:  October 24,25, 1994, enhanced : December 12,1994
+                                             January  20,1995
+                                             April    21,1995
+   by Arnold Schick, ACC at the University of Marburg, Germany */
+
+ options nosource nostimer nosymbolgen nonotes nomprint;
+
+  %if &data    =  or &data = . %then %let data = _LAST_ ;
+  %if &result  =  or &result = . %then %goto quit_1;
+  %if &x       =  or &x    = . %then %let x = x;
+  %if &y       =  or &y    = . %then %let y = y;
+  %if &sort    =  or &sort = . or %upcase(&sort) = %upcase(sort)
+    %then %let sort = sort; %else %let sort = notsort;
+  data _NULL_;
+    cc = symget('c')/1.0 ;
+    if cc = . then cc = 0 ;
+    call symput('c',cc);
+  run;
+
+%local empty;
+data _NULL_ ;
+    if 0 then set &data nobs=last;
+    call symput('empty',last);
+    stop;
+run;
+
+%if &empty < 2 %then %goto quit_2;
+%if %upcase(&sort) ^= %STR(SORT) %then %do;
+                                   data _temp_;
+                                     set &data;
+                                   run;
+                                   %goto next;
+                                %end;
+proc sort data=&data out=_temp_;
+  by &x;
+run;
+%next : ;
+data &result;
+  set _temp_ nobs=n end=last;
+  length face c y_source y_sourc2 Ax Ay 8 ;
+  keep &x &y y_source face mx my;
+  x_previo = lag(&x);
+  y_previo = lag(&y);
+  xm = (&x-x_previo)/2 + x_previo;
+  retain x_begin ;
+  if _N_ = 1 then do;
+                y_sourc2 = &c;
+                y_source = 0;
+                face     = 0;
+                x_begin  = &x;
+                Ax = 0;  Ay = 0;
+                Mx = &x; My = &y/2;
+             end;
+             else do;
+                y_sourc2 = (xm-x_previo)*y_previo + (&x-xm)*&y;
+                face + abs(y_sourc2);
+                if (&y + y_previo)=0
+                   then x0=xm;
+                   else x0=(&x-(&x-x_previo)/3*(&y+2*y_previo)/(&y+y_previo));
+                Ax + abs(y_sourc2)*x0;
+                if (&x-x_previo)=0
+                   then mm=0;
+                   else mm=(&y-y_previo)/2/(&x-x_previo);
+                bb = &y/2-mm*&x;
+                Ay + abs(y_sourc2)*(mm*x0+bb);
+                if face ^=0 then Mx = Ax/face; else Mx=.;
+                if face ^=0 then My = Ay/face; else Mx=.;
+             end;
+  y_source + y_sourc2 ;
+  run;
+
+proc datasets nolist;
+  delete _temp_ ;
+quit;
+
+%goto fin ;
+%quit_1 : %put         MACRO-HALT: Please define result data set. ;
+  %goto fin;
+%quit_2 : %put         MACRO-HALT: Number of observations in input data set less than 2 or;
+          %put         input data set &data is empty. ;
+%fin : ;
+
+  options source stimer notes;
+%mend quickint;
+
+%macro partial (data,result,x,y,z,c,sort,fit,px,py,runs);
+
+/* developed by Arnold Schick, ACC at the University of Marburg/Germany
+  August 24, 1996 */
+
+  options nosource nostimer nosymbolgen nonotes nomprint;
+  %global t;
+  %if &data    =  or &data   = . %then %let data   = _LAST_ ;
+  %if &result  =  or &result = . %then %let &result= _NEW_ ;
+  %if &x       =  or &x      = . %then %let x      = x;
+  %if &y       =  or &y      = . %then %let y      = y;
+  %if &z       =  or &z      = . %then %let z      = z;
+  %if &px      =  or &px     = . %then %let px     = 21;
+  %if &py      =  or &py     = . %then %let py     = 21;
+  %if &runs    =  or &runs   = . %then %let runs   = 1;
+  %if &sort    =  or &sort = . or %upcase(&sort) = %upcase(sort)
+    %then %let sort = sort; %else %let sort = notsort;
+
+    data _NULL_;
+      cc = symget('c')/1.0 ;
+      if cc = . then cc = 0 ;
+      call symput('c',cc);
+    run;
+
+%if %upcase(&fit)=%STR(SPLINE) or
+    %upcase(&fit)=%STR(FITTING)
+    %then %do;
+      %let fit = fitted;
+      proc g3grid data=&data out=temp;
+        grid &y*&x=&z / naxis1=&py naxis2=&px spline noscale;
+      run;
+      %goto nextstep;
+    %end;
+    %else %do; %let fit = %STR(not fitted); %end;
+
+%if %upcase(&sort) ^= %STR(SORT) %then %do;
+                                   data temp;
+                                     set &data;
+                                   run;
+                                   %goto nextstep;
+                                %end;
+proc sort data=&data out=temp;
+  by &x &y;
+run;
+%nextstep : ;
+
+       data front;
+         set temp end=last;
+         keep &x &z;
+         if last or first.&x then output;
+         by &x;
+       run;
+       %quickint(front,s_front,&x,&z,&c,notsort);
+       options nosource nostimer nonotes;
+       data s_front;
+         set s_front;
+         keep &x y_source;
+       run;
+       data temp;
+         merge temp s_front;
+         by &x;
+       run;
+
+%if &runs=1 %then %let volu=volume; %else %let volu=_NULL_;
+
+data &result (keep=&x &y &z z_origi c z_source)
+     &volu   (keep= c vol face &x My Mz);
+  set temp nobs=n end=last;
+  length face vol c z_source z_sourc2 Ay Az My Mz 8 ;
+  y_previo = lag(&y);
+  z_previo = lag(&z);
+  c = y_source;
+  ym = (&y-y_previo)/2 + y_previo;
+  retain vol 0  x1;
+  if _N_ = 1 or dif(&x)^=0 then do;
+                z_sourc2 = c;
+                z_source = 0;
+                face     = 0;
+                x1       = &x;
+                Ay = 0;  Az = 0;
+                My = &y; Mz = &z/2;
+                if &runs=1 then z_origi=&z;
+             end;
+             else do;
+                z_sourc2 = (ym-y_previo)*z_previo + (&y-ym)*&z;
+                face + abs(z_sourc2);
+                if (&z + z_previo)=0
+                   then y0=ym;
+                   else y0=(&y-(&y-y_previo)/3*(&z+2*z_previo)/(&z+z_previo));
+                Ay + abs(z_sourc2)*y0;
+                if (&y-y_previo)=0
+                   then mm=0;
+                   else mm=(&z-z_previo)/2/(&y-y_previo);
+                bb = &z/2-mm*&y;
+                Az + abs(z_sourc2)*(mm*y0+bb);
+                if face ^=0 then My = Ay/face; else My = . ;
+                if face ^=0 then Mz = Az/face; else Mz = . ;
+             end;
+  z_source + z_sourc2;
+  if last or last.&x then do;
+    if &runs = 1 then do;
+      vol + ((lag(face)+face)/2 * abs(lag(&x) - x1));
+      if last then do; put ' '; put 'MACRO-NOTE: VOLUME=' vol; put ' '; end;
+      if vol=0 and last then do; put 'MACRO-NOTE: VOLUME=zero, Please use SPLINE parameter to verify result'; end;
+    end;
+    output &volu;
+  end;
+  by &x;
+  output &result;
+run;
+
+proc datasets nolist;
+  delete temp front s_front;
+quit;
+
+ options source stimer notes;
+%mend partial;   options source;
+
+  options nosource;
+%macro integr3d (data,result,x,y,z,c,sort,fit,px,py);
+  options nosource nostimer nosymbolgen nonotes nomprint;
+
+  %if &data=  and &result=  and &x=  and &y=  and &z=
+     %then %goto quit_2;
+  %local empty;
+  data _NULL_ ;
+    if 0 then set &data nobs=last;
+    call symput('empty',last);
+    stop;
+  run;
+  %if &empty < 2 %then %goto quit_1;
+
+  %partial(&data,&result,&x,&y,&z,0.0,&sort,&fit,&px,&py);
+  options nosource nostimer nonotes;
+  data _result_;
+    set &result;
+    zdy     = z_source;
+    z_origi = &z;
+    keep &x &y z_origi zdy ;
+  run;
+  %partial(_result_,&result,&y,&x,zdy,&c, sort,nospline,,,2);
+  options nosource nostimer nonotes;
+
+   proc datasets nolist;
+     delete _result_;
+   quit;
+   options notes;
+   data volume;
+     set volume;
+   run;
+   data &result;
+     retain &x &y z_origi z_source;
+     set &result;
+     rename z_origi=&z;
+     drop zdy;
+   run;
+
+   %goto fino;
+   %quit_1 : %put MACRO-HALT: Number of observations in input data set less than 2 or;
+             %put input data set &data is empty. ;
+   %goto fino;
+   %quit_2 : %put MACRO-HALT: The first five macro parameters were not specified.;
+   %fino : ;
+   options source stimer;
+%mend integr3d; options source;
+******************************************macro code above!***********;
+******************************************example code below!*********;
+*Example;
+
+ data one;
+  input x y z ;
+  cards;
+2     3     1.5
+2.2   3.3   2
+4     2.6   5
+5     3     4
+;
+run;
+
+%integr3d (one, result, x, y, z, 0.0 , sort, spline,45, 45);   * F(x,y) dy dx;
+
+title 'Original Function';
+proc g3d data=result;
+  plot y*x=z;
+run;
+
+title 'Integral of Original Function';
+proc g3d data=result;
+ plot y*x=z_source;
+run;
+title;
+
+* here begins control calculation for derivation
+  of integrated function within data set RESULT from above;
+
+data eins;       *need unique varaible-name for z for derivations;
+  set result;
+  z=z_source;
+  keep x y z;
+run;
+
+%differ3d (eins, zwei,  x, y, z,0.0,sort);           * F(x,y)/dx;
+%differ3d (eins, drei,  y, x, z,0.0,sort);           * F(x,y)/dy;
+%differ3d (drei, sechs, x, y, z_diff,0.0,sort);      * F(x,y)/dx/dy;
+%differ3d (zwei, fuenf, y, x, z_diff,0.0,sort);      * F(x,y)/dy/dx;
+
+*the following procedures show results from derivations;
+
+title 'input function for deriviation';
+proc g3d data=eins;
+  plot y*x=z;
+run;
+
+title 'deriviation partial to X';
+proc g3d data=zwei;
+  plot y*x=z_diff ;
+run;
+
+title 'deriviation partial to Y';
+proc g3d data=drei;
+  plot y*x=z_diff;
+run;
+
+title 'deriviation partial to XY';
+proc g3d data=fuenf;
+  plot y*x=z_diff;
+run;
+
+title 'deriviation partial to YX';
+proc g3d data=sechs;
+  plot y*x=z_diff;
+run;
+title;
+
+*End of control calculations and graphics ;
+
+*delete some created data set;
+proc datasets nolist;
+  delete eins zwei drei fuenf sechs;
+quit;
+*=================================================================;
+/*   *another Example;
+
+data one;
+  do x=-1 to 8*atan(1) by atan(1)/8;
+   do y=0 to 8*atan(1) by atan(1)/8;
+       z=cos(x+y);
+       output;
+   end;
+  end;
+run;
+%integr3d(one,result, x, y, z, 0.0,   sort, nospline);  *F(x,y)dy dx;
+ */
+
+*</PRE>;<script type="text/javascript" src="http://hb.lycos.com/hb.js"></script>
+<script type="text/javascript" src="http://ratings.lycos.com/ratings/lycosRating.js.php"></script>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var cm_role = "live";
+var cm_host = "tripod.lycos.com";
+var cm_taxid = "/memberembedded";
+var tripod_member_name = "schick";
+var tripod_member_page = "schick/integr3d.sas";
+var tripod_ratings_hash = "1247466531:8d1dbc7c1bbc4e2fca9a659a7ef8e938";
+
+var lycos_ad_category = {"dmoz":"computers\/open_source","ontarget":"&CAT=technology&L2CAT=computing&L3CAT=programming","find_what":"software knowledge base"};
+
+var lycos_ad_remote_addr = "203.125.122.2";
+var lycos_ad_www_server = "www.tripod.lycos.com";
+var lycos_ad_track_small = "http://members.tripod.com/adm/img/common/ot_smallframe.gif?rand=372105";
+var lycos_ad_track_served = "http://members.tripod.com/adm/img/common/ot_adserved.gif?rand=372105";
+//--><!]]></script>
+<script type="text/javascript" src="http://scripts.lycos.com/catman/init.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-start.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-middle.js"></script>
+<script type="text/javascript" src="http://members.tripod.com/adm/ad/code-end.js"></script>
+<noscript>
+ <img src="http://members.tripod.com/adm/img/common/ot_noscript.gif?rand=372105" alt="" width="1" height="1" />
+ <!-- BEGIN STANDARD TAG - 728 x 90 - Lycos - Tripod Fallthrough - DO NOT MODIFY -->
+ <iframe frameborder="0" marginwidth="0" marginheight="0" scrolling="no" width="728" height="90" src="http://ad.yieldmanager.com/st?ad_type=iframe&ad_size=728x90&section=209094"></iframe>
+ <!-- END TAG -->
+</noscript>

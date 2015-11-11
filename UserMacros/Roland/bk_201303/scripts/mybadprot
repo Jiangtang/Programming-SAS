@@ -1,0 +1,81 @@
+#!/bin/bash
+#<pre><b>
+# Script     : mybadprot
+# Version    : 1.1
+# Author     : Roland Rashleigh-Berry
+# Date       : 04-Mar-2007
+# Purpose    : To list which of your own SAS programs do not have a correct 
+#              protocol in the standard header.
+# SubScripts : getfields
+# Notes      : none
+# Usage      : mybadprot 
+#              mybadprot -f
+#================================================================================
+# OPTIONS:
+#-opt- -------------------------------description--------------------------------
+#  f   (switch) fixes your protocol in the standard headers
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not supply any parameters
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  04Mar07         "getfields" script used
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Usage message then exit
+usage () {
+  echo "Usage: mybadprot -f" 1>&2
+  exit 1
+}
+
+# options defaults
+switchf=0                           # Default switch=off for fixes your program
+name
+
+
+# "case" statement for action to take on selected options
+while getopts "f" param ; do
+  case $param in
+   "?") # bad option supplied
+        usage
+        ;;
+   "f") # (switch) fixes your program name
+        switchf=1
+        ;;
+  esac
+done
+
+
+# shift to bring first parameter to position 1
+shift $(($OPTIND - 1))
+
+
+# No parameters required
+if [ $# -gt 0 ] ; then
+  echo "Do not supply any parameters" 1>&2
+  usage
+fi
+
+study=$(getfields | cut -d/ -f4)
+
+
+if [ $switchf -eq 0 ] ; then
+
+  grep "^/ Protocol  *: .* *" $(myfiles *.sas) | gawk -F: 'index($3,prot)==0' prot="$study"
+
+else
+
+  echo "The following files will be fixed:" 1>&2
+  for file in $(grep "^/ Protocol  *: .* *" $(myfiles *.sas) | gawk -F:
+'index($3,prot)==0 {print $1}' prot="$study")
+  do
+    echo "$file" 1>&2
+    perl -i -pe "s%^/ Protocol  *: .* *%/ Protocol     : $study%" ${file}
+  done
+
+fi

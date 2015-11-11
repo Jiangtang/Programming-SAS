@@ -1,0 +1,38 @@
+http://support.sas.com/rnd/base/datastep/dsobject/Power_to_show_paper.pdf
+
+TEXT METHODS
+• Format_text  Displays active text
+• Note   Displays text as a note
+
+
+TABLE SECTION METHODS
+• HEAD_START Start the Table Heading Section.
+• HEAD_END End the Table Heading Section.
+• BODY_START Start the Table Body (Data) Section.
+• BODY_END End the Table Body (Data) Section.
+• FOOT_START Start the Table Footer Section.
+• FOOT_END End the Table Footer Section.
+
+
+TABLE METHODS
+• TABLE_START Start a table.
+• TABLE_END End a table.
+• ROW_START Start a row.
+• ROW_END End a row.
+• CELL_START Start a cell.
+• CELL_END End a cell
+• FORMAT_CELL A more convenient way to create a cell.
+
+
+PAGE METHODS
+• PAGE  Start a new page.
+• TITLE  Add, delete, or update a title in the system.
+• FOOTNOTE Add, delete, or update a footnote in the system
+
+MISCELLANEOUS CATEGORY
+• OPEN_DIR Insert a custom folder in the table of contents and DMS Results window.
+• CLOSE_DIR Close a custom folder in the table of contents and DMS Results window.
+• LINE  Draw a horizontal line across the page.
+• IMAGE  Insert an image.
+• HREF  Create a URL link that will be taken when the item is clicked.
+• DELETE  Delete the object.

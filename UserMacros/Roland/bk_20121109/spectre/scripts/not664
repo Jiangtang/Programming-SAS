@@ -1,0 +1,28 @@
+#!/bin/bash
+#<pre><b>
+# Script     : not664
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 14-Jan-2004
+# Purpose    : List all files in the current directory that do not have 664
+#              permission
+# SubScripts : none
+# Notes      : Output will be in ls -l format
+# Usage      : not664
+#              not664 *.sas
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   File(s) to check
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+ls -al "$@" | awk '{ if (substr($0,1,1) == "-" && substr($0,2,9) != "rw-rw-r--") \
+{print $0}}'
+

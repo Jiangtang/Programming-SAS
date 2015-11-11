@@ -1,0 +1,57 @@
+#!/bin/bash
+#<pre><b>
+# Script     : fsv
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 04-Aug-2003
+# Purpose    : To launch fsview to browse a SAS dataset in the current directory
+#              (uses SAS).
+# SubScripts : none
+# Notes      : Make the data directory the current directory. When fsview is
+#              invoked it will go into command line mode and will attempt to
+#              make "patno" the id variable. This task is run in background so
+#              you can continue to use your xterm window for other tasks.
+#
+#              If you give a SAS dataset file extension, the extension will be
+#              ignored.
+#
+#              The toolbox window is closed on startup. If you wish to use it 
+#              then issue the command "toolopen" on the fsview command line.
+#
+# Usage      : fsv demog
+#              fsv demog.sas7bdat
+#
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   Name of SAS dataset
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+#
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+if [ $# -lt 1 ] ; then
+  echo "Usage: fsv SAS-dataset" 1>&2
+  exit 1
+fi
+
+dset=$(echo $1 | cut -d. -f1)
+
+sas -sasuser work -nofmterr \
+-initstmt "
+%alloc
+libname here './';
+%macro fmtlookup;
+  %if %sysfunc(cexist(stat.formats)) %then %do;
+    options fmtsearch=(stat);
+  %end;
+  %else %if %sysfunc(cexist(der.formats)) %then %do;
+    options fmtsearch=(der);
+  %end;
+%mend fmtlookup;
+%fmtlookup;
+" -initcmd "fsview here.$dset;toolclose;command;show id patno" &

@@ -1,0 +1,1177 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!--CDL Document viewer xslt v1.0-->
+
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+<title>Functions and CALL Routines: Using Perl Regular Expressions in the DATA Step</title>
+
+<!--CDL provided CSS file:--><link type="text/css" rel="stylesheet" href="../../../../common/61991/HTML/default/ss/style.css" />
+<link type="text/css" rel="stylesheet" href="/css/bookviewer.css" />          
+            <!-- ***** HTMLHEAD ***** -->
+            <!-- Site Styles -->
+<link rel="stylesheet" type="text/css" href="/css/sasbase.css" title="default" />
+<link rel="stylesheet" type="text/css" href="/css/print.css" media="print" />
+
+<!-- Global .js references -->
+<script type="text/javascript" src="/lib/global.js"></script>
+<script type="text/javascript" src="/lib/navigation/topnav.js"></script>  
+
+            
+      <script src="/lib/bookviewer_tabs.js" type="text/javascript"><!--Bookviewer Scripts--></script>
+<!-- *** meta begin *** -->
+
+<meta name="filename" content="a002291852.htm" />
+
+<meta name="keywords" content="strings,substrings,pattern matching,extracting strings from substrings,DATA step,validating data,data validation,Perl regular expressions (PRX)" />
+<meta name="pagehash" content="1235726547216_a002291852.htm" /><!--Docset metatags-->          
+            <!-- ***** document meta area ***** -->
+            <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!--Begin Document level Meta Tags-->
+<meta name="docsettitle" content="SAS(R) 9.2 Language Reference: Dictionary" />
+<meta name="docsetdescription" content="Provides comprehensive reference information for the Base SAS language, which is available in all operating environments that support SAS. This document is organized by data set options, formats, functions and CALL routines, informats, ARM macros, statements, system options, and component objects." />
+<meta name="locale" content="en" />
+<meta name="alias" content="lrdict" />
+<meta name="documenttype" content="HTML" />
+<meta name="extension" content="default" />
+<meta name="product" content="'Base SAS'" />
+<meta name="host" content="IVMS" />
+<meta name="host" content="SLX6" />
+<meta name="host" content="AR64" />
+<meta name="host" content="HP64" />
+<meta name="host" content="OS" />
+<meta name="host" content="WX6" />
+<meta name="host" content="WNDW" />
+<meta name="host" content="W64" />
+<meta name="host" content="LINX" />
+<meta name="host" content="HP6I" />
+<meta name="host" content="SL64" />
+<meta name="host" content="LINA" />
+<meta name="release" content="9.2" />
+<meta name="releasesystem" content="9.2" />
+<meta name="keywords" content="9.2" />
+
+<meta name="subject" content="analytics" />
+<meta name="subject" content="descriptivestatistics_2" />
+<meta name="subject" content="distributionanalysis_1" />
+<meta name="subject" content="financialanalysis_1" />
+<meta name="subject" content="forecasting_1" />
+<meta name="subject" content="mathematicaloptimization_1" />
+<meta name="subject" content="multivariateanalysis_1" />
+<meta name="subject" content="timeseriesanalysis_1" />
+<meta name="subject" content="commonprogrammingtasks" />
+<meta name="subject" content="combiningdata_1" />
+<meta name="subject" content="conditionalprocessing_1" />
+<meta name="subject" content="debugging_1" />
+<meta name="subject" content="improvingperformance_1" />
+<meta name="subject" content="iterativeprocessing_1" />
+<meta name="subject" content="readingandwritingexternaldata_1" />
+<meta name="subject" content="readingandwritingsasdata_1" />
+<meta name="subject" content="selectingdata_1" />
+<meta name="subject" content="sortingdata_1" />
+<meta name="subject" content="utilities_1" />
+<meta name="subject" content="workingwithcharacterdata_1" />
+<meta name="subject" content="datamanagement" />
+<meta name="subject" content="access_1" />
+<meta name="subject" content="client_server_1" />
+<meta name="subject" content="datasetpasswords_1" />
+<meta name="subject" content="export_1" />
+<meta name="subject" content="externali_o_1" />
+<meta name="subject" content="import_1" />
+<meta name="subject" content="indexes_1" />
+<meta name="subject" content="sasi_o_1" />
+<meta name="subject" content="datasources_1" />
+<meta name="subject" content="datarelatedengines_1" />
+<meta name="subject" content="datasourceaccess_1" />
+<meta name="subject" content="dataviews_1" />
+<meta name="subject" content="dictionarytables_1" />
+<meta name="subject" content="externaldatabases_1" />
+<meta name="subject" content="sascatalogs_1" />
+<meta name="subject" content="sasdatasets_tables_1" />
+<meta name="subject" content="saslibraries_1" />
+<meta name="subject" content="manipulationandtransformation_1" />
+<meta name="subject" content="arrayprocessing_1" />
+<meta name="subject" content="by_groupprocessing_1" />
+<meta name="subject" content="combiningandmodifyingdatasets_1" />
+<meta name="subject" content="compressingdatafiles_1" />
+<meta name="subject" content="dateandtime_1" />
+<meta name="subject" content="expressions_1" />
+<meta name="subject" content="integrityconstrains_1" />
+<meta name="subject" content="missingvalues_1" />
+<meta name="subject" content="numericprecision_1" />
+<meta name="subject" content="transposingdatasets_1" />
+<meta name="subject" content="userwrittenformats_1" />
+<meta name="subject" content="queryandreporting" />
+<meta name="subject" content="creatingreports_1" />
+<meta name="subject" content="nongraphical_1" />
+<meta name="subject" content="saslanguage" />
+<meta name="subject" content="callroutines_1" />
+<meta name="subject" content="componentobjects_1" />
+<meta name="subject" content="datasetoptions_1" />
+<meta name="subject" content="datastep_1" />
+<meta name="subject" content="formats_1" />
+<meta name="subject" content="functions_1" />
+<meta name="subject" content="informats_1" />
+<meta name="subject" content="libnameengines_1" />
+<meta name="subject" content="statements_1" />
+<meta name="subject" content="systemoptions_1" />
+<meta name="subject" content="systemadministration" />
+<meta name="subject" content="logging_1" />
+<meta name="subject" content="performance_1" />
+<meta name="subject" content="hardware_1" />
+<meta name="subject" content="os_1" />
+<meta name="subject" content="sas_1" />
+<meta name="subject" content="printing_1" />
+<meta name="subject" content="security_1" />
+<meta name="subject" content="authentication_1" />
+<meta name="subject" content="encryption_1" />
+<meta name="subject" content="permissions_1" />
+<meta name="subject" content="servers_1" />
+<meta name="subject" content="3rdparty" />
+<meta name="subject" content="informationexchange_1" />
+<meta name="subject" content="email_smtp__1" />
+<meta name="subject" content="ftp_filetransferprotocol__1" />
+<meta name="subject" content="jdbc_javadatabaseconnectivity__1" />
+<meta name="subject" content="ssh_secureshell__1" />
+<meta name="subject" content="output_1" />
+<meta name="subject" content="devicedrivers_1" />
+<meta name="subject" content="html_1" />
+<meta name="subject" content="pdf_1" />
+<meta name="subject" content="postscript_2" />
+<meta name="subject" content="rtf_1" />
+<meta name="subject" content="xml_1" />
+<meta name="subject" content="products_1" />
+<meta name="subject" content="activedirectory_1" />
+<meta name="subject" content="ldap_1" />
+<meta name="subject" content="webdav_1" />
+<meta name="subject" content="programming_1" />
+<meta name="subject" content="java_2" />
+<meta name="contenttype" content="Usage and Reference" />
+
+<meta name="pdflink" content="/documentation/cdl/en/lrdict/61724/PDF/default/lrdict.pdf" />
+<meta name="creationdate" content="2009-02-27" />
+<meta name="date" content="2009-01-16" />
+
+<meta name="documenthash" content="1236698715694" />
+<!--End Document level Meta Tags-->
+</html>
+            
+      
+<meta id="pagename" name="pagename" content="a002291852.htm" />
+
+<!-- *** meta end *** -->
+</head><body>
+<!--
+          *** Begin Body ***
+        --><div id="container">  
+            <!-- ***** MASTHEAD COLUMN ***** -->
+             
+<div id="masthead"> 
+<!--stopindex--> 
+<!--googleoff: all-->
+  <div style="float: left;"><a href="http://www.sas.com/index.html"><img src="/images/global/saslogo.gif" alt="SAS Institute. The Power to Know" height="50" width="185" /></a></div>
+
+<div id="searchBox"> 
+ <form method="get" action="/dsearch">
+ <fieldset class="search"> <label>search:</label> 
+  <input class="searchField" type="text" title="Enter your search term" name="qt" value="" size="30" tabindex="1" accesskey="s" onFocus="clearField(this)" />
+  <select name="ct" class="searchSelect">
+
+        <option label="Search support.sas.com" value="">Search support.sas.com</option>
+	    <optgroup label="Select a sub-section to search"></optgroup>
+        <option label="KNOWLEDGE BASE" value="5200">KNOWLEDGE BASE</option>
+		    <option label="&nbsp;&nbsp;&nbsp;&nbsp;System Requirements" value="5220">&nbsp;&nbsp;&nbsp;&nbsp;System Requirements</option>
+        <option label="&nbsp;&nbsp;&nbsp;&nbsp;Install Center" value="5230">&nbsp;&nbsp;&nbsp;&nbsp;Install Center</option>
+        <option label="&nbsp;&nbsp;&nbsp;&nbsp;Product Documentation" value="5210">&nbsp;&nbsp;&nbsp;&nbsp;Product Documentation</option>
+        <option label="&nbsp;&nbsp;&nbsp;&nbsp;Papers" value="5240">&nbsp;&nbsp;&nbsp;&nbsp;Papers</option>
+        <option label="&nbsp;&nbsp;&nbsp;&nbsp;Samples &amp; SAS Notes" value="51000">&nbsp;&nbsp;&nbsp;&nbsp;Samples &amp; SAS Notes</option>
+        <option label="&nbsp;&nbsp;&nbsp;&nbsp;Focus Areas" value="5250">&nbsp;&nbsp;&nbsp;&nbsp;Focus Areas</option> 
+		     	
+        <option label="SUPPORT" value="4100">SUPPORT</option>	
+        <option label="&nbsp;&nbsp;&nbsp;&nbsp;License Assistance" value="4110">&nbsp;&nbsp;&nbsp;&nbsp;License Assistance</option>
+        <option label="&nbsp;&nbsp;&nbsp;&nbsp;Administrator Services" value="4120">&nbsp;&nbsp;&nbsp;&nbsp;Administrator Services</option>
+        <option label="&nbsp;&nbsp;&nbsp;&nbsp;Downloads &amp; Hot Fixes" value="4130">&nbsp;&nbsp;&nbsp;&nbsp;Downloads &amp; Hot Fixes</option>
+   
+        <option label="LEARNING CENTER" value="5300">LEARNING CENTER</option>
+        <option label="&nbsp;&nbsp;&nbsp;&nbsp;Bookstore" value="5340">&nbsp;&nbsp;&nbsp;&nbsp;Bookstore</option>
+        <option label="&nbsp;&nbsp;&nbsp;&nbsp;Training" value="5320">&nbsp;&nbsp;&nbsp;&nbsp;Training</option>
+        <option label="&nbsp;&nbsp;&nbsp;&nbsp;Certification" value="5330">&nbsp;&nbsp;&nbsp;&nbsp;Certification</option>
+        <option label="&nbsp;&nbsp;&nbsp;&nbsp;SAS Learning Edition" value="5340">&nbsp;&nbsp;&nbsp;&nbsp;SAS Learning Edition</option>
+        <option label="&nbsp;&nbsp;&nbsp;&nbsp;Higher Education Resources" value="5310">&nbsp;&nbsp;&nbsp;&nbsp;Higher Education Resources</option>
+        <option label="&nbsp;&nbsp;&nbsp;&nbsp;SAS OnDemand For Academics" value="5325">&nbsp;&nbsp;&nbsp;&nbsp;SAS OnDemand For Academics</option>
+   
+        <option label="COMMUNITY" value="5400">COMMUNITY</option>
+        <option label="&nbsp;&nbsp;&nbsp;&nbsp;User Groups" value="5410">&nbsp;&nbsp;&nbsp;&nbsp;User Groups</option>
+        <option label="&nbsp;&nbsp;&nbsp;&nbsp;Events" value="5420">&nbsp;&nbsp;&nbsp;&nbsp;Events</option>
+        <option label="&nbsp;&nbsp;&nbsp;&nbsp;E-Newsletters" value="5430">&nbsp;&nbsp;&nbsp;&nbsp;E-Newsletters</option>
+		
+      </select>
+      <input class="searchButton" type="submit" name="Find" value="Search" />
+	    <input id="searchCollection" type="hidden" name="col" value="suppprd" /> 
+      <input type="hidden" name="nh" value="10" />
+      <input type="hidden" name="qp" value="" />
+      <input type="hidden" name="qc" value="suppsas" />
+      <input type="hidden" name="ws" value="1" />
+      <input type="hidden" name="qm" value="1" />
+      <input type="hidden" name="st" value="1" />
+      <input type="hidden" name="lk" value="1" />
+      <input type="hidden" name="rf" value="0" />
+      <input type="hidden" name="oq" value="" />
+      <input type="hidden" name="rq" value="0" />
+      </fieldset> 
+    </form>
+  </div>
+    <!--googleon: all-->
+    <!--startindex-->
+</div>
+
+            <!-- ***** NAVIGATION ***** -->
+            <div id="mastheadnav">
+<!--stopindex--> 
+<!--googleoff: all-->
+  <ul>
+    <li class="homeselected">
+      <a href="/index.html" accesskey="h">support.sas.com</a>
+    </li>
+    <li>
+      <a id="nav_1" href="/resources">KNOWLEDGE BASE</a>
+    </li>
+    <li>
+      <a id="nav_2" href="/techsup">SUPPORT</a>
+    </li>
+    <li>
+      <a id="nav_3" href="/learn">LEARNING CENTER</a>
+    </li>
+    <li>
+      <a id="nav_4" href="/community">COMMUNITY</a>
+    </li>
+    <li>
+      <a href="#content" title="begin main content" name="content">&nbsp;</a>
+    </li>
+  </ul>
+ <!--googleon: all-->
+ <!--startindex-->
+</div>
+
+<div class="clear">
+  <!-- -->
+</div>
+
+
+            
+      
+<div id="docpeb"><!--stopindex--><!--googleoff: all-->
+<div style="display:none" id="sectionTitlediv">
+</div><div style="float: left;"><ul class="siteBreadcrumb"><li><a href="/documentation">Product Documentation</a></li><li class="divider">&gt;</li><li><a href="/cdlsearch?ct=80000">SAS 9.2 Documentation</a></li></ul></div>
+<div style="float: right;"><ul class="docpeb"><li><a title="Print" onclick="PrintPage();" href="#">Print</a> |
+          </li><li><a title="Email Page" onclick="mailThisUrl();" href="#">E-mail</a> |
+          </li><li><a title="Bookmark" onclick="CreateBookmarkLink();" href="#">Bookmark</a> |
+          </li><li><a title="Feedback" href="/documentation/onlinedoc/feedback.html">Feedback</a></li></ul></div><!--googleon: all--><!--startindex--><div class="clear"><h1 class="booktitle">SAS(R) 9.2 Language Reference: Dictionary</h1></div></div>
+<!--BEGIN BODY--><div id="docleftcolumn"><!--stopindex--><!--googleoff: all-->
+          
+            <!-- ***** Link AREA ***** -->
+            <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<div class="tocLinks"><a href="/documentation/cdl/en/lrdict/61724/PDF/default/lrdict.pdf">
+            PDF
+          </a>
+
+</div>
+</html>
+            
+      
+<div id="tabs">
+<ul><li id="tabnav_toc"><a onclick="changeTab('toc'); return false" class="none" href="#"><span>Contents</span></a></li><li id="tabnav_about"><a onclick="changeTab('about'); return false" class="none" href="#"><span>About</span></a></li></ul></div><div class="clear"><!----></div>
+<!--googleon: all--><!--startindex--><div style="overflow:auto; visibility:hidden;" id="leftscroll">
+<div style="display:none;" id="tab_toc">          
+            <!-- ***** TOC AREA ***** -->
+            <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><!--stopindex--><!--googleoff: all--><div id="toc"><ul>
+<li class="nolink"><a id="p_bl1r1" href="lrdictwhatsnew902.htm">What's New in the Base SAS 9.2 Language</a></li><li class="node"><a href="#"><img border="0" src="/images/elements/expand_icon.gif" onclick="tocToggle(this,'bl1r2')" /></a><span class="toc">Dictionary of Language Elements</span></li><ul id="bl1r2" style="display: none;">
+<li class="node"><a href="#"><img border="0" src="/images/elements/expand_icon.gif" onclick="tocToggle(this,'bl1r2l2r1')" /></a><a id="p_bl1r2l2r1" href="a002295669.htm">SAS 9.2 Language Reference: Dictionary</a></li><ul id="bl1r2l2r1" style="display: none;">
+<li class="leaf"><a id="p_bl1r2l2r1l3r1" href="a002441943.htm">The SAS Language Reference: Dictionary</a></li><li class="leaf"><a id="p_bl1r2l2r1l3r2" href="a003264136.htm">Syntax Conventions for the SAS Language</a></li></ul><li class="node"><a href="#"><img border="0" src="/images/elements/expand_icon.gif" onclick="tocToggle(this,'bl1r2l2r2')" /></a><a id="p_bl1r2l2r2" href="a002295655.htm">SAS Data Set Options</a></li><ul id="bl1r2l2r2" style="display: none;">
+<li class="leaf"><a id="p_bl1r2l2r2l3r1" href="a000201788.htm">Definition of Data Set Options</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r2" href="a001000998.htm">Syntax</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r3" href="a000131091.htm">Using Data Set Options</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r4" href="a000104210.htm">Data Set Options by Category</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r5" href="a003075534.htm">Data Set Options Documented in Other SAS Publications</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r6" href="a000131095.htm">ALTER= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r7" href="a000131098.htm">BUFNO= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r8" href="a000131102.htm">BUFSIZE= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r9" href="a000131106.htm">CNTLLEV= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r10" href="a001288760.htm">COMPRESS= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r11" href="a000388329.htm">DLDMGACTION= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r12" href="a000131113.htm">DROP= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r13" href="a000131120.htm">ENCRYPT= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r14" href="a000131124.htm">FILECLOSE= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r15" href="a000131129.htm">FIRSTOBS= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r16" href="a000243174.htm">GENMAX= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r17" href="a000243056.htm">GENNUM= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r18" href="a000414058.htm">IDXNAME= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r19" href="a000414149.htm">IDXWHERE= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r20" href="a000131134.htm">IN= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r21" href="a000131138.htm">INDEX= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r22" href="a000131144.htm">KEEP= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r23" href="a000131149.htm">LABEL= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r24" href="a000131154.htm">OBS= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r25" href="a002502620.htm">OBSBUF= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r26" href="a000344147.htm">OUTREP= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r27" href="a001288684.htm">POINTOBS= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r28" href="a000131161.htm">PW= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r29" href="a000131164.htm">PWREQ= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r30" href="a000131166.htm">READ= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r31" href="a000131169.htm">RENAME= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r32" href="a001270943.htm">REPEMPTY= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r33" href="a000131176.htm">REPLACE= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r34" href="a000131180.htm">REUSE= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r35" href="a000131184.htm">SORTEDBY= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r36" href="a002502627.htm">SPILL= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r37" href="a000606768.htm">TOBSNO= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r38" href="a000131189.htm">TYPE= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r39" href="a000131192.htm">WHERE= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r40" href="a000388330.htm">WHEREUP= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r41" href="a000131197.htm">WRITE= Data Set Option</a></li><li class="leaf"><a id="p_bl1r2l2r2l3r42" href="a003075534.htm">Data Set Options Documented in Other SAS Publications</a></li></ul><li class="node"><a href="#"><img border="0" src="/images/elements/expand_icon.gif" onclick="tocToggle(this,'bl1r2l2r3')" /></a><a id="p_bl1r2l2r3" href="a000309859.htm">Formats</a></li><ul id="bl1r2l2r3" style="display: none;">
+<li class="leaf"><a id="p_bl1r2l2r3l3r1" href="a000202062.htm">Definition of Formats</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r2" href="a001130997.htm">Syntax</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r3" href="a000179178.htm">Using Formats</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r4" href="a001270373.htm">Byte Ordering for Integer Binary Data on Big Endian and Little Endian Platforms</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r5" href="a002194455.htm">Data Conversions and Encodings</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r6" href="a001131887.htm">Working with Packed Decimal and Zoned Decimal Data</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r7" href="a003169814.htm">Working with Dates and Times Using the ISO 8601 Basic and Extended Notations</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r8" href="a001263753.htm">Formats by Category</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r9" href="a003168458.htm">Formats Documented in Other SAS Publications</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r10" href="a000205092.htm">$ASCIIw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r11" href="a003161924.htm">$BASE64Xw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r12" href="a000205094.htm">$BINARYw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r13" href="a000205096.htm">$CHARw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r14" href="a000202119.htm">$EBCDICw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r15" href="a000205099.htm">$HEXw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r16" href="a000205101.htm">$MSGCASEw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r17" href="a003170416.htm">$N8601Bw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r18" href="a003170431.htm">$N8601BAw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r19" href="a003170447.htm">$N8601Ew.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r20" href="a003170467.htm">$N8601EAw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r21" href="a003170493.htm">$N8601EHw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r22" href="a003170517.htm">$N8601EXw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r23" href="a003170483.htm">$N8601Hw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r24" href="a003170504.htm">$N8601Xw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r25" href="a000205103.htm">$OCTALw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r26" href="a000205105.htm">$QUOTEw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r27" href="a000205107.htm">$REVERJw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r28" href="a000205109.htm">$REVERSw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r29" href="a000205111.htm">$UPCASEw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r30" href="a000193609.htm">$VARYINGw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r31" href="a000205114.htm">$w. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r32" href="a000184495.htm">BESTw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r33" href="a003171706.htm">BESTDw.p Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r34" href="a000205117.htm">BINARYw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r35" href="a003169726.htm">B8601DAw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r36" href="a003169735.htm">B8601DNw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r37" href="a003169749.htm">B8601DTw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r38" href="a003169758.htm">B8601DZw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r39" href="a003169776.htm">B8601LZw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r40" href="a003169787.htm">B8601TMw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r41" href="a003169911.htm">B8601TZw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r42" href="a000200667.htm">COMMAw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r43" href="a000200612.htm">COMMAXw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r44" href="a000205121.htm">Dw.p Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r45" href="a000195834.htm">DATEw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r46" href="a000196050.htm">DATEAMPMw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r47" href="a000197923.htm">DATETIMEw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r48" href="a000201472.htm">DAYw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r49" href="a000197953.htm">DDMMYYw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r50" href="a000590669.htm">DDMMYYxw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r51" href="a000200614.htm">DOLLARw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r52" href="a000201649.htm">DOLLARXw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r53" href="a000200842.htm">DOWNAMEw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r54" href="a002295672.htm">DTDATEw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r55" href="a001585315.htm">DTMONYYw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r56" href="a001585325.htm">DTWKDATXw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r57" href="a001585384.htm">DTYEARw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r58" href="a002295676.htm">DTYYQCw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r59" href="a000205131.htm">Ew. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r60" href="a003065445.htm">E8601DAw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r61" href="a003065450.htm">E8601DNw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r62" href="a003065455.htm">E8601DTw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r63" href="a003065460.htm">E8601DZw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r64" href="a003065465.htm">E8601LZw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r65" href="a003065475.htm">E8601TMw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r66" href="a003065470.htm">E8601TZw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r67" href="a000205150.htm">FLOATw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r68" href="a000205152.htm">FRACTw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r69" href="a000205154.htm">HEXw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r70" href="a000198049.htm">HHMMw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r71" href="a000198051.htm">HOURw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r72" href="a000205158.htm">IBw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r73" href="a000387217.htm">IBRw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r74" href="a000205160.htm">IEEEw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r75" href="a000205162.htm">JULDAYw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r76" href="a000197940.htm">JULIANw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r77" href="a000199367.htm">MMDDYYw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r78" href="a000590662.htm">MMDDYYxw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r79" href="a000198053.htm">MMSSw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r80" href="a000199314.htm">MMYYw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r81" href="a002231365.htm">MMYYxw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r82" href="a000201049.htm">MONNAMEw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r83" href="a000171689.htm">MONTHw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r84" href="a000197959.htm">MONYYw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r85" href="a000205173.htm">NEGPARENw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r86" href="a000199379.htm">NUMXw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r87" href="a000205178.htm">OCTALw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r88" href="a000205180.htm">PDw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r89" href="a000510042.htm">PDJULGw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r90" href="a000510044.htm">PDJULIw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r91" href="a000205182.htm">PERCENTw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r92" href="a002980019.htm">PERCENTNw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r93" href="a000205185.htm">PIBw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r94" href="a000387319.htm">PIBRw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r95" href="a000205187.htm">PKw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r96" href="a000205189.htm">PVALUEw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r97" href="a000201232.htm">QTRw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r98" href="a000201235.htm">QTRRw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r99" href="a000205193.htm">RBw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r100" href="a000205195.htm">ROMANw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r101" href="a000205199.htm">S370FFw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r102" href="a000205201.htm">S370FIBw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r103" href="a000205203.htm">S370FIBUw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r104" href="a000205205.htm">S370FPDw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r105" href="a000205207.htm">S370FPDUw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r106" href="a000205209.htm">S370FPIBw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r107" href="a000205211.htm">S370FRBw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r108" href="a000205213.htm">S370FZDw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r109" href="a000205215.htm">S370FZDLw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r110" href="a000205217.htm">S370FZDSw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r111" href="a000205219.htm">S370FZDTw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r112" href="a000205221.htm">S370FZDUw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r113" href="a003287094.htm">SIZEKw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r114" href="a003287187.htm">SIZEKBw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r115" href="a003287099.htm">SIZEKMGw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r116" href="a000205197.htm">SSNw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r117" href="a000197928.htm">TIMEw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r118" href="a000201272.htm">TIMEAMPMw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r119" href="a000201157.htm">TODw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r120" href="a002295678.htm">VAXRBw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r121" href="a003134647.htm">VMSZNw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r122" href="a000199377.htm">w.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r123" href="a000201433.htm">WEEKDATEw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r124" href="a000201303.htm">WEEKDATXw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r125" href="a000200757.htm">WEEKDAYw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r126" href="a002604217.htm">WEEKUw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r127" href="a002604239.htm">WEEKVw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r128" href="a002604261.htm">WEEKWw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r129" href="a000201451.htm">WORDDATEw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r130" href="a000201147.htm">WORDDATXw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r131" href="a000201460.htm">WORDFw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r132" href="a000201455.htm">WORDSw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r133" href="a000205234.htm">YEARw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r134" href="a000199309.htm">YYMMw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r135" href="a002231336.htm">YYMMxw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r136" href="a000197961.htm">YYMMDDw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r137" href="a000589916.htm">YYMMDDxw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r138" href="a000205240.htm">YYMONw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r139" href="a000201247.htm">YYQw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r140" href="a002231398.htm">YYQxw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r141" href="a000201250.htm">YYQRw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r142" href="a002231415.htm">YYQRxw. Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r143" href="a000205244.htm">Zw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r144" href="a000205246.htm">ZDw.d Format</a></li><li class="leaf"><a id="p_bl1r2l2r3l3r145" href="a003168458.htm">Formats Documented in Other SAS Publications</a></li></ul><li class="node"><a href="#"><img border="0" src="/images/elements/expand_icon.gif" onclick="tocToggle(this,'bl1r2l2r4')" /></a><a id="p_bl1r2l2r4" href="a000245852.htm">Functions and CALL Routines</a></li><ul id="bl1r2l2r4" style="display: none;">
+<li class="leaf"><a id="p_bl1r2l2r4l3r1" href="a001131396.htm">Definitions of Functions and CALL Routines</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r2" href="a002295632.htm">Syntax</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r3" href="a001281551.htm">Using Functions and CALL Routines</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r4" href="a003274719.htm">Function Compatibility with SBCS, DBCS, and MBCS Character Sets</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r5" href="a001281561.htm">Using Random-Number Functions and CALL Routines</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r6" href="a003065889.htm">Date and Time Intervals</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r7" href="a002288677.htm">Pattern Matching Using Perl Regular Expressions (PRX)</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r8" href="a002291852.htm">Using Perl Regular Expressions in the DATA Step</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r9" href="a002292806.htm">Writing Perl Debug Output to the SAS Log</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r10" href="a002326488.htm">Perl Artistic License Compliance</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r11" href="a001250470.htm">Base SAS Functions for Web Applications</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r12" href="a000245860.htm">Functions and CALL Routines by Category</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r13" href="a003165916.htm">Functions and CALL Routines Documented in Other SAS Publications</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r14" href="a000245861.htm">ABS Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r15" href="a000202872.htm">ADDR Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r16" href="a002214165.htm">ADDRLONG Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r17" href="a000215084.htm">AIRY Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r18" href="a003112305.htm">ALLCOMB Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r19" href="a003112049.htm">ALLPERM Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r20" href="a002194054.htm">ANYALNUM Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r21" href="a002194060.htm">ANYALPHA Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r22" href="a002194153.htm">ANYCNTRL Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r23" href="a002194193.htm">ANYDIGIT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r24" href="a002197039.htm">ANYFIRST Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r25" href="a002194214.htm">ANYGRAPH Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r26" href="a002194244.htm">ANYLOWER Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r27" href="a002197365.htm">ANYNAME Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r28" href="a002194283.htm">ANYPRINT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r29" href="a002194304.htm">ANYPUNCT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r30" href="a002194348.htm">ANYSPACE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r31" href="a002194376.htm">ANYUPPER Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r32" href="a002194391.htm">ANYXDIGIT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r33" href="a000245862.htm">ARCOS Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r34" href="a003121206.htm">ARCOSH Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r35" href="a000245863.htm">ARSIN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r36" href="a003121200.htm">ARSINH Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r37" href="a003121122.htm">ARTANH Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r38" href="a000245864.htm">ATAN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r39" href="a002629428.htm">ATAN2 Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r40" href="a000147794.htm">ATTRC Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r41" href="a000212040.htm">ATTRN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r42" href="a000245865.htm">BAND Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r43" href="a002198749.htm">BETA Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r44" href="a000543441.htm">BETAINV Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r45" href="a002982263.htm">BLACKCLPRC Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r46" href="a002982265.htm">BLACKPTPRC Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r47" href="a002979681.htm">BLKSHCLPRC Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r48" href="a002982723.htm">BLKSHPTPRC Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r49" href="a000245867.htm">BLSHIFT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r50" href="a000245868.htm">BNOT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r51" href="a000245869.htm">BOR Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r52" href="a000245870.htm">BRSHIFT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r53" href="a000245871.htm">BXOR Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r54" href="a000543481.htm">BYTE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r55" href="a003112302.htm">CALL ALLCOMB Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r56" href="a003112314.htm">CALL ALLCOMBI Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r57" href="a002208648.htm">CALL ALLPERM Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r58" href="a002256376.htm">CALL CATS Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r59" href="a002256373.htm">CALL CATT Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r60" href="a002256379.htm">CALL CATX Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r61" href="a002206135.htm">CALL COMPCOST Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r62" href="a000127810.htm">CALL EXECUTE Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r63" href="a003121541.htm">CALL GRAYCODE Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r64" href="a003156604.htm">CALL IS8601_CONVERT Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r65" href="a000127812.htm">CALL LABEL Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r66" href="a003112053.htm">CALL LEXCOMB Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r67" href="a003112177.htm">CALL LEXCOMBI Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r68" href="a003112850.htm">CALL LEXPERK Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r69" href="a003117014.htm">CALL LEXPERM Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r70" href="a002594972.htm">CALL LOGISTIC Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r71" href="a002558398.htm">CALL MISSING Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r72" href="a000471253.htm">CALL MODULE Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r73" href="a000127816.htm">CALL POKE Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r74" href="a001631548.htm">CALL POKELONG Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r75" href="a002295959.htm">CALL PRXCHANGE Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r76" href="a002295961.htm">CALL PRXDEBUG Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r77" href="a002295963.htm">CALL PRXFREE Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r78" href="a002295965.htm">CALL PRXNEXT Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r79" href="a002295969.htm">CALL PRXPOSN Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r80" href="a002295971.htm">CALL PRXSUBSTR Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r81" href="a000127819.htm">CALL RANBIN Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r82" href="a000127823.htm">CALL RANCAU Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r83" href="a000127828.htm">CALL RANEXP Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r84" href="a000127832.htm">CALL RANGAM Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r85" href="a000127836.htm">CALL RANNOR Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r86" href="a002208635.htm">CALL RANPERK Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r87" href="a002208637.htm">CALL RANPERM Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r88" href="a000127840.htm">CALL RANPOI Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r89" href="a000127844.htm">CALL RANTBL Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r90" href="a000127848.htm">CALL RANTRI Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r91" href="a000127852.htm">CALL RANUNI Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r92" href="a002255934.htm">CALL SCAN Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r93" href="a000127856.htm">CALL SET Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r94" href="a001418812.htm">CALL SLEEP Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r95" href="a002594975.htm">CALL SOFTMAX Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r96" href="a003106052.htm">CALL SORTC Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r97" href="a003106054.htm">CALL SORTN Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r98" href="a002408779.htm">CALL STDIZE Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r99" href="a001466799.htm">CALL STREAMINIT Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r100" href="a000127861.htm">CALL SYMPUT Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r101" href="a002295697.htm">CALL SYMPUTX Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r102" href="a000127864.htm">CALL SYSTEM Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r103" href="a002594286.htm">CALL TANH Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r104" href="a000127866.htm">CALL VNAME Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r105" href="a002295699.htm">CALL VNEXT Routine</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r106" href="a002257060.htm">CAT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r107" href="a003143640.htm">CATQ Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r108" href="a002256540.htm">CATS Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r109" href="a002257057.htm">CATT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r110" href="a002257076.htm">CATX Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r111" href="a000208980.htm">CDF Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r112" href="a000207949.htm">CEIL Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r113" href="a002135870.htm">CEILZ Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r114" href="a000148177.htm">CEXIST Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r115" href="a003082990.htm">CHAR Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r116" href="a002604617.htm">CHOOSEC Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r117" href="a002604619.htm">CHOOSEN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r118" href="a000245872.htm">CINV Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r119" href="a000212086.htm">CLOSE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r120" href="a003121095.htm">CMISS Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r121" href="a000245873.htm">CNONCT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r122" href="a002518172.htm">COALESCE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r123" href="a002518268.htm">COALESCEC Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r124" href="a000212216.htm">COLLATE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r125" href="a001009658.htm">COMB Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r126" href="a002206130.htm">COMPARE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r127" href="a000214211.htm">COMPBL Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r128" href="a002206133.htm">COMPGED Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r129" href="a002206137.htm">COMPLEV Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r130" href="a000245874.htm">COMPOUND Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r131" href="a000212246.htm">COMPRESS Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r132" href="a002295680.htm">CONSTANT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r133" href="a001123218.htm">CONVX Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r134" href="a001122959.htm">CONVXP Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r135" href="a000245875.htm">COS Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r136" href="a000245876.htm">COSH Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r137" href="a002260230.htm">COUNT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r138" href="a002260840.htm">COUNTC Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r139" href="a002977495.htm">COUNTW Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r140" href="a000245877.htm">CSS Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r141" href="a000245878.htm">CUROBS Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r142" href="a000245879.htm">CV Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r143" href="a000138358.htm">DACCDB Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r144" href="a000245880.htm">DACCDBSL Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r145" href="a000245881.htm">DACCSL Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r146" href="a000138361.htm">DACCSYD Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r147" href="a000138363.htm">DACCTAB Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r148" href="a000245882.htm">DAIRY Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r149" href="a000530603.htm">DATDIF Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r150" href="a000200621.htm">DATE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r151" href="a000197943.htm">DATEJUL Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r152" href="a000245883.htm">DATEPART Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r153" href="a000200627.htm">DATETIME Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r154" href="a000201606.htm">DAY Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r155" href="a002295683.htm">DCLOSE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r156" href="a002986745.htm">DCREATE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r157" href="a000245884.htm">DEPDB Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r158" href="a000245885.htm">DEPDBSL Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r159" href="a000245886.htm">DEPSL Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r160" href="a000245887.htm">DEPSYD Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r161" href="a000138366.htm">DEPTAB Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r162" href="a000245888.htm">DEQUOTE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r163" href="a001010917.htm">DEVIANCE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r164" href="a000179419.htm">DHMS Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r165" href="a000212596.htm">DIF Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r166" href="a000245889.htm">DIGAMMA Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r167" href="a000213236.htm">DIM Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r168" href="a000209676.htm">DINFO Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r169" href="a003105093.htm">DIVIDE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r170" href="a000209695.htm">DNUM Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r171" href="a000209538.htm">DOPEN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r172" href="a000209541.htm">DOPTNAME Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r173" href="a000209578.htm">DOPTNUM Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r174" href="a000209687.htm">DREAD Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r175" href="a000211377.htm">DROPNOTE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r176" href="a000148241.htm">DSNAME Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r177" href="a001123076.htm">DUR Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r178" href="a001123061.htm">DURP Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r179" href="a003171062.htm">ENVLEN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r180" href="a000245890.htm">ERF Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r181" href="a000245891.htm">ERFC Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r182" href="a003088117.htm">EUCLID Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r183" href="a000210903.htm">EXIST Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r184" href="a000245892.htm">EXP Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r185" href="a001009912.htm">FACT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r186" href="a000211960.htm">FAPPEND Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r187" href="a000210034.htm">FCLOSE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r188" href="a000211493.htm">FCOL Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r189" href="a000245893.htm">FDELETE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r190" href="a000202928.htm">FETCH Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r191" href="a000202931.htm">FETCHOBS Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r192" href="a000210817.htm">FEXIST Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r193" href="a000210036.htm">FGET Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r194" href="a000210912.htm">FILEEXIST Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r195" href="a000210819.htm">FILENAME Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r196" href="a000210907.htm">FILEREF Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r197" href="a003180371.htm">FINANCE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r198" href="a002267763.htm">FIND Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r199" href="a002264923.htm">FINDC Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r200" href="a002978282.htm">FINDW Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r201" href="a000209583.htm">FINFO Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r202" href="a000245894.htm">FINV Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r203" href="a000212628.htm">FIPNAME Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r204" href="a000211299.htm">FIPNAMEL Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r205" href="a000211301.htm">FIPSTATE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r206" href="a003082988.htm">FIRST Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r207" href="a000207955.htm">FLOOR Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r208" href="a002135872.htm">FLOORZ Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r209" href="a000245895.htm">FNONCT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r210" href="a000209721.htm">FNOTE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r211" href="a000209683.htm">FOPEN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r212" href="a000209587.htm">FOPTNAME Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r213" href="a000209591.htm">FOPTNUM Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r214" href="a000209714.htm">FPOINT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r215" href="a000210806.htm">FPOS Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r216" href="a000210081.htm">FPUT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r217" href="a000210888.htm">FREAD Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r218" href="a000211061.htm">FREWIND Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r219" href="a000245896.htm">FRLEN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r220" href="a000210892.htm">FSEP Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r221" href="a000245897.htm">FUZZ Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r222" href="a000210085.htm">FWRITE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r223" href="a000245898.htm">GAMINV Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r224" href="a000245899.htm">GAMMA Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r225" href="a002982110.htm">GARKHCLPRC Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r226" href="a002982112.htm">GARKHPTPRC Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r227" href="a003121162.htm">GCD Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r228" href="a003113162.htm">GEODIST Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r229" href="a002595249.htm">GEOMEAN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r230" href="a002596515.htm">GEOMEANZ Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r231" href="a000149068.htm">GETOPTION Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r232" href="a000148379.htm">GETVARC Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r233" href="a000148384.htm">GETVARN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r234" href="a003121538.htm">GRAYCODE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r235" href="a002595247.htm">HARMEAN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r236" href="a002595920.htm">HARMEANZ Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r237" href="a000213123.htm">HBOUND Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r238" href="a000201212.htm">HMS Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r239" href="a003060817.htm">HOLIDAY Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r240" href="a000201210.htm">HOUR Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r241" href="a001146073.htm">HTMLDECODE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r242" href="a001157104.htm">HTMLENCODE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r243" href="a000245901.htm">IBESSEL Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r244" href="a002604570.htm">IFC Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r245" href="a002604573.htm">IFN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r246" href="a000212242.htm">INDEX Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r247" href="a000212237.htm">INDEXC Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r248" href="a000212235.htm">INDEXW Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r249" href="a000180357.htm">INPUT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r250" href="a000212553.htm">INPUTC Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r251" href="a000212557.htm">INPUTN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r252" href="a000245902.htm">INT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r253" href="a003060784.htm">INTCINDEX Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r254" href="a000212868.htm">INTCK Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r255" href="a003060791.htm">INTCYCLE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r256" href="a003116031.htm">INTFIT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r257" href="a003060797.htm">INTFMT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r258" href="a003079048.htm">INTGET Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r259" href="a003060803.htm">INTINDEX Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r260" href="a000212700.htm">INTNX Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r261" href="a000245903.htm">INTRR Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r262" href="a003060810.htm">INTSEAS Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r263" href="a003116038.htm">INTSHIFT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r264" href="a003060829.htm">INTTEST Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r265" href="a002135868.htm">INTZ Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r266" href="a000509952.htm">IORCMSG Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r267" href="a002291775.htm">IQR Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r268" href="a000245904.htm">IRR Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r269" href="a000245905.htm">JBESSEL Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r270" href="a000197945.htm">JULDATE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r271" href="a001020773.htm">JULDATE7 Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r272" href="a000245906.htm">KURTOSIS Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r273" href="a000212547.htm">LAG Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r274" href="a002154862.htm">LARGEST Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r275" href="a000213216.htm">LBOUND Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r276" href="a003121150.htm">LCM Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r277" href="a003168279.htm">LCOMB Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r278" href="a000212224.htm">LEFT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r279" href="a000245907.htm">LENGTH Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r280" href="a002283942.htm">LENGTHC Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r281" href="a002284128.htm">LENGTHM Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r282" href="a002284668.htm">LENGTHN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r283" href="a003112051.htm">LEXCOMB Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r284" href="a003112168.htm">LEXCOMBI Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r285" href="a003112843.htm">LEXPERK Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r286" href="a003112233.htm">LEXPERM Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r287" href="a003169439.htm">LFACT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r288" href="a000245908.htm">LGAMMA Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r289" href="a000212079.htm">LIBNAME Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r290" href="a000212077.htm">LIBREF Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r291" href="a000245909.htm">LOG Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r292" href="a003121132.htm">LOG1PX Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r293" href="a000245910.htm">LOG10 Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r294" href="a000245911.htm">LOG2 Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r295" href="a002198746.htm">LOGBETA Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r296" href="a002256613.htm">LOGCDF Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r297" href="a000139961.htm">LOGPDF Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r298" href="a000270631.htm">LOGSDF Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r299" href="a000245912.htm">LOWCASE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r300" href="a003168287.htm">LPERM Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r301" href="a003088105.htm">LPNORM Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r302" href="a002291783.htm">MAD Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r303" href="a002982145.htm">MARGRCLPRC Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r304" href="a002982147.htm">MARGRPTPRC Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r305" href="a000245913.htm">MAX Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r306" href="a003064419.htm">MD5 Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r307" href="a000199044.htm">MDY Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r308" href="a000245914.htm">MEAN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r309" href="a002205763.htm">MEDIAN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r310" href="a000245915.htm">MIN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r311" href="a000198031.htm">MINUTE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r312" href="a000509996.htm">MISSING Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r313" href="a000245916.htm">MOD Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r314" href="a003213304.htm">MODEXIST Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r315" href="a000470863.htm">MODULEC Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r316" href="a000470860.htm">MODULEN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r317" href="a002135956.htm">MODZ Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r318" href="a000197966.htm">MONTH Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r319" href="a000209685.htm">MOPEN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r320" href="a000245917.htm">MORT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r321" href="a003188493.htm">MSPLINT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r322" href="a000245918.htm">N Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r323" href="a000245919.htm">NETPV Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r324" href="a002270848.htm">NLITERAL Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r325" href="a000245920.htm">NMISS Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r326" href="a000245921.htm">NORMAL Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r327" href="a002194056.htm">NOTALNUM Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r328" href="a002194058.htm">NOTALPHA Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r329" href="a002194155.htm">NOTCNTRL Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r330" href="a002194195.htm">NOTDIGIT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r331" href="a000209710.htm">NOTE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r332" href="a002197041.htm">NOTFIRST Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r333" href="a002194216.htm">NOTGRAPH Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r334" href="a002194246.htm">NOTLOWER Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r335" href="a002197357.htm">NOTNAME Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r336" href="a002194285.htm">NOTPRINT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r337" href="a002194306.htm">NOTPUNCT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r338" href="a002194350.htm">NOTSPACE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r339" href="a002194378.htm">NOTUPPER Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r340" href="a002194393.htm">NOTXDIGIT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r341" href="a000245922.htm">NPV Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r342" href="a002271952.htm">NVALID Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r343" href="a003060824.htm">NWKDOM Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r344" href="a000148395.htm">OPEN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r345" href="a000245923.htm">ORDINAL Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r346" href="a000245924.htm">PATHNAME Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r347" href="a002186127.htm">PCTL Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r348" href="a000270634.htm">PDF Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r349" href="a000202878.htm">PEEK Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r350" href="a000202880.htm">PEEKC Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r351" href="a001631463.htm">PEEKCLONG Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r352" href="a001631465.htm">PEEKLONG Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r353" href="a001009940.htm">PERM Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r354" href="a000209702.htm">POINT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r355" href="a000245925.htm">POISSON Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r356" href="a000245927.htm">PROBBETA Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r357" href="a000245928.htm">PROBBNML Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r358" href="a001010102.htm">PROBBNRM Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r359" href="a000245929.htm">PROBCHI Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r360" href="a000245930.htm">PROBF Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r361" href="a000245931.htm">PROBGAM Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r362" href="a000245932.htm">PROBHYPR Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r363" href="a000245933.htm">PROBIT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r364" href="a001016947.htm">PROBMC Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r365" href="a000245934.htm">PROBNEGB Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r366" href="a000245935.htm">PROBNORM Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r367" href="a000245936.htm">PROBT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r368" href="a002598106.htm">PROPCASE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r369" href="a002601591.htm">PRXCHANGE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r370" href="a002296115.htm">PRXMATCH Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r371" href="a002295974.htm">PRXPAREN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r372" href="a002295977.htm">PRXPARSE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r373" href="a002601903.htm">PRXPOSN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r374" href="a002295687.htm">PTRLONGADD Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r375" href="a000199354.htm">PUT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r376" href="a000212562.htm">PUTC Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r377" href="a000212564.htm">PUTN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r378" href="a001123040.htm">PVP Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r379" href="a000213098.htm">QTR Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r380" href="quantilefunction.htm">QUANTILE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r381" href="a000245937.htm">QUOTE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r382" href="a000202883.htm">RANBIN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r383" href="a000202886.htm">RANCAU Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r384" href="a001466748.htm">RAND Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r385" href="a000202893.htm">RANEXP Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r386" href="a000202899.htm">RANGAM Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r387" href="a000245938.htm">RANGE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r388" href="a000212189.htm">RANK Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r389" href="a000202908.htm">RANNOR Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r390" href="a000202919.htm">RANPOI Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r391" href="a000202921.htm">RANTBL Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r392" href="a000202924.htm">RANTRI Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r393" href="a000202926.htm">RANUNI Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r394" href="a003122440.htm">RENAME Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r395" href="a000245939.htm">REPEAT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r396" href="a000245940.htm">RESOLVE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r397" href="a000245941.htm">REVERSE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r398" href="a000212081.htm">REWIND Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r399" href="a000212248.htm">RIGHT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r400" href="a002595532.htm">RMS Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r401" href="a000245942.htm">ROUND Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r402" href="a002212436.htm">ROUNDE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r403" href="a002209745.htm">ROUNDZ Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r404" href="a000245943.htm">SAVING Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r405" href="a000214639.htm">SCAN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r406" href="a000270638.htm">SDF Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r407" href="a000198033.htm">SECOND Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r408" href="a000245944.htm">SIGN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r409" href="a000245945.htm">SIN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r410" href="a000245946.htm">SINH Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r411" href="a000245947.htm">SKEWNESS Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r412" href="a001418809.htm">SLEEP Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r413" href="a002154865.htm">SMALLEST Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r414" href="a000245948.htm">SOUNDEX Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r415" href="a000245949.htm">SPEDIS Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r416" href="a000245950.htm">SQRT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r417" href="a000245951.htm">STD Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r418" href="a000245952.htm">STDERR Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r419" href="a000211303.htm">STFIPS Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r420" href="a000211305.htm">STNAME Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r421" href="a000211307.htm">STNAMEL Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r422" href="a002295689.htm">STRIP Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r423" href="a002255133.htm">SUBPAD Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r424" href="a000212267.htm">SUBSTR (left of =) Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r425" href="a000212264.htm">SUBSTR (right of =) Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r426" href="a002255112.htm">SUBSTRN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r427" href="a000245953.htm">SUM Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r428" href="a003088120.htm">SUMABS Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r429" href="a002636690.htm">SYMEXIST Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r430" href="a000202938.htm">SYMGET Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r431" href="a002636698.htm">SYMGLOBL Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r432" href="a002636694.htm">SYMLOCAL Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r433" href="a000245954.htm">SYSGET Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r434" href="a000210917.htm">SYSMSG Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r435" href="a000510053.htm">SYSPARM Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r436" href="a000590205.htm">SYSPROCESSID Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r437" href="a000590213.htm">SYSPROCESSNAME Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r438" href="a000245955.htm">SYSPROD Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r439" href="a000212032.htm">SYSRC Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r440" href="a000245956.htm">SYSTEM Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r441" href="a000245957.htm">TAN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r442" href="a000245958.htm">TANH Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r443" href="a000201204.htm">TIME Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r444" href="a000201269.htm">TIMEPART Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r445" href="a000245959.htm">TINV Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r446" href="a000245960.htm">TNONCT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r447" href="a000245961.htm">TODAY Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r448" href="a000215153.htm">TRANSLATE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r449" href="a003254155.htm">TRANSTRN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r450" href="a000215027.htm">TRANWRD Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r451" href="a000245962.htm">TRIGAMMA Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r452" href="a000212226.htm">TRIM Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r453" href="a000212475.htm">TRIMN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r454" href="a000245963.htm">TRUNC Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r455" href="a000245964.htm">UNIFORM Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r456" href="a000245965.htm">UPCASE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r457" href="a001191534.htm">URLDECODE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r458" href="a001172006.htm">URLENCODE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r459" href="a000245966.htm">USS Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r460" href="a002505764.htm">UUIDGEN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r461" href="a000245967.htm">VAR Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r462" href="a000148399.htm">VARFMT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r463" href="a000148419.htm">VARINFMT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r464" href="a000148456.htm">VARLABEL Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r465" href="a000148433.htm">VARLEN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r466" href="a000148436.htm">VARNAME Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r467" href="a000148439.htm">VARNUM Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r468" href="a000245968.htm">VARRAY Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r469" href="a000245969.htm">VARRAYX Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r470" href="a000148443.htm">VARTYPE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r471" href="a000245970.htm">VERIFY Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r472" href="a000245971.htm">VFORMAT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r473" href="a000245972.htm">VFORMATD Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r474" href="a000245973.htm">VFORMATDX Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r475" href="a000245974.htm">VFORMATN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r476" href="a000245975.htm">VFORMATNX Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r477" href="a000245976.htm">VFORMATW Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r478" href="a000245977.htm">VFORMATWX Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r479" href="a000245978.htm">VFORMATX Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r480" href="a000245979.htm">VINARRAY Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r481" href="a000245980.htm">VINARRAYX Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r482" href="a000245981.htm">VINFORMAT Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r483" href="a000245982.htm">VINFORMATD Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r484" href="a000245983.htm">VINFORMATDX Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r485" href="a000245984.htm">VINFORMATN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r486" href="a000245985.htm">VINFORMATNX Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r487" href="a000245986.htm">VINFORMATW Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r488" href="a000245987.htm">VINFORMATWX Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r489" href="a000245988.htm">VINFORMATX Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r490" href="a000202869.htm">VLABEL Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r491" href="a000245989.htm">VLABELX Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r492" href="a000245990.htm">VLENGTH Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r493" href="a000245991.htm">VLENGTHX Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r494" href="a000202943.htm">VNAME Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r495" href="a000245992.htm">VNAMEX Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r496" href="a000245993.htm">VTYPE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r497" href="a000245994.htm">VTYPEX Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r498" href="a002233820.htm">VVALUE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r499" href="a002233818.htm">VVALUEX Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r500" href="a003154994.htm">WEEK Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r501" href="a000201173.htm">WEEKDAY Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r502" href="a003122577.htm">WHICHC Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r503" href="a003122573.htm">WHICHN Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r504" href="a000197970.htm">YEAR Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r505" href="a001123050.htm">YIELDP Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r506" href="a000530606.htm">YRDIF Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r507" href="a000199346.htm">YYQ Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r508" href="a002598220.htm">ZIPCITY Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r509" href="a003113156.htm">ZIPCITYDISTANCE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r510" href="a000212678.htm">ZIPFIPS Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r511" href="a000212671.htm">ZIPNAME Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r512" href="a000212669.htm">ZIPNAMEL Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r513" href="a000212667.htm">ZIPSTATE Function</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r514" href="a003165916.htm">Functions and CALL Routines Documented in Other SAS Publications</a></li><li class="leaf"><a id="p_bl1r2l2r4l3r515" href="a001019314.htm">References</a></li></ul><li class="node"><a href="#"><img border="0" src="/images/elements/expand_icon.gif" onclick="tocToggle(this,'bl1r2l2r5')" /></a><a id="p_bl1r2l2r5" href="a000309877.htm">Informats</a></li><ul id="bl1r2l2r5" style="display: none;">
+<li class="leaf"><a id="p_bl1r2l2r5l3r1" href="a001131331.htm">Definition of Informats</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r2" href="a001258737.htm">Syntax</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r3" href="a001258738.htm">Using Informats</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r4" href="a001258728.htm">Byte Ordering for Integer Binary Data on Big Endian and Little Endian Platforms</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r5" href="a001239773.htm">Working with Packed Decimal and Zoned Decimal Data</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r6" href="a003169817.htm">Reading Dates and Times Using the ISO 860 Basic and Extended Notations</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r7" href="a001239776.htm">Informats by Category</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r8" href="a003168632.htm">Informats Documented in Other Base SAS Publications</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r9" href="a000204370.htm">$ASCIIw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r10" href="a003161929.htm">$BASE64Xw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r11" href="a000204372.htm">$BINARYw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r12" href="a000197319.htm">$CBw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r13" href="a000204375.htm">$CHARw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r14" href="a000204377.htm">$CHARZBw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r15" href="a000204379.htm">$EBCDICw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r16" href="a000204381.htm">$HEXw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r17" href="a000204383.htm">$OCTALw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r18" href="a000204385.htm">$PHEXw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r19" href="a003170563.htm">$N8601Bw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r20" href="a003170574.htm">$N8601Ew.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r21" href="a000204387.htm">$QUOTEw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r22" href="a000204393.htm">$UPCASEw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r23" href="a000193602.htm">$VARYINGw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r24" href="a000204396.htm">$w. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r25" href="a002605538.htm">ANYDTDTEw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r26" href="a002605552.htm">ANYDTDTMw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r27" href="a002605647.htm">ANYDTTMEw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r28" href="a003169646.htm">B8601DAw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r29" href="a003169656.htm">B8601DNw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r30" href="a003169665.htm">B8601DTw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r31" href="a003169674.htm">B8601DZw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r32" href="a003169696.htm">B8601TMw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r33" href="a003169705.htm">B8601TZw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r34" href="a000180755.htm">BINARYw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r35" href="a000204399.htm">BITSw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r36" href="a000204401.htm">BZw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r37" href="a000180429.htm">CBw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r38" href="a000204404.htm">COMMAw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r39" href="a000204406.htm">COMMAXw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r40" href="a000194757.htm">DATEw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r41" href="a000199624.htm">DATETIMEw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r42" href="a000197977.htm">DDMMYYw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r43" href="a000204411.htm">Ew.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r44" href="a003065410.htm">E8601DAw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r45" href="a003065435.htm">E8601DNw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r46" href="a003065440.htm">E8601DTw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r47" href="a003065430.htm">E8601DZw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r48" href="a003065425.htm">E8601LZw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r49" href="a003065420.htm">E8601TMw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r50" href="a003065415.htm">E8601TZw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r51" href="a000204416.htm">FLOATw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r52" href="a000204418.htm">HEXw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r53" href="a000179702.htm">IBw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r54" href="a000380092.htm">IBRw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r55" href="a000198010.htm">IEEEw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r56" href="a000201594.htm">JULIANw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r57" href="a003172027.htm">MDYAMPMw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r58" href="a000197956.htm">MMDDYYw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r59" href="a000199690.htm">MONYYw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r60" href="a000204427.htm">MSECw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r61" href="a000194648.htm">NUMXw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r62" href="a000204431.htm">OCTALw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r63" href="a000204433.htm">PDw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r64" href="a000544658.htm">PDJULGw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r65" href="a000380097.htm">PDJULIw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r66" href="a000204435.htm">PDTIMEw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r67" href="a000204437.htm">PERCENTw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r68" href="a000204439.htm">PIBw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r69" href="a000380106.htm">PIBRw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r70" href="a000194949.htm">PKw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r71" href="a000180432.htm">PUNCH.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r72" href="a000195040.htm">RBw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r73" href="a000204444.htm">RMFDURw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r74" href="a000198012.htm">RMFSTAMPw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r75" href="a000180434.htm">ROWw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r76" href="a000195467.htm">S370FFw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r77" href="a000199382.htm">S370FIBw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r78" href="a000204451.htm">S370FIBUw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r79" href="a000204453.htm">S370FPDw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r80" href="a000204455.htm">S370FPDUw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r81" href="a000204457.htm">S370FPIBw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r82" href="a000204459.htm">S370FRBw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r83" href="a003287018.htm">S370FZDBw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r84" href="a000204461.htm">S370FZDw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r85" href="a000204463.htm">S370FZDLw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r86" href="a000204465.htm">S370FZDSw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r87" href="a000204467.htm">S370FZDTw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r88" href="a000204469.htm">S370FZDUw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r89" href="a000380112.htm">SHRSTAMPw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r90" href="a003287085.htm">SIZEKMGw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r91" href="a000194655.htm">SMFSTAMPw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r92" href="a002295695.htm">STIMERw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r93" href="a000197899.htm">TIMEw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r94" href="a000197987.htm">TODSTAMPw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r95" href="a002637855.htm">TRAILSGNw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r96" href="a000204473.htm">TUw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r97" href="a000195653.htm">VAXRBw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r98" href="a003134633.htm">VMSZNw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r99" href="a002604468.htm">WEEKUw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r100" href="a002604488.htm">WEEKVw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r101" href="a002604509.htm">WEEKWw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r102" href="a000199348.htm">w.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r103" href="a003172040.htm">YMDDTTMw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r104" href="a000197982.htm">YYMMDDw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r105" href="a000363557.htm">YYMMNw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r106" href="a000204480.htm">YYQw. Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r107" href="a000198021.htm">ZDw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r108" href="a000204483.htm">ZDBw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r109" href="a000199350.htm">ZDVw.d Informat</a></li><li class="leaf"><a id="p_bl1r2l2r5l3r110" href="a003168632.htm">Informats Documented in Other Base SAS Publications</a></li></ul><li class="node"><a href="#"><img border="0" src="/images/elements/expand_icon.gif" onclick="tocToggle(this,'bl1r2l2r6')" /></a><a id="p_bl1r2l2r6" href="a000293668.htm">Statements</a></li><ul id="bl1r2l2r6" style="display: none;">
+<li class="leaf"><a id="p_bl1r2l2r6l3r1" href="a001131550.htm">Definition of Statements</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r2" href="a001225397.htm">DATA Step Statements</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r3" href="a001225401.htm">Global Statements</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r4" href="a003164134.htm">SAS Statements Documented in Other SAS Publications</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r5" href="a000230210.htm">ABORT Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r6" href="a000201956.htm">ARRAY Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r7" href="a000203460.htm">Array Reference Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r8" href="a000214494.htm">Assignment Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r9" href="a000179227.htm">ATTRIB Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r10" href="a000202968.htm">BY Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r11" href="a000289369.htm">CALL Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r12" href="a000289371.htm">CARDS Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r13" href="a000289373.htm">CARDS4 Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r14" href="a000363072.htm">CATNAME Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r15" href="a003133498.htm">CHECKPOINT EXECUTE_ALWAYS Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r16" href="a000289375.htm">Comment Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r17" href="a000289377.htm">CONTINUE Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r18" href="a000188132.htm">DATA Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r19" href="a000188182.htm">DATALINES Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r20" href="a000201747.htm">DATALINES4 Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r21" href="a002576871.htm">DECLARE Statement, Hash and Hash Iterator Objects</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r22" href="a003258186.htm">DECLARE Statement, Java Object</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r23" href="a000201996.htm">DELETE Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r24" href="a001212721.htm">DESCRIBE Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r25" href="a000214656.htm">DISPLAY Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r26" href="a000167815.htm">DM Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r27" href="a000201951.htm">DO Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r28" href="a000201276.htm">DO Statement, Iterative</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r29" href="a000201924.htm">DO UNTIL Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r30" href="a000201927.htm">DO WHILE Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r31" href="a000202902.htm">DROP Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r32" href="a000289390.htm">END Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r33" href="a000289392.htm">ENDSAS Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r34" href="a000289394.htm">ERROR Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r35" href="a001212710.htm">EXECUTE Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r36" href="a000171874.htm">FILE Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r37" href="a000211297.htm">FILENAME Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r38" href="a000218954.htm">FILENAME Statement, CATALOG Access Method</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r39" href="a002571877.htm">FILENAME, CLIPBOARD Access Method</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r40" href="a002058232.htm">FILENAME Statement, EMAIL (SMTP) Access Method</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r41" href="a000178980.htm">FILENAME Statement, FTP Access Method</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r42" href="a003041481.htm">FILENAME Statement, SFTP Access Method</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r43" href="a000218957.htm">FILENAME Statement, SOCKET Access Method</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r44" href="a000223242.htm">FILENAME Statement, URL Access Method</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r45" href="a002332686.htm">FILENAME Statement, WebDAV Access Method</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r46" href="a000214615.htm">FOOTNOTE Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r47" href="a000178212.htm">FORMAT Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r48" href="a000201949.htm">GO TO Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r49" href="a000201978.htm">IF Statement, Subsetting</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r50" href="a000202239.htm">IF-THEN/ELSE Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r51" href="a000214504.htm">%INCLUDE Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r52" href="a000146932.htm">INFILE Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r53" href="a000178244.htm">INFORMAT Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r54" href="a000146292.htm">INPUT Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r55" href="a000148066.htm">INPUT Statement, Column</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r56" href="a000148073.htm">INPUT Statement, Formatted</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r57" href="a000144370.htm">INPUT Statement, List</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r58" href="a000148147.htm">INPUT Statement, Named</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r59" href="a000202978.htm">KEEP Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r60" href="a000201974.htm">LABEL Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r61" href="a000204328.htm">Labels, Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r62" href="a000202782.htm">LEAVE Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r63" href="a000218807.htm">LENGTH Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r64" href="a000214133.htm">LIBNAME Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r65" href="a003040549.htm">LIBNAME Statement for WebDAV Server Access</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r66" href="a000201972.htm">LINK Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r67" href="a000230095.htm">LIST Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r68" href="a000214157.htm">%LIST Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r69" href="a001517609.htm">LOCK Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r70" href="a000289424.htm">LOSTCARD Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r71" href="a000202970.htm">MERGE Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r72" href="a000227561.htm">MISSING Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r73" href="a000173361.htm">MODIFY Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r74" href="a000289429.htm">Null Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r75" href="a000289431.htm">OPTIONS Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r76" href="a000194540.htm">OUTPUT Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r77" href="a000230136.htm">PAGE Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r78" href="a000161869.htm">PUT Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r79" href="a000176820.htm">PUT Statement, Column</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r80" href="a000175758.htm">PUT Statement, Formatted</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r81" href="a000176623.htm">PUT Statement, List</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r82" href="a000174678.htm">PUT Statement, Named</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r83" href="a002205777.htm">PUTLOG Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r84" href="a000510006.htm">REDIRECT Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r85" href="a000202648.htm">REMOVE Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r86" href="a000203026.htm">RENAME Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r87" href="a000201991.htm">REPLACE Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r88" href="a000214163.htm">RETAIN Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r89" href="a000201969.htm">RETURN Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r90" href="a000214506.htm">RUN Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r91" href="a000214155.htm">%RUN Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r92" href="a001500739.htm">SASFILE Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r93" href="a000201966.htm">SELECT Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r94" href="a000173782.htm">SET Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r95" href="a000289450.htm">SKIP Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r96" href="a000214597.htm">STOP Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r97" href="a000289454.htm">Sum Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r98" href="a003169880.htm">SYSECHO Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r99" href="a000220968.htm">TITLE Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r100" href="a000202975.htm">UPDATE Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r101" href="a000202951.htm">WHERE Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r102" href="a000224863.htm">WINDOW Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r103" href="a000212624.htm">X Statement</a></li><li class="leaf"><a id="p_bl1r2l2r6l3r104" href="a003164134.htm">SAS Statements Documented in Other SAS Publications</a></li></ul><li class="node"><a href="#"><img border="0" src="/images/elements/expand_icon.gif" onclick="tocToggle(this,'bl1r2l2r7')" /></a><a id="p_bl1r2l2r7" href="a000309878.htm">SAS System Options</a></li><ul id="bl1r2l2r7" style="display: none;">
+<li class="leaf"><a id="p_bl1r2l2r7l3r1" href="a000103940.htm">Definition of System Options</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r2" href="a000245117.htm">Syntax</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r3" href="a000103941.htm">Using SAS System Options</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r4" href="a000245123.htm">Comparisons</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r5" href="a002237888.htm">SAS System Options by Category</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r6" href="a003161497.htm">SAS System Options Documented in Other SAS Publications</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r7" href="a003273971.htm">APPEND= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r8" href="a002267058.htm">APPLETLOC= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r9" href="base-sysop-authpd.htm">AUTHPROVIDERDOMAIN System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r10" href="a002608830.htm">AUTOSAVELOC= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r11" href="a000510031.htm">BINDING= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r12" href="a000510032.htm">BOTTOMMARGIN= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r13" href="a000202857.htm">BUFNO= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r14" href="a000202861.htm">BUFSIZE= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r15" href="a000203919.htm">BYERR System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r16" href="a000234737.htm">BYLINE System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r17" href="a002261730.htm">BYSORTED System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r18" href="a000279037.htm">CAPS System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r19" href="a000201795.htm">CARDIMAGE System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r20" href="a000279040.htm">CATCACHE= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r21" href="a000279042.htm">CBUFNO= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r22" href="a000279044.htm">CENTER System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r23" href="a003266603.htm">CGOPTIMIZE= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r24" href="a000205506.htm">CHARCODE System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r25" href="a000279047.htm">CLEANUP System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r26" href="base-sysop-cmplib.htm">CMPLIB= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r27" href="a003158125.htm">CMPMODEL= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r28" href="a002295701.htm">CMPOPT= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r29" href="a000510033.htm">COLLATE System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r30" href="a000510034.htm">COLORPRINTING System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r31" href="a000202890.htm">COMPRESS= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r32" href="a000510036.htm">COPIES= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r33" href="a002197020.htm">CPUCOUNT= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r34" href="a000279062.htm">CPUID System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r35" href="a000279064.htm">DATASTMTCHK= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r36" href="a000279066.htm">DATE System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r37" href="a002237916.htm">DATESTYLE= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r38" href="a003158327.htm">DEFLATION= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r39" href="a000279071.htm">DETAILS System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r40" href="a000279073.htm">DEVICE= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r41" href="a000208086.htm">DKRICOND= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r42" href="a000205514.htm">DKROCOND= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r43" href="a000279078.htm">DLDMGACTION= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r44" href="a000279080.htm">DMR System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r45" href="a000203880.htm">DMS System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r46" href="a000279083.htm">DMSEXP System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r47" href="base-sysop-dmslogsize.htm">DMSLOGSIZE= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r48" href="base-sysop-dmsoutsize.htm">DMSOUTSIZE= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r49" href="a003159672.htm">DMSPGMLINESIZE= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r50" href="a002217186.htm">DMSSYNCHK System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r51" href="a000203285.htm">DSNFERR System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r52" href="a002233884.htm">DTRESET System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r53" href="a000510039.htm">DUPLEX System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r54" href="a000279088.htm">ECHOAUTO System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r55" href="a002221206.htm">EMAILAUTHPROTOCOL= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r56" href="a003090961.htm">EMAILFROM System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r57" href="a001472105.htm">EMAILHOST= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r58" href="a002135033.htm">EMAILID= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r59" href="a001472102.htm">EMAILPORT System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r60" href="a002221201.htm">EMAILPW= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r61" href="a000279090.htm">ENGINE= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r62" href="a000279092.htm">ERRORABEND System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r63" href="a002233887.htm">ERRORBYABEND System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r64" href="a000279094.htm">ERRORCHECK= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r65" href="a000279096.htm">ERRORS= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r66" href="a000243390.htm">EXPLORER System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r67" href="a003188222.htm">FILESYNC= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r68" href="a000202948.htm">FIRSTOBS= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r69" href="a000279100.htm">FMTERR System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r70" href="a000279102.htm">FMTSEARCH= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r71" href="a003159686.htm">FONTEMBEDDING System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r72" href="a003161096.htm">FONTRENDERING= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r73" href="a002264016.htm">FONTSLOC= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r74" href="a000279104.htm">FORMCHAR= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r75" href="a000279106.htm">FORMDLIM= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r76" href="a000279108.htm">FORMS= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r77" href="a003159690.htm">GSTYLE System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r78" href="a000279113.htm">GWINDOW System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r79" href="a003264983.htm">HELPBROWSER= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r80" href="a002299175.htm">HELPENCMD System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r81" href="a003264918.htm">HELPHOST System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r82" href="a003264836.htm">HELPPORT= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r83" href="a003285943.htm">HTTPSERVERPORTMAX= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r84" href="a003285935.htm">HTTPSERVERPORTMIN= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r85" href="a003139228.htm">IBUFNO= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r86" href="a002252102.htm">IBUFSIZE= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r87" href="a000279121.htm">INITCMD System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r88" href="a000279123.htm">INITSTMT= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r89" href="a003273966.htm">INSERT= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r90" href="a003252593.htm">INTERVALDS= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r91" href="a000210381.htm">INVALIDDATA= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r92" href="a003158441.htm">JPEGQUALITY= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r93" href="a000279126.htm">LABEL System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r94" href="a000279128.htm">_LAST_= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r95" href="a000510048.htm">LEFTMARGIN= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r96" href="a000214613.htm">LINESIZE= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r97" href="a002303556.htm">LOGPARM= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r98" href="a003160472.htm">LRECL= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r99" href="a000279132.htm">MAPS= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r100" href="a002295703.htm">MERGENOBY System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r101" href="a000227574.htm">MISSING= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r102" href="a000279149.htm">MSGLEVEL= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r103" href="a000279154.htm">MULTENVAPPL System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r104" href="a000279160.htm">NEWS= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r105" href="a000279162.htm">NOTES System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r106" href="a000279164.htm">NUMBER System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r107" href="a000203007.htm">OBS= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r108" href="a002295774.htm">ORIENTATION= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r109" href="a000279171.htm">OVP System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r110" href="a002233889.htm">PAGEBREAKINITIAL System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r111" href="a000279173.htm">PAGENO= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r112" href="a000218916.htm">PAGESIZE= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r113" href="a000531088.htm">PAPERDEST= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r114" href="a000531077.htm">PAPERSIZE= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r115" href="a000531080.htm">PAPERSOURCE= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r116" href="a000531083.htm">PAPERTYPE= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r117" href="a000279176.htm">PARM= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r118" href="a000279178.htm">PARMCARDS= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r119" href="a003086034.htm">PDFACCESS System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r120" href="a003086038.htm">PDFASSEMBLY System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r121" href="a003086042.htm">PDFCOMMENT System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r122" href="a003086046.htm">PDFCONTENT System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r123" href="a003086050.htm">PDFCOPY System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r124" href="a003086054.htm">PDFFILLIN System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r125" href="a003136258.htm">PDFPAGELAYOUT= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r126" href="a003136256.htm">PDFPAGEVIEW= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r127" href="a003086061.htm">PDFPASSWORD= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r128" href="a003086065.htm">PDFPRINT= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r129" href="a003080949.htm">PDFSECURITY= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r130" href="base-sysop-primpd.htm">PRIMARYPROVIDERDOMAIN= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r131" href="a002295708.htm">PRINTERPATH= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r132" href="a000279182.htm">PRINTINIT System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r133" href="a000279184.htm">PRINTMSGLIST System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r134" href="a002233891.htm">QUOTELENMAX System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r135" href="a000203031.htm">REPLACE System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r136" href="a000202894.htm">REUSE= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r137" href="a000530928.htm">RIGHTMARGIN= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r138" href="a000279195.htm">RSASUSER System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r139" href="a000204958.htm">S= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r140" href="a000204943.htm">S2= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r141" href="a003160144.htm">S2V= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r142" href="a000279204.htm">SASHELP= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r143" href="a000279209.htm">SASUSER= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r144" href="a000204946.htm">SEQ= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r145" href="a000279214.htm">SETINIT System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r146" href="a000279216.htm">SKIP= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r147" href="a002295710.htm">SOLUTIONS System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r148" href="a002256370.htm">SORTDUP= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r149" href="a002253176.htm">SORTEQUALS System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r150" href="a000279221.htm">SORTSIZE= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r151" href="a003160301.htm">SORTVALIDATE System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r152" href="a000279223.htm">SOURCE System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r153" href="a000279225.htm">SOURCE2 System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r154" href="a000218370.htm">SPOOL System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r155" href="a003161376.htm">SQLCONSTDATETIME System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r156" href="a003161378.htm">SQLREDUCEPUT= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r157" href="a003187216.htm">SQLREDUCEPUTOBS= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r158" href="a003187293.htm">SQLREDUCEPUTVALUES= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r159" href="a003187101.htm">SQLREMERGE System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r160" href="a003157487.htm">SQLUNDOPOLICY= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r161" href="a002295712.htm">STARTLIB System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r162" href="a003133434.htm">STEPCHKPT System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r163" href="a003133428.htm">STEPCHKPTLIB= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r164" href="a003133430.htm">STEPRESTART System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r165" href="a000606560.htm">SUMSIZE= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r166" href="a003178062.htm">SVGCONTROLBUTTONS</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r167" href="a003155964.htm">SVGHEIGHT= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r168" href="a003155995.htm">SVGPRESERVEASPECTRATIO= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r169" href="a003155966.htm">SVGTITLE= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r170" href="a003155993.htm">SVGVIEWBOX= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r171" href="a003155962.htm">SVGWIDTH= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r172" href="a003155985.htm">SVGX= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r173" href="a003155989.htm">SVGY= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r174" href="base-sysop-syntaxcheck.htm">SYNTAXCHECK System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r175" href="lr-sysop-sysprintfont.htm">SYSPRINTFONT= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r176" href="a000203915.htm">TERMINAL System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r177" href="a002231071.htm">TERMSTMT= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r178" href="a002228118.htm">TEXTURELOC= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r179" href="a002197022.htm">THREADS System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r180" href="a002237912.htm">TOOLSMENU System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r181" href="a000530883.htm">TOPMARGIN= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r182" href="a000279240.htm">TRAINLOC= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r183" href="base-sysop-universalprint.htm">UNIVERSALPRINT System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r184" href="a003158329.htm">UPRINTCOMPRESSION System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r185" href="a000279243.htm">USER= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r186" href="a002230156.htm">UTILLOC= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r187" href="a002332654.htm">UUIDCOUNT= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r188" href="a002332651.htm">UUIDGENDHOST= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r189" href="a002309496.htm">V6CREATEUPDATE= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r190" href="a002148043.htm">VALIDFMTNAME= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r191" href="a000279245.htm">VALIDVARNAME= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r192" href="a003269301.htm">VARLENCHK= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r193" href="a002237914.htm">VIEWMENU System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r194" href="a000203287.htm">VNFERR System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r195" href="a000279252.htm">WORK= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r196" href="a000205255.htm">WORKINIT System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r197" href="a000205086.htm">WORKTERM System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r198" href="a000197881.htm">YEARCUTOFF= System Option</a></li><li class="leaf"><a id="p_bl1r2l2r7l3r199" href="a003161497.htm">SAS System Options Documented in Other SAS Publications</a></li></ul></ul><li class="node"><a href="#"><img border="0" src="/images/elements/expand_icon.gif" onclick="tocToggle(this,'bl1r3')" /></a><span class="toc">Dictionary of Component Object Language Elements</span></li><ul id="bl1r3" style="display: none;">
+<li class="node"><a href="#"><img border="0" src="/images/elements/expand_icon.gif" onclick="tocToggle(this,'bl1r3l2r1')" /></a><a id="p_bl1r3l2r1" href="a003143744.htm">Component Objects</a></li><ul id="bl1r3l2r1" style="display: none;">
+<li class="leaf"><a id="p_bl1r3l2r1l3r1" href="a003143745.htm">DATA Step Component Objects</a></li><li class="leaf"><a id="p_bl1r3l2r1l3r2" href="a003252708.htm">The DATA Step Component Interface</a></li><li class="leaf"><a id="p_bl1r3l2r1l3r3" href="a002587970.htm">Dot Notation and DATA Step Component Objects</a></li><li class="leaf"><a id="p_bl1r3l2r1l3r4" href="a003160954.htm">Rules When Using Component Objects</a></li></ul><li class="node"><a href="#"><img border="0" src="/images/elements/expand_icon.gif" onclick="tocToggle(this,'bl1r3l2r2')" /></a><a id="p_bl1r3l2r2" href="a003143739.htm">Hash and Hash Iterator Object Language Elements</a></li><ul id="bl1r3l2r2" style="display: none;">
+<li class="leaf"><a id="p_bl1r3l2r2l3r1" href="a002588343.htm">ADD Method</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r2" href="a002588397.htm">CHECK Method</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r3" href="a003123750.htm">CLEAR Method</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r4" href="a003258665.htm">DECLARE Statement, Hash and Hash Iterator Objects</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r5" href="a002588550.htm">DEFINEDATA Method</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r6" href="a002588566.htm">DEFINEDONE Method</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r7" href="a002588590.htm">DEFINEKEY Method</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r8" href="a002588652.htm">DELETE Method</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r9" href="a003122747.htm">EQUALS Method</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r10" href="a002588683.htm">FIND Method</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r11" href="a003186317.htm">FIND_NEXT Method</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r12" href="a003186324.htm">FIND_PREV Method</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r13" href="a002588744.htm">FIRST Method</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r14" href="a003186346.htm">HAS_NEXT Method</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r15" href="a003186351.htm">HAS_PREV Method</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r16" href="a003124020.htm">ITEM_SIZE Attribute</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r17" href="a002588805.htm">LAST Method</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r18" href="a003162564.htm">_NEW_ Operator, Hash or Hash Iterator Object</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r19" href="a002588836.htm">NEXT Method</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r20" href="a002588144.htm">NUM_ITEMS Attribute</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r21" href="a002588845.htm">OUTPUT Method</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r22" href="a002588864.htm">PREV Method</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r23" href="a003122795.htm">REF Method</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r24" href="a002588875.htm">REMOVE Method</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r25" href="a003186374.htm">REMOVEDUP Method</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r26" href="a002589067.htm">REPLACE Method</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r27" href="a003186387.htm">REPLACEDUP Method</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r28" href="a003123062.htm">SETCUR Method</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r29" href="a003124167.htm">SUM Method</a></li><li class="leaf"><a id="p_bl1r3l2r2l3r30" href="a003186409.htm">SUMDUP Method</a></li></ul><li class="node"><a href="#"><img border="0" src="/images/elements/expand_icon.gif" onclick="tocToggle(this,'bl1r3l2r3')" /></a><a id="p_bl1r3l2r3" href="a003252767.htm">Java Object Language Elements</a></li><ul id="bl1r3l2r3" style="display: none;">
+<li class="leaf"><a id="p_bl1r3l2r3l3r1" href="a003255139.htm">Java Object Methods by Category</a></li><li class="leaf"><a id="p_bl1r3l2r3l3r2" href="a003254462.htm">CALLtypeMETHOD Method</a></li><li class="leaf"><a id="p_bl1r3l2r3l3r3" href="a003254468.htm">CALLSTATICtypeMETHOD Method</a></li><li class="leaf"><a id="p_bl1r3l2r3l3r4" href="a003255129.htm">DECLARE Statement, Java Object</a></li><li class="leaf"><a id="p_bl1r3l2r3l3r5" href="a003252768.htm">DELETE Method</a></li><li class="leaf"><a id="p_bl1r3l2r3l3r6" href="a003254474.htm">EXCEPTIONCHECK Method</a></li><li class="leaf"><a id="p_bl1r3l2r3l3r7" href="a003254480.htm">EXCEPTIONCLEAR Method</a></li><li class="leaf"><a id="p_bl1r3l2r3l3r8" href="a003254486.htm">EXCEPTIONDESCRIBE Method</a></li><li class="leaf"><a id="p_bl1r3l2r3l3r9" href="a003254492.htm">FLUSHJAVAOUTPUT Method</a></li><li class="leaf"><a id="p_bl1r3l2r3l3r10" href="a003254456.htm">GETtypeFIELD Method</a></li><li class="leaf"><a id="p_bl1r3l2r3l3r11" href="a003254498.htm">GETSTATICtypeFIELD Method</a></li><li class="leaf"><a id="p_bl1r3l2r3l3r12" href="a003258557.htm">_NEW_ Operator, Java Object</a></li><li class="leaf"><a id="p_bl1r3l2r3l3r13" href="a003254504.htm">SETtypeFIELD Method</a></li><li class="leaf"><a id="p_bl1r3l2r3l3r14" href="a003254510.htm">SETSTATICtypeFIELD Method</a></li></ul></ul><li class="node"><a href="#"><img border="0" src="/images/elements/expand_icon.gif" onclick="tocToggle(this,'bl1r4')" /></a><span class="toc">Appendixes</span></li><ul id="bl1r4" style="display: none;">
+<li class="node"><a href="#"><img border="0" src="/images/elements/expand_icon.gif" onclick="tocToggle(this,'bl1r4l2r1')" /></a><a id="p_bl1r4l2r1" href="a000510023.htm">DATA Step Debugger</a></li><ul id="bl1r4l2r1" style="display: none;">
+<li class="leaf"><a id="p_bl1r4l2r1l3r1" href="a000510024.htm">Introduction</a></li><li class="leaf"><a id="p_bl1r4l2r1l3r2" href="a000379845.htm">Basic Usage</a></li><li class="leaf"><a id="p_bl1r4l2r1l3r3" href="a000379339.htm">Advanced Usage: Using the Macro Facility with the Debugger</a></li><li class="leaf"><a id="p_bl1r4l2r1l3r4" href="a000379345.htm">Examples</a></li><li class="leaf"><a id="p_bl1r4l2r1l3r5" href="a000379386.htm">Commands</a></li><li class="leaf"><a id="p_bl1r4l2r1l3r6" href="a001321221.htm">Dictionary</a></li><li class="leaf"><a id="p_bl1r4l2r1l3r7" href="a000379388.htm">BREAK</a></li><li class="leaf"><a id="p_bl1r4l2r1l3r8" href="a000379399.htm">CALCULATE</a></li><li class="leaf"><a id="p_bl1r4l2r1l3r9" href="a000379407.htm">DELETE</a></li><li class="leaf"><a id="p_bl1r4l2r1l3r10" href="a000379413.htm">DESCRIBE</a></li><li class="leaf"><a id="p_bl1r4l2r1l3r11" href="a000379418.htm">ENTER</a></li><li class="leaf"><a id="p_bl1r4l2r1l3r12" href="a000379423.htm">EXAMINE</a></li><li class="leaf"><a id="p_bl1r4l2r1l3r13" href="a000379432.htm">GO</a></li><li class="leaf"><a id="p_bl1r4l2r1l3r14" href="a000379440.htm">HELP</a></li><li class="leaf"><a id="p_bl1r4l2r1l3r15" href="a000379441.htm">JUMP</a></li><li class="leaf"><a id="p_bl1r4l2r1l3r16" href="a000379446.htm">LIST</a></li><li class="leaf"><a id="p_bl1r4l2r1l3r17" href="a000379451.htm">QUIT</a></li><li class="leaf"><a id="p_bl1r4l2r1l3r18" href="a000379453.htm">SET</a></li><li class="leaf"><a id="p_bl1r4l2r1l3r19" href="a000379462.htm">STEP</a></li><li class="leaf"><a id="p_bl1r4l2r1l3r20" href="a000379467.htm">SWAP</a></li><li class="leaf"><a id="p_bl1r4l2r1l3r21" href="a000379468.htm">TRACE</a></li><li class="leaf"><a id="p_bl1r4l2r1l3r22" href="a000379474.htm">WATCH</a></li></ul><li class="node"><a href="#"><img border="0" src="/images/elements/expand_icon.gif" onclick="tocToggle(this,'bl1r4l2r2')" /></a><a id="p_bl1r4l2r2" href="a003199385.htm">Perl Regular Expression (PRX) Metacharacters</a></li><ul id="bl1r4l2r2" style="display: none;">
+<li class="leaf"><a id="p_bl1r4l2r2l3r1" href="a003288497.htm">Tables of Perl Regular Expression (PRX) Metacharacters</a></li></ul><li class="node"><a href="#"><img border="0" src="/images/elements/expand_icon.gif" onclick="tocToggle(this,'bl1r4l2r3')" /></a><a id="p_bl1r4l2r3" href="a002683388.htm">SAS Utility Macro</a></li><ul id="bl1r4l2r3" style="display: none;">
+<li class="leaf"><a id="p_bl1r4l2r3l3r1" href="a002683390.htm">%DS2CSV Macro</a></li></ul><li class="leaf"><a id="p_bl1r4l2r4" href="rectopic.htm">Recommended Reading</a></li></ul></ul></div><!--googleon: all--><!--startindex--></html>
+            
+      </div><script type="text/JavaScript" language="JavaScript">tocNodeID = 'bl1r2l2r4l3r8';</script><!--stopindex--><!--googleoff: all--><div style="display:none;" id="tab_index">
+      Index here<br /><hr /></div><!--googleon: all--><!--startindex--><div style="display:none;" id="tab_about">          
+            <!-- ***** About AREA ***** -->
+            <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!--Begin shared about section--><!--stopindex--><!--googleoff: all--><div id="about"><table width="80%" cellspacing="0"><tr><th scope="col" id="Product">Product</th><th scope="col" id="Release">Release</th></tr><tr><td headers="Product" rowspan="1">Base SAS</td><td headers="Release">9.2</td></tr></table><dl><dt>Type</dt><dd>Usage and Reference</dd><dt>Copyright Date</dt><dd>February 2009</dd><dt>Last Updated</dt><dd>16Jan2009</dd></dl><!-- ** Subject Info Here ** --></div><!--googleon: all--><!--startindex-->
+<!--End shared about section-->
+</html>
+            
+      </div></div></div><div id="content2"><a id="content">
+</a>
+<div id="breadcrumb">
+<div id="searchBox">
+<form action="/cdlsearch" accept-charset="iso-8859-1" method="GET" name="docsetsearch"><fieldset class="search"><input value="Search this document" maxlength="1991" size="30" name="qt" title="Search this document" id="search" type="text" class="searchField" /> <input value="Search" name="Find" type="submit" class="searchButton" /><input name="qp" type="hidden" value="url:/documentation/cdl/en/lrdict/61724/HTML/default" /></fieldset></form></div></div>
+<!--stopindex--><!--googleoff: all--><div id="booknav"><ul><li><a href="a002288677.htm">
+                    Previous Page
+                  </a></li><li class="divider">|</li><li><a href="a002292806.htm">
+                    Next Page
+                  </a></li></ul></div><!--googleon: all--><!--startindex-->
+<!-- *** Begin Page Body Content *** --><!-- <META prod="SAS 9.2 Language Reference: Dictionary" title="Using Perl Regular Expressions in the DATA Step" url="../lrdict.hlp/a002291852.htm "> -->
+
+<DIV class="sgml">
+
+<!-- stopindex -->
+<!-- top navigation -->
+<TABLE cellpadding="0" cellspacing="0" width="100%" border="0" class="navBgTop">
+<TR><TD><IMG src="../../../../common/61991/HTML/default/images/spacer.gif" height="1" alt=""></TD></TR></TABLE>
+<TABLE cellpadding="0" cellspacing="0" width="100%" border="0">
+<TR><TD><IMG src="../../../../common/61991/HTML/default/images/spacer.gif" height="3" alt=""></TD></TR></TABLE>
+<TABLE cellpadding="0" cellspacing="0">
+<TR valign="top">
+<TD align="left"><A href="a002288677.htm"><SPAN class="nav">Previous Page</SPAN></A></TD>
+<TD align="center" width="24"><SPAN class="navDivider">|</SPAN></TD>
+<TD align="left">
+<A href="a002292806.htm"><SPAN class="nav">Next Page</SPAN></A></TD>
+</TR></TABLE>
+<P></P>
+<!-- running head -->
+<TABLE width="100%" cellpadding="0" cellspacing="0">
+<TR valign="MIDDLE">
+<TD class="runninghead">Functions and CALL Routines</TD>
+</TR>
+</TABLE>
+<!-- startindex -->
+
+<H1><A name="a002291852">Using Perl Regular Expressions in the DATA Step</A></H1>
+
+
+<P></P>
+<TABLE width="100%" cellpadding="0" cellspacing="0">
+<TR valign="bottom"><TD><HR></TD></TR>
+<TR valign="top"><TD class="title2"><A name="a002405779">Syntax of Perl Regular Expressions</A></TD></TR></TABLE>
+
+<P>
+</P>
+<BR><H3><A name="a003253752">The Components of a Perl Regular Expression</A></H3>
+
+<P><A name="a002896833"></A>Perl
+regular expressions consist of characters and
+special characters that are called metacharacters. When performing a match,
+SAS searches a source string for a substring that matches the Perl regular
+expression that you specify. Using metacharacters enables SAS to perform special
+actions. These actions include forcing the match to begin in a particular
+location, and matching a particular set of characters. Paired forward slashes
+are the default delimiters. The following two examples show metacharacters
+and the values they match:</P>
+<UL>
+
+<LI>
+<P>If you use the metacharacter \d, SAS matches a digit between 0-9.</P>
+</LI>
+<LI>
+<P>If you use /\dt/, SAS finds the digits in the
+string "Raleigh,
+NC 27506".</P>
+</LI></UL>You can see lists of PRX metacharacters in <A href="a003288497.htm">Tables of Perl Regular Expression (PRX) Metacharacters</A>.
+<BR><H3><A name="a003253755">Basic Syntax for Finding a Match in a String</A></H3>
+
+<P>You use the PRXMATCH function to find the position of a matched value
+in a source string. PRXMATCH has the following general form:
+</P>
+
+<PRE><A name="a003253751"></A>/<SPAN class="emphMono">search-string</SPAN>/<SPAN class="emphMono">source-string</SPAN>/</PRE>
+<P></P>
+<P>The following example uses the PRXMATCH function to find the position
+of <SPAN class="emph">search-string</SPAN> in <SPAN class="emph">source-string</SPAN>:
+</P>
+
+<PRE><A name="a003253773"></A>prxmatch('world', 'Hello world!');</PRE>
+<P></P>
+<P>The result of PRXMATCH is the value 7, because <SPAN class="emph">world</SPAN>
+occurs in the seventh position of the string <SPAN class="emph">Hello world!</SPAN>.</P>
+<BR><H3><A name="a003253756">Basic Syntax for Searching and Replacing Text: Example 1</A></H3>
+
+<P>The basic syntax for searching and replacing text has the following
+form:
+</P>
+
+<PRE><A name="a003253748"></A>s/<SPAN class="emphMono">regular-expression</SPAN>/<SPAN class="emphMono">replacement-string</SPAN>/ </PRE>
+<P></P>
+<P>The following example uses the PRXCHANGE function to show how substitution
+is performed: 
+</P>
+
+<PRE><A name="a003253761"></A>prxchange('s/world/planet/', 1, 'Hello world!'); </PRE>
+<P></P>
+<P>where</P>
+<TABLE cellpadding="5" cellspacing="0" class="largeSpace">
+<TR align="left" valign="top">
+<TD>s</TD>
+<TD align="left">
+<P>specifies the metacharacter for substitution.</P></TD></TR>
+
+<TR align="left" valign="top">
+<TD><SPAN class="emph">world</SPAN></TD>
+<TD align="left">
+<P>specifies the regular expression. </P></TD></TR>
+
+<TR align="left" valign="top">
+<TD><SPAN class="emph">planet</SPAN></TD>
+<TD align="left">
+<P>specifies the replacement value for <SPAN class="emph">world</SPAN>.</P></TD></TR>
+
+<TR align="left" valign="top">
+<TD>1</TD>
+<TD align="left">
+<P>specifies that the search ends when one match is
+found.</P></TD></TR>
+
+<TR align="left" valign="top">
+<TD><SPAN class="emph">Hello world!</SPAN></TD>
+<TD align="left">
+<P>specifies the source string to be searched.</P></TD></TR>
+</TABLE>
+
+<P>The result of the substitution is <SPAN class="strongMono">Hello planet</SPAN>.</P>
+<BR><H3><A name="a003274121">Basic Syntax for Searching and Replacing Text: Example 2</A></H3>
+
+<P>Another example of using the PRXCHANGE function changes the value <SPAN class="emph">Jones,
+Fred</SPAN> to <SPAN class="emph">Fred Jones</SPAN>: 
+</P>
+
+<PRE><A name="a003253777"></A>prxchange('s/(\w+), (\w+)/$2 $1',-1, 'Jones, Fred');</PRE>
+<P></P>
+<P>In this example, the Perl regular expression is <SPAN class="strongMono"><A name="a003271021"></A>s/(\w+), (\w+)/$2 $1</SPAN>
+. The number of times to
+search for a match is -1. The source string is 'Jones, Fred'. The value -1
+specifies that matching patterns continue to be replaced until the end of
+the source is reached. </P>
+<P>The Perl regular expression can be divided into its elements:</P>
+<TABLE cellpadding="5" cellspacing="0" class="largeSpace">
+<TR align="left" valign="top">
+<TD>s</TD>
+<TD align="left">
+<P>specifies a substitution regular expression.</P></TD></TR>
+
+<TR align="left" valign="top">
+<TD>(\w+)</TD>
+<TD align="left">
+<P>matches one or more word characters (alphanumeric
+and underscore). The parentheses indicate that the value is stored in capture
+buffer 1.</P></TD></TR>
+
+<TR align="left" valign="top">
+<TD>,&lt;space></TD>
+<TD align="left">
+<P>matches a comma and a space.</P></TD></TR>
+
+<TR align="left" valign="top">
+<TD>(\w+)</TD>
+<TD align="left">
+<P>matches one or more word characters (alphanumeric
+and underscore). The parentheses indicate that the value is stored in capture
+buffer 2.</P></TD></TR>
+
+<TR align="left" valign="top">
+<TD>/</TD>
+<TD align="left">
+<P>separator between the regular expression and the
+replacement string.</P></TD></TR>
+
+<TR align="left" valign="top">
+<TD>$2</TD>
+<TD align="left">
+<P>part of the replacement string that substitutes the
+value in capture buffer 2, which in this case is the word after the comma,
+puts the substitution in the results.</P></TD></TR>
+
+<TR align="left" valign="top">
+<TD>&lt;space></TD>
+<TD align="left">
+<P>puts a space in the result.</P></TD></TR>
+
+<TR align="left" valign="top">
+<TD>$1</TD>
+<TD align="left">
+<P>puts capture buffer 1 into the result. In this case,
+it is the word before the comma.</P></TD></TR>
+</TABLE>
+
+<BR><H3><A name="a003288594">Replacing Text: Example 3</A></H3>
+
+<P>The following example uses the \u and \L
+metacharacters to replace
+the second character in MCLAUREN with a lower case letter: 
+</P>
+
+<PRE><A name="a003288601"></A>data _null_;
+   x = 'MCLAUREN';
+   x = prxchange("s/ (MC) /\u\L$1/i", -1, x);
+   put x=;
+run;</PRE>
+<P></P>
+<P>SAS writes the following output to the log: 
+</P>
+
+<PRE><A name="a003288602"></A>x=McLAUREN</PRE>
+<P></P>
+<TABLE width="100%" cellpadding="0" cellspacing="0">
+<TR valign="bottom"><TD><HR></TD></TR>
+<TR valign="top"><TD class="title2"><A name="a002291853">Example 1: Validating Data</A></TD></TR></TABLE>
+
+<P>
+</P>
+<P><A name="a002896925"></A>You
+can test for a pattern of characters within a string. For example, you can
+examine a string to determine whether it contains a correctly formatted telephone
+number. This type of test is called data validation. </P>
+<P><A name="a002896926"></A>The following example validates a list of phone numbers.
+To be valid, a phone number must have one of the following forms: <SPAN class="strongMono"><A name="a002283641"></A>(XXX) XXX-XXXX</SPAN>
+ or <SPAN class="strongMono"><A name="a002283661"></A>XXX-XXX-XXXX</SPAN>
+. 
+</P>
+
+<PRE><A name="a002372307"></A>data _null_;  <SPAN class="callout">1</SPAN> 
+   if _N_ = 1 then 
+      do;  
+         paren = "\([2-9]\d\d\) ?[2-9]\d\d-\d\d\d\d";  <SPAN class="callout">2</SPAN> 
+         dash = "[2-9]\d\d-[2-9]\d\d-\d\d\d\d";  <SPAN class="callout">3</SPAN> 
+         expression = "/(" || paren || ")|(" || dash || ")/";  <SPAN class="callout">4</SPAN> 
+         retain re; 
+         re = prxparse(expression);  <SPAN class="callout">5</SPAN> 
+         if missing(re) then  <SPAN class="callout">6</SPAN> 
+            do;
+               putlog "ERROR: Invalid expression " expression;  <SPAN class="callout">7</SPAN> 
+               stop;
+            end;     
+      end; 
+
+   length first last home business $ 16;
+   input first last home business;
+
+   if ^prxmatch(re, home) then  <SPAN class="callout">8</SPAN> 
+      putlog "NOTE: Invalid home phone number for " first last home;
+
+   if ^prxmatch(re, business) then  <SPAN class="callout">9</SPAN> 
+      putlog "NOTE: Invalid business phone number for " first last business;
+
+   datalines;   
+Jerome Johnson (919)319-1677 (919)846-2198 
+Romeo Montague 800-899-2164 360-973-6201
+Imani Rashid (508)852-2146 (508)366-9821 
+Palinor Kent . 919-782-3199
+Ruby Archuleta . . 
+Takei Ito 7042982145 .
+Tom Joad 209/963/2764 2099-66-8474
+;
+run;</PRE>
+<P></P>
+<P><A name="a002896927"></A></P>
+<P><A name="a002896928"></A>The following items correspond to the lines that are
+numbered in the DATA step that is shown above. </P>
+<P><A name="a002896929"></A></P>
+<TABLE cellpadding="6" cellspacing="2">
+<TR valign="top"><TD></TD><TD>
+<P><A name="a002896930"></A><IMG border="0" src="../../../../common/61991/HTML/default/images/sym01.gif" alt="[1]" width="14" height="14"> Create a DATA step. </P></TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><A name="a002896931"></A><IMG border="0" src="../../../../common/61991/HTML/default/images/sym02.gif" alt="[2]" width="14" height="14"> Build a Perl regular expression to identify
+a phone number that matches (XXX)XXX-XXXX, and assign the variable PAREN to
+hold the result. Use the following syntax elements to build the Perl regular
+expression: </P>
+<TABLE cellpadding="5" cellspacing="0" class="largeSpace">
+<TR align="left" valign="top">
+<TD><A name="a002896932"></A>\(</TD>
+<TD align="left">
+<P><A name="a002896933"></A>matches the open parenthesis in the
+area code. </P></TD></TR>
+
+<TR align="left" valign="top">
+<TD><A name="a002896934"></A>[2-9]</TD>
+<TD align="left">
+<P><A name="a002896935"></A>matches the digits 2-9, which
+is the first number in the area code. </P></TD></TR>
+
+<TR align="left" valign="top">
+<TD><A name="a002896936"></A>\d</TD>
+<TD align="left">
+<P><A name="a002896937"></A>matches a digit, which is the second
+number in the area code. </P></TD></TR>
+
+<TR align="left" valign="top">
+<TD><A name="a002896938"></A>\d</TD>
+<TD align="left">
+<P><A name="a002896939"></A>matches a digit, which is the third
+number in the area code.</P></TD></TR>
+
+<TR align="left" valign="top">
+<TD><A name="a002896940"></A>\)</TD>
+<TD align="left">
+<P><A name="a002896941"></A>matches the closed parenthesis in
+the area code.</P></TD></TR>
+
+<TR align="left" valign="top">
+<TD><A name="a002896942"></A>&lt;space>?</TD>
+<TD align="left">
+<P><A name="a002896943"></A>matches the space (which is the preceding
+subexpression) zero or one time. Spaces are significant in Perl regular expressions.
+They match a space in the text that you are searching. If a space precedes
+the question mark metacharacter (as it does in this case), the pattern matches
+either zero spaces or one space in this position in the phone number.</P></TD></TR>
+</TABLE>
+</TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><A name="a002896944"></A><IMG border="0" src="../../../../common/61991/HTML/default/images/sym03.gif" alt="[3]" width="14" height="14"> Build a Perl regular expression to identify
+a phone number that matches XXX-XXX-XXXX, and assign the variable DASH to
+hold the result.   </P></TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><A name="a002896945"></A><IMG border="0" src="../../../../common/61991/HTML/default/images/sym04.gif" alt="[4]" width="14" height="14"> Build a Perl regular expression that concatenates
+the regular expressions for (XXX)XXX-XXXX  and XXX--XXX--XXXX. The
+concatenation enables you to search for both phone number formats from one
+regular expression. </P>
+<P><A name="a002896946"></A>The PAREN and DASH regular expressions are placed within
+parentheses. The bar metacharacter (|) that is located between PAREN and DASH
+instructs the compiler to match either pattern. The slashes around the entire
+pattern tell the compiler where the start and end of the regular expression
+is located. </P></TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><A name="a002896947"></A><IMG border="0" src="../../../../common/61991/HTML/default/images/sym05.gif" alt="[5]" width="14" height="14"> Pass the Perl regular expression to PRXPARSE
+and compile the expression. PRXPARSE returns a value to the compiled pattern.
+Using the value with other Perl regular expression functions and CALL routines
+enables SAS to perform operations with the compiled Perl regular expression. </P></TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><A name="a002896948"></A><IMG border="0" src="../../../../common/61991/HTML/default/images/sym06.gif" alt="[6]" width="14" height="14"> Use the MISSING function to check whether
+the regular expression was successfully compiled. </P></TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><A name="a002896949"></A><IMG border="0" src="../../../../common/61991/HTML/default/images/sym07.gif" alt="[7]" width="14" height="14"> Use the PUTLOG statement to write an error
+message to the SAS log if the regular expression did not compile. </P></TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><A name="a002896950"></A><IMG border="0" src="../../../../common/61991/HTML/default/images/sym08.gif" alt="[8]" width="14" height="14"> Search for a valid home phone number. PRXMATCH
+uses the value from PRXPARSE along with the search text and returns the position
+where the regular expression was found in the search text. If there is no
+match for the home phone number, the PUTLOG statement writes a note to the
+SAS log. </P></TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><A name="a002896951"></A><IMG border="0" src="../../../../common/61991/HTML/default/images/sym09.gif" alt="[9]" width="14" height="14"> Search for a valid business phone number.
+PRXMATCH uses the value from PRXPARSE along with the search text and returns
+the position where the regular expression was found in the search text. If
+there is no match for the business phone number, the PUTLOG statement writes
+a note to the SAS log. </P></TD></TR></TABLE>
+<P><A name="a002896954"></A></P>
+<P><SPAN class="titleRefaid"><A name="a003274463">Output from Validating Data</A></SPAN>
+</P>
+<PRE>NOTE: Invalid home phone number for Palinor Kent  
+NOTE: Invalid home phone number for Ruby Archuleta  
+NOTE: Invalid business phone number for Ruby Archuleta  
+NOTE: Invalid home phone number for Takei Ito 7042982145
+NOTE: Invalid business phone number for Takei Ito  
+NOTE: Invalid home phone number for Tom Joad 209/963/2764
+NOTE: Invalid business phone number for Tom Joad 2099-66-8474</PRE>
+<TABLE width="100%" cellpadding="0" cellspacing="0">
+<TR valign="bottom"><TD><HR></TD></TR>
+<TR valign="top"><TD class="title2"><A name="a003274250">Example 2: Replacing Text</A></TD></TR></TABLE>
+
+<P>
+</P>
+<P>This example uses a Perl
+regular expression to find a match and
+replace the matching characters with other characters. PRXPARSE compiles the
+regular expression and uses PRXCHANGE to find the match and perform the replacement.
+The example replaces all occurrences of a less than sign with <SPAN class="strongMono"><A name="a003274255"></A>&amp;lt;</SPAN>
+, a common substitution when converting
+text to HTML.
+</P>
+
+<PRE><A name="a003274251"></A>data _null_;  <SPAN class="callout">1</SPAN> 
+   input;  <SPAN class="callout">2</SPAN> 
+   _infile_ = prxchange('s/&lt;/&amp;lt;/', -1, _infile_); <SPAN class="callout">3</SPAN> 
+   put _infile_; <SPAN class="callout">4</SPAN>  
+   datalines;  <SPAN class="callout">5</SPAN> 
+x + y &lt; 15
+x &lt; 10 &lt; y
+y &lt; 11
+;
+run;</PRE>
+<P></P>
+<P>The following items correspond to the numbered lines in the DATA step
+that is shown above.
+</P>
+<TABLE cellpadding="6" cellspacing="2">
+<TR valign="top"><TD></TD><TD>
+<P><IMG border="0" src="../../../../common/61991/HTML/default/images/sym01.gif" alt="[1]" width="14" height="14"> Create a DATA step. </P></TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><IMG border="0" src="../../../../common/61991/HTML/default/images/sym02.gif" alt="[2]" width="14" height="14"> Bring an input data record into the input buffer without creating
+any SAS variables.</P></TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><IMG border="0" src="../../../../common/61991/HTML/default/images/sym03.gif" alt="[3]" width="14" height="14"> Call the PRXCHANGE routine to perform the pattern exchange.
+The format for the regular expression is <SPAN class="strongMono"><A name="a003274253"></A>s/regular-expression/replacement-text/</SPAN>
+. The <SPAN class="strongMono"><A name="a003274254"></A>s</SPAN>
+ before the regular expression signifies that this is a substitution
+regular expression. The -1 is a special value that is passed to PRXCHANGE
+and indicates that all possible replacements should be made. </P></TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><IMG border="0" src="../../../../common/61991/HTML/default/images/sym04.gif" alt="[4]" width="14" height="14"> Write the current output line to the log by using the _INFILE_
+option with the PUT statement. </P></TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><IMG border="0" src="../../../../common/61991/HTML/default/images/sym05.gif" alt="[5]" width="14" height="14"> Identify the input file.</P></TD></TR></TABLE>
+<P></P>
+<P><SPAN class="titleRefaid"><A name="a003274252">Output from Replacing Text</A></SPAN>
+</P>
+<PRE>x + y &amp;lt; 15
+x &amp;lt; 10 &amp;lt; y
+y &amp;lt; 11</PRE>
+<P>The ability to pass a regular expression to PRXCHANGE and return a result
+enables calling PRXCHANGE from a PROC SQL query. The following query produces
+a column with the same character substitution as in the preceding example.
+From the input table the query reads <SPAN class="strongMono"><A name="a003274257"></A>text_lines</SPAN>
+, changes the text for the column <SPAN class="strongMono"><A name="a003274258"></A>line</SPAN>
+, and places the results in a column named <SPAN class="strongMono"><A name="a003274259"></A>html_line</SPAN>
+: 
+</P>
+
+<PRE><A name="a003274260"></A>proc sql;
+   select prxchange('s/&lt;/&amp;lt;/', -1, line)
+   as html_line
+   from text_lines;
+quit;</PRE>
+<P></P>
+<TABLE width="100%" cellpadding="0" cellspacing="0">
+<TR valign="bottom"><TD><HR></TD></TR>
+<TR valign="top"><TD class="title2"><A name="a002291855">Example 3: Extracting a Substring from a String</A></TD></TR></TABLE>
+
+<P>
+</P>
+<P><A name="a002896970"></A>You can use Perl regular expressions to find and easily extract
+text from a string. In this example, the DATA step creates a subset of North
+Carolina business phone numbers. The program extracts the area code and checks
+it against a list of area codes for North Carolina.</P><A name="a002399032"></A>
+<P><A name="a002896971"></A></P>
+
+<PRE><A name="a002283933"></A>data _null_;  <SPAN class="callout">1</SPAN> 
+   if _N_ = 1 then 
+      do; 
+         paren = "\(([2-9]\d\d)\) ?[2-9]\d\d-\d\d\d\d";  <SPAN class="callout">2</SPAN> 
+         dash = "([2-9]\d\d)-[2-9]\d\d-\d\d\d\d";  <SPAN class="callout">3</SPAN> 
+         regexp = "/(" || paren || ")|(" || dash || ")/";  <SPAN class="callout">4</SPAN> 
+         retain re; 
+         re = prxparse(regexp);  <SPAN class="callout">5</SPAN> 
+         if missing(re) then  <SPAN class="callout">6</SPAN> 
+            do;
+               putlog "ERROR: Invalid regexp " regexp;  <SPAN class="callout">7</SPAN> 
+               stop;
+            end;     
+ 
+         retain areacode_re;
+         areacode_re = prxparse("/828|336|704|910|919|252/");  <SPAN class="callout">8</SPAN> 
+         if missing(areacode_re) then 
+            do;
+               putlog "ERROR: Invalid area code regexp";
+               stop;
+            end;
+      end; 
+
+   length first last home business $ 16;
+   length areacode $ 3;
+   input first last home business;
+
+   if ^prxmatch(re, home) then  
+      putlog "NOTE: Invalid home phone number for " first last home;
+
+   if prxmatch(re, business) then  <SPAN class="callout">9</SPAN> 
+      do;
+         which_format = prxparen(re);  <SPAN class="callout">10</SPAN> 
+         call prxposn(re, which_format, pos, len);  <SPAN class="callout">11</SPAN> 
+         areacode = substr(business, pos, len);  
+         if prxmatch(areacode_re, areacode) then  <SPAN class="callout">12</SPAN> 
+            put "In North Carolina: " first last business;
+      end;
+      else
+         putlog "NOTE: Invalid business phone number for " first last business;
+   datalines; 
+Jerome Johnson (919)319-1677 (919)846-2198 
+Romeo Montague 800-899-2164 360-973-6201
+Imani Rashid (508)852-2146 (508)366-9821 
+Palinor Kent 704-782-4673 704-782-3199
+Ruby Archuleta 905-384-2839 905-328-3892 
+Takei Ito 704-298-2145 704-298-4738
+Tom Joad 515-372-4829 515-389-2838
+;</PRE>
+<P></P>
+<P><A name="a002896972"></A></P>
+<P><A name="a002896973"></A>The following items correspond to the numbered lines
+in the DATA step that is shown above.</P>
+<P><A name="a002896974"></A></P>
+<TABLE cellpadding="6" cellspacing="2">
+<TR valign="top"><TD></TD><TD>
+<P><A name="a002896975"></A><IMG border="0" src="../../../../common/61991/HTML/default/images/sym01.gif" alt="[1]" width="14" height="14"> Create a DATA step. </P></TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><A name="a002896976"></A><IMG border="0" src="../../../../common/61991/HTML/default/images/sym02.gif" alt="[2]" width="14" height="14"> Build a Perl regular expression to identify
+a phone number that matches (XXX)XXX-XXXX, and assign the variable PAREN to
+hold the result. Use the following syntax elements to build the Perl regular
+expression: </P>
+<TABLE cellpadding="5" cellspacing="0" class="largeSpace">
+<TR align="left" valign="top">
+<TD><A name="a002896977"></A>\(</TD>
+<TD align="left">
+<P><A name="a002896978"></A>matches the open parenthesis in the
+area code. The open parenthesis marks the start of the submatch.</P></TD></TR>
+
+<TR align="left" valign="top">
+<TD><A name="a002896979"></A>[2-9]</TD>
+<TD align="left">
+<P><A name="a002896980"></A>matches the digits 2-9. </P></TD></TR>
+
+<TR align="left" valign="top">
+<TD><A name="a002896981"></A>\d</TD>
+<TD align="left">
+<P><A name="a002896982"></A>matches a digit, which is the second
+number in the area code. </P></TD></TR>
+
+<TR align="left" valign="top">
+<TD><A name="a002896983"></A>\d</TD>
+<TD align="left">
+<P><A name="a002896984"></A>matches a digit, which is the third
+number in the area code.</P></TD></TR>
+
+<TR align="left" valign="top">
+<TD><A name="a002896985"></A>\)</TD>
+<TD align="left">
+<P><A name="a002896986"></A>matches the closed parenthesis in
+the area code. The closed parenthesis marks the end of the submatch. </P></TD></TR>
+
+<TR align="left" valign="top">
+<TD><A name="a002896987"></A> ?</TD>
+<TD align="left">
+<P><A name="a002896988"></A>matches the space (which is the preceding
+subexpression) zero or one time. Spaces are significant in Perl regular expressions.
+They match a space in the text that you are searching. If a space precedes
+the question mark metacharacter (as it does in this case), the pattern matches
+either zero spaces or one space in this position in the phone number.</P></TD></TR>
+</TABLE>
+</TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><A name="a002896989"></A><IMG border="0" src="../../../../common/61991/HTML/default/images/sym03.gif" alt="[3]" width="14" height="14"> Build a Perl regular expression to identify
+a phone number that matches XXX-XXX-XXXX, and assign the variable DASH to
+hold the result.   </P></TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><A name="a002896990"></A><IMG border="0" src="../../../../common/61991/HTML/default/images/sym04.gif" alt="[4]" width="14" height="14"> Build a Perl regular expression that concatenates
+the regular expressions for (XXX)XXX-XXXX  and XXX--XXX--XXXX. The
+concatenation enables you to search for both phone number formats from one
+regular expression. </P>
+<P><A name="a002896991"></A>The PAREN and DASH regular expressions are placed within
+parentheses. The bar metacharacter (|) that is located between PAREN and DASH
+instructs the compiler to match either pattern. The slashes around the entire
+pattern tell the compiler where the start and end of the regular expression
+is located. </P></TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><A name="a002896992"></A><IMG border="0" src="../../../../common/61991/HTML/default/images/sym05.gif" alt="[5]" width="14" height="14"> Pass the Perl regular expression to PRXPARSE
+and compile the expression. PRXPARSE returns a value to the compiled pattern.
+Using the value with other Perl regular expression functions and CALL routines
+enables SAS to perform operations with the compiled Perl regular expression.</P></TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><A name="a002896993"></A><IMG border="0" src="../../../../common/61991/HTML/default/images/sym06.gif" alt="[6]" width="14" height="14"> Use the MISSING function to check whether
+the Perl regular expression compiled without error. </P></TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><A name="a002896994"></A><IMG border="0" src="../../../../common/61991/HTML/default/images/sym07.gif" alt="[7]" width="14" height="14"> Use the PUTLOG statement to write an error
+message to the SAS log if the regular expression did not compile. </P></TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><A name="a002896995"></A><IMG border="0" src="../../../../common/61991/HTML/default/images/sym08.gif" alt="[8]" width="14" height="14"> Compile a Perl regular expression that searches
+a string for a valid North Carolina area code. </P></TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><A name="a002896996"></A><IMG border="0" src="../../../../common/61991/HTML/default/images/sym09.gif" alt="[9]" width="14" height="14"> Search for a valid business phone number. </P></TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><A name="a002896997"></A><IMG border="0" src="../../../../common/61991/HTML/default/images/sym10.gif" alt="[10]" width="14" height="14"> Use the
+PRXPAREN function to determine which
+submatch to use. PRXPAREN returns the last submatch that was matched. If an
+area code matches the form (XXX), PRXPAREN returns the value 2. If an area
+code matches the form XXX, PRXPAREN returns the value 4.</P></TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><A name="a002896998"></A><IMG border="0" src="../../../../common/61991/HTML/default/images/sym11.gif" alt="[11]" width="14" height="14"> Call the PRXPOSN routine to retrieve the position
+and length of the submatch.</P></TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><A name="a002896999"></A><IMG border="0" src="../../../../common/61991/HTML/default/images/sym12.gif" alt="[12]" width="14" height="14"> Use the PRXMATCH function to determine whether
+the area code is a valid North Carolina area code, and write the observation
+to the log.</P></TD></TR></TABLE>
+<P><A name="a002897000"></A></P>
+<P><SPAN class="titleRefaid"><A name="a003274465">Output from Extracting a Substring from a String</A></SPAN>
+</P>
+<PRE>In North Carolina: Jerome Johnson (919)846-2198
+In North Carolina: Palinor Kent 704-782-3199
+In North Carolina: Takei Ito 704-298-4738</PRE>
+<TABLE width="100%" cellpadding="0" cellspacing="0">
+<TR valign="bottom"><TD><HR></TD></TR>
+<TR valign="top"><TD class="title2"><A name="a003274261">Example 4: Another Example of Extracting a Substring from a String</A></TD></TR></TABLE>
+
+<P>
+</P>
+<P>In this example, the PRXPOSN function is passed to the original search
+text instead of to the position and length variables. PRXPOSN returns the
+text that is matched.
+</P>
+
+<PRE><A name="a003274262"></A>data _null_;  <SPAN class="callout">1</SPAN> 
+   length first last phone $ 16;
+   retain re;
+   if _N_ = 1 then do;  <SPAN class="callout">2</SPAN> 
+      re=prxparse("/\(([2-9]\d\d)\) ?[2-9]\d\d-\d\d\d\d/");  <SPAN class="callout">3</SPAN> 
+   end;
+ 
+   input first last phone &amp; 16.;
+   if prxmatch(re, phone) then do;  <SPAN class="callout">4</SPAN> 
+      area_code = prxposn(re, 1, phone);  <SPAN class="callout">5</SPAN> 
+      if area_code ^in ("828" 
+                                  "336"
+                                  "704"
+                                  "910"
+                                  "919" 
+                                  "252") then
+         putlog "NOTE: Not in North Carolina: "
+                      first last phone;  <SPAN class="callout">6</SPAN> 
+    end;
+   datalines;  <SPAN class="callout">7</SPAN> 
+Thomas Archer    (919)319-1677
+Lucy Mallory       (800)899-2164
+Tom Joad              (508)852-2146
+Laurie Jorgensen  (252)352-7583
+;
+run;</PRE>
+<P></P>
+<P>The following items correspond to the numbered lines in the DATA step
+that is shown above.
+</P>
+<TABLE cellpadding="6" cellspacing="2">
+<TR valign="top"><TD></TD><TD>
+<P><IMG border="0" src="../../../../common/61991/HTML/default/images/sym01.gif" alt="[1]" width="14" height="14"> Create a DATA step. </P></TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><IMG border="0" src="../../../../common/61991/HTML/default/images/sym02.gif" alt="[2]" width="14" height="14"> If this is the first record, find the value of
+<SPAN class="emph">re</SPAN>.</P></TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><IMG border="0" src="../../../../common/61991/HTML/default/images/sym03.gif" alt="[3]" width="14" height="14"> Build a Perl regular expression for pattern matching. Use
+the following syntax elements to build the Perl regular expression: </P>
+<TABLE cellpadding="5" cellspacing="0" class="largeSpace">
+<TR align="left" valign="top">
+<TD>/</TD>
+<TD align="left">
+<P>is the beginning delimiter for a regular expression.</P></TD></TR>
+
+<TR align="left" valign="top">
+<TD>\(</TD>
+<TD align="left">
+<P>marks the next character entry as a character or
+a literal.</P></TD></TR>
+
+<TR align="left" valign="top">
+<TD>(</TD>
+<TD align="left">
+<P>marks the start of the submatch.</P></TD></TR>
+
+<TR align="left" valign="top">
+<TD>[2-9]</TD>
+<TD align="left">
+<P>matches the digits 2-9 and identifies the first
+number in the area code. </P></TD></TR>
+
+<TR align="left" valign="top">
+<TD>\d</TD>
+<TD align="left">
+<P>matches a digit, which is the second number in the
+area code. </P></TD></TR>
+
+<TR align="left" valign="top">
+<TD>\d</TD>
+<TD align="left">
+<P>matches a digit, which is the third number in the
+area code.</P></TD></TR>
+
+<TR align="left" valign="top">
+<TD>\)</TD>
+<TD align="left">
+<P>matches the close parenthesis in the area code. The
+close parenthesis marks the end of the submatch. </P></TD></TR>
+
+<TR align="left" valign="top">
+<TD> ?</TD>
+<TD align="left">
+<P>matches the space (which is the preceding subexpression)
+zero or one time. Spaces are significant in Perl regular expressions. The
+spaces match a space in the text that you are searching. If a space precedes
+the question mark metacharacter (as it does in this case), the pattern matches
+either zero spaces or one space in this position in the phone number.</P></TD></TR>
+
+<TR align="left" valign="top">
+<TD>||</TD>
+<TD align="left">
+<P>is the concatenation operator.</P></TD></TR>
+
+<TR align="left" valign="top">
+<TD>[2-9]</TD>
+<TD align="left">
+<P>matches the digits 2-9 and identifies the first
+number in the seven-digit phone number. </P></TD></TR>
+
+<TR align="left" valign="top">
+<TD>\d</TD>
+<TD align="left">
+<P>matches a digit, which is the second number in the
+seven-digit phone number. </P></TD></TR>
+
+<TR align="left" valign="top">
+<TD>\d</TD>
+<TD align="left">
+<P>matches a digit, which is the third number in the
+seven-digit phone number.</P></TD></TR>
+
+<TR align="left" valign="top">
+<TD>-</TD>
+<TD align="left">
+<P>is the hyphen between the first three and last four
+digits of the phone number after the area code.</P></TD></TR>
+
+<TR align="left" valign="top">
+<TD>\d</TD>
+<TD align="left">
+<P>matches a digit, which is the fourth number in the
+seven-digit phone number.</P></TD></TR>
+
+<TR align="left" valign="top">
+<TD>\d</TD>
+<TD align="left">
+<P>matches a digit, which is the fifth number in the
+seven-digit phone number.</P></TD></TR>
+
+<TR align="left" valign="top">
+<TD>\d</TD>
+<TD align="left">
+<P>matches a digit, which is the sixth number in the
+seven-digit phone number.</P></TD></TR>
+
+<TR align="left" valign="top">
+<TD>\d</TD>
+<TD align="left">
+<P>matches a digit, which is the seventh number in the
+seven-digit phone number.</P></TD></TR>
+
+<TR align="left" valign="top">
+<TD>/</TD>
+<TD align="left">
+<P>is the ending delimiter for a regular expression.</P></TD></TR>
+</TABLE>
+</TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><IMG border="0" src="../../../../common/61991/HTML/default/images/sym04.gif" alt="[4]" width="14" height="14"> Return the position at which the string
+begins.</P></TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><IMG border="0" src="../../../../common/61991/HTML/default/images/sym05.gif" alt="[5]" width="14" height="14"> Identify the position at which the area code begins.</P></TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><IMG border="0" src="../../../../common/61991/HTML/default/images/sym06.gif" alt="[6]" width="14" height="14"> Search for an area code from the list. If the area code is
+not valid for North Carolina, use the PUTLOG statement to write a note to
+the SAS log.</P></TD></TR>
+<TR valign="top"><TD></TD><TD>
+<P><IMG border="0" src="../../../../common/61991/HTML/default/images/sym07.gif" alt="[7]" width="14" height="14"> Identify the input file.</P></TD></TR></TABLE>
+<P></P>
+<P><SPAN class="titleRefaid"><A name="a003274466">Output from Extracting a Substring from a String</A></SPAN>
+</P>
+<PRE>NOTE: Not in North Carolina: Lucy Mallory (800)899-2164
+NOTE: Not in North Carolina: Tom Joad (508)852-2146</PRE>
+
+
+<PRE><A name="a003274426"></A></PRE>
+<P></P>
+
+<P> </P>
+
+<!-- stopindex -->
+<!-- bottom navigation -->
+<TABLE cellpadding="0" cellspacing="0" width="100%" border="0" class="navBg">
+<TR><TD><IMG src="../../../../common/61991/HTML/default/images/spacer.gif" height="1" alt=""></TD></TR></TABLE>
+<TABLE cellpadding="0" cellspacing="0" width="100%" border="0">
+<TR><TD><IMG src="../../../../common/61991/HTML/default/images/spacer.gif" height="3" alt=""></TD></TR></TABLE>
+<TABLE cellpadding="0" cellspacing="0">
+<TR valign="top">
+<TD align="left"><A href="a002288677.htm"><SPAN class="nav">Previous Page</SPAN></A></TD>
+<TD align="center" width="24"><SPAN class="navDivider">|</SPAN></TD>
+<TD align="left">
+<A href="a002292806.htm"><SPAN class="nav">Next Page</SPAN></A></TD>
+<TD align="center" width="24"><SPAN class="navDivider">|</SPAN></TD>
+<TD align="left">
+<A href="#a002291852">
+<SPAN class="nav">Top of Page</SPAN></A></TD>
+</TR></TABLE>
+<P class="copyright"><A href="../../../../common/61991/HTML/default/images/copyrite.htm">Copyright © 2008 by SAS Institute Inc., Cary, NC, USA. All rights reserved.</A></P>
+</DIV>
+
+<!-- ***** End Page Body Content *****-->
+<!--stopindex--><!--googleoff: all--><div id="booknav_bottom"><ul><li><a href="a002288677.htm">
+                    Previous Page
+                  </a></li><li class="divider">|</li><li><a href="a002292806.htm">
+                    Next Page
+                  </a></li><li class="divider">|</li><li><a href="#content">Top of Page</a></li></ul></div><!--googleon: all--><!--startindex--></div>
+          
+            <!-- ***** FOOTER AREA ***** -->
+            <div class="clear">
+  <!-- -->
+</div>
+<div id="footer">
+<!--stopindex--> 
+<!--googleoff: all-->
+  <a href="/contact/index.html">Contact Us</a> | <a href="/sitemap.html">Sitemap</a> | <a href="/community/rss/">RSS Feeds</a> | <a href="http://www.sas.com">www.sas.com</a> | <a href="http://www.sas.com/Copyright.html">Terms of Use &amp; Legal Information</a> | <a href="http://www.sas.com/Privacy.html">Privacy Statement</a><br />
+  <script>writeCopyright();</script>
+  <!--googleon: all-->
+  <!--startindex-->
+  
+<script type="text/javascript" src="/lib/navigation/topnav_set.js"></script>
+<script type="text/javascript" src="/lib/sectiontitle.js"></script>
+
+<script type="text/javascript">
+  try {
+  selectSearchCollection();
+      }
+  catch(err) {
+  //search collection failed
+      }
+</script>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-1022528-1");
+pageTracker._setDomainName("sas.com");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+
+<!-- BEGIN Invitation Positioning  -->
+<script language="javascript" type="text/javascript">
+var lpPosY = 100;
+</script>
+<!-- END Invitation Positioning  -->
+
+<!-- BEGIN HumanTag Monitor. DO NOT MOVE! MUST BE PLACED JUST BEFORE THE /BODY TAG --><script language='javascript' src='http://server.iad.liveperson.net/hc/42179880/x.js?cmd=file&file=chatScript3&site=42179880&&imageUrl=http://support.sas.com/images/contact'> </script><!-- END HumanTag Monitor. DO NOT MOVE! MUST BE PLACED JUST BEFORE THE /BODY TAG -->
+
+
+</div>
+            
+      
+</div>
+<script type="text/JavaScript" language="JavaScript">
+              var tab = 'toc';
+            
+          if (window.location.hash != '') {
+            var htab = window.location.hash.replace('#','');
+            if (isvalidTab(htab)) {tab = htab;}
+            }
+          changeTab(tab);
+        </script>
+</body></html>

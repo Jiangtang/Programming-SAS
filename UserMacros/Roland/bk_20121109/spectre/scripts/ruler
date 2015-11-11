@@ -1,0 +1,33 @@
+#!/bin/bash
+#<pre><b>
+# Script     : ruler
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 03-Jan-2006
+# Purpose    : To echo a line with markers at 10 column intervals
+# SubScripts : none
+# Notes      : none
+# Usage      : ruler
+#               
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not specify any parameters
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# No parameters allowed
+if [ $# -gt 0 ] ; then
+  echo "Usage: ruler" 1>&2
+  exit 1
+fi
+
+echo "---------1---------2---------3---------4---------5---------6---------7---------8---------9---------0---------1---------2---------3---------4---------5"
+
+ 

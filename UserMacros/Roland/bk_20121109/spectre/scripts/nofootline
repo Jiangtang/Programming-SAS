@@ -1,0 +1,36 @@
+#!/bin/bash
+#<pre><b>
+# Script     : nofootline
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 03-Mar-2006
+# Purpose    : To detect output files with no solid footnote line
+# SubScripts : pages
+# Notes      : none
+# Usage      : nofootline la_*.lis
+#              
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   File(s) or file pattern to check
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# At least one file required
+if [ $# -lt 1 ] ; then
+  echo "Usage: nofootline la_*.lis" 1>&2
+  exit 1
+fi
+
+for file in "$@" ; do
+  pages -e 1 "$file" | grep -v "^  *$"| tail -10 | /usr/xpg4/bin/grep -q "^__*_$"
+  if [ $? -ne 0 ] ; then
+    echo "$file"
+  fi
+done

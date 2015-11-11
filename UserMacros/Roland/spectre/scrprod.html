@@ -1,0 +1,271 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="Spectre production shell scripts">
+   <meta name="Description" content="Spectre production shell scripts">
+   <title>Spectre Production Scripts</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Production Scripts</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 04 Apr 2011)</b></center>
+
+<h2>
+Introduction</h2>
+The Spectre "production" scripts are those scripts that are involved in
+the normal process of running a program suite from producing output through
+to creating the PDFs. These are the most complicated scripts. You can view
+them from this section. If you are thinking of learning how to write shell
+scripts then do not be put off by the complexity of the examples you will
+find here. More typical scripts will be those you will find on the "Utility
+scripts" page.
+<p>To help you understand the purposes of the scripts, they will be split
+into sections. That way you will get an idea of <b><i>why</i></b> they
+were written and hopefully may give you an idea of when a script might
+be useful in a new setting.
+<p><i>(When you use your browser to view the scripts, you will probably
+see a first line like this "# !/bin/bash #". If you view the same script
+as "Source", from the "View" pull-down menu, you will see two lines instead.
+The first is "# !/bin/bash" and the second is "#&lt;pre>&lt;b>". I have
+inserted this second line so that your browser can correctly display the
+script from that point on. The "&lt;pre>" tells the browser that what follows
+is "pre-formatted" and the "&lt;b>" tells it to display it as "bold". This
+second line will not affect the operation of the script because any line
+(except the first) that starts with a "#" is treated as a comment).</i>
+<h2>
+Titles dataset scripts</h2>
+Scripts are used to write titles to a "titles" sas dataset and other scripts
+ae used to read them from the "titles" dataset. Actually, there is a "protocol"
+dataset that gets written at the same time you create the "titles" dataset
+so that will be covered in this section as well. Any script that writes
+this dataset or reads it will be using sas to do some of the work. And
+because the titles dataset will be placed in a directory that will be decided
+by the Spectre administrator it will most likely call a site-specific macro
+to do the library allocations. I don't know what your site will call this
+allocation macro so I have used the entry "%alloc" in some of these scripts
+to refer to this macro that will be used at your site. "%alloc" is not
+a real macro. If you have Spectre running at your site then this will have
+been changed or removed.
+<p>Before you start programming on a study, the Spectre administrator uses
+a script to put a template file in the programs directory that they will
+copy and amend to become "protocol.txt". A link to it is below.
+<br><a href="scripts/crprottmpl" target="_blank">crprottmpl</a>
+<p>There is another script that will put the template for titles members
+in your program directory and name it "titles.template". If you work in
+batch then you can use the script "titles" to automatically create your
+titles member, but the "titles" script calls the script below in any case.
+<br><a href="scripts/crtitlestmpl" target="_blank">crtitlestmpl</a>
+<p>Once you have finished creating the titles for your program, it must
+be read in to create the "titles" dataset. Actually, not just your titles
+member gets read in - all titles members get read in and the protocol information
+as well and a "protocol" dataset gets created. It is done by the following
+script and note that the header lists the scripts it calls as well as the
+sas macros.
+<br><a href="scripts/crtitlesds" target="_blank">crtitlesds</a>
+<p>The "crtitlesds" script called the scripts "vtitles", "alltitles", "checktitles"
+and "intnop" and these are below.
+<br><a href="scripts/vtitles" target="_blank">vtitles</a>
+<br><a href="scripts/alltitles" target="_blank">alltitles</a>
+<br><a href="scripts/checktitles" target="_blank">checktitles</a>
+<br><a href="scripts/intnop" target="_blank">intnop</a>
+<p>The "intnop" script (short for "in titles no programs") calls the script
+"intitlesds" to find out what programs are in the titles dataset as well
+as the script "nofile". There is another script similar to "intitlesds"
+which finds out all the programs and their report labels. These are below.
+<br><a href="scripts/nofile" target="_blank">nofile</a>
+<br><a href="scripts/intitlesds" target="_blank">intitlesds</a>
+<br><a href="scripts/intitlabels" target="_blank">intitlabels</a>
+<h2>
+sas batch script</h2>
+When you use Spectre you should run all your sas programs in batch using
+the "sasb" script. This script will check for errors and warnings and other
+important messages and if it finds anything will tell you at the end. If
+it finds something then you have to check this. To get more details about
+these messages you use the "scanlogs" script.
+<br><a href="scripts/sasb" target="_blank">sasb</a>
+<br><a href="scripts/scanlogs" target="_blank">scanlogs</a>
+<h2>
+printing output</h2>
+To print output created using Spectre you should use "lis2ps" which is
+short for ".lis to PostScript". This script converts your output file (which
+will have the extension ".lis" or ".lis*") to PostScript. It reads information
+from the titles dataset and protocol dataset to ensure it applies the correct
+margins and font size. You may think you want to print your output, not
+convert it to PostScript, but nearly all printers are PostScript printers.
+First, your output must be converted to PostScript before it is printed
+and "lis2ps" does this. To send it to the printer you use the "-p" option
+and specify the printer name after the option. This will be explained in
+the header.
+<br><a href="scripts/lis2ps" target="_blank">lis2ps</a>
+<p>"lis2ps" calls other scripts. To see the dependencies, click <a href="scrdep.html#lis2ps" target="_blank">here</a>.
+<h2>
+running all the programs</h2>
+Certainly, the creation of output will be done using Spectre but the datasets
+the reports are produced from may come from elsewhere. If both the reporting
+datasets and the report output need to be created and all in one go then
+the script "<b>fullrunsuite</b>" is used. Once you launch that script it
+is time to go for a coffee and lunch as well. You will get an email from
+the script to tell you when it has finished. More likely, you will be running
+the reporting program only. The scripts that run the programs are automatically
+generated by a script called "<b>makerun</b>". This generates scripts named
+"runsuite", "runderived" (for building the datasets) and "runreports" (for
+creating the output). You can run "runderived" and "runreports" separately
+and you will get an email from each when they have completed. To get the
+full list and correct order of the programs to create the reporting datasets,
+the script "derorder" is used. These scripts are below.
+<br><a href="scripts/fullrunsuite" target="_blank">fullrunsuite</a>
+<br><a href="scripts/makerun" target="_blank">makerun</a>
+<br><a href="scripts/derorder" target="_blank">derorder</a>
+<p>"fullrunsuite" calls other script which in turn call other scripts.
+To see the dependencies, click <a href="scrdep.html#fullrunsuite" target="_blank">here</a>.
+<h2>
+pagexofy</h2>
+When you produce output, your output gets written to a temporary file.
+There is another process that needs to be run before you have your final
+output and that is adding the "Page X of Y" labels. That is done using
+the script "<b>pagexofy</b>" called from the sas macro %closerep. It first
+counts the pages so that it knows the "Y" part of "Page X of Y" and then
+it reads the temporary file again and adds the page labels. It assumes
+a page marker character of "FF"x will be there. If you look at the temporary
+file, this "FF"x character appears as a "y" with two dots above it. But
+adding page labels is not all it does. If it encounters the non-breaking
+space character "A0"x character it will substitute it for a space. For
+column alignment purposes using "proc report", it is sometimes necessary
+to add such a character to stop the values in columns being shifted when
+you use "right" and "center" alignment. But these characters must be removed
+at the end and so pagexofy does this. There are some more characters it
+will substitute. The titles system changes "&amp;" and "%" to different
+characters that pagexofy will change back.
+<p><b>Remember this character "A0"x that gets turned into a space</b> by
+the macro %closerep calling pagexofy. You will sometimes want to use this
+character as well. It is useful for forcing a variable label to be spaces.
+If you set a variable label to spaces then sas will use the name of the
+variable for the label. But if you set it to this "A0"x character then
+sas will accept it and so it will get changed to a space later.
+<p>The script is written in "gawk". I found it quite easy to learn gawk
+because to me, it is similar to SAS/AF code which I have written in the
+past. It can have a "begin" block, a main block and an "end" block and
+this is similar to SAS/AF code. The functions are similar to sas as well.
+Not only is gawk a much more powerful language for handling text files
+but will run much faster than sas, so that is another reason to use it.
+You might find the code a little difficult to follow but have a try. See
+if you can find the other characters it converts into "&amp;" and "%".
+<br><a href="scripts/pagexofy" target="_blank">pagexofy</a>
+<h2>
+creating PDFs</h2>
+PDFs are created by converting PostScript files to PDF format using system
+utilities. Once you have a PostScript file then the rest is easy. The utility
+that converts your output to PostScript is called "<b>lptops</b>" and this
+is called from the "lis2ps" script mentioned above. The script "lis2ps"
+and the scripts it calls comprise the bulk of the script code written for
+Spectre. The process is complicated and some of the scripts are complicated
+as well. To create <b><i>bookmarked </i></b>PDFs, the bookmarks have to
+be inserted into the postscript file. The bookmarks contain the titles
+in your output. It has to get these titles by reading the first ten lines
+of your output file. It can not get it from the titles dataset (which would
+be more convenient) because only changeable titles are held there. The
+reporting macro might add other titles so the only way to be sure you have
+all these titles is to read the first ten lines of the output file. The
+script that does this is named "getitles". It is written in "gawk" and
+has to be tailored for each company using Spectre to ensure it can find
+the titles for the different client layout styles. Because this script
+may be difficult to understand, a simple sas version of it is supplied
+as well, so that the maintenance programmer can gain an understanding of
+what the script is trying to do. These are below.
+<br><a href="scripts/getitles" target="_blank">getitles</a>
+<br><a href="scripts/getitles_sas" target="_blank">getitles_sas</a>
+<p>In case "lptops" makes a mistake when it converts the output to PostScript
+there is a utility named "<b>pstolp</b>" that recreates the output from
+the PostScript file and compares it to the original. This is a complex
+script written in gawk. If a mismatch between the input file and what is
+extracted is found then the scripts "badlines" and "badchars" will be called
+to tell you exactly where the problem occurred. If needs be, you can then
+edit the PostScript file to fix the problem as it will tell you on what
+line the problem was found. These scripts are below.
+<br><a href="scripts/pstolp" target="_blank">pstolp</a>
+<br><a href="scripts/badlines" target="_blank">badlines</a>
+<br><a href="scripts/badchars" target="_blank">badchars</a>
+<p>Other scripts called by "lis2ps" are below.
+<br><a href="scripts/getlayout" target="_blank">getlayout</a>
+<br><a href="scripts/pages" target="_blank">pages</a>
+<br><a href="scripts/filesize" target="_blank">filesize</a>
+<p>When a full run of the reporting programs is done there is a file created
+named "donelist.txt" with a list of all the output in it. The number of
+pages of each output is shown at the end of each entry. Often there is
+too much output to put into a single PDF so "donelist.txt" has to be split
+into "donesect(n).txt" files where "n" is a number. The script "bigps"
+can be run on "donelist.txt" or individual "donesect(n).txt" files to create
+the collected PostScript files. This is below.
+<br><a href="scripts/bigps" target="_blank">bigps</a>
+<p>Once the PostScript file has been generated, it gets converted to PDF
+using the script "a4ps2pdf" or "usps2pdf" depending on whether it uses
+the A4 layout or the US Letter layout. Your PostScript file is the input
+to these utilities and the output is the bookmarked PDF. By default, compression
+is used so that the pdf file takes up less room. You can override this
+compression using the -u option to give you an uncompressed pdf. When you
+ftp the pdf onto a Windows platform, you should choose binary mode for
+the default compressed pdf and text mode for the uncompressed pdf. The
+-u (uncompressed) function is provided in case the pdf behaves differently
+when ftp'ed to Windows so that you can try it in uncompressed mode to see
+if it solves the problem. Somebody once noticed that pages got searched
+in the correct order but backwards for each page on Windows but got searched
+in the correct way using "acroread" on Linux. If you encounter this anomaly
+then the -u option will allow you to try it with the uncompressed version.
+<br><a href="scripts/a4ps2pdf" target="_blank">a4ps2pdf</a>
+<br><a href="scripts/usps2pdf" target="_blank">usps2pdf</a>
+<center><font face="Arial Narrow"><font size=+2>Finally -- bookmarked PDFs
+!!</font></font></center>
+
+<p>We are not done with PDFs quite yet. Once you have the PDF you need
+a script to extract a complete list of bookmarks. This list of bookmarks
+can then form the basis for a table of contents.
+<br><a href="scripts/printpdfbookmarks" target="_blank">printpdfbookmarks</a>
+<h2>
+biglis</h2>
+There is a script named "<b>biglis</b>" which works in the same way as
+"bigps" except that it creates a listing file with all the output in. This
+can then be imported into a text editor such as Word. There is an option
+to create a table of contents, using the "toclis" script. If you can write
+a clever Word macro to change layout, then there is the option to add orientation
+and fontsize information to the list produced.
+<br><a href="scripts/biglis" target="_blank">biglis</a>
+<br><a href="scripts/toclis" target="_blank">toclis</a>
+<br>&nbsp;
+<h2>
+Conclusion</h2>
+You have been introduced to all of the production scripts that Spectre
+uses. Many of these are complicated due to the complex work they do. They
+are not typical of shell scripts that you might write in the future, so
+do not be put off by the script code you can link to from this page. If
+you are not the Spectre administrator, then you will not use most of these
+scripts but the ones you will use in your daily work of running programs
+and printing output are "<b>sasb</b>", "<b>sc</b>" and "<b>lis2ps</b>"
+so you should remember these. You will be reminded of them on the utility
+scripts page.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="../contact.html">contact the author</a></center>
+
+<p><br>
+<br>
+</body>
+</html>

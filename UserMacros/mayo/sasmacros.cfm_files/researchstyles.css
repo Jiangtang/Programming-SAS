@@ -1,0 +1,1311 @@
+table {
+    font-size: 100%;
+}
+
+body { 
+        font-size: 12px;
+        background-color: #666666; 
+        margin: 0 0 30px 0;
+        text-align: center;
+        font-family: Verdana, Arial, sans-serif;        
+}
+
+/* 
+================================
+COMMON CONTENT FORMATTING 
+================================
+*/
+
+p {
+    color: #000;
+    margin: 0 0 10px 0;
+    padding: 0;
+    line-height: 1.5em;
+}
+
+h1, h2, h3, h4 {
+    color : #000;
+    margin : 5px 0 5px 0;
+    padding : 0;
+    font-family: Arial, sans-serif; 
+}
+ 
+h1 { 
+    font-size: 125%;
+}
+
+h2 { 
+    font-size: 125%;
+}
+
+h3 { 
+    font-size: 115%;
+}
+
+
+h4 { 
+    
+}
+
+
+a {	color: #3333CC; outline: none; text-decoration: none;}
+a:visited { color: #3333CC; text-decoration: none;}
+a:hover, a:focus { color: #666; text-decoration: underline;}
+a:active { color: #666; text-decoration: underline;}
+
+.uppercasetext {
+	text-transform: uppercase;
+}
+
+.textuppercase {
+	text-transform: uppercase;
+}
+
+.question-form label {
+	font-weight: bold;
+	display: block;
+	padding: 10px 0;
+}
+
+.question-form label span {
+	color: red;
+	font-weight: normal;
+}
+
+.question-form .form-button {
+margin: 10px 0;
+
+}
+
+ol li {
+	margin: 0 0 7px 0;
+}
+
+
+
+/* 
+================================
+LISTS
+================================
+*/
+
+ul, ol {
+    margin: 5px 0 10px 35px;
+	 padding: 0;
+}
+
+li {
+    line-height: 1.4em;
+}
+
+.profile-list {
+	
+	margin: 4px 5px 5px 0;
+	padding: 0;
+	list-style: none;
+}
+
+.profile-list li {
+	margin: 4px 5px 8px 0;
+	padding: 0 0 0 7px;
+	 background: url(../research/images/arrow3.gif) no-repeat;  
+	 background-position:  0 6px;
+	 	font-size: 11px;
+}
+
+
+.profile-list .profile-head {
+	font-weight: bold;
+	border-top: 1px solid #ccc;
+	list-style: none;
+	list-style-image: none;
+	margin: 10px 0 0 0;
+	padding: 5px 0 5px 0;
+	background: none;
+}
+
+
+
+.deptlist {
+    list-style: none;
+   margin: 10px 10px 10px 10px;
+   padding: 0;
+}
+
+.deptlist li a {
+    font-weight: normal;
+}
+
+.deptlist li {
+   padding: 0 0 7px 5px;
+    margin: 0;
+}
+
+.deptlist .division{
+	 font-weight: bold;
+	 color: #333;
+	 padding: 5px 0 0 20px;
+	background: url(../research/images/divisionline.gif) no-repeat top left;
+	background-position: 0 4px;	
+}
+
+.locationbullet {
+    margin: 4px 0 0 40px;
+    padding: 0;	  
+}
+
+.locationbullet li {
+	padding: 0 0 3px 2px;
+	margin: 0;
+    font-weight: normal;
+    color: #000;
+	 list-style-image: url(../research/images/arrow2.gif);  
+}
+
+.publist {
+    margin: 10px 10px 10px 10px;
+    padding: 0;
+}
+
+.publist li {
+    padding: 0 0 7px 5px;
+    margin: 7px 0 7px 9px;
+    list-style-type: none;  
+    font-weight: normal;
+    list-style-image: url(../research/images/arrow2.gif);
+    background: url(../research/images/location-gradtwo.gif) bottom left no-repeat;
+    color: #000;
+}
+
+.publist strong {
+    color: #232323;
+}
+
+.plainlist {
+    margin: 5px 0 10px 0;
+}
+
+.plainlist li {
+    margin: 0;
+	 padding: 0 0 8px 0;
+    list-style: none;
+}
+
+.listheader {
+	padding: 10px 0 0 0;
+}
+
+.researchlist {
+    margin: 10px 0 10px 20px;
+    padding: 0;  
+}
+
+.researchlist li {
+    padding: 0 0 4px 4px;
+    margin: 4px 0 4px 4px;
+    list-style-type: none;  
+    font-weight: normal;
+    list-style-image: url(../research/images/arrow2.gif);
+    background: url(../research/images/location-gradtwo.gif) bottom left no-repeat;
+    color: #000;
+}
+
+.researchlist strong {
+    color: #232323;
+}
+
+.researchlistnoline {
+    margin: 10px 0 10px 20px;
+    padding: 0;	  
+}
+
+.researchlistnoline li {
+    padding: 0 0 0 4px;
+    margin: 3px 0;
+    font-weight: normal;
+    color: #000;
+	 list-style-image: url(../research/images/arrow2.gif);  
+	 line-height: 1.5em;
+}
+
+.researchlistnoline strong {
+    color: #232323;
+}
+
+.clinical-trials-list {
+	 padding: 0;
+	 margin-left: 45px;
+}
+
+.clinical-trials-list  li {
+    padding: 5px;
+    margin: 0;
+}
+
+.ranklist {
+	margin: 5px 0 10px 0;
+	padding: 0;
+}
+
+.ranklist li {
+    padding-left: 4px;
+    margin: 0;
+    list-style: none;
+}
+
+.ranklist .rank-item {
+	padding-bottom: 10px;
+}
+
+.ranklist .rank-title {
+	font-weight: bold;
+	padding-bottom: 10px;
+}
+
+.publication-row {
+padding:0;
+list-style: none;
+margin: 3px 0;
+clear: both;
+}
+
+.publication-row li{
+padding: 12px 10px 12px 10px;
+margin: 0;
+}
+
+.keyword-list {
+	clear: both;
+	list-style: none;
+	margin: 0 0 0 0;
+	padding: 0;
+}
+
+.keyword-list li{
+	margin: 0;
+	padding-left: 0;
+}
+
+.keyword-list li ol {
+	margin: 5px 0 5px 30px;
+	padding: 0;
+}
+
+.keyword-list li ol li {
+	list-style: none;
+	list-style-image: url(../research/images/arrow2.gif);  
+}
+
+.keyword-title {
+	background: #F4F4F4;
+	padding: 6px 2px 6px 10px;
+	color: #000;
+}
+
+.readmore {
+	background: url(../images/arrow_r.gif) no-repeat right;
+	padding: 0 15px 0 0;
+	margin: 0 0 10px 0;
+}
+
+.backtotop {
+	background: url(../images/arrow_up.gif) no-repeat right;
+	padding: 0 19px 0 0;
+	margin: 0 0 10px 0;
+}
+
+/* 
+================================
+ALPHA
+================================
+*/
+
+/* LAB/FACULTY ALPHA */
+
+.pages {
+    padding: 0 1em 1.3em 0;
+    margin: 1em 0;
+    clear: left;
+}
+
+.pages a, .pages span {
+    display: block;
+    float: left;
+    padding: 0.2em 0.5em;
+    margin-right: 0.3em;
+    border: 1px solid #fff;
+    background: #fff;
+    text-transform:capitalize;
+}
+
+.pages span.current {
+    border: 1px solid #636FA5;
+    font-weight: bold;
+    background: #7C88BD;
+    color: #fff;
+}
+
+.pages a {
+    border: 1px solid #9AAFE5;
+    text-decoration: none;
+}
+
+.pages a:hover {
+    border-color: #06c;
+    text-decoration: none;
+}
+
+.pages span.nolisting {
+    border: 1px solid #ccc;
+    font-weight: bold;
+    color: #ccc;
+}
+
+/* SUB PAGE ALPHA */
+
+.alpha {
+    padding: 0 1em 1em 0;
+    margin: 1em 0 2em 0;
+    clear: left;
+}
+
+.alpha a, .alpha span {
+    display: block;
+    float: left;
+    padding: 0.2em 0.3em;
+    margin-right: 0.1em;
+    border: 1px solid #fff;
+    background: #fff;
+    text-transform:capitalize;
+}
+
+.alpha span.current {
+    border: 1px solid #636FA5;
+    font-weight: bold;
+    background: #7C88BD;
+    color: #fff;
+}
+
+.alpha span.nolisting {
+    border: 1px solid #ccc;
+    font-weight: bold;
+    color: #ccc;
+}
+
+.alpha a {
+    border: 1px solid #9AAFE5;
+    text-decoration: none;
+}
+
+.alpha a:hover {
+    border-color: #06c;
+    text-decoration: none;
+}
+
+
+/* 
+================================
+LEFT NAVIGATION
+================================
+*/
+
+.leftnavcontainer {
+    width: 160px;
+   border: 1px solid #ccc;
+    padding: 0 0 0 0;
+    margin:  0 0 10px 0;
+    font-family: arial, helvetica, sans-serif;
+	 font-weight: normal;
+}
+
+.leftnavcontainer li{
+    list-style-type: none;
+    margin: 0;
+	 padding: 3px 5px 3px 10px;
+}
+
+.homecontainer {
+    width: 160px;
+    background: #fff;
+    padding: 0;
+    margin:  0 0 10px 0;
+    font-family: arial, helvetica, sans-serif;
+}
+
+.homecontainer li{
+    list-style-type: none;
+    padding-right: 5px;
+    padding-left: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin: 0;
+    border: 1px solid #e2e2e2;
+    background: url(/mayo/images/sitehome_grad.gif) bottom;
+    
+}
+.homecontainer a {
+    padding: 0 0 0 10px;
+    font-weight: bold;
+
+}
+
+.homecontainer a:hover {
+    padding: 0 0 0 10px;
+}
+
+/* 
+================================
+BLUE BOX - RELATED - AFFILIAIONS
+================================
+*/
+
+.bluebox {
+    width: 160px;
+    background: #fff;
+    border: 1px solid #333399;
+    padding: 0 0 0 0;
+    margin:  0;
+    font-family: arial, helvetica, sans-serif;
+}
+
+.bluebox li{
+    list-style-type: none;
+    margin: 0;  
+}
+
+.blueboxheader {
+    color: #fff;
+    font-size: 14px;
+    padding: 4px 5px 4px 5px;
+    background: #333399;
+	 margin: 0;
+}
+
+.blueboxitem {
+    padding: 3px 5px 3px 10px;
+    font-size: 12px;    
+}  
+
+/* 
+================================
+POSTDOC
+================================
+*/
+
+.postdoc {
+    margin: 0;
+    border: none;
+    border-collapse:collapse;
+    font-family: Verdana, Arial, sans-serif; 
+    color: #666;
+}
+
+.postdoc td {
+    font-size: 12px;
+    padding: 5px 10px;
+    margin: 0;
+}   
+
+.postdoc p {
+    color: #333;
+}
+
+.postdoc .postdoctop td{
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    margin: 0;
+}
+
+.postdoc h3 {
+    font-size: 12px;
+    padding: 0;
+    margin: 0;
+    font-family: Verdana, Arial, sans-serif; 
+}
+
+.postdoc .desciption {
+    padding: 10px 10px 10px 10px;
+    color: #333;
+}
+
+.viewby {
+    background: url(/postdoc/images/postdoc-grad.gif);
+    padding: 5px 10px;
+    margin: 0;
+    color: #000;
+}
+
+/* 
+================================
+TRAINING GRANTS / PROGRAMS
+================================
+*/
+
+.tabledisplay{
+    padding: 0;
+    margin-bottom: 10px;
+    border-top: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-collapse: collapse;
+}
+
+.tabledisplay caption {
+    font-weight: bold;
+    text-align: left;
+    padding: 7px 0;
+}
+
+.tabledisplay a {
+    font-weight: normal;
+}
+
+.tabledisplay h2 {
+    text-transform: none;
+}
+
+.tabledisplay td{
+    vertical-align: top;
+    padding: 4px 6px;
+    margin: 0;
+    border-right: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    line-height: 1.3em;
+}
+
+.tabledisplay th{
+    padding: 7px;
+    margin: 0;
+    background: #E7EBF6;
+    text-align: left;
+    border-right: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+}
+
+.tabledisplay p {
+    padding: 0;
+    margin: 5px 10px;
+    line-height: 1.5em;
+}
+
+.tablespacer {
+width: 8px;
+}
+
+/* 
+================================
+DEPARTMENT LISTING PAGE
+================================
+*/
+
+.deptsideheaders {
+    font-weight: bold;
+    color: #333;
+    border-bottom: 1px solid #b4b4b4;;
+    padding: 4px 0 4px 0;
+    margin-top: 6px;
+    margin-bottom: 5px;
+}
+
+.locationline {
+    font-weight: bold;
+    color: #333;
+    border-bottom: 1px solid #b4b4b4;;
+    padding: 4px 0 4px 0;
+    margin-top: 6px;
+    margin-bottom: 5px;
+	 text-transform: uppercase;
+}
+
+.moreinfolocation {
+    margin: 0 0 0 0;
+    padding: 0;
+}
+
+.moreinfolocation div{
+    padding: 5px 10px 0 10px;
+}
+
+.moreinfolocation div h2 {
+    color: #333;
+    padding: 5px 0 0 0;
+}
+
+.moreinfolocation div p {
+    color: #333;
+    padding: 5px 0 13px 0;
+    margin: 0;
+    background: url(../research/images/location-grad.gif) bottom no-repeat;
+}
+
+.moreinfolocation a{
+    width: 240px; 
+    padding: 2px 0 0 0;
+    margin: 0;
+}
+    
+
+/* 
+================================
+FACULTY AND STAFF
+================================
+*/
+
+.stafftable {
+    width: 550px;
+    border-collapse: collapse;
+}
+
+.stafftable td {
+    padding: 2px 0 2px 5px;
+}
+
+.stafftable tr {
+    padding: 0 0 10px 5px;
+}
+
+
+.stafftable .doctorsprofile {
+	padding: 0 10px 0 0;
+}
+
+.stafftable .stafftableheader {
+	padding: 0;
+	margin: 0;
+}
+
+.stafftable td p {
+    padding: 2px 0;
+    margin: 0;
+}
+
+.stafftable td h3 {
+    padding: 2px 0;
+    margin: 0;
+}
+
+.stafftable .alphaimageborder {
+	padding: 2px;
+	border: 1px solid #ccc;
+	background: #fff;
+	width: 93px;
+	height: 112px;
+}
+
+.stafftable .alphaimagebordertwo {
+	padding: 2px;
+	border: 1px solid #ccc;
+	background: #fff;
+	width: 125px;
+	height: 150px;
+}
+
+.stafftable .boldlinklower {
+	text-transform: lowercase;
+	padding: 0;
+	margin: 0;
+}
+
+.stafftable .staffimage {
+	width: 93px;
+}
+
+
+/* 
+================================
+DEPARTMENT LISTING PAGE
+================================
+*/
+
+
+/* 
+================================
+FORMS
+================================
+*/
+
+
+/* 
+================================
+PUBLICATION PUBMED LINK
+================================
+*/
+
+.pubmed_link {
+	font-size: 11px;
+	background: url(../images/new-window.gif) right no-repeat;
+	margin: 0;
+	padding: 0 20px 0 0;
+}	
+
+/* 
+================================
+FACULTY PROFILES
+================================
+*/
+
+.profileheader {
+    padding:  10px 10px;
+    margin: 0;
+    color: #663399;
+    font-size: 18px;
+    background: #eee;
+    border-bottom: 1px solid #999;
+}
+
+.profile-center h3 {
+	border-bottom-color: #666666;
+border-bottom-style: solid;
+border-bottom-width: 1px;
+color: #666666;
+}
+
+.profile-right ul {
+	padding: 0;
+	margin: 0 0 10px 0;
+	border: 1px solid #ccc;
+}
+
+.profile-right ul .profile-link-item{
+	padding: 3px 0;
+	margin: 0 10px;
+	list-style: none;
+}
+
+.profile-right ul li a {
+	display: block;
+	width: 138px;
+	font-weight: normal;
+	font-family: arial;
+}
+
+.profile-link-head {
+	margin: 0;
+	padding: 0;
+	background: #663399;
+	list-style: none;
+	color: #fff;
+	padding: 5px 10px;
+}
+
+.profile-padding {
+	padding: 5px;
+	margin: 0;
+
+}
+
+.profile-portrait {
+	border: 1px solid #ccc;
+	padding: 2px;
+	background: #fff;
+	width: 125px;	
+	margin: 0 0 0 10px;
+}
+
+.profile-portraittwo {
+	border: 1px solid #ccc;
+	padding: 2px;
+	background: #fff;
+	width: 93px;	
+	margin: 0 0 0 25px;
+}
+
+.email-lowercase {
+	text-transform: lowercase;
+}
+
+.profile-name {
+	text-align: center;
+	font-weight: bold;
+	margin: 5px 0 0 0;
+}
+
+.profile-email {
+	text-align: center;
+	margin: 5px 0 0 0;
+}
+
+.profile-email img {
+	border: none;
+}
+
+.profile-org {
+	text-align: center;
+	margin: 5px 0 0 0;
+}
+
+/* 
+================================
+IMAGE BOXES
+================================
+*/
+
+/* 400px */
+
+.imageleft {
+    padding: 2px;
+    margin: 0 0 10px 10px;
+    float: left;
+    width: 400px;
+    text-align: left;
+    color: #666;
+    background: #fff url(/mayo/research/images/fig_back.gif) bottom repeat-x;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+.imageleft img {
+	padding: 0;
+	margin: 0;
+}
+
+.imageleft a {
+    font-weight: bold;
+}
+
+.imageleft p{
+    text-align: left;
+    line-height: 1.5em;
+    color: #333;
+    padding: 10px 5px 10px 5px;
+    margin: 0;
+}
+
+/* 56px */
+
+.imageleftlarger {
+    padding: 2px;
+    margin: 0 0 10px 10px;
+    float: left;
+    width: 560px;
+    text-align: left;
+    color: #666;
+    background: #fff url(/mayo/research/images/fig_back.gif) bottom repeat-x;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+.imageleftlarger a {
+    font-weight: bold;
+}
+
+.imageleftlarger p{
+    text-align: left;
+    line-height: 1.5em;
+    color: #333;
+    padding: 10px 5px 10px 5px;
+    margin: 0;
+}
+
+
+/* 500px */
+
+.imageleftlarge {
+    padding: 2px;
+    margin: 0 0 10px 0;
+    width: 500px;
+    text-align: left;
+    color: #666;
+    background: #fff url(/mayo/research/images/fig_back.gif) bottom repeat-x;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+.imageleftlarge a {
+    font-weight: bold;
+}
+
+.imageleftlarge p{
+    text-align: left;
+    line-height: 1.5em;
+    color: #333;
+    padding: 10px 5px 10px 5px;
+    margin: 0;
+}
+
+.enlargeimage {
+    padding: 0 0 0 17px;
+    clear: both;
+    background: url(../../images/enlarge.gif) left no-repeat;
+}
+
+.imageborderleft{
+    float: left;
+    padding: 0;
+    margin: 0;
+    border: 1px solid #ccc;
+    background: #fff;
+}
+
+/* 300px */
+
+.rightimagecaptionlarge {
+    padding: 2px;
+    margin: 0 0 10px 10px;
+    float: right;
+    width: 300px;
+    text-align: left;
+    color: #333;
+    background: #fff url(/mayo/research/images/fig_back.gif) bottom repeat-x;
+    border: 1px solid #ccc;
+}
+
+.rightimagecaptionlarge p{
+ 	font-size: 11px;
+	line-height: 1.5em;
+	color: #333;
+	padding: 5px 5px 0 5px;
+ 	margin: 0;
+ }
+
+.rightimagecaptionlarge a img{
+    border: none;
+}
+
+/* AUTO WIDTH */
+
+.autorightimage {
+    padding: 2px;
+    margin: 0 0 10px 10px;
+    float: right;
+    text-align: left;
+    color: #333;
+    background: #fff url(/mayo/research/images/fig_back.gif) bottom repeat-x;
+    border: 1px solid #ccc;
+}
+
+.autorightimage p{
+ 	font-size: 11px;
+	line-height: 1.5em;
+	color: #333;
+	padding: 5px 5px 0 5px;
+ 	margin: 0;
+ }
+
+.autorightimage a img{
+    border: none;
+}
+
+.profileimageright {
+ clear: right;
+    float: right;
+    border: 1px solid #ccc;
+    padding: 2px;
+    margin: 0 0 5px 10px;
+    background: #fff;
+	 font-size: 11px;
+	
+}
+
+.profileimageright p {
+	padding: 5px 0;
+	margin: 0 3px;
+}
+
+
+
+/* 
+================================
+SURVEY FORM 
+================================
+*/
+
+.form-holder  {
+padding: 0;
+margin-bottom: 10px;
+border-collapse: collapse;
+border-top: 1px solid #ccc;
+border-left: 1px solid #ccc;
+}
+
+.form-holder  td{
+vertical-align: top;
+margin: 0;
+line-height: 1.5em;
+font-size: 12px;
+}
+
+
+.formerror {
+font-weight: bold;
+padding: 2px 0;
+margin: 0;
+color: #cc0000;
+font-size: 12px;
+}
+
+.form-odd {
+background: #fff;
+}
+
+.question, .answer, .note {
+line-height: 1.6em;
+}
+
+.question {
+font-weight: bold;
+color: ##3333333;
+border-right: 1px solid #ccc;
+border-bottom: 1px solid #ccc;
+padding: 4px 5px 4px 5px;
+}
+
+.answer, .confirmanswer {
+text-align: left;
+margin: 0;
+border-right: 1px solid #ccc;
+border-bottom: 1px solid #ccc;
+padding: 4px 5px 4px 5px;
+}
+
+.number {
+text-align: center;
+font-weight: bold;
+padding: 4px 0 5px 5px;
+margin: 0;
+border-bottom: 1px solid #ccc;
+}
+
+
+.form-buttons {
+clear: both;
+text-align: center;
+margin: 0;
+padding: 10px 0;
+background: #ccc;
+}
+
+.mass{
+text-align: left;
+border: 1px solid #ccc;
+padding: 5px;
+margin: 5px 0 5px 0;
+}
+
+.note {
+text-align: left;
+margin: 0;
+border-right: 1px solid #ccc;
+border-bottom: 1px solid #ccc;
+padding: 4px 5px 4px 5px;
+}
+
+
+/* 
+================================
+TOOL TIP MOUSE OVER
+================================
+*/
+
+#dhtmltooltip {
+		position: absolute;
+		width: 400px;
+		font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+		font-size: 11px;
+		padding: 5px;
+		border-right: 1px solid #666;
+		border-bottom: 1px solid #666;
+		border-left: 1px solid #666;
+		border-top: 1px solid #666;
+		visibility: hidden;
+		z-index: 100;
+	}
+
+		#dhtmltooltip  p {
+		padding: 0;
+		margin: 0;
+		line-height: 1.4em;
+	}
+	
+	.yellow_highlight {
+		background: #FFFF99;
+	}
+
+
+
+/* 
+================================
+MISCELLANEOUS
+================================
+*/
+
+.headerdivider {
+	clear: both;
+    border-top: 1px solid #ccc;
+    padding: 5px 0;
+    margin: 15px 0 0 0;
+}
+
+
+
+
+
+.flashmovie {
+    padding: 2px;
+    margin: 0 10px 10px 0;
+    float: left;
+    width: 320px;
+    text-align: left;
+    color: #333;
+    background: #fff url(/mayo/images/fig_back.gif) bottom repeat-x;
+    border: 1px solid #ccc;
+}
+
+.right {
+	float: right;
+	margin: 0 0 10px 10px;
+}
+
+
+
+.flashmovie p{
+ font-size: 11px;
+ line-height: 1.5em;
+ color: #333;
+ padding: 5px 5px 0 5px;
+ margin: 0;
+ }
+
+.flashmovie h4{
+color: #444444;
+padding: 0 0 0 20px;
+margin: 4px;
+background: url(/mayo/images/video-icon.gif) no-repeat left;
+}
+
+.flashmovie a img{
+    border: none;
+}
+
+
+
+
+
+
+/* IRB POLICY */
+
+.irbpolicy{
+    padding: 0;
+    margin-bottom: 10px;
+    border-top: 1px solid #000;
+    border-left: 1px solid #000;
+    border-collapse: collapse;
+}
+
+.irbpolicy caption {
+    font-weight: bold;
+    text-align: left;
+    padding: 7px;
+
+}
+
+.irbpolicy h2 {
+    text-transform: none;
+    font-size: 100%;
+}
+
+.irbpolicy td {
+	padding: 4px;
+    font-size: 85%;
+    vertical-align: top;
+    border-right: 1px solid #000;
+    border-bottom: 1px solid #000;
+}
+
+.irbpolicy th {
+    font-size: 90%;
+    padding: 4px;
+    margin: 0;
+    background: #E7EBF6;
+    text-align: left;
+    border-right: 1px solid #000;
+    border-bottom: 1px solid #000;
+}
+
+.irbpolicy p {
+    padding: 0;
+    margin: 0;
+    line-height: 1.5em;
+}
+
+
+.irbpolicy a {
+    font-weight: normal;
+}
+
+
+
+
+.shadetabs {
+padding: 3px 0;
+margin-left: 0;
+margin-top: 1px;
+margin-bottom: 0;
+font: bold 12px Verdana;
+list-style-type: none;
+text-align: left; /*set to left, center, or right to align the menu as desired*/
+}
+
+.shadetabs li{
+display: inline;
+margin: 0;
+}
+
+.shadetabs li a{
+text-decoration: none;
+padding: 3px 7px;
+margin-right: 3px;
+border: 1px solid #778;
+color: #2d2b2b;
+background: white url(shade.gif) top left repeat-x;
+}
+
+.shadetabs li a:visited{
+color: #2d2b2b;
+}
+
+.shadetabs li a:hover{
+text-decoration: underline;
+color: #2d2b2b;
+}
+
+.shadetabs li.selected{
+position: relative;
+top: 1px;
+}
+
+.shadetabs li.selected a{ /*selected main tab style */
+background-image: url(shadeactive.gif);
+border-bottom-color: white;
+}
+
+.shadetabs li.selected a:hover{ /*selected main tab style */
+text-decoration: none;
+}
+
+.tabcontentstyle{ /*style of tab content oontainer*/
+border: 1px solid gray;
+width: 450px;
+margin-bottom: 1em;
+padding: 10px;
+}
+
+.tabcontent{
+display:none;
+}
+
+@media print {
+.tabcontent {
+display:block!important;
+}
+
+
+
+
+#questions {
+	margin: 10px 0;
+	font-weight: bold;
+	background: #000;
+}
+
+
+

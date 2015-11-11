@@ -1,0 +1,32 @@
+#!/bin/bash
+#<pre><b>
+# Script     : badtitlesprogs
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 07-Jun-2005
+# Purpose    : To list which titles members do not have a matching program name
+# SubScripts : none
+# Notes      : none
+# Usage      : badtitlesprogs 
+#              
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not supply any parameters
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# No parameters required
+if [ $# -gt 0 ] ; then
+  echo "Usage: badtitlesprogs # do not supply any parameters" 1>&2
+  exit 1
+fi
+
+grep "^program:.*" *.titles | sed 's% *$%%' | gawk -F:
+'index($1,substr($3,2)".titles")==0'

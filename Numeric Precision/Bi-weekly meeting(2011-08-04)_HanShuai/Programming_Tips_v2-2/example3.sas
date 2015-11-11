@@ -1,0 +1,18 @@
+data gmt1;
+	do result1=., 10, 20, 40, 80, 160;
+		do result2=., 10, 20, 40, 80, 160;
+			do result3=., 10, 20, 40, 80, 160;
+			output;
+			end;
+		end;
+	end;
+run;
+data gmt2;
+	set gmt1;
+	gmt=10**mean(log10(result1),log10(result2),log10(result3));
+	gmtr=round(gmt,0.01);
+	seroport=(gmt>=40);
+	seroport2=(gmtr>=40);
+	if 39.9<=gmt<=40.1;
+	d=gmt-40;
+run;

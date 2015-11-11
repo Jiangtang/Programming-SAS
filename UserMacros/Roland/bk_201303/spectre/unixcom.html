@@ -1,0 +1,2044 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="common unix commands">
+   <meta name="Description" content="Common Unix Commands">
+   <title>Common Unix Commands</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Common Unix Commands</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 15 Apr 2011)</b></center>
+
+<h2>
+Introduction</h2>
+I have stated elsewhere and will state here again that "<b>The power of
+Unix comes from the ability of simple utilities to pass information to
+each other for processing</b>". As for the word "<b>power</b>" in that
+sentence, it does not mean that the CPUs are more powerful than on other
+platforms (although some Unix servers have a lot of CPUs). What it means
+is that you can do what you want to do more easily on a Unix platform.
+If you think of programming languages, you will hear someone say that one
+programming language is "more powerful" than another. Again, this is not
+due to the speed with which it runs (in most cases), it is to do with the
+<b>functionality
+</b>and
+the <b>ease of achieving what you are trying to do<i> </i></b>as a programmer
+using the language.
+<p>This document will teach you about the common Unix commands but it will
+do more than that. Because, as stated, the power of Unix comes from the
+ability of simple utilities to <b>pass information to each other for processing</b>,
+then to achieve that power as a Unix user, you need to learn how to <b>combine
+Unix commands<i> </i></b>so that they can pass information to each other.
+To achieve that, you will be introduced to the terms "<b>piping</b>", "<b>substitution</b>"
+and the utility "<b>xargs</b>" which are ways of passing information between
+Unix utilities.
+<p>This document is for <b>learning Unix commands</b>. It is not that good
+as a reference source. I wrote it and I hardly ever use it as a reference
+document. You should <b>read this document through from start to finish
+for the first time</b> as later sections build on ideas introduced in earlier
+sections so you can develop your understanding of "<b>piping</b>" and "<b>substitution</b>",
+gradually, and with a firm understanding. If you use it as a reference
+document without having gone through it from start to finish then it won't
+be very useful to you even though you think it might be. What I am hoping
+for is that you have quiet times, like on train journeys or flights, or
+even a quiet day at the office, when you can <b>carefully go through this
+entire document from start to finish</b>. But take your time. It is not
+a "quick read". It takes a lot of concentrated effort. You are not going
+to know Unix commands in less than an hour unless you are a genius. A week
+of evening study would be more realistic. That's how long it took me. If
+this were a course then I guess it would take a day and a half to complete
+with trying out examples.
+<p>Once you have been through this document carefully then you can jump
+to any topic you like, from the links below, to refresh your memory. If
+you have come back to this page after a while, updates or new sections
+will be marked as such after the links below.
+<p><a href="#man">"man pages"</a>
+<br><a href="#cd">cd</a>
+<br><a href="#ls">ls</a>
+<br><a href="#wc">wc</a>
+<br><a href="#grep">grep</a>
+<br><a href="#fgrep">fgrep and egrep</a>
+<br><a href="#patt">pattern matching vs. regular expressions</a>
+<br><a href="#regex">beyond "regular expressions"</a>
+<br><a href="#more">more</a>
+<br><a href="#mkdir">mkdir</a>
+<br><a href="#rmdir">rmdir</a>
+<br><a href="#cp">cp</a>
+<br><a href="#mv">mv</a>
+<br><a href="#rm">rm</a>
+<br><a href="#create">create a file</a>
+<br><a href="#cat">cat</a>
+<br><a href="#cntl">cntl-c and cntl-d</a>
+<br><a href="#diff">diff</a>
+<br><a href="#cmp">cmp</a>
+<br><a href="#xargs">xargs</a>
+<br><a href="#tee">tee</a>
+<br><a href="#awk">awk</a>
+<br><a href="#cut">cut</a>
+<br><a href="#lns">ln -s</a>
+<br><a href="#find">find</a>
+<br><a href="#amp">&amp;</a>
+<br><a href="#nice">nice</a>
+<br><a href="#nohup">nohup</a>
+<br><a href="#ps">ps</a>&nbsp;&nbsp;&nbsp; (updated)
+<br><a href="#kill">kill</a>
+<br><a href="#spec">special characters</a>
+<br><a href="#chmod">chmod</a>
+<br><a href="#umask">umask</a>
+<br><a href="#file">file</a>
+<br><a href="#cnf">"command not found" messages</a>
+<br><a href="#env">user-defined system environment variables</a>
+<br><a href="#set">"set" command</a>
+<br><a href="#alias">alias</a>
+<br><a href="#src">"sourcing" a list of commands</a>
+<br><a href="#which">which</a>
+<br><a href="#clear">clear</a>
+<br><a href="#exit">exit</a>
+<br><a href="#xterm">xterm</a>
+<br><a href="#fuser">/usr/sbin/fuser</a>
+<br><a href="#finger">finger</a>
+<br><a href="#sed">sed</a>
+<br><a href="#gen">generating a command file</a>
+<br><a href="#vi">vi</a>
+<br><a href="#less">less</a>
+<br><a href="#conc">conclusion</a>
+<p>You will be introduced to a number of Unix commands. I will not be able
+to cover any in much detail so you will need a extra reference source for
+further information. Don't worry though, you will not have spend any money
+on books.
+<h2>
+<a NAME="man"></a>"man pages"</h2>
+Unix systems have a manual you can easily access where you can find full
+information on the utilities that are "native" to (in other words "supplied
+with") the system. They are called "<b>man pages</b>" which is short for
+"User Manual Pages". This is the definitive source of information on any
+of the utilities you will learn about in this document. When these utilities
+are written, somebody else in constant contact with the author writes the
+"man pages" for that utility and so the "man pages" for that utility should
+be full and correct. <b>The "man pages" are going to be your reference
+source</b>. To see the “man” pages for the “ls” command, for example, then
+type in the command “man ls” like this (you might have to press the "<b>q</b>"
+key (for "<b>quit</b>") on your keyboard to get out of the display).
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>man ls</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="cd"></a>cd</h2>
+“<b>cd</b>” is short for “<b>c</b>hange <b>d</b>irectory”. If you use “cd”
+with no following parameter then you will go to your home directory. If
+you use “cd ~” you will again go to your home directory (this does not
+work if you use the older Bourne shell). If you specify a directory using
+its full path name then that becomes your current directory. A full path
+name will always start with a “/” slash.
+<p>If you were to type in the command “cd /” then you would go to the top
+directory on your Unix machine that is called the “root” directory. Once
+you are in a directory you can go “up” and “down” directories (but there
+is no “up” from the root directory). If you were to go to the /usr/bin/
+directory by typing in “cd /usr/bin” (or “cd /usr/bin/”) and then type
+in “cd ..” (or “cd ../”) you would find yourself in the upper or “parent”
+directory. If this is not automatically displayed then you can display
+the current directory using the <b>pwd</b> command (short for “<b>p</b>rint
+<b>w</b>orking
+<b>d</b>irectory”).&nbsp;
+Once you are in the /usr&nbsp; directory you can go “down” again to the
+/usr/bin directory by typing in “cd bin”, “cd bin/” or by using the bash
+shell to complete it for you by typing “cd b”, followed by pushing the
+TAB key to get it to auto complete to “cd bin/” and then pressing ENTER
+(if you are using the Korn shell then you should be able to auto complete
+file names by pressing ESC twice). If there were two or more directories
+or files that started with a “b” then the bash shell would auto complete
+as many letters that were common to the start of these files or directories
+and then make a bleep sound to let you know there was a problem. On the
+other hand, if there were no directories starting with a “b” it would also
+bleep. To illustrate this then make /data your current directory and type
+in “cd d” followed by a TAB. It will auto complete to /data/db and bleep
+to let you know there is more than one file starting with “db”. To list
+these multiple files or directories then you have to use the ls command
+in a certain way. The “ls” command is described next.
+<p>Quite often, when you change directories, you will want to return to
+the original directory after finishing your work there. This can be done
+using “cd -“.
+<p>"<b>cd</b>" is known as a "shell built-in". It is a command but it is
+a "built-in command". If you type in "man cd", hoping to see the "man"
+pages for "cd", then instead you will see a page for all the shell "built-ins".
+You might want to try this out of interest.
+<h2>
+<a NAME="ls"></a>ls</h2>
+“ls” stands for “list”. It lists out the files in a directory. But please
+note that a sub-directory is also a file. Just plain “ls” will list all
+files and sub-directories. But just plain “ls” does not tell you much about
+these files. Some of these files might be sub-directories and it might
+be important to identify these as such. Fortunately, you can include options
+with the “ls” statement following a hyphen (“-“) sign.&nbsp; “ls –p” will
+show up directories by putting a “/” after their name. This is what the
+previous section on the “cd” command ended with when you had multiple files/directories
+that started with “db”. You can list all the files using “ls –p” and look
+for those that start with “db” and end in a slash “/” to indicate that
+they are directories.
+<p>The “ls” command is usually used with a file name pattern to limit the
+number of files listed. To list out all the programs in a directory you
+would normally type in the command “ls *.sas”. It would then only list
+the files that has a “.sas” extension.
+<p>“ls” can be used on other directories apart from the current directory.
+If you wanted to list all the files in the directory /usr and still stay
+in your home directory then type in the command “ls /usr” or “ls /usr/”.
+<p>“ls” gives you a different result from “ls *”. In the second case, if
+some of the files are directories, then they get expanded out – the directory
+name being shown with a “:” at the end and the files in that directory
+follow. Try this out using the command “ls /usr/local” and then “ls /usr/local/*”.
+You may think that both should be the same, since in a sense in both cases
+you are asking it to list all files. But it is not the same and why will
+be explained here. Before a utility is called, there is something called
+a “command parser” that works out what command you want to call. If it
+sees a file pattern such as “*” or “*.sas” or “db*” then the command parser
+will expand this out into a list of all files that match that pattern.
+You could use “echo *” to get a list of files or “echo *.sas” to get a
+list of programs. “echo” does no work except write to the terminal. So
+when you enter the command “ls *” the command parser takes the “*” and
+expands it out into all files and this list gets passed to the “ls” command.
+When “ls” receives a pure file name, there is nothing for it to do except
+list it and so you just get the file name. But in the case of a directory
+then “ls” expands it out into what files it contains. But if you call “ls”
+on its own then the command parser has nothing to expand into a list of
+files so “ls” just acts on the current directory and gives you a list of
+files and directories in it. That is why “ls *” acts differently to “ls”.
+It is all to do with the command parser acting on file patterns.
+<p>You can use many options with “ls”. If used with the “-l” (“long”) option
+then you get out a lot more information about the files and their read/write/execute
+status. Here is the start of a sample list when you use “ls” with the “-l”
+options. The entered command is shown, directly followed by the start of
+the list. Note that the first line gives a total. This is a total number
+of blocks of 512 bytes storage (each file will use up one or a multiple
+of these) used by the listed files. This total is not the number of files
+but will equal the number of files if every file is 512 bytes or less in
+size. You should not rely on this number for anything. Note that the date
+and time is shown for when the file was last updated. The owner or user
+is shown as well as the size of the file in bytes. The first column will
+be explained in a later section. “ls –l” gives you very useful information
+on the files. Of particular importance are the size of the file and the
+date of the file for where you have copies of these files of the same name
+in other directories. A difference of size in two files of the same name
+in different locations will indicate that the file has been changed. A
+difference of date will indicate that one file is newer than another. Note
+that in the command used below the output from the "ls" command is being
+passed to the "more" command by using the symbol "|". This is known an
+"<b>piping</b>" and "|" is known as the "pipe" character. <b>This is the
+main way Unix utilities pass information to each other.</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>$ ls -l | more</tt>
+<br><tt>total 2068</tt>
+<br><tt>-rw-rw-r--&nbsp;&nbsp; 1 rrash&nbsp;&nbsp;&nbsp; rpt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2243 Dec&nbsp; 4 13:42 1</tt>
+<br><tt>-rwxrw-r--&nbsp;&nbsp; 1 rrash&nbsp;&nbsp;&nbsp; rpt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6332 Oct 24&nbsp; 2001 SAS</tt>
+<br><tt>-rwxrwxr-x&nbsp;&nbsp; 1 rrash&nbsp;&nbsp;&nbsp; rpt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1259 Oct&nbsp; 8 14:56 addcr</tt>
+<br><tt>-rwxrwxr-x&nbsp;&nbsp; 1 rrash&nbsp;&nbsp;&nbsp; rpt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+37 Jan 16 09:42 al</tt>
+<br><tt>-rwxrwxr-x&nbsp;&nbsp; 1 rrash&nbsp;&nbsp;&nbsp; rpt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2482 Dec&nbsp; 1 11:53 allfmts</tt>
+<br><tt>-rw-rw-r--&nbsp;&nbsp; 1 rrash&nbsp;&nbsp;&nbsp; rpt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6052 Dec 15 11:26 allfmts.log</tt>
+<br><tt>-rwxrwxr-x&nbsp;&nbsp; 1 rrash&nbsp;&nbsp;&nbsp; rpt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2732 Dec 15 11:29 allfmtsl</tt></td>
+</tr>
+</table>
+
+<p>You can add an option to show “hidden” files. These are files that start
+with a period but it also includes the current directory as just one “.”
+and the parent directory as “..” as shown below.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>$ ls -al | more</tt>
+<br><tt>total 2112</tt>
+<br><tt>drwxr-xr-x&nbsp;&nbsp; 8 rrash&nbsp;&nbsp;&nbsp; rpt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3072 Jan 19 15:52 .</tt>
+<br><tt>drwxrwxrwx+ 98 root&nbsp;&nbsp;&nbsp;&nbsp; other&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1536 Dec 19 16:49 ..</tt>
+<br><tt>-rw-------&nbsp;&nbsp; 1 rrash&nbsp;&nbsp;&nbsp; rpt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+146 Jan 19 10:05 .TTauthority</tt>
+<br><tt>-rw-------&nbsp;&nbsp; 1 rrash&nbsp;&nbsp;&nbsp; rpt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7064 Jan 19 16:09 .bash_history</tt>
+<br><tt>-rw-rw-r--&nbsp;&nbsp; 1 rrash&nbsp;&nbsp;&nbsp; rpt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3334 Jan 19 14:42 .bashrc</tt>
+<br><tt>-rw-rw-r--&nbsp;&nbsp; 1 rrash&nbsp;&nbsp;&nbsp; rpt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2441 Nov 21 15:17 .gv</tt>
+<br><tt>-rwxr--r--&nbsp;&nbsp; 1 rrash&nbsp;&nbsp;&nbsp; rpt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+729 Dec&nbsp; 8 15:48 .profile</tt>
+<br><tt>-rw-------&nbsp;&nbsp; 1 rrash&nbsp;&nbsp;&nbsp; rpt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+60 Oct&nbsp; 9 08:53 .sh_history</tt>
+<br><tt>-rw-rw-r--&nbsp;&nbsp; 1 rrash&nbsp;&nbsp;&nbsp; rpt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2243 Dec&nbsp; 4 13:42 1</tt>
+<br><tt>-rwxrw-r--&nbsp;&nbsp; 1 rrash&nbsp;&nbsp;&nbsp; rpt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6332 Oct 24&nbsp; 2001 SAS</tt>
+<br><tt>-rwxrwxr-x&nbsp;&nbsp; 1 rrash&nbsp;&nbsp;&nbsp; rpt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1259 Oct&nbsp; 8 14:56 addcr</tt>
+<br><tt>-rwxrwxr-x&nbsp;&nbsp; 1 rrash&nbsp;&nbsp;&nbsp; rpt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+37 Jan 16 09:42 al</tt>
+<br><tt>-rwxrwxr-x&nbsp;&nbsp; 1 rrash&nbsp;&nbsp;&nbsp; rpt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2482 Dec&nbsp; 1 11:53 allfmts</tt>
+<br><tt>-rw-rw-r--&nbsp;&nbsp; 1 rrash&nbsp;&nbsp;&nbsp; rpt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6052 Dec 15 11:26 allfmts.log</tt>
+<br><tt>-rwxrwxr-x&nbsp;&nbsp; 1 rrash&nbsp;&nbsp;&nbsp; rpt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2732 Dec 15 11:29 allfmtsl</tt></td>
+</tr>
+</table>
+
+<p>Before we leave "ls" I thought I would introduce you to the "-t" option
+which will order the files in descending datetime order. This is a very
+useful option to find out what files have been recently updated in a directory.
+Again, "<b>piping</b>" is your friend, since the most recent files will
+be shown first so these will be the first to scroll off your screen. Suppose
+you wanted to see the most recent 10 files only then you could <b>pipe</b>
+to the "<b>head</b>" utility like this.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>ls -lt | head -10</tt></td>
+</tr>
+</table>
+
+<p>The "head" utility has an opposite counterpart named "tail". Consult
+the "man" pages if you are interested.
+<h2>
+<a NAME="wc"></a>wc</h2>
+“wc” is short for “word count”. Actually it counts lines, words and characters
+and by default gives you all three. If you just want the number of words
+you call it using the “w” option like this “wc –w “. It normally operates
+on a file you specify but you can also “<b>pipe</b>” into it. This process
+of "<b>piping</b>" is the main way that Unix utilities pass information
+between each other. Suppose you wanted to know the number of files in a
+directory. “ls”, used with no parameters set, will list them all but not
+give you a count of them. But you can “pipe” the file list to “wc” to count
+them using this command:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>ls | wc –w</tt></td>
+</tr>
+</table>
+
+<p>If you count files by piping “ls” output to “wc” then be aware that
+you will get a different count depending on the options you use with “ls”.
+The “-a” option gives you “hidden” files as well and this includes the
+current directory as “.” and the parent directory as “..”. The “-l” option
+will give you a line at the start giving you the total number of files.
+In this case, if you were counting lines of output and assumed this was
+the number of files then you would get one more due to this total line
+shown at the start.
+<p>Note that if some of your file names contain a space then counting the
+words will not give you the number of files. It is best to never have file
+names on Unix that contain a space. It can cause problems where you least
+expect them to occur, since many user-written utilities were not designed
+to deal with this situation.
+<h2>
+<a NAME="grep"></a>grep</h2>
+“grep” is a utility that searches for pattern matches in a file or list
+of files. It stands for “generalized regular expression pattern-matcher”.
+It does not just search for a string that you specify. It searches for
+a regular expression that you specify. It is important to understand the
+difference. Some characters in regular expressions have a different meaning.
+For example, “.” stands for “any single character” and not a period. If
+you want to search for a period then you have to put an escape character
+in front of it. Suppose you wanted to search a program for the string “der.”
+(“der” followed by a period) then the string you would specify to grep
+is “der\.”. The “\” is an escape character and tells grep that you want
+the actual character you specify. So to search all programs for this string
+you would type in the command “grep 'der\.' *.sas“. If you missed out the
+escape slash then you would get a match on “der “ (“der” followed by a
+space) as well.
+<p>Again, you can use options with this command. A very useful option is
+the “c” option which instead of giving you the matching lines gives you
+the count of matching lines in each file. The same command as above to
+give just a count would be “grep -c 'der\.' *.sas”. This will also give
+you a zero count for those files that did not contain your regular expression
+in any line. You will see that the file names end in a colon followed by
+the count.
+<p>Taking the previous example a little further, suppose you wanted to
+find out which programs did not contain the regular expression then you
+could select only those output lines that ended in “:0” by using this command
+“grep -c 'der\.' *.sas | grep ':0$'”.&nbsp; What this does is to pipe it
+to grep again and to select only those lines that end in “:0” (the “$”
+sign means “ends with”).
+<p>Taking the previous example one extra stage, suppose you only wanted
+a list of the files that had a zero count as in the above but you did not
+want to see the “:0” at the end. There is no option in “grep” to switch
+this off but you could <b>pipe</b> the list to a utility called sed (stands
+for “stream editor”) to replace the “:0” ending with nothing. The command
+then becomes:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>grep -c 'der\.' *.sas | grep ':0$' | sed 's/:0$//'</tt></td>
+</tr>
+</table>
+
+<p>A useful option is “-v”. This selects lines that do not contain the
+regular expression you supply. And another option you will use is “-i”
+which tells it to “ignore” case. You can use these options together. For
+example, the following command will return all lines in the file date.txt
+that do no contain the word “date” in upper or lower case or any combination
+of upper or lower case:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>grep -iv 'date' date.txt</tt></td>
+</tr>
+</table>
+
+<p>If you just want a list of files that contain the string or regular
+expression you are looking for then use the -l option ("l" for "list").
+<h2>
+<a NAME="fgrep"></a>fgrep and egrep</h2>
+“fgrep” and “egrep” are later versions of “grep”. There is an important
+difference between them. What they both have in common is that you can
+put the patterns you are searching for in a file, instead of having to
+type them in each time. You refer to this file using the “-f” option like
+this.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>fgrep –f $HOME/search.lst *.log</tt></td>
+</tr>
+</table>
+
+<p>The important difference between “egrep” and “fgrep” is that “fgrep”
+uses literal matching of strings and not regular expression matching. “egrep”,
+on the other hand, uses regular expressions, but slightly extended regular
+expressions such that “|” means “or” (it does not act as a "pipe" character
+when used like this). Also “?” and “+” take on a special meaning. For example,
+the following will pick out any line with “one” or “two” or “three” in
+it:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>egrep 'one|two|three' *.sas</tt></td>
+</tr>
+</table>
+
+<p>For more information on “fgrep” and “egrep” (and its extended regular
+expressions), consult the "man pages".
+<p>Although the “grep” you have access to does not allow for your patterns
+to be in a file, there is another version of “grep” that does. This lives
+at /usr/xpg4/bin/grep. If you use this then your matching patterns will
+be treated as ordinary regular expressions and not extended ones as for
+egrep. You can always use it, like any other utility, if you specify its
+full path name.
+<h2>
+<a NAME="patt"></a>Pattern Matching vs. Regular Expressions</h2>
+It is easy to confuse “regular expressions” with “pattern matching” but
+they are two different things. Consider a directory where a number of files
+existed with the extension “.log”, then you could list them with the command
+“ls *.log”. This is an example of pattern matching. But if you tried to
+select them with a regular expression like this “ls | grep '*.log' “, then
+you most likely would not get anything selected. You are using the same
+characters but are getting different results. For Regular Expressions,
+“*” means “zero or more of the previous character”, but if it is the first
+character then it just means an asterisk. For patterns, a “*” means any
+string of characters that might also be the null string (i.e. not there).
+For Regular Expressions, a “.” means any character. For Pattern Matching
+it means itself (a period). So the results you get are different. If you
+tried to list files like this “ls .log” then again you would likely get
+a message saying the file “.log” does not exist. The reason being that
+for pattern matching, the first character would have to be a “.”.&nbsp;
+But if you used this command “ls | grep '.log'” or better still, to match
+the “.” literally, “ls | grep '\.log'” you would get matches. This is because
+“grep” is looking for a match in any position in the name. For pattern
+matching, if it ends with “log” then the thing it matches must also end
+with “log”. For regular expressions, you have to use a trailing “$” if
+you want the string to be at the end.
+<p>Suppose you wanted to list all the log files that started with a “c”
+then you would use “ls c*.log”. If you wanted to select them using “grep”,
+following the same rule exactly, then you would have to do it with “ls
+| grep '^c.*\.log$' ”. So you see there is a big difference between pattern
+matching and regular expressions.
+<h2>
+<a NAME="regex"></a>Beyond "regular expressions"</h2>
+Regular expressions are so useful that people built extra functionality
+on top of the original functionality. There are now "extended regular expressions"
+and "perl regular expressions". These later supersets of the original functionality
+are far more powerful and useful. To give an example of how the functionality
+has been extended, you can now match on what is <b>not</b> a regular expression
+using the "<b>(?!RE)</b>" notation (where "RE" is the regular expression).
+Several programming languages allow you to use them. If you are a sas programmer,
+for example, you can use "perl regular expressions" in the functions prxparse()
+and prxmatch(). To gain full benefit from this you will need a good tutorial.
+I currently recommend the web site you can link to <a href="http://www.regular-expressions.info/" target="_blank">here</a>.
+For those who know "regular expressions" but not the features of the extended
+functionality now available, you can link to a useful reference page on
+that same web site <a href="http://www.regular-expressions.info/refadv.html" target="_blank">here</a>.
+<h2>
+<a NAME="more"></a>more</h2>
+“more” lists a page full of information and if there is “more” to come
+it waits for your response. If you press ENTER then it will give you one
+more line. If you press the space bar then it will give you the next page.
+This utility can act on a file to list its contents but there are better
+utilities than this to do so. “dtpad” is a simple editor that is much better
+for this.&nbsp; Instead, you usually pipe into “more” if you might have
+more than one page of information and you do not want to miss what is shown
+first. For example, if you were to list the contents of the /usr/bin directory
+using “ls /usr/bin” then you would likely get more than one page of information
+and just end up with the last page and miss what was shown at the start.
+Instead you could pipe it to “more” like this: “ls /usr/bin | more”.
+<h2>
+<a NAME="mkdir"></a>mkdir</h2>
+“mkdir” is short for (“make directory”). It creates a directory that you
+specify. You normally do this in a “parent” directory to create a subdirectory.
+If you were in your home area and wanted to create a sub-directory named
+“temp” then you could do this by typing in the command “mkdir temp”. Note
+that if a file already existed called “temp” then you would get an error
+message even if the current “temp” was a file and not a sub-directory.
+Directories are just special types of files.
+<h2>
+<a NAME="rmdir"></a>rmdir</h2>
+This is the opposite of “mkdir”. It is for deleting a directory. It will
+only delete an empty directory. If files exist in the directory then you
+will get an error message. If you want to delete all files and directories
+and all sub-directories then you should use the “rm” command with the “-r”
+option as described in the “rm” section. You should take care that you
+are in the correct location before issuing this command.
+<h2>
+<a NAME="cp"></a>cp</h2>
+“cp” stands for “copy”. It copies files. The first-named file is what it
+copies from and the second-named file is what it copies to. It can be used
+with parameters and the most useful of these is the “-i” option. “i” stands
+for “interactive”. If your copy command would overwrite a file already
+there then it will prompt you to ask you if you really want to do it. There
+is also the “-p” option where the “p” stands for “preserve”. “-p” most
+importantly preserves the date of the file. This is important because it
+shows you when the file was last updated or “how old” it is. If you are
+copying somebody else’s file to a new location you should use the “-p”
+option so that the date information is preserved. To copy somebody else’s
+program from the parent directory to the current directory then do it like
+this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>cp –pi ../program.sas .</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="mv"></a>mv</h2>
+“mv” is short for “move”. It “moves” files from one place to another. It
+is like doing a copy using “cp” but it does not leave the file in the old
+location. It is better to use “cp -p” and then to delete the original file
+when complete.
+<h2>
+<a NAME="rm"></a>rm</h2>
+“rm” is short for “remove”. It deletes a file. If you use it with the “-i”
+option (“interactive”) then it will prompt for confirmation before deleting.
+If you use it with the “-f” option then it will delete files without asking
+for confirmation. If you use it without any options, then for some Unix
+sites it will prompt for confirmation and for others it will not, so it
+is always best to specify the option yourself.
+<p>Using “rm” with the “-r” option is a very powerful form of the delete
+command that will delete all files and subdirectories. You must take care
+that you are in the correct directory and that you really intend to delete
+everything in a subdirectory and all subdirectories below that. You use
+it like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>rm –r directory</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="create"></a>create a file</h2>
+There is no command to specifically create a file. A file is automatically
+created when output is written to it. If you needed to create a file with
+nothing in it, then you could do it a number of ways. Here are a few (for
+the "touch" command, consult the "man" pages):
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>echo –n > newfile</tt>
+<br><tt>echo 2>newfile</tt>
+<br><tt>> newfile</tt>
+<br><tt>: > newfile</tt>
+<br><tt>touch newfile</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="cat"></a>cat</h2>
+“cat” is short for “catenate”. You can use it to list a file to the terminal.
+“cat test.sas” will list the file test.sas to the screen. You can use it
+to list a number of files. To list all .sas files to the screen then use
+“cat *.sas”. You can use it with <b>redirection</b>. Writing to the screen
+is usually not very useful. Writing a lot of information to a file is more
+useful. Suppose you wanted to combine all your postscript files into one
+big file then you could do it like this “cat *.ps > bigpsfile”. Note that
+“<b>redirection</b>” is not the same as “<b>piping</b>” and it uses a “>”
+sign instead of a “|” sign. “<b>Piping</b>” is for passing information
+from one utility to another. “<b>Redirection</b>” is for writing to a file
+or reading from a file. If you are reading from a file then use “&lt;”
+instead of “>” when you are writing to a file. If you want to keep what
+is in a file and write to the end of the file then use “>>” instead of
+“>”.
+<p>“>” can also be written as “1>”. The “1” is implied when you use “>”.
+The “1” refers to “standard output”. It is where all normal output goes.
+There is a “2” as well that refers to “standard error”. It is where all
+the error messages are (supposed) to go. You can redirect error messages
+to a file using “2>”. Sometimes you will want to discard some error messages.
+For example, suppose you had a list of Unix commands and some of these
+just deleted certain types of files which may or may not exist. Assuming
+you did not want to see any error messages for the files that you tried
+to delete but did not exist, then you can redirect “standard error” to
+the Unix trash can like this “2> /dev/null”.
+<p>In some cases you might want to redirect standard output to standard
+error. For example, suppose you had detected an error condition and you
+wanted to write out an error message, then you could write out a message
+using “echo” like this…
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>echo "Error detected"</tt></td>
+</tr>
+</table>
+
+<p>…but the output would go to standard output. Standard output is where
+all the correct information should be written to. Error, warning or other
+diagnostic information should be written to standard error, but then somebody
+might have redirected standard error using “2>”. You would need to send
+it to the same place that the error messages are supposed to go to. You
+can do this by redirecting standard output to the standard error location
+like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>echo "Error detected" 1>&amp;2</tt></td>
+</tr>
+</table>
+
+<p>Another use of “cat” is to write a file to the terminal and use the
+“-v” option to show up non-printable characters which would otherwise be
+invisible. If a file on Unix started off on a Windows platform then there
+could be carriage return characters at the end of some or all of the lines.
+“cat –v filename” would reveal these characters as a “^M” at the end of
+the line. If these characters exist then it is wise to delete them. How
+to do this will be described in the section on “special characters”.
+<h2>
+<a NAME="cntl"></a>Cntl-C and Cntl-D</h2>
+These are not commands but rather ways of breaking out of commands. If
+you were to type in “cat” as a command, then because you have not told
+it the file to act on, it assumes that you are going to enter information
+from “standard input”, which is the keyboard. If you enter a line of text
+and press ENTER then it will echo it to the screen and wait for the next
+input. This will not stop until you stop it. Cntl-D will create an end-of-file
+character that it will accept as the end of your input, and so control
+will be returned to the terminal. If you get “stuck” in a command, which
+can happen if you mistype or maybe forget a file name, and it seems to
+be accepting what you type in, then Cntl-D should end it. The other way
+to get out of a command that works also in cases where you want to stop
+a command that is running, is Cntl-C. Cntl-C stops a process completely.
+<p>Do not use Cntl-Z to stop a command. This only interrupts a command
+and leaves it as a suspended process. These suspended processes can slow
+the Unix system down and you will have to “kill” these processes at some
+stage. Some Unix systems are set up so that you can not log off if you
+have suspended processes so you have to find out what they are and “kill”
+them. Listing processes and “killing” them is covered later in this document.
+<h2>
+<a NAME="diff"></a>diff</h2>
+“diff” is short for “differences”. It is very useful for listing out the
+differences between two sets of output. It is only for use on text-type
+files. You use it in the form “diff test1.txt test2.txt”. If it finds a
+difference then it will show lines in the first file with a “&lt; “ in
+front and lines in the second file with a “> “ in front. Above the two
+lines will be a line number followed by a “c” followed by a character number
+in the lines it is displaying. This is to tell you where it found the difference.
+<p>Options can be used with "diff" that affect how the comparison is done.
+The "-b" option will treat multiple blanks as single blanks, for example.
+For a full list of options, consult the "man pages".
+<p>For standard output listing then you will have lines that are always
+different because they have the date and time in it. The “<b>idiff</b>”
+utility is an in-house written extended version of “diff” where you can
+specify a start pattern for lines you want ignored. All it does is use
+sed to blank out these lines and write the two files to temporary files
+and then does the comparison between the two temporary files using "diff"
+with the "-b" option set. For comparing the contents of two directories
+there is "<b>ddiff</b>" as well ("<b>d</b>irectory <b>diff</b>"), another
+in-house written utility. You can link to these two utilities below to
+read about how to use them.
+<br><a href="scripts/idiff" target="_blank">idiff</a>
+<br><a href="scripts/ddiff" target="_blank">ddiff</a>
+<h2>
+<a NAME="cmp"></a>cmp</h2>
+"cmp" (an abbreviation of "<b>c</b>o<b>mp</b>are") is another tool for
+comparing files except it will work on all types of files and not just
+text-type files like "diff" does. If your file is a text-type file then
+you should continue to use "diff" but if you wanted to compare other file
+types, such as database files (presumably non-text files) then you would
+need to use "cmp". And if a non-text file then the actual details of the
+differences might not mean much to you - instead you just want to know
+whether two files are different or not and no more. To find out just whether
+there are any differences then you can use the "cmp" command with the "-s"
+option (I guess the "s" stands for "silent"). Then what you do is <b>check
+the return code</b> for the command. This is something that you are perhaps
+not aware of but commands have a return code to tell you what has happened.
+You can access this return code using "<b>$?</b>" for bash type shells
+directly after the command has run (if you leave it too late it might be
+the return code of something that ran after the command you are interested
+in). If "cmp" finds that the two files are the same then the return code
+will be "0". If the two files are different then the return code will be
+"1". If something went wrong with the "cmp" utility while the comparison
+was being done then the return code will be greater than "1". Here is the
+"cmp" command at work, run againt files on my PC, but not using the "-s"
+option so you can see the messages. The expected outcome is in a comment
+(after a "#") and I have run the "<b>echo $?</b>" command to see what return
+code I actually got. Note that I am combining two Unix commands on one
+line using a semi-colon separator.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>$ cmp roland.txt roland2.txt ; echo $? # I know these files are
+different</tt>
+<br><tt>roland.txt roland2.txt differ: char 1, line 1</tt>
+<br><tt>1</tt>
+<p><tt>$ cmp roland.txt roland3.txt ; echo $? # These file are the same&nbsp;</tt>
+<br><tt>0</tt>
+<p><tt>$ cmp roland.txt roland4.txt ; echo $? # The second file does not
+exist</tt>
+<br><tt>cmp: roland4.txt: No such file or directory</tt>
+<br><tt>2</tt></td>
+</tr>
+</table>
+
+<p>Now here is something that might worry you a little bit, depending on
+what job you do. I work as a clinical trials sas programmer and it worries
+me a lot so I am telling about it here. In that job there is no way you
+can allow the results of a clinical trial to get stored in an altered way,
+but that is exactly what might be happening on very rare occassions. That
+is that the <b>copy</b> command, "cp", on Unix platforms <b>has no "verify"
+option</b> that you can use to tell you if the copy you are making is a
+perfect one (on Windows platforms you could specify a "verify" option).
+If&nbsp; "cp" encounters a problem that it<b><i> knows </i></b>about during
+its execution then it will give out a message and return a non-zero return
+code that you can test just like you can see I have tested "$?" for "cmp"
+above. But who checks this? Worse still, it can return a zero return code
+but the <b>copy might be corrupted</b> that nobody knows about. The only
+way you can be sure this very valuable data has been copied correctly is
+to run the "cmp" command against the two files (the orginal and the copy)
+to make sure they are the same after the copy has been made. But who does
+this? Nobody, I guess. <b>But there is another problem lurking here.</b>
+If you run "cmp" on a copy you have just created, part of that file or
+even all of it will be sitting in the disk cache so when you run "cmp"
+it uses the part of the file in the disk cache and not the file that has
+been written to disk so doing the comparison immediately after creating
+a file is a waste of time. You have to do it in a way such that you are
+sure the copy has been committed to disk and is no longer in the disk cache.
+<p>If these files are extremely important and an organization makes copies
+a lot of times using "cp" then some day, somewhere, somebody is going to
+discover than one or more of these files has been corrupted. Worse than
+that, your files may get copied around by the systems administrator without
+your knowing about it, during server changeover or routine overnight maintenance,
+and if they do not know which of your files are very important, and are
+not validating the copies they are making, then your files might become
+corrupted in very rare circumstances without your having any indication
+that anything has changed.
+<p>But all is not lost. If you are copying a batch of large files then
+when all the copies are made, you can be fairly sure that the first file
+you copied has been flushed from the cache so you are ready to do the compares.
+How to do a bulk "cmp" is covered in the "xargs" section next.
+<h2>
+<a NAME="xargs"></a>xargs</h2>
+"xargs" is a utility that many Unix users try to ignore because they think
+it is a bit esoteric and can't quite work out why it is there. They will
+happily regard it as being in the "advanced" category and so never bother
+to learn about it but that would be a mistake. What "xargs" essentially
+does is "pass arguments". It is a way of passing a list of things coming
+out of one utilty over to another. Now you would think that all utilities
+should be able to handle this naturally but there are good reasons why
+it isn't so. I will give you a practical and important example so that
+you realize that you must use "xargs" in some situations. The example I
+am going to give you is the comparing of a list of files using "cmp" after
+you have done a bulk copy. You should already know that for the "cp" command
+you can do a bulk copy of files to a directory in this form:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>cp r*.txt txtdir/</tt></td>
+</tr>
+</table>
+
+<p>...but once you had done the copy and these were important files and
+the copy had to be validated as correct using "cmp" then how would you
+run the "cmp" command on these files? The "cmp" command will only accept
+the two file names it is going to compare as arguments so how can you feed
+it "r*.txt" and tell it about the other directory and have it compare just
+those files you copied across? The answer is that this is not possible
+unless you use "xargs". It so happens that I have set this up on my PC
+and there are indeed some files of the form "r*.txt" that I have copied
+to a directory "txtdir" so here is how I run the "cmp" on each of them.
+Unfortunately there is no way to get it to show the return code from the
+"cmp" command (unless I write a script for "xargs" to call) but you can
+see it really is running "cmp" properly because it spotted the deliberate
+change I made to roland2.txt after I did the bulk copy. I have used the
+"-t" option (trace mode) with "xargs" so that it echoes each command to
+standard error before actually running the command.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>$ ls -1 r*.txt | xargs -t -I {} cmp {} txtdir/{}</tt>
+<br><tt>cmp roland.txt txtdir/roland.txt&nbsp;</tt>
+<br><tt>cmp roland2.txt txtdir/roland2.txt&nbsp;</tt>
+<br><tt>roland2.txt txtdir/roland2.txt differ: char 1, line 1</tt>
+<br><tt>cmp roland3.txt txtdir/roland3.txt&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>I would dearly like the return code to be echoed after each "cmp" had
+been run so it would give me positive feedback when "cmp" found no differences
+so I have written a script named <a href="scripts/cmprc" target="_blank">cmprc</a>
+("cmp" plus the return code) for this. It echoes each "cmp" command it
+will run so I don't need the "-t" option with xargs so here is "xargs"
+calling my "cmprc" script and the output produced.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>$ ls -1 r*.txt | xargs -I {} cmprc {} txtdir/{}</tt>
+<br><tt>cmp roland.txt txtdir/roland.txt</tt>
+<br><tt>rc=0</tt>
+<br><tt>cmp roland2.txt txtdir/roland2.txt</tt>
+<br><tt>roland2.txt txtdir/roland2.txt differ: char 1, line 1</tt>
+<br><tt>rc=1</tt>
+<br><tt>cmp roland3.txt txtdir/roland3.txt</tt>
+<br><tt>rc=0</tt></td>
+</tr>
+</table>
+
+<p>Quite apart from detecting corrupted copies (which will be extremely
+rare), you can use the above method to "make sure nothing has changed"
+in a directory compared to another directory. An awareness of "xargs" for
+passing arguments from one utility to another is extremely useful.
+<p>There is another command you can use that is similar to "xargs" in some
+ways and that is "apply" (see "man" pages).
+<h2>
+<a NAME="tee"></a>tee</h2>
+Still on the theme of doing a bulk "cmp" on files, there is a another very
+simple utility named "tee". You can think of it like a "T" junction in
+a road where traffic can now go in two directions. What "tee" does is write
+standard input to standard output but also writes it to a file. So this
+way you can see stuff on your screen while it is writing to a file at the
+same time. In the last example I used in the "xargs" section I was running
+a bulk compare. If it is an important job then I would like to keep a log
+of what it found but it would be nice to see it on the screen as well while
+it is running. So here is the previous command run again but writing the
+output to "cmp.log". Since "cmprc" writes all its diagnostics to standard
+error and not standard output, I will have to reroute standard error to
+standard output using "2>&amp;1" before I pipe it to "tee". I will "cat"
+the contents of "cmp.log" to standard output to show you that this information
+on the screen was indeed written away to that log file as well.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>$ ls -1 r*.txt | xargs -I {} cmprc {} txtdir/{} 2>&amp;1 | tee
+cmp.log</tt>
+<br><tt>cmp roland.txt txtdir/roland.txt</tt>
+<br><tt>rc=0</tt>
+<br><tt>cmp roland2.txt txtdir/roland2.txt</tt>
+<br><tt>roland2.txt txtdir/roland2.txt differ: char 1, line 1</tt>
+<br><tt>rc=1</tt>
+<br><tt>cmp roland3.txt txtdir/roland3.txt</tt>
+<br><tt>rc=0</tt>
+<p><tt>$ cat cmp.log</tt>
+<br><tt>cmp roland.txt txtdir/roland.txt</tt>
+<br><tt>rc=0</tt>
+<br><tt>cmp roland2.txt txtdir/roland2.txt</tt>
+<br><tt>roland2.txt txtdir/roland2.txt differ: char 1, line 1</tt>
+<br><tt>rc=1</tt>
+<br><tt>cmp roland3.txt txtdir/roland3.txt</tt>
+<br><tt>rc=0</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="awk"></a>awk</h2>
+“awk” isn’t short for anything meaningful. The letters “a”, “w” and “k”
+are the first letters of the names of the three people who wrote this utility.
+It is a stream editor like sed but much more powerful. Most people use
+it for separating an input string into fields and printing out maybe only
+one or two of the fields.
+<p>The following command was used earlier, where the last “sed” step was
+to drop the “:0” from the ends of a list of files and just leave the file
+name. “awk” can be used instead in the last step. Here is the original
+command again, using “sed” in the last step:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>grep -c 'der\.' *.sas | grep ':0$' | sed 's/:0$//'</tt></td>
+</tr>
+</table>
+
+<p>If there is only one “:” in each line then we can tell “awk” that the
+delimiter is “:” using the option “-F:” and tell it we want the first field.
+So we can use the following command in place of the above command:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>grep -c 'der\.' *.sas | grep ':0$' | sed 's/:0$//'</tt></td>
+</tr>
+</table>
+
+<p>Here is another example using “awk” run against the Unix password file
+to match the first field with the user name and print out the fifth field,
+which is the full name of the person, held in the password file:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>awk -F: '{if ($1=="'$USER'") {print $5}}' /etc/passwd</tt></td>
+</tr>
+</table>
+
+<p>There are newer versions of “awk” that have extra capabilities. There
+is “nawk” (“new awk”) and “gawk” (“GNU awk”). Both “nawk” and “gawk” have
+a global substitution function that you can define hexadecimal characters
+to. Try typing in this command, for example:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>echo * | gawk '{gsub(" ","\x0a")} {print $0}'</tt></td>
+</tr>
+</table>
+
+<p>…and compare it with the output from the “ls” command used with the
+“-1” option:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>ls -1</tt></td>
+</tr>
+</table>
+
+<p>If the above example with “gsub” works with “awk” then you will probably
+find that the systems administrator has replaced the original “awk” utility
+with a symbolic link to “gawk” or “nawk”. If you can locate where it is
+stored then using “ls –l” will show you the long form of file listing and
+if it is a symbolic link then the first character of the “-rwxr-xr-x” will
+not be a “-“ but will be an “l” and the very last column will show the
+link as “awk -> gawk” or something similar.
+<p>For more information on “awk” see “man awk” and for “nawk” see “man
+nawk”. This will give you a lot of information and you should realize that
+these are very powerful utilities, but you will mainly make use of it to
+identify fields.
+<h2>
+<a NAME="cut"></a>cut</h2>
+“cut” is another useful utility that you can use for selecting fields based
+on a supplied delimiter. It is like “awk” in that regard but “cut” is a
+very simple and limited utility. You can not use it to test for equality,
+like you can with “awk”. You just tell it the delimiter and ask for the
+field or fields like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>cut –d: -f5 /etc/passwd</tt></td>
+</tr>
+</table>
+
+<p>You can also "cut" based on column positions. You can learn more about
+it using “man cut”.
+<h2>
+<a NAME="lns"></a>ln –s</h2>
+“ln” is short for “link” and the “-s” option used with it is short for
+“symbolic”. Used together you can think of it as “create symbolic link”.
+Suppose there are some useful utility macros in a central directory but
+you need them to be in your project macro library, for some reason, rather
+than adding the central library to your sasautos path. Making copies of
+them and putting them in your project library is one way of doing this,
+but as macros can be changed and then you might end up with two different
+versions of the same macro. Another way is to create a “link” from your
+project library to the central library where the macro is stored. That
+way there is only one copy. But, of course, if the macro gets changed then
+it might no longer work the way it did when you used it before. So creating
+symbolic links, rather than copying files, has its pros and cons and you
+should be aware of this.
+<p>When you set up a symbolic link you normally keep the name of the file
+the same, except have it in a different directory. So to create a symbolic
+link to a macro in a project library and have it point to a file the same
+name in a central library then you would make your project directory your
+current directory and enter the command:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>ln –s /central/library/macro.sas macro.sas</tt></td>
+</tr>
+</table>
+
+<p>If you edit a file that is a symbolic link then you will edit the original
+file. If you delete a file that is a symbolic link then you will not delete
+the original file. You will just delete the link to it.
+<h2>
+<a NAME="find"></a>find</h2>
+This utility is used by system administrators to find files either by name
+or creation date or to find files “newer” than another file. It will search
+for these files down all subdirectories. It can be used with many options.
+You can read about these in the “man find” pages. You will most often use
+it to locate programs that you have lost. Perhaps you know what project
+area it is in but you do not remember what subdirectory or subdirectory
+within subdirectory it is in. “find” is the tool you use to find them.
+Suppose you wanted to find all programs of the form di*.sas from the current
+directory and searching all subdirectories then you would do it like this
+(note that you <b>must</b> put file patterns you give to the "find" -name
+parameter in <b>single quotes</b>):
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>find . -name 'di*.sas'</tt></td>
+</tr>
+</table>
+
+<p>If you wanted to “find” what subdirectories you had from the current
+location downwards then you could do it like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>find . –type d</tt></td>
+</tr>
+</table>
+
+<p>Supposing you wanted to search for the string “labs” in all programs
+of the form di*.sas from the current directory downwards, the following
+would not work:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>find . -name 'di*.sas' | grep 'labs'&nbsp; # this does NOT work</tt></td>
+</tr>
+</table>
+
+<p>The reason the above does not work is because it searches for the string
+“labs” in the list of files that comes out of the “find” command rather
+than in the files themselves. But the following would work:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>grep 'labs' $(find . -name 'di*.sas')</tt></td>
+</tr>
+</table>
+
+<p>The reason the above works is that if <b>$(....)</b> is encountered
+in a Unix command, then what is enclosed in those brackets gets performed
+first. This is called <b>substitution</b> and is an important way that
+Unix commands pass information to each other. The <b>$( )</b> contains
+the “find” command and so this results in a list of files. “grep” then
+understands this list of files as the list of files it has to search in
+and so will search them and return the results.
+<h2>
+<a NAME="amp"></a>&amp;</h2>
+If you follow a command or list of commands with a “&amp;” then you “spawn”
+a sub-process that is done in the background. This allows you to keep typing
+in commands while the sub-process is running. Suppose you are editing a
+file using dtpad then “dtpad file.txt &amp;” would allow you to continue
+to use the terminal so you could swap between editing your file and running
+commands.
+<h2>
+<a NAME="nice"></a>nice</h2>
+You might run a suite of programs in background using “&amp;” as the last
+character in the command. If the machine is busy and the programs were
+very CPU intensive then you could reduce the impact on other users of the
+system
+by running it as a “nice” job. “nice” jobs run with a lower CPU priority.
+All you have to do is put the word “nice” in front of your command like
+this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>nice sas sasjob &amp;</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="nohup"></a>nohup</h2>
+When you run a job as "nice" it is usually because it is a very long-running
+job. Maybe the job will take a day to run and before it ends you will have
+logged off and gone home. The problem with logging off is that the system
+might send out a "hang up" command when you log off to make sure all your
+processes are stopped and if it does it will terminate your "nice" job,
+which you do not want. To prevent this from happening, use the "nohup"
+(which means "no hang-up") command at the start like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>nohup nice sas sasjob &amp;</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="ps"></a>ps</h2>
+“ps” is short for “process status”. It lists processes running on Unix.
+Used without options it will show the status of every process running under
+Unix which could be a large number. To see just your own processes then
+you should use this command the following way, where the last entry is
+your userid:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>ps -fu rrash</tt></td>
+</tr>
+</table>
+
+<p>To list another user’s processes then put a different userid at the
+end.
+<p>The "f" is an option that means "full". It goes beyond the "l" option
+which means "long". The "u" option means "user" or in other words the "user-id".
+Of course, if you have an option for user then you have an option "p" for
+"process-id" instead and this will look like the following:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>ps -pu 12345</tt></td>
+</tr>
+</table>
+
+<p>You should remember "f" for "full" and "u" for "user-id" and "p" for
+"process-id" and sometimes look at the "man pages" for the many options
+you can specify with this command. It is a very important command. But
+to help you for the processes owned by you, a utility named <a href="scripts/myps" target="_blank">myps</a>
+has been written to list out your own processes. You can also list out
+another person's processes very easily.
+<h2>
+<a NAME="kill"></a>kill</h2>
+You can sometimes end up with old processes on Unix. Some of these might
+still be running and using CPU and maybe impacting the system. Others might
+be dead processes but can still slow the system down. But you can “kill”
+these old processes. If you use “ps –lf –u rrash” (put your own userid
+at the end) or the simpler “myps” then one of the columns will have the
+header “PID”. This is the process id. Suppose your process with process
+id 12345 needs to be terminated, then you could do it like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>kill 12345</tt></td>
+</tr>
+</table>
+
+<p>...then you could list your processes again in a few seconds to make
+sure it is gone. You should always try to “kill” processes in this way,
+rather than the way described next, because it will hopefully allow resources
+used by the process to be released back to the Unix system in a controlled
+way. If your process does not go away then you can force it to go away
+using the “-9” option with the “kill” command like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>kill -9 12345</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="spec"></a>Special characters</h2>
+If you refer back to the “cat” command in this document, then it states
+that you can show up carriage return characters using the “-v” option.
+They show up as “^M” usually at the end of the line. But how would you
+search for these using grep? You can do it but the character you are searching
+for is not “^” followed by “M”. It is a special character. Under the bash
+shell you enter this character by entering Cntl-V with the Cntl key still
+held down when you press the “V” and still holding down the Cntl key you
+then press “M”. This then shows as “^M”. You can then search for this special
+character. To get a count (using the -c option) of these characters in
+any files in a directory you could use this command:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>grep -c '^M' *</tt></td>
+</tr>
+</table>
+
+<p>… but remember that the “^M” was entered as Cntl-V M (still holding
+down the Cntl key). There is another way you can search for this carriage
+return character using grep and that is using $'\r'
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>grep -c $'\r'</tt></td>
+</tr>
+</table>
+
+<p>...and to show just those file names without the count on the end we
+could use “sed” to replace a regular expression at the end with nothing
+like this:
+<p>Once we know what files contain these carriage return characters then
+it is easy to delete them using “sed” as follows. A new file test3.txt
+is created from the old file test2.txt with these characters removed:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>sed 's/^M//g' test2.txt > test3.txt</tt></td>
+</tr>
+</table>
+
+<p>...again remember that “^M” was entered using Cntl-V M. You can also
+use "\r" to represent the carriage return in the sed expression as follows
+but you should check that it is doing what you expect (and not just removing
+all the "r" characters):
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>sed 's/\r//g' test2.txt > test3.txt</tt></td>
+</tr>
+</table>
+
+<p>These “^M” characters are often result from not setting the right options
+when transferring files from a Windows platform onto a Unix platform using
+“ftp”. It is better if these characters can be avoided since the date information
+for these files are often important and running utilities against them
+at a later date to strip out the “^M” will change the date of these files.
+<h2>
+<a NAME="chmod"></a>chmod</h2>
+“chmod” is short for “change mode”. It is for changing file permissions.
+When you list files using “ls –l” (long form) then at the start of each
+line is a pattern that looks something like “-rw-rw-r--“. The very first
+character is a “d” if it is a directory and a “-“ if it is a file. After
+that are three repeats of three characters that are “rwx” except any of
+these three characters can be a “-“. The three letters “r”, “w” and “x”
+stand for “read”, “write” and “execute”. It tells you whether you can “read”
+the file, “write” to the file or “execute” the file. If one of these characters
+is a “-“ then you can not do that thing. The first set applies to the owner
+of the file. The second set applies to the others in the same group as
+the owner and the third set applies to those outside the group. Looking
+at the example pattern “-rw-rw-r--“ then we see that nobody has “execute”
+permission, the owner has read and write permission, the group members
+have read and write permission and others have read permission only. This
+is the most usual set of permissions for programs since they are not executable
+files (like applications or shell scripts would be) and we want our group
+members to be able to change them if they need to but we don’t want people
+from other groups editing them and changing them. If we think of these
+three sets of characters as three binary numbers with “-“ being “0” and
+a letter being “1” then we have the three numbers 110, 110 and 100 which
+have the octal equivalent 6, 6 and 4. This is compressed into 664 and this
+is the octal representation of the file permission. You can use this number
+or another number with the “chmod” command to set file permissions for
+one or multiple files. You have to be the owner of the file to do this,
+however. To set the permission of all your programs to 664 then enter this
+command:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>chmod 664 *.sas</tt></td>
+</tr>
+</table>
+
+<p>You will get error messages for the programs that are not yours, since
+you are not allowed to change file permissions for those files. But no
+harm will be done and all your own programs will have been changed. There
+is a script called <a href="scripts/myfiles" target="_blank">myfiles</a>
+that has been written to only list out files owned by the invoker so you
+can also do it using that command and it will only act on your own .sas
+files. Note that we are using the <b>$( ...)substitution</b> technique
+again. This is an important way that Unix utilities can pass information
+to each other.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>chmod 664 $(myfiles *.sas)</tt></td>
+</tr>
+</table>
+
+<p>You have to be very careful using the chmod command. Suppose you wanted
+to remove write access for all the files in a directory. You could cause
+problems if you used this command:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>chmod 444 *&nbsp;&nbsp;&nbsp; # NEVER use this command</tt></td>
+</tr>
+</table>
+
+<p>The reason you should never use the command in the above way is because
+it implies that you want to set permission to 444 for every type of file,
+except you maybe do not know what all the files are. If there were any
+scripts then they would no longer work as you will have removed the execute
+permission. And, more importantly, directories are also files that would
+be affected by this command. Directories need execute permission for them
+to work as directories so if you used “chmod 444 *” then people would no
+longer be able to read any directory that you created until you switched
+the execute permission back on. And only the owner can do this or the Unix
+systems administrator. Fortunately there is another way of using “chmod”
+that is much safer for removing write access as follows:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>chmod –w *</tt></td>
+</tr>
+</table>
+
+<p>What the above command does is to remove write access for everybody
+for all files. It will not affect the execute permission of any scripts
+or subdirectories. You can also use this form of the command on single
+files. Suppose you had created a file that you wanted to run as a script
+(it needs execute permission for this) then you could set the permission
+this way:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>chmod 775 myscript</tt></td>
+</tr>
+</table>
+
+<p>Or you could do it like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>chmod +x myscript</tt></td>
+</tr>
+</table>
+
+<p>The second way is probably easier to remember. To find out more about
+the “chmod” command then use “man chmod”.
+<p>You should note that using the “chmod” command like “chmod –w” or “chmod
++w” uses your “umask” value to mask permissions (this will be explained
+in the following section). If you wanted to switch on write permission
+for all files for all users then you would find that “chmod +w *” would
+probably switch on write permission for yourself (the owner) and your group
+because for “others” the write permission might be masked. You can still
+use this method to switch on write for everybody, though, using a letter
+before the “+” or “-“ to say whether it referred to “a” (“all users”),
+“u” (“user/owner”), “g” (“group”) or “o” (“others”). So to switch on “write”
+for everybody, including “others”, you could do it like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>chmod a+x *</tt></td>
+</tr>
+</table>
+
+<p>…or like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>chmod ugo+x *</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="umask"></a>umask</h2>
+“umask” is short for “user mask”. It is very much to do with “chmod”. If
+you type in the command “umask” then it should display “002”. If it does
+not then you have a login member you can edit that gets called every time
+you start a Unix session and you need to add the line “umask 002” to it.
+The Unix system administrator should also be informed as the default should
+be 002 for everybody. “umask” “masks” the bits of the file permissions
+when you create a file for the first time. It stops any utility from switching
+on that file permission when a file is created. It also gets used to mask
+permission changes by the “chmod” command when you use it in the form “chmod
++w” (with no letter preceding the “+” or “-“ sign). It works the same way
+as “chmod” in that the first digit is for the owner, the second for the
+owner’s group and the third for outsiders. If you think of the rwx characters
+as binary then “2” is “w”. So a umask of 002 masks the “w” permission for
+people outside your group. So if you used an editor to create a file, for
+example, that editor might try to make the file readable and writable for
+everybody by setting the file permission (as explained in the “chmod” section)
+to rw-rw-rw- . But if you have a umask of 002 then the “w” permission for
+others is masked and the editor will not be able to switch on that permission.
+So instead of the permission rw-rw-rw- that is was trying to set, it would
+end up as rw-rw-r-- and so people outside your group would not be able
+to edit or overwrite that file.
+<p>If you have a “umask” of 022 then the “w” permission of the group is
+masked as well as the “w” permission of outsiders and nobody in your group
+will be able to edit the file you created. So if you created a program
+then it would mean that nobody else in your group could edit it and make
+changes. This is not a good idea if you are all working together on a project
+so you should, instead, make sure “umask” is set to 002.
+<p>You can set “umask” during your Unix session, if you like, but it is
+normal to have it set to 002 for you by default or to have it in your login
+member as “umask 002”.
+<h2>
+<a NAME="file"></a>file</h2>
+You probably won’t use the “file” command very often. It tells you (or
+at least makes a guess) what the file type is of a file or multiple files
+that you specify following the command. It won’t know that a program is
+a program, for example. It will just think it is text. But then all your
+programs will have the extension “.sas” so you will know anyway. This command
+is more useful for files that do not have file extensions that tell you
+the file type.
+<p>If you try to browse or list binary executable files then it can mess
+up your terminal window with strange flashing characters and from then
+on you have to close the window down. If you are unsure about a file and
+you want to know more about it, then the “file” command is the best and
+safest way to find out. To list all the file types in a directory then
+you could use “file *”. You can pipe the output to “grep” and then it becomes
+more useful. Suppose you have a mix of scripts and other files in a directory
+and you just want a list of the scripts then you could pipe the output
+to “grep” like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>file * | grep ' script'</tt></td>
+</tr>
+</table>
+
+<p>This will give you a list with the file name followed by a colon plus
+the description mentioning the word “script”. If you just wanted the file
+name and nothing else then you could drop the colon and everything after
+it.&nbsp; There are various ways of doing this and you should know more
+than one way already after reading this document. Here is a solution using
+“sed”:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>file * | grep ' script' | sed 's/:.*$//'</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="cnf"></a>"command not found” messages</h2>
+If you mistype a command such as typing in “gref” when you intended to
+type in “grep” then you will see a message on your screen something like
+“bash: gref: command not found”. This is to be expected if you have mistyped
+a command, since the command parser will not guess what you should have
+typed in and will look for what you actually typed and there is maybe no
+command that matches. But sometimes you will type in a command that you
+know exists as being spelled like that (bear in mind that Unix is case
+sensitive so you must get the case right) but you will get the “command
+not found” message. It works for another person but does not work for you.
+This will be explained here. The cause of it is the setting of a system
+environment variable named PATH (capital letters). PATH has defined to
+it a list of directories in which to search for commands. If another person
+has different directories defined to it then they may be able to access
+commands that you can not. Unix uses this system environment variable to
+search for commands.
+<p>To list all your system environment variables then enter the command
+“env”. You may see a lot of these when you do this. They are shown as the
+name followed by “=” followed by what they are set to. Suppose you just
+wanted to see what PATH was set to. You could pipe it to grep like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>env | grep '^PATH'</tt></td>
+</tr>
+</table>
+
+<p>(the “^” sign above is a regular expression special symbol meaning “line
+beginning with”). That will show you just that line but the more common
+way to do it would be like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>echo $PATH</tt></td>
+</tr>
+</table>
+
+<p>Putting the “$” in front of the variable is to refer to its contents
+and “echo” just displays it on the screen. The “$” for a system environment
+variable is rather like a “&amp;” for a macro variable. You put the sign
+in front to refer to its contents. You could also do the same with this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>echo ${PATH}</tt></td>
+</tr>
+</table>
+
+<p>The above is a longer form of the same thing and you would use it if
+you were following this variable with characters that it would confuse
+as part of the name of the variable. For example, $PATHXX would not resolve
+to anything as the variable PATHXX had not been set up but ${PATH}XX would
+work. Note that these brackets must be “curly” brackets.
+<p>Suppose your PATH variable was set differently to other people in your
+group and so you could not run commands that your group members were running
+and you wanted it changed so that you could. PATH values are usually set
+for you by default but you can set your own values as well. It is likely
+that your group members have reset PATH to a different value in their Unix
+login member but you should check whether they had done this. This resides
+in the home directory. If you go there and list out the files, including
+the “hidden” ones, using “ls” with the “-a” option, you will see a member&nbsp;
+called&nbsp; “.bashrc”. This is the login member you can edit (at most
+sites you are not allowed to edit this member and are only allowed to edit
+one called .bashrc_own). You would then include the line that sets PATH
+the same as your other group members and remove any other lines that do
+the same. This member only takes effect at login time so next time you
+logged on then PATH would have the same setting as your group members and
+you should be able to access the same Unix commands as they do.
+<p>Note that the setting of PATH in your login member is not recommended
+and is to be avoided if at all possible. It is better if everybody in your
+group gets a suitable setting for PATH by default.
+<h2>
+<a NAME="env"></a>User-defined system environment variables</h2>
+While on the subject of editing the .bashrc member, it is common practise
+for people to define their own system environment variables to give meaningful
+names to project directories they are working on. Here is an example of
+some lines added to set up these variables:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>pk04p=/data/sas/xxx/pr0g/drug/study/inc/dev</tt>
+<br><tt>pk04d=/data/sas/xxx/data/drug/study/inc/der</tt>
+<br><tt>pk04s=/data/sas/xxx/data/drug/study/inc/stat</tt>
+<p><tt>export pk04p pk04d pk04s</tt></td>
+</tr>
+</table>
+
+<p>Note that in the above, not only should the variables be set but they
+should be “exported” as well. This is so that any background sub-sessions
+are also aware of their settings. You only need to export the variables
+once after they have been created. If you change their values after that
+then so long as they have already been exported they will also change for
+any new sub-processes. Once these are set then you can use them as short-cuts
+to directories like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>cd $pk04p</tt></td>
+</tr>
+</table>
+
+<p>You could also use these variables in any other command. For example,
+you could copy all the programs in one directory to the current directory
+like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>cp -p $pk04p/*.sas .</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="set"></a>"set" command</h2>
+The "set" command is a shell built in command like "cd" is so if you try
+to show the "man" pages for it using "man set" then you will have to pick
+through the output to find the "set" command and its description. You can
+use the set command to show you all your environment variables using the
+command with no options in the same way as you would use "env" but its
+most important use is in controlling your environment. With "set" you can
+change the way your current shell behaves and even control how your subshells
+behave. To find out what environment options you have set then use the
+set command in the form "set -o". Here is what I get when I use it in my
+Cygwin session on my PC. I have highlighted the line half-way down with
+"<b>noclobber&nbsp; off</b>" in it and will return to that.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>$ set -o&nbsp;</tt>
+<br><tt>allexport&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; off</tt>
+<br><tt>braceexpand&nbsp;&nbsp;&nbsp;&nbsp; on</tt>
+<br><tt>emacs&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+on</tt>
+<br><tt>errexit&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; off</tt>
+<br><tt>errtrace&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; off</tt>
+<br><tt>functrace&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; off</tt>
+<br><tt>hashall&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; on</tt>
+<br><tt>histexpand&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; on</tt>
+<br><tt>history&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; on</tt>
+<br><tt>igncr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+off</tt>
+<br><tt>ignoreeof&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; off</tt>
+<br><tt>interactive-comments&nbsp;&nbsp;&nbsp; on</tt>
+<br><tt>keyword&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; off</tt>
+<br><tt>monitor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; on</tt>
+<br><b><tt>noclobber&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; off</tt></b>
+<br><tt>noexec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; off</tt>
+<br><tt>noglob&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; off</tt>
+<br><tt>nolog&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+off</tt>
+<br><tt>notify&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; off</tt>
+<br><tt>nounset&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; off</tt>
+<br><tt>onecmd&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; off</tt>
+<br><tt>physical&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; off</tt>
+<br><tt>pipefail&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; off</tt>
+<br><tt>posix&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+off</tt>
+<br><tt>privileged&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; off</tt>
+<br><tt>verbose&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; off</tt>
+<br><tt>vi&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+off</tt>
+<br><tt>xtrace&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; off</tt></td>
+</tr>
+</table>
+
+<p>What "noclobber" does, if set to "on", is to prevent redirection using
+">" from overwriting a file if it already exists. I do not want that feature
+so I use the default which is to have "noclobber" inactive. There are two
+ways I can activate it. Both are equivalent.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>$ set -o noclobber</tt>
+<p><tt>$ set -C</tt></td>
+</tr>
+</table>
+
+<p>Now if I check on this setting I will see that it has changed.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>$ set -o | grep noclobber</tt>
+<br><tt>noclobber&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; on</tt></td>
+</tr>
+</table>
+
+<p>If it is active and I want to deactivate it then there are two ways
+to do it which are the same as the ways I used to activate it except the
+"-" is changed to "+". I will make the change and check on the "noclobber"
+setting again.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>$ set +o noclobber</tt>
+<p><tt>$ set +C</tt>
+<p><tt>$ set -o | grep noclobber</tt>
+<br><tt>noclobber&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; off</tt></td>
+</tr>
+</table>
+
+<p>If you have "noclobber" active then you might find that some utilities
+written for you do not work properly as they are trying to overwrite existing
+files using redirection using ">". If it is a problem then the script programmer
+might change the script to ensure this option is not in effect using the
+commands above or they may force the overwrite using&nbsp; "<tt>>|</tt>"
+(or "<tt>>!</tt>" for C shell scripts) instead of ">" but it might be easier
+for you to reset this option in your own session. You could do this in
+your login member.
+<h2>
+<a NAME="alias"></a>alias</h2>
+Again, while still on the subject of editing your login member, it is often
+useful to set up aliases. An “alias” is another name for something. It
+is different to a system environment variable since you do not refer to
+its contents using a “$” sign in front. You just use the name instead.
+Here is an example where the command to run SAS&reg; software version 6
+is given the alias name “sas6”.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>alias sas6='/data/app/sas/sas612/sas'</tt></td>
+</tr>
+</table>
+
+<p>Once this is done, then you can use the command like this to run a program
+under version 6:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>sas6 progname</tt></td>
+</tr>
+</table>
+
+<p>To list all the aliases for your session then enter the command “alias”.
+<p><b>The use of aliases can cause some confusion</b>. For example, at
+some Unix sites, “cp” is an alias of “cp –i” and “rm” is an alias of “rm
+–i”. You might like to set these up yourself. The effect in these two cases
+is to set the “-i” option (“interactive”) so that it prompts you for confirmation
+to make sure a file is not deleted or overwritten by mistake. If you move
+from one site where “cp” is an alias of “cp –i” and you were not aware
+of this then you might move to another site and expect to be prompted when
+you copy a file and are about to overwrite another file, except that the
+alias does not exist at the other site and so it overwrites it without
+prompting.
+<p>You can easily escape an alias definition and use the raw command by
+preceding it with an escape character like this “\rm”. Another thing you
+can do is to specifically cancel an alias using the “unalias” command like
+in the following command. However these aliases must have been defined
+otherwise you will get an error message.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>unalias rm cp</tt></td>
+</tr>
+</table>
+
+<p>You can “unalias” all aliases set up by using the “-a” option like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>unalias –a</tt></td>
+</tr>
+</table>
+
+<p>Aliases have a very limited scope. You can not “export” an alias like
+you can a system environment variable.
+<h2>
+<a NAME="src"></a>"sourcing" a list of commands</h2>
+Once you know how to set up environment variables and aliases, as described
+above, then you may want to put these in a file and activate them. So maybe
+you write a script to do this and execute it and then find out that none
+of your commands were put into effect. This can be puzzling until you realize
+that when you execute a script, a sub-shell is created and your commands
+run in that, and when the script finishes, you are back in your own shell
+and all this is lost. So to activate a list of commands in your <b><i>current</i></b>
+shell you need to "<b>source</b>" it. Your list of commands should be just
+that, and not be written as a script, and it most certainly <b>must not
+have the "exit" command in it</b>, otherwise when you "source" it it will
+end your session when the "exit" command is encountered. Also, it is best
+to leave it as an ordinary file and not have it executable, like it would
+be for a script. Sourcing is done using the "." command as shown below,
+but what you should remember to do is <b>always provide a path name when
+sourcing</b>, even if it is in the current directory (use "./" as the path
+name in that case).
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>. /path-name/command_file</tt>
+<br><tt>. ./command_file&nbsp; # for current directory</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="which"></a>which</h2>
+You can use the "which" command to find out the location of a script. Suppose
+somebody has written a script you want to use and you use it and it does
+not give you the results you were expecting. It could be that a script
+of the same name exists in another directory and it is picking up that
+one instead. The directories you have defined to your PATH system environment
+variable are searched in that order for the script and maybe the script
+exists in one of those directories that gets searched before the one you
+want. To find out which script will get called first, use the "which" command
+and it will tell you the full path name of the script. Here is an example
+as used on my PC for the script named "contents":
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>$ which contents</tt>
+<br><tt>/cygdrive/c/spectre/scripts/contents</tt></td>
+</tr>
+</table>
+
+<p>Because scripts with the same name in different directories can cause
+problems sometimes, I wrote a script that you can use named <a href="scripts/pathscr" target="_blank">pathscr</a>
+that will list out all scripts defined to your PATH system environment
+variable in the order in which they will be accessed. This is what I get
+when I use that script and grep for "contents". The number you see is the
+order number of the directory defined to PATH.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>$ pathscr | grep contents</tt>
+<br><tt>contents&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8&nbsp;&nbsp; /cygdrive/c/spectre/scripts&nbsp;</tt>
+<br><tt>contents_cygwin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8&nbsp;&nbsp; /cygdrive/c/spectre/scripts&nbsp;</tt>
+<br><tt>contentsl&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8&nbsp;&nbsp; /cygdrive/c/spectre/scripts&nbsp;</tt>
+<br><tt>contentsl_cygwin&nbsp;&nbsp;&nbsp;&nbsp; 8&nbsp;&nbsp; /cygdrive/c/spectre/scripts</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="clear"></a>clear</h2>
+“clear” is used to “clear” your terminal window. It deletes everything
+being displayed in the window and leaves you with a clear window with the
+command line prompt at the top.
+<h2>
+<a NAME="exit"></a>exit</h2>
+“exit” closes the terminal window when you no longer need it. For “xterm”
+windows you can also close a window using Cntl-D in the first position
+of the command prompt.
+<h2>
+<a NAME="xterm"></a>xterm</h2>
+If your terminal windows have “xterm” as the box description in the window
+border at the top left (or in the toolbar at the bottom of your screen
+if the window in minimized) then the command “xterm &amp;” will open up
+an extra terminal window for you with the current directory the same as
+the terminal window that you opened it from. You must follow the command
+with “&amp;” so that it runs as a background task otherwise you will not
+be able to use the original terminal window simultaneously. When opening
+a new xterm window, you can customize it if you want to. There is a file
+you can set up in your home directory named "<tt>.Xdefaults</tt>" (note
+that it starts with a period) and you can specify window size and background
+colours as well as other things. Changing the background colour can make
+it easier on your eyes if you work as a programmer. This is what is in
+my own .Xdefaults file. Note that lines starting with "!" mean they have
+been commented out.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>xterm*background: AntiqueWhite</tt>
+<br><tt>xterm*geometry: 81x24</tt>
+<br><tt>sas*background: wheat</tt>
+<br><tt>!xterm*foreground: black</tt>
+<br><tt>ghostscript*background: white</tt>
+<br><tt>ghostscript*foreground: black</tt>
+<br><tt>!ghostscript*useXPutImage: false</tt>
+<br><tt>!ghostscript*useXSetTile: false</tt>
+<br><tt>!ghostscript*useBackingPixmap: false</tt></td>
+</tr>
+</table>
+
+<p>To find out more about customizing xterm windows, do an Internet search
+on ".Xdefaults".
+<h2>
+<a NAME="fuser"></a>/usr/sbin/fuser</h2>
+There is a whole set of utilities especially for Unix systems administrators.
+They might be powerful utilities that they don’t want you to land on by
+mistake, because you have mistyped another command, so they will never
+be found in a default PATH assignment and I am not suggesting you change
+your PATH assignment to make them accessible. But some of these utilities
+are safe for anybody to use. One of these is the “fuser” utility which
+is short for “file user”. It lives in the /usr/sbin directory. With any
+command, there is nothing to stop you from invoking it using its full path
+name.&nbsp; “/usr/sbin/fuser” tells you who is holding a lock on a file.
+Suppose you wanted to recreate a SAS dataset but it kept failing because
+somebody was reading the file, then you could find out who was reading
+it using this command. Suppose you wanted to check on all the SAS datasets
+in a directory then you could do it like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>/usr/sbin/fuser –u *.sas7bdat</tt></td>
+</tr>
+</table>
+
+<p>If there were any users holding locks then the userids would be listed
+alongside the file names. To find out the full name of a person from just
+their userid then use the “finger” command described next.
+<p>Note that in the case of “fuser” the list of files and the users holding
+locks on them are written to standard error and not standard output. It
+is a simple matter to redirect this to standard output if you want to by
+following the command with “ 2>&amp;1”.
+<h2>
+<a NAME="finger"></a>finger</h2>
+“finger” gives you more information about a userid on your Unix system.
+If the user has multiple terminal windows open then you will get multiple
+information out. About the most important thing you will want to know is
+the person’s real name. This will be shown whether they are logged on or
+not. You use it like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>finger rrash</tt></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="sed"></a>sed</h2>
+“sed” has been mentioned before in this document as a “stream editor” used
+to substitute a string or a regular expression with nothing. This is the
+major use of “sed”. “awk” is a much better and more powerful stream editor
+and you should spend more time reading about “awk” than reading about “sed”.
+All you need to know about “sed” is its substitution capabilities and this
+will be explained further here.
+<p>You usually “<b>pipe</b>” a stream of information to “sed” and “sed”
+sends its output to “standard output” which is your terminal. You can,
+of course, “<b>pipe</b>” its output to another utility if you want to.
+The general form of using “sed” is like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>previous command | sed 's/RE/replacement/' | next command</tt></td>
+</tr>
+</table>
+
+<p>The above is for a single substitution (hence the “s” for “substitution”
+at the start) of a regular expression “RE” with a replacement string “replacement”.
+To replace a regular expression with nothing then it would take the form:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>previous command | sed 's/RE//' | next command</tt></td>
+</tr>
+</table>
+
+<p>If you wanted to apply the substitution multiple times or “globally”
+then you put a “g” at the end like this. "globally" means multiple times
+in the same line.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>previous command | sed 's/RE//g' | next command</tt></td>
+</tr>
+</table>
+
+<p>The “/” used to separate the RE from the replacement could be another
+character instead. Suppose your RE contained a “/” then you could use this
+instead:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>previous command | sed 's%RE%%g' | next command</tt></td>
+</tr>
+</table>
+
+<p>As mentioned previously, a “regular expression” or “RE” is more than
+just a string. Some characters have a special meaning. To give some examples,
+“^” at the beginning means “begins with”, “$” at the end means “ends with”,
+“.” means “any character”, “*” means “zero or more of the previous character”.
+There is more to this that you can read about. If you really did want to
+search for one of these characters then you have to put an “escape” character
+“\” in front of it. Note that this slash leans the opposite way to a Unix
+directory slash.
+<p>Here is a “sed” step for removing the full path name complete with slashes
+from a fully specified file name to just leave the ending such that “/xx/yy/file.ext”
+will end up as “file.ext”:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>sed 's%^.*/%%'</tt></td>
+</tr>
+</table>
+
+<p>Here is a “sed” step for removing a colon followed by something or nothing
+from the end of a string such that “aa:0 and more things” will end up as
+“aa”.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>sed 's/:.*$//'</tt></td>
+</tr>
+</table>
+
+<p>If you see examples of “sed” being used, then very often they will be
+doing one of the two examples above.
+<p>You can do a lot more with sed. For example, you can have multiple edits
+each preceeded by the "-e" option and the pattern you are searching for
+can be substituted into the replacement string using the "&amp;" symbol.
+Sometimes you will want to substitute different sections of the pattern
+you are searching for into the replacement string. You can do this by splitting
+your RE into bracketed portions using "\(" and "\)" to define each section
+and then you can substitute each section using "\1", "\2" etc. in the replacement
+string. This technique was used to add the links in the "updates" page
+on this web site. You can view the raw "updates" page where you can see
+this sed command listed in the instructions by clicking on the link below.
+<br><a href="updates.html" target="_blank">updates.html</a>
+<h2>
+<a NAME="gen"></a>generating a command file</h2>
+Here is an example of "sed" and "gawk" working together to generate a list
+of commands. You can <b>write commands that write commands!</b>
+<p>In this example, I have some programs I want to run that have the extension
+".sas". I want a command that will create a command list that will take
+each program in turn, will generate the commands to delete its output files
+and then on the next line run the program using the command "sasb". First
+of all, let us see what programs are there.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>$ ls t_*.sas</tt>
+<br><tt>t_adv.sas&nbsp; t_adv2.sas&nbsp; t_demog.sas</tt></td>
+</tr>
+</table>
+
+<p>Now I see what is there I want to drop the ".sas" extension and add
+the file extensions of the output files I want to delete, then on a new
+line, run the program with the "sasb" utility. Here goes:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>$ ls t_*.sas | sed 's%\..*%%' | gawk '{print "rm -f " $0 ".log
+" $0 ".lst\n" "sasb " $0}'</tt>
+<br><tt>rm -f t_adv.log t_adv.lst</tt>
+<br><tt>sasb t_adv</tt>
+<br><tt>rm -f t_adv2.log t_adv2.lst</tt>
+<br><tt>sasb t_adv2</tt>
+<br><tt>rm -f t_demog.log t_demog.lst</tt>
+<br><tt>sasb t_demog</tt></td>
+</tr>
+</table>
+
+<p>You can see from above that it has generated the commands that I want.
+I can redirect it to a file and then "source" it to run it. Do you see
+how easy it is? There is no need to "maintain" a list of commands like
+this if you know how to extract the list of programs and the ordering of
+it does not matter. It is easier and better to generate the commands as
+that way there will be no syntax errors, no spelling mistakes and no missing
+programs in the list.
+<h2>
+<a NAME="vi"></a>vi</h2>
+"vi" is a text editor that you can be almost certain is installed on the
+Unix platform where you work. You may find yourself having to use it one
+day if a better editor is not available. It is most definitely is not a
+WYSIWYG (<b>W</b>hat <b>Y</b>ou <b>S</b>ee <b>I</b>s <b>W</b>hat <b>Y</b>ou
+<b>G</b>et)
+editor. You should not even invoke it unless you have access to documentation
+about how it works. It has an "insert" mode that you get into by just typing
+"i". "Esc" gets you out of this mode. When not in "insert" mode then it
+is in "command" mode and the keyboard letters usually mean something. For
+example "x" deletes a character, "o" opens a new line below and "O" opens
+a new line above. To save a file, you type Shift-q to get a ":" prompt
+and then press "w" to write away the text. To <b>quit</b>, you type Shift-q
+to give you a command prompt and press "q".
+<p>I have copied a number of scripts on this web site and put them in my
+AIX "bin" directory at work using "vi". First, I highlight and copy the
+script code I am looking at in Internet Explorer so it is in the paste
+buffer. Next, I invoke "vi" in the directory I want to store the script
+in using the command in the form "<b>vi scriptname</b>". Next I press "i"
+to put "vi" into insert mode. Next I click the right mouse button to paste
+in the code from the buffer. Next I press "Esc" (actually twice to be sure)
+so I am out of insert mode. Next, I type Shift-q to get the ":" prompt
+and push "w" to save the code. I then press "q" to quit and close "vi".
+Lastly, I make the script executable using the command in the form "<b>chmod
++x scriptname</b>" and then it is done. It only takes a few seconds.
+<h2>
+<a NAME="less"></a>less</h2>
+At some stage you are going to run a command to request some information
+about something and the information you want suddenly appears in your terminal
+window. This is commonly done for the "man" pages. You scroll down and
+go past something and then to your surprise you find you are able to scroll
+up as well. You can scroll up and down the whole length of this information
+which you find very useful. You find what you were looking for and then
+think "<b>How do I get out of this?</b>". Welcome to "<b>less</b>" which
+is a combination of "<b>more</b>" and "<b>vi</b>". "less" is a joke name
+because it does so much more than "more". You have opened a file in a quite
+sophisticated browser named "less" without being told about it. Don't worry
+about this. <b>All you need to know</b> when you first encounter "less"
+is that if you press the "<b>q</b>" key on your keyboard then you will
+"<b>quit</b>" and the display that was in your terminal window will appear
+again. "less" is often used by script writers to give information to the
+user because the person who wrote the script does not know what your terminal
+display capabilities are or what editors are available to you to use in
+read mode. They might use the settings of your EDITOR or VISUAL system
+environment variables but often these are not set properly. But they can
+be very sure that "less" will work for you so that is what they use. Just
+be aware that when you seem to be able to scroll up and down in your terminal
+windows as much as you want, reading some requested information, then you
+are very likely in a "<b>less</b>" session and "<b>q</b>" will get you
+out of it.
+<p>"Less" can do more for you. It is very useful for searching for words,
+for example. To learn about its capabilities, press the "<b>h</b>" for
+"<b>help</b>" key.
+<h2>
+<a NAME="conc"></a>Conclusion</h2>
+If you have read this far and are able to put into practise everything
+you have read in this document, then you have reached the level as a Unix/Linux
+end-user that could be called “quite competent”. I hope you noticed where
+"<b>piping</b>", "<b>substitution</b>" and "<b>xargs</b>" are used as these
+are three methods you will use to get the Unix utilities to pass information
+to each other and so be able to tap the power of Unix. There is more to
+learn but if you are a programmer then you will maybe never need to use
+more than is described in this document. There are many other commands.
+If you are interested in seeing a comprehensive list of Linux commands
+then refer to this <a href="http://www.linuxdevcenter.com/linux/cmd/" target="_blank">page</a>.
+<p>If you come to the end of this document hungry for more knowledge then
+I have written a document called “<a href="bashscr.html">Writing bash Shell
+Scripts</a>” that may interest you. But you should only start reading that
+document if you know the common Unix/Linux commands well and have assimilated
+all the material in this document. It would prove to be a waste of time
+unless you have done this.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript"
+ src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+</body>
+</html>

@@ -1,0 +1,90 @@
+#!/bin/bash
+#<pre><b>
+# Script     : showtitles_win
+# Version    : 1.3
+# Author     : Roland Rashleigh-Berry
+# Date       : 19-Jul-2007
+# Purpose    : To list the titles for a program(s) in the titles dataset
+#              (uses SAS).
+# SubScripts : none
+# SubMacros  : %allocr
+# Notes      : WINDOWS VERSION
+#              If no parameter is supplied then all the titles will be listed.
+#              Output goes to standard output (the terminal by default). The
+#              program name is case sensitive and the .sas extension is not
+#              required.
+# Usage      : showtitles_win progname
+#              showtitles_win
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   (optional) program name
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  20Feb07         Call %allocr macro
+# rrb  02Mar07         Use "&_ptlibref_.." instead of "der."
+# rrb  08Mar07         Fix for showing a single titles entry
+# rrb  19Jul07         Allow for "lisfile" variable in titles dataset
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# No more than one parameter allowed
+if [ $# -gt 1 ] ; then
+  echo "Usage: showtitles progname" 1>&2
+  echo "       showtitles " 1>&2
+  exit 1
+fi
+
+prog=$(echo "$1" | awk -F. '{print $1}')
+
+# Write SAS code to a temporary file
+cat > $HOME/showtitles_$$.sas << -----FINISH-----
+filename _outfile "$HOMEW\showtitles_$$.tmp";
+%allocr
+options validvarname=v7 nofmterr noovp nodate nonumber;
+%macro showt;
+data _titles;
+  set &_ptlibref_..titles
+  %if %length($prog) %then %do;
+    (where=(program="$prog"))
+  %end;
+  ;
+run;
+%mend;
+%showt
+
+data _null_;
+  length lisfile $ 38;
+  file _outfile notitles noprint;
+  set _titles end=last;
+  if type="T" and number=1 then do;
+    put;
+    put @1 "Program: " program;
+    put @1 "Label: " label;
+    if lisfile=" " then lisfile=trim(program)||".lis"||left(label);
+    put @1 "Lisfile: " lisfile;
+    put @1 "Population: " population;
+    put @1 "Layout: " layout;
+    put @1 "Sascode: " sascode;
+    put @1 "Titles below:";
+  end;
+  else if type="F" and number=1 then put @1 "Footnotes below:";
+  put @1 text;
+  if last then put;
+run;
+-----FINISH-----
+
+# run the code
+sas -nosplash -nologo -icon -log "$HOMEW" -sysin "$HOMEW\showtitles_$$.sas"
+
+# if output file exists then cat it and delete it
+if [ -f $HOME/showtitles_$$.tmp ] ; then
+  cat $HOME/showtitles_$$.tmp 
+  rm -f $HOME/showtitles_$$.tmp 
+fi
+
+# tidy up
+rm -f $HOME/showtitles_$$.sas $HOME/showtitles_$$.log

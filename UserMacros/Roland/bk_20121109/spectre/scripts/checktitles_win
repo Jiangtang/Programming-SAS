@@ -1,0 +1,110 @@
+#!/bin/bash
+#<pre><b>
+# Script     : checktitles_win
+# Version    : 1.1
+# Author     : Roland Rashleigh-Berry
+# Date       : 02-Mar-2007
+# Purpose    : Production script to check the titles in the titles dataset
+#              (uses SAS).
+# SubScripts : none
+# SubMacros  : %allocr
+# Notes      : WINDOWS VERSION
+# Usage      : checktitles_win 
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+# N/A  Do not supply any parameters
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+# rrb  20Feb07         Call %allocr macro
+# rrb  02Mar07         Use "&_ptlibref_.." instead of "der."
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+# No parameters allowed
+if [ $# -gt 0 ] ; then
+  echo "Error: (checktitles) Do not supply any parameters" 1>&2
+  exit 1
+fi
+
+# Write SAS code to a temporary file
+cat > $HOME/checktitles_$$.sas << -----FINISH-----
+%allocr
+options validvarname=v7 nofmterr noovp nodate nonumber;
+filename _outfile "$HOMEW\checktitles_$$.tmp";
+
+data _noprog(keep=program text);
+  set &_ptlibref_..titles(where=(type='T' and number=1 and program=" "));
+run;
+
+data _notitle1(keep=program text);
+  set &_ptlibref_..titles(where=(type='T' and number=1 and text=" "));
+run;
+
+data _badtitle1(keep=program text);
+  set &_ptlibref_..titles(where=(type='T' and number=1 
+  and (upcase(text) NE: "TABLE " and upcase(text) NE: "APPENDIX" and
+upcase(text) NE: "FIGURE")
+  ));
+run;
+
+proc sort data=&_ptlibref_..titles(where=(type='T' and number=1))
+           out=_dups(keep=program label);
+  by program label;
+run;
+data _dups;
+  set _dups;
+  by program label;
+  if first.label and not last.label;
+run;
+
+data _dupref(keep=program ref);
+  length ref $ 20;
+  set &_ptlibref_..titles(where=(type='T' and number=1 and text NE " "));
+  ref=upcase(scan(text,2,' '));
+run;
+proc sort data=_dupref;
+  by ref program;
+run;
+data _dupref;
+  length holdprog $ 32 text $ 200;
+  retain holdprog ' ';
+  set _dupref;
+  by ref;
+  if not first.ref then do;
+    text="Same table/appendix reference "||trim(ref)||" is used for programs
+"||trim(holdprog)|| " and "||program;
+    output;
+  end;
+  holdprog=program;
+run;
+
+data _null_;
+  file _outfile notitles noprint;
+  set _noprog(in=_noprog) _notitle1(in=_notitle1) _dups(in=_dups) 
+      _dupref(in=_dupref) _badtitle1(in=_badtitle1);
+  if _noprog then put "Error: (checktitles) No program name corresponding the first title " text;
+  if _notitle1 then put "Error: (checktitles) No first title found for program " program;
+  if _badtitle1 then put "Error: (checktitles) The first title should start with 'table', 'appendix' or 'figure' for " program = text=;
+  if _dups then do;
+    if label ne " " then put "Error: (checktitles) Duplicate entries for program " program "label " label;
+    else put "Error: (checktitles) Duplicate entries for program " program;
+  end;
+  if _dupref then put "Error: (checktitles) " text;
+run;
+-----FINISH-----
+
+# run the code
+sas -nosplash -nologo -icon -sasuser work -log "$HOMEW" -sysin "$HOMEW\checktitles_$$.sas"
+
+# if output file exists then cat it and delete it
+if [ -f $HOME/checktitles_$$.tmp ] ; then
+  cat $HOME/checktitles_$$.tmp 
+  rm -f $HOME/checktitles_$$.tmp 
+fi
+
+# tidy up
+rm -f $HOME/checktitles_$$.sas $HOME/checktitles_$$.log

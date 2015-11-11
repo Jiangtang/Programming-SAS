@@ -12,18 +12,26 @@ run;
 
 options cmplib=work.foo;
 
+
+
+/*
+  endsubmit;
+quit;
+*/
+
 proc lua;
   submit; 
-
+    
+    --this is a Line Comment
     --http://support.sas.com/resources/papers/proceedings15/SAS1561-2015.pdf
 
     --0.When PROC LUA initializes the Lua state, it creates a special global Lua table called sas
-    print(sas)
+    print(sas)         -->table: 000000000D8F8F80
    
     --1. hello world
     print("hello world")
 
-    --[[
+    --[[this is a Block Comment
     2. declare variables
     --]]
     local pi = 3.14
@@ -61,7 +69,6 @@ proc lua;
       drummer='John Bonham'
     }
 
-    print(band)
 
     --[[
     6. d pairs (similar to ipairs) that iterates through all the key/value combinations in the dictionary

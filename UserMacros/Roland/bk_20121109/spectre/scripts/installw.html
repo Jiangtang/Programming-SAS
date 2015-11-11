@@ -1,0 +1,472 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="install Spectre Windows">
+   <meta name="Description" content="Installing Spectre on Windows">
+   <title>Installing Spectre on Windows</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Installing Spectre (Clinical) on Windows</h1></center>
+
+<p><br><b><font color="#3333FF">Note: If you arrived at this page directly
+using a search engine such as Google then this may not be the "Spectre"
+you are looking for. There are a few software packages of this name. This
+"Spectre" is to do with clinical trials reporting.</font></b>
+<h2>
+Introduction</h2>
+<b>If you just want to use the %npcttab and %unistats macros but do not
+want to set up the whole of Spectre (Clinical) then installing it is easy.</b>
+All you need to do is download the macros and copy them to a directory
+that you then define to sasautos and then everything should work fine.
+The rest of the information you can read here is to do with a full Spectre
+(Clinical) install for those users planning to set up a full clinical reporting
+system. If this does not apply to you then skip the rest of this page.
+<p>There are a number of steps to installing Spectre. Some changes to a
+shell script are needed. Other changes require a lot of thought, such as
+how to allocate libraries for your sas programs as Spectre might need this
+to be done differently to your established method. I will be updating this
+page as I get feedback from users who have attempted to do this installation.
+There will be things I have missed out and places where I have given unclear
+instructions so please send me feedback by email on what is missing or
+what is wrong so that I can improve this page. There is a contact link
+for me at the bottom of this page.
+<p><b>If you are doing this installation yourself</b> and you have never
+done an installation like this before then use the following guidelines:
+<ul>
+<li>
+<b>Do not start the installation process until you have all the components
+available</b></li>
+
+<li>
+Read the installation instructions from beginning to end <b>before</b>
+you start the installation process to make sure you can do it <b>all</b>.
+You may have to arrange for people to help you. <b>Do not start it if you
+know you can not finish it the same day</b>.</li>
+
+<li>
+Print off this page and work from the hard copy.</li>
+
+<li>
+Work through the installation process in the order listed. <b>Do not skip
+anything or change the order</b>. Tick off processes when complete and
+make notes on your hard copy of any difficulties encountered.</li>
+
+<li>
+<b>Never amend anything</b> in Spectre to "get the installation to work"
+<b>unless</b>
+the installation instructions tell you to do so. <b>Do not use workarounds
+in any circumstances.</b></li>
+
+<li>
+Communicate unclear or missing installation instructions to the author
+after you have attempted the installation <b>assuming you carefully followed
+the guidelines given above</b> and yet still encountered problems.</li>
+</ul>
+
+<h2>
+What you do not get with the Windows version</h2>
+The Windows version of Spectre lacks the support for conversion to PostScript
+and thence to bookmarked PDFs. Since Spectre uses PostScript for printing,
+the printing scripts in Spectre will not work in this case. If you want
+to print Spectre output on Windows then you should use your existing methods
+for this.
+<h2>
+Cygwin</h2>
+In order for Spectre to work on Windows, you need to install the Cygwin
+Linux emulator. This is so that the Spectre scripts can run. To find out
+how to install Cygwin on your PC, consult the <a href="http://www.cygwin.com/" target="_blank">Cygwin</a>
+web site. Do a typical installation and add the extra things you need later.
+At the start of installing Cygwin you will be shown a screen that shows
+the directory it will download to and below it on the left will be "Install
+For" for which you should choose the recommended "All Users" (unless you
+really don't want other people to have access to it) and on the right "<b>Default
+Text File Type</b>" for which you should change the default so that it
+becomes the non-recommended "<b>DOS /text</b>".
+<h2>
+gawk and ssmtp</h2>
+Some of the scripts require <b>ssmtp</b> (an email package) and <b>gawk</b>
+so you need to make sure you have installed them from Cygwin. You can do
+this as a later install. The <b>gawk</b> version installed should be 3.1.4
+or higher.
+<h2>
+Make sure your .bashrc is working</h2>
+A number of edits has to be made to your <b>.bashrc</b> file in your home
+directory but you have got to be sure this <b>.bashrc</b> member is being
+called and run (sourced). If you have just completed a Cygwin installtion
+then check that this file is in your home directory. You can either use
+the Windows Explorer or list the files that start with a period in your
+Cygwin home directory using the command:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>echo .*</tt></td>
+</tr>
+</table>
+
+<p>When I installed Cygwin on my PC it automatically put my <b>.bashrc</b>
+member in my home directory. This is the correct situation. However, I
+am hearing of plenty of cases where a Cygwin installation was done but
+this <b>.bashrc</b> member <b>was found to be missing</b>. This is an error
+and how to correct this will be explained here.
+<p>If your <b>.bashrc</b> member is missing or empty then you should copy
+it from <b>/etc/defaults/etc/skel/.bashrc</b>
+<p>To test that your <b>.bashrc</b> in your home directory is being called
+then add the following command near the top of the file:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>echo Hello from my .bashrc</tt></td>
+</tr>
+</table>
+
+<p>....then when you start up your Cygwin session next time this "<b>Hello
+from my .bashrc</b>" message should be displayed. If it is, then that is
+good. You can delete this test message from your <b>.bashrc</b> member
+when you make the edits to it as detailed in the next section "Changes
+to .bashrc".
+<p><b>If you do not see this message</b> when you start Cygwin, even though
+you put the above command in your <b>.bashrc</b> member, then something
+is wrong. You will be given instructions here to resolve this situation
+to make sure your <b>.bashrc</b> member in your home directory is actually
+being run (sourced) when you start Cygwin.
+<p>First check your home directory and what shell is defined to you in
+the <b>/etc/passwd</b> file. Browse this file and take a look. I have an
+"Roland" entry shown below. The last two field members (separated by colons)
+are "/home/Roland" that says where my home directory is and "/bin/bash"
+that says my start-up shell is "bash".
+<b>If your home directory entry
+is not in the form /home/something then edit this file to correct it</b>
+(after making a backup). Also, your start-up shell must be "/bin/bash"
+otherwise it will not call your <b>.bashrc</b> member so change it to this
+if it is not.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt><font size=-1>Roland:unused_by_nt/2000/xp:1006:513:U-DELL1\Roland,S-1-5-21-2888820645-753754486-1581935503-1006:/home/Roland:/bin/bash</font></tt></td>
+</tr>
+</table>
+
+<p>Your <b>.bashrc</b> member is "sourced" from your <b>.bash_profile</b>
+member in your home directory. If your <b>.bash_profile</b> member is missing
+or empty then you should copy it from <b>/etc/defaults/etc/skel/.bash_profile</b>
+<p>It could be that the problem is in your <b>.bash_profile</b> member.
+Near the top of that member you should see it "sourcing" the <b>.bashrc</b>
+file as follows:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt># source the users bashrc if it exists</tt>
+<br><tt>if [ -e "${HOME}/.bashrc" ] ; then</tt>
+<br><tt>&nbsp; source "${HOME}/.bashrc"</tt>
+<br><tt>fi</tt></td>
+</tr>
+</table>
+
+<p>Maybe you see something like that in your <b>.bash_profile</b> member
+but for some reason it is commented out. Try uncommenting it by removing
+the leading "#" from the script code so it looks the same as above. Also,
+make sure your system environment variable HOME is resolving OK by using
+this command.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>$ echo $HOME</tt>
+<br><tt>/home/Roland</tt></td>
+</tr>
+</table>
+
+<p>Do you get a "/home/something" result like I do? If you get nothing
+then your HOME environment variable is not set and bash will look for the
+.bashrc file in the top directory /.bashrc
+<p><b>You must get your .bashrc member active and working</b> before you
+can continue with the Spectre installation. I believe the actions above
+will resolve all situations where your <b>.bashrc</b> is not being sourced.
+I am no Cygwin expert, though, so if you have tried the above and you still
+can not get out your "Hello from my .bashrc" test message from the command
+you put in your <b>.bashrc</b> member then you will have to <b>ask for
+help on the Cygwin mailing list</b> aimed at getting your <b>.bashrc</b>
+member sourced, after you have tried searching through the archives at
+<a href="http://www.cygwin.com" target="_blank">www.cygwin.com</a>
+to try to resolve your problem. Nothing less than this will get your problem
+resolved. Do not continue with the installation of Spectre until this has
+been resolved. When you do resolve it fully, in the sense that you get
+your <b>.bashrc</b> working, rather than using a workaround, then please
+let me know by email what your problem was and how it was resolved so I
+can expand this section to help other installers.
+<h2>
+Changes to .bashrc</h2>
+Once you have installed Cygwin and you are sure your .bashrc member is
+working then you need to make some edits to it. To call SAS from the Linux
+emulator session you will have to add the directory that contains the sas
+executable (sas.exe) to your
+<b>PATH</b> declaration. If you don't know
+where it is located then do a file search on Windows on the SAS directories
+contained in the "Program Files" subfolder. You should also add the Spectre
+scripts to the PATH statement. Also, because SAS on Windows will not recognise
+Unix-style path names, you will have to declare your home directory in
+a way that SAS will understand it. For the Spectre scripts that call SAS,
+a variable
+<b>HOMEW</b> is set up and exported for this. The relevant entries
+in my .bashrc file are shown below.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt># Add Spectre scripts to the path as well as the sas executables&nbsp;</tt>
+<br><tt># For SAS Learning Edition 1.0 on Windows 98&nbsp;</tt>
+<br><tt>#PATH=$PATH:/cygdrive/c/spectre/scripts:/cygdrive/c/PROGRA~1/SASINS~1/SAS/v8&nbsp;</tt>
+<p><tt># For SAS Learning Edition 4.1 on Windows XP - note that file names
+containing spaces must be quoted&nbsp;</tt>
+<br><tt>PATH=$PATH:/cygdrive/c/spectre/scripts:/cygdrive/c/"Program Files"/SAS/"SAS
+Learning Edition 4.1"&nbsp;</tt>
+<p><tt># Set up HOMEW as a Windows path so SAS on Windows knows where my
+home directory is&nbsp;</tt>
+<br><tt>HOMEW=C:\\cygwin\\home\\$USER&nbsp;</tt>
+<p><tt>export HOMEW</tt></td>
+</tr>
+</table>
+
+<p>I do not like any of the editors that come with Cygwin so for editing
+a file I use <b>Wordpad</b> and for browsing a file I use "less". I have
+no problem accessing "less" but in order to be able to use Wordpad I have
+to define its location to my PATH as shown below. You might choose to do
+the same. Note that if you use Wordpad as an editor or browser then it
+will not understand unix-style path names. It will only work properly for
+files without a path that are in the current directory.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt># Make Wordpad available as an editor</tt>
+<br><tt>PATH=$PATH:/cygdrive/c/"Program Files"/"Windows NT"/Accessories</tt></td>
+</tr>
+</table>
+
+<h2>
+Changes to cygwin.bat</h2>
+In the top Cygwin directory you will find the DOS command file <b>cygwin.bat</b>
+and I have edited this to add some things I need. I use "<b>rxvt</b>" as
+a terminal window (this can be downloaded from the Cygwin site) and I have
+set up two environment variables named <b>EDITOR</b> and <b>VISUAL</b>.
+The Spectre scripts will check if these have been set and for editing tasks
+called within a script it will use what is defined to EDITOR and for browsing
+a file it will use what is defined to VISUAL if set, otherwise will default
+to browsing using "less". Here is the change I made to my <b>cygwin.bat</b>
+<p>Before any changes....
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>@echo off</tt>
+<p><tt>C:</tt>
+<br><tt>chdir C:\cygwin\bin</tt>
+<p><tt>bash --login -i</tt></td>
+</tr>
+</table>
+
+<p>Here is my edited version. Note that you <b>must have the CYGWIN variable
+set up</b> for Spectre scripts to work correctly. This may be set even
+though there is no entry in cygwin.bat. To find out, use the command "<b><tt>set
+| grep CYGWIN</tt></b>" to see if you get a line that starts with "<b><tt>CYGWIN=</tt></b>".
+Also, if you are going to use <b>Wordpad</b> as an editor, then you must
+define its location to the <b>PATH</b> statement as I showed you above
+in the changes to <b>.bashrc</b> . You can also assign Wordpad to VISUAL
+but I do not like to this this as it allows the user to edit the file they
+open which I do not want. There is no option you can use with Wordpad to
+open it in read-only mode, which is a shame. Note that if you use Wordpad
+as an editor or browser then it will not understand unix-style path names.
+It will only work properly for files without a path that are in the current
+directory.
+<p>After the changes I made....
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>@echo off</tt>
+<br><tt>C:</tt>
+<br><tt>chdir C:\cygwin\bin</tt>
+<br><tt>set EDITOR=wordpad</tt>
+<br><tt>set VISUAL=less</tt>
+<br><tt>set CYGWIN=codepage:oem tty binmode title</tt>
+<br><tt>rxvt -e bash --login -i</tt></td>
+</tr>
+</table>
+
+<h2>
+Allocating macros and libraries</h2>
+If you are the installer and not a programmer then you should inform the
+senior programmer of the existence of the following page and tell them
+that they have to take action on it.
+<p><a href="alloc.html">Allocation of Libraries for Spectre</a>
+<h2>
+Macros and scripts</h2>
+Spectre consists of three components; html documentation, macros and shell
+script. <b>Only the macros and shell scripts need to be downloaded and
+installed.</b> The macros and shell scripts must each have their own library.
+The shell script library will have to be added to the PATH system environment
+variable for users of Spectre at a point that is fairly early on the path
+so that Spectre shell scripts take precedence over possible duplicate shell
+script names on the system. What you need are the names of these two directories.
+<p>Once you know the names of the two libraries then you are ready to download.
+Both the <a href="macros.zip">macros</a> and <a href="scripts.zip">scripts</a>
+come as zip files and the links to download them are highlighted in this
+sentence. Some of the files are not wanted and you will be told which ones
+to delete after you have unzipped them into their folders.
+<p>For the macros you should delete any html and text files so delete "<tt>*.<b>html</b></tt>"
+and "<b><tt>*.txt</tt></b>".
+<p>For the scripts you do not need any of the html or text files so delete
+"<b><tt>*.html</tt></b>", "<b><tt>*.txt</tt></b>"..
+<p>Note that the scripts have to be executable. The following command should
+make them so if issued from the same directory.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>chmod +x *</tt></td>
+</tr>
+</table>
+
+<h2>
+Editing the "getfields" script</h2>
+I have a number of scripts that generate sas program headers. They pick
+out the names of the client, office, drug, protocol and increment from
+the path name -- but based on <b>my own directory structure</b>. Your directory
+structure might be very different. In any case, you might not like my program
+headers and so will handle this yourself. But whatever, you will need to
+edit the script <a href="scripts/getfields" target="_blank">getfields</a>
+to display the client, office, drug, protocol and increment. Anybody who
+writes scripts will find this easy to amend. If you have a support contract
+with me then I might do it for you.
+<h2>
+Creating @index.txt in the scripts and macros directory</h2>
+When you installed the macros and scripts you were asked to delete files
+named @index.txt and this was intentional. Now is the time to recreate
+these files to test the installation so far. Assuming the script directory
+is on your path and the scripts that call SAS software have been correctly
+changed then it should be possible to run the script <b>newix</b> in each
+of the scripts and macros directly and it should create the file @index.txt
+. First "cat @index.txt". If the file is there then delete it. Next use
+the command "newix" to recreate the "@index.txt" file.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>newix</tt></td>
+</tr>
+</table>
+
+<p><b>What happened?</b> Is the "@index.txt" file correctly created when
+you run the "newix" command? This is the first hurdle to overcome in the
+installation process. The supplied @index.txt for macros looks like <a href="macros/@index.txt">this</a>
+and for scripts it looks like <a href="scripts/@index.txt">this</a>. Is
+that what you got? Did you get any file created? You might have got a script
+error, in which case you can probably fix it. If you got an error within
+the SAS software code that caused it to stop then there is no log file.
+The reason there is no log file is because it gets deleted at the end of
+the script. To stop it being deleted then put a "#" in front of the log
+file name. That turns the rest of the line into a commant. Once it is working
+then remove the "#" you added. When you have got over this hurdle then
+relax. The first hurdle has been overcome.
+<h2>
+Getting "showfmts" and "showfmt" working</h2>
+The next hurdle to jump is getting the scripts "<b>showfmts</b>" and "<b>showfmt</b>"
+working. These are the scripts that display a list of all formats and details
+of a specific format. Taking "showfmts" to start with, this will only work
+if the allocation macro reference has been changed and the new allocation
+macro is working (if any), that the Spectre macros are on the sasautos=
+path and that the correct formats are assigned to the fmtsearch= path within
+the new allocation macro (or correctly done in the autoexec member if an
+allocation macro is no longer required). Assuming you are in a study data
+directory then type in the command:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>showfmts</tt></td>
+</tr>
+</table>
+
+<p>What happened? If you got nothing then keep the sas log by putting a
+"#" in front of its name in the delete statement at the end of the script.
+You may have to add the "mprint" option to the SAS software code in that
+script to help work out what is wrong.
+<p>When you get it working then try out the "showfmt" script as well on
+one of the formats listed out by the "showfmts" script. Character formats
+will need to have the dollar sign preceded by a "\" escape character to
+stop Unix assuming it is a Unix variable. Try showfmt on a numeric variable
+if need be. Does it work?
+<p>This is the second hurdle. Once this has been overcome then the rest
+should be easy.
+<h2>
+Make the two directories read only</h2>
+Assuming everything is working so far then it is time to make the members
+of the scripts directory and macros directory read only. The following
+command should work:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>chmod g-w *</td>
+</tr>
+</table>
+
+<p>It would be a good idea if the directory itself had no update access
+for the users otherwise one of them might manage to delete one or two of
+the members.
+<h2>
+Conclusion</h2>
+If you have got this far then you should be ready to use Spectre. I am
+sure I have forgotten something that should be on this page and I am sure
+you will hit extra problems, though. You can always email me (contact link
+below) and I will try to help, even if you do not have a support contract.
+If the latter then I may not be able to give much of my time, it depends
+on my priorities, but I will do what I can and am interested in having
+feedback from people who have gone through this installation process.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.php" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+</body>
+</html>

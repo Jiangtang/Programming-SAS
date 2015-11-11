@@ -1,0 +1,42 @@
+#!/bin/bash
+#<pre><b>
+# Script     : compdirs
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 08-Dec-2004
+# Purpose    : To compare the contents of two directories
+# SubScripts : none
+# Notes      : Paired files will not be shown. Files in first directory not in
+#              second directory will be shown first (if any) with a "+" in front
+#              and then files in second directory not in first directory will be
+#              shown last (if any) with a "-" in front.
+# Usage      : compdirs . /there
+#              
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   First directory to compare
+#  2   Secnd directory to compare
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Two directories must be specified
+if [ $# -ne 2 ] ; then
+  echo "Usage: compdirs /here /there" 1>&2
+  exit 1
+fi
+
+ls -1 "$1" > ~/compdirs1_$$.tmp
+
+ls -1 "$2" > ~/compdirs2_$$.tmp
+
+join -v 1 ~/compdirs1_$$.tmp ~/compdirs2_$$.tmp | gawk '{print "+" $0}'
+join -v 2 ~/compdirs1_$$.tmp ~/compdirs2_$$.tmp | gawk '{print "-" $0}'
+
+rm -f ~/compdirs1_$$.tmp ~/compdirs2_$$.tmp
