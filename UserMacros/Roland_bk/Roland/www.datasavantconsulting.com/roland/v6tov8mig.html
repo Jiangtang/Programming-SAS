@@ -1,0 +1,548 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/v6tov8mig.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <title>A v6 to v8 data migration</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+A v6 to v8 data migration</h1></center>
+<b>Author: Roland Rashleigh-Berry</b>
+<br><b>Updated: 25 Aug 2013</b>
+<br>&nbsp;
+<h2>
+Introduction</h2>
+This page will cover the thinking process required for a sas version 6
+to version 8 data conversion/migration using a real case and will give
+you snippets of code that you can adapt for your own use. Note that this
+describes <b>data migration</b> only. If you are doing a full migration
+then at the very least you will migrating <b>format catalogs</b> as well
+(I would recommend the cntlout= and cntlin= method combined with fixing
+invalid format names for this). Only <b>data migration</b> is covered on
+this page.
+<h2>
+The scenario</h2>
+The scenario is that a server and disk pool used for collecting and analysing
+data from clinical trials is being decommissioned and the data needs to
+be saved in an accessible form for the future. The data will be archived
+but if there is a requirement to access it in the future then it must be
+readable by more modern versions of sas. The versions of the sas data go
+from sas 6.06, various higher version of sas 6 up&nbsp; to sas 8.2. Sas
+9 and later can read sas 8 datasets but can not read sas 6 datasets so
+the sas 6 data needs to be migrated to sas 8 before it can be archived.
+Sas 6 datasets have a different file extension -- ".ssd01" rather than
+".sas7bdat" for version 8. This gives us the possibility to migrate the
+data and write it back to the same directory that the sas 6 data resides
+in. This way the data "stays together" and this is an obvious requirement
+as we can not convert the data from various studies and write the data
+into a collective folder - there would be file name clashes and we would
+not be able to tell what data belonged to what study. Also the code members
+would likely no longer work so we have the opportunity to migrate to the
+same folder which is the ideal scene. This is going to be the approach
+described on this page.
+<p>As for the server and its data then this is no longer in use by people
+and the only user allowed access is the person doing the migration. As
+such, the files are static in the disk pool and this person is not cpu
+or work space restricted due to other users, although their configuration
+might need to be changed so as to remove restrictions that might have been
+put in place.
+<p>It is assumed that you will be running the code interactively.
+<h2>
+What tool to use?</h2>
+To "<b>data step</b>" or "<b>proc copy</b>" -- that is the question. For
+sure, we can not rely on data steps for everything because sas 8.2 can
+not read sas 6.06 datasets. We might consider a mix of data steps and proc
+copy but if we use data steps then we also need to consider the dataset
+labels. We would want to keep these and some extra coding will be required
+for this for data steps. We might have a preference for data steps in the
+case where there is an ALTER password assigned to the dataset to prevent
+deletion but if we need to delete these datasets we can always use a system
+delete, rather than a sas delete, as will be described later. Weighing
+up the pros and cons then "<b>proc copy</b>" and only "proc copy" is the
+only sensible choice. We are going to "proc copy" from a v6 source library
+out to a v8 target library.
+<h2>
+Validation</h2>
+Should we somehow validate the action of "proc copy" in migrating the data?
+I think we should. The overhead is not great to use "proc compare" to do
+this. Datasets can be compared "directly" with proc compare - there is
+no need to sort and use "id" variables. You just do a direct "proc compare"
+on the datasets as they are. You might think that this would generate a
+lot of output that would be difficult to read through but this can be avoided
+by running "proc compare" in "silent mode", looking at the contents of
+the system macro variable SYSINFO at the end and if its value is not zero
+then run a verbose "proc compare" to show details of the differences. "Proc
+compare" is our way of proving that our data conversion worked correctly.
+So after "proc copy"ing from a v6 source library out to a v8 target library,
+we will do a direct "proc compare" between the dataset in its v6 form to
+that dataset in its converted v8 form and show that they are the same and
+write a confirmation to the sas log.
+<h2>
+Dry Runs</h2>
+You will need to do many "dry runs" (aka "rehearsals") before you do the
+migration for real and actually write the converted data into the folder.
+You will hit many problems. For a "dry run" then you convert the datasets
+to v8 and write them to the WORK library. Then the "proc compare" is between
+the v6 datasets and the v8 dataset in the work library. Once done then
+the dataset in the work library will be deleted. It is here that you will
+be making use of "system deletes" since many of these datasets might have
+an ALTER password assigned that will prevent a sas deletion.
+<p>The aim of using "dry runs" is to identify and eliminate all obstacles
+so that the "final run" will hopefully run from start to finish without
+any problems.
+<h2>
+Libname statements</h2>
+Since we are both reading from and writing to the same folder - reading
+v6 and writing v8 - then how can we achieve both of these things using
+libname statements? This is easy, as you will see below. We can explicitly
+sas what data engine we want to use ("v6" and "v8"). At last, you will
+see your firs bit of sas code (assume the directory path has been assigned
+to the macro variable DIR):
+<br>&nbsp;
+<table BORDER COLS=1 BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>libname v6data v6 "&amp;dir" access=readonly;</tt>
+<br><tt>libname v8data v8 "&amp;dir";</tt></td>
+</tr>
+</table>
+
+<h2>
+What datasets do we process?</h2>
+Assuming we have assigned our v6 data directory to the libref V6DATA then
+how do we get the list of datasets we need to migrate? Maybe we want to
+write this list to a macro variable. This is also easy - we can use the
+<b>dictionary.tables</b>
+table for this as follows. Some more code! :
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>proc sql noprint;</tt>
+<br><tt>&nbsp; %let memnames=;</tt>
+<br><tt>&nbsp; select memname into :memnames separated by ' '</tt>
+<br><tt>&nbsp; from dictionary.tables</tt>
+<br><tt>&nbsp; where libname="V6DATA" and memtype="DATA"</tt>
+<br><tt>&nbsp; and memname not like '#TM%'</tt>
+<br><tt>&nbsp; and indexw("&amp;baddsets",memname)=0;</tt>
+<br><tt>quit;</tt></td>
+</tr>
+</table>
+
+<p>In the code above, the list of datasets to process are written to the
+macro variable memnames with the dataset names separated by spaces. Note
+that we don't want to comvert any sas temporary datasets that might be
+there that might be left over from a crashed session so we exclude the
+memname if it starts with "#TM" (maybe that should be "_TM" - I will update
+when I find out). Also, we might have a list of known bad datasets that
+we can not convert written to a macro variable <b>baddsets</b> so we exclude
+those as well.
+<h2>
+The "copy and compare" macro</h2>
+Now we have written our list of datasets to process to the macro variable
+<b>memnames</b>
+then we need to pass this to some sas code for processing. It would be
+normal to implement this as a macro so this is what you will see in the
+code below. It will be well worth your time to study this code closely:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>*- WORK pathname to use in "system" delete -;</tt>
+<br><tt>%let workpath=%sysfunc(pathname(WORK));</tt>
+<br>&nbsp;
+<p><tt>*- Target library is WORK for a dry run and V8DATA for the real
+thing -;</tt>
+<br><tt>%if &amp;dryrun EQ N %then %let targetlib=V8DATA;</tt>
+<br><tt>%else %let targetlib=WORK;</tt>
+<br>&nbsp;
+<p><tt>*- "proc compare" differences flag used for a final job message
+-;</tt>
+<br><tt>%let comperr=0;</tt>
+<br>&nbsp;
+<p><tt>*- Define macro for doing the copy and compare -;</tt>
+<br><tt>%macro copycomp(memnames);</tt>
+<br><tt>&nbsp; %local name i diff;</tt>
+<br><tt>&nbsp; %let diff=0;</tt>
+<br><tt>&nbsp; %let i=1;</tt>
+<br><tt>&nbsp; %let name=%scan(&amp;memnames,&amp;i,%str( ));</tt>
+<br><tt>&nbsp; options nonotes;</tt>
+<br><tt>&nbsp; %do %while(%length(&amp;name));</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; proc copy in=V6DATA out=&amp;targetlib memtype=data;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; select &amp;name;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; run;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; *- do a "quiet" proc compare and save the sysinfo
+value -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; proc compare base=v6data.&amp;name compare=&amp;targetlib..&amp;name</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; noprint nosummary novalues;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; run;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %let rc=&amp;sysinfo;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; *- See if we got a 0 sysinfo value and if not
+then do the -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; *- "proc compare" again writing to the log and
+output.&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %if &amp;rc NE 0 %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %put ERROR: "Proc compare" differences
+were found with &amp;name;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let comperr=1;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let diff=1;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; title "Conversion diffences for
+dataset &amp;name in folder ""&amp;dir"" ";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; footnote;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; proc compare base=v6data.&amp;name
+compare=&amp;targetlib..&amp;name listall;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; run;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; title;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %if &amp;dryrun EQ Y %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *- Use a "system" delete to ensure
+that datasets -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *- protected by an ALTER password
+are deleted.&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; x rm -f &amp;workpath/%lowcase(&amp;name).sas7bdat;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; %let i=%eval(&amp;i+1);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %let name=%scan(&amp;memnames,&amp;i,%str( ));</tt>
+<br><tt>&nbsp; %end;</tt>
+<p><tt>&nbsp; %if not &amp;diff %then %put >>>> no differences were found
+when comparing;</tt>
+<br><tt>&nbsp; options notes;</tt>
+<p><tt>%mend copycomp;</tt></td>
+</tr>
+</table>
+
+<h2>
+Identifying the directories to process</h2>
+Something that will take up the most time is identifying the directories
+to process. There are various ways of doing this. On Unix, the<b> find</b>
+command is used to find files that match a pattern. It will list these
+files with the full directory path and you can use the <b>dirname</b> command
+to give just the directory, without the file name, from this. This can
+then be passed to <b>sort -u</b> to sort the directory paths so you are
+left with unique values. All this can be used in a <b>pipe</b> filename
+statement in sas. An example of this is below. To minimize use of the <b>find</b>
+command then this is only run of the top directory has changed. I am setting
+up an unfilled variable named "baddsets" for consistency when I merge with
+other data that will have this variable set:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>*- Set to the top directory for looking for datasets to convert
+-;</tt>
+<p><tt>%let topdir=/saspeu/u01/sas6mig_write/d2/;</tt>
+<p><tt>&nbsp; %global holdtopdir;</tt>
+<p><tt>&nbsp; *- Run the FIND commands if there has been a change in the
+value for the top directory -;</tt>
+<br><tt>&nbsp; *-&nbsp;&nbsp; (these can take a long time to run so they
+are only done if strictly required)&nbsp;&nbsp;&nbsp; -;</tt>
+<p><tt>&nbsp; %if "&amp;holdtopdir" NE "&amp;topdir" %then %do;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; %let holdtopdir=&amp;topdir;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; *- pipe command for finding all directories containing
+v8 datasets -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; filename v8dirs pipe "find &amp;topdir -name
+'*.sas7bdat' | xargs -n1 dirname | sort -u";</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; *- read v8 directories into a dataset (will be
+slow for higher directories) -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; data __v8dirs;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; length dir $ 200 baddsets $ 100;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; retain baddsets ' ';</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; infile v8dirs;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; input dir;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; run;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; *- sort ready for a merge -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; proc sort data=__v8dirs;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; by dir;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; run;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; *- clear the v8 fileref -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; filename v8dirs CLEAR;</tt>
+<br>&nbsp;
+<br>&nbsp;
+<p><tt>&nbsp;&nbsp;&nbsp; *- pipe command for finding all directories containing
+v6 datasets -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; filename v6dirs pipe "find &amp;topdir -name
+'*.ssd01' | xargs -n1 dirname | sort -u";</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; *- read v6 directories into a dataset (will be
+slow for higher directories) -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; data __v6dirs;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; length dir $ 200 baddsets $ 100;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; retain baddsets ' ';</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; infile v6dirs;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; input dir;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; run;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; *- sort ready for a merge -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; proc sort data=__v6dirs;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; by dir;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; run;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; *- clear the v6 fileref -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; filename v6dirs CLEAR;</tt>
+<p><tt>&nbsp; %end;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>The reason I am looking for directories with *.sas7bdat files in them
+as well is in case they are the same as some directories containing *.ssd01
+files. I will have to be careful in case there are already files of the
+same name as both v6 and v8 datasets. I do a later merge that identifies
+them. I also merge with some known "bad" directories to avoid processing
+these.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp; *- Identify directories containing both types -;</tt>
+<br><tt>&nbsp; *- and select on the pure v6 data directories -;</tt>
+<br><tt>&nbsp; data __bothdirs __v6good;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; merge __v6dirs(in=_a) __v8dirs(in=_b) __baddirs(in=_c);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; by dir;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if _a and _b then output __bothdirs;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; else if _a and not _b and not _c then output
+__v6good;</tt>
+<br><tt>&nbsp; run;</tt></td>
+</tr>
+</table>
+
+<p>I do further manipulation to create a <b>__v6todo</b> dataset which
+are the directories I want to process:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp; *- These are the v6 datasets to process -;</tt>
+<br><tt>&nbsp; data __v6todo;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; set __v6good</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %*- also use the directories that are both v6
+and v8 -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %if &amp;useallv6dirs EQ Y %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; __bothdirs</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; __baddirs(where=(dir=:"&amp;topdir" and baddsets
+ne ' '))</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; ;</tt>
+<br><tt>&nbsp; run;</tt></td>
+</tr>
+</table>
+
+<p>Before closing this section I would point out that the method used above
+for getting a list of directories is not a recommendation. It depends on
+the circumstances. For a static situation where data on disk can not change
+then it may be better to run the <b>find </b>or whatever command on the
+whole of the data only once and write this to datasets that you can use
+in your code. Then you could select on these using "<tt>where=(dir=:"&amp;topdir")</tt>".
+The initial build of these datasets might take a very long time but things
+will run hugely faster after that if these datasets can be used.
+<h2>
+Looping through the directories dataset</h2>
+There are different ways of looping through a dataset and doing processing
+for each observation's values. The clearest and easiest way is to count
+the number of observations and then in a macro loop to select one observation
+at each iteration of the loop. You can do this using the <b>firstobs</b>
+and <b>obs</b> dataset options. The <b>todostart</b> macro reference at
+the start of the loop will be set to 1 but sometimes changed to a higher
+number if you are restarting a dry run and do not want to repeat processing
+for directories you know are good.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>&nbsp; *- find out how many obs are in the v6 "to do" directories
+dataset -;</tt>
+<br><tt>&nbsp; options nonotes;</tt>
+<br><tt>&nbsp; data _null_;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if 0=1 then set __v6todo nobs=v6nobs;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; call symput('v6nobs',compress(put(v6nobs,best8.)));</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; stop;</tt>
+<br><tt>&nbsp; run;</tt>
+<br><tt>&nbsp; options notes;</tt>
+<p><tt>&nbsp; %put >>>> There are &amp;v6nobs version 6 directories to
+migrate data for ;</tt>
+<br>&nbsp;
+<p><tt>&nbsp; *- Loop through the v6 directories and convert the data.
+If you are -;</tt>
+<br><tt>&nbsp; *- restarting this data conversion and some of the directories
+have -;</tt>
+<br><tt>&nbsp; *- been successfully converted then you can skip over these
+by&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- setting the "i" start value so that it skip those directories.&nbsp;&nbsp;
+-;</tt>
+<p><tt>&nbsp; %do i=&amp;todostart %to &amp;v6nobs;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; *- pick out the next directory -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; options nonotes;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; data _null_;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set __v6todo(firstobs=&amp;i obs=&amp;i);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; call symput('dir',trim(dir));</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; call symput('baddsets',upcase(trim(left(baddsets))));</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stop;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; run;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; options notes;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; %put;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %put >>>> Now working on directory "&amp;dir";</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; *- give it a fileref of "v6data" and an explicit
+v6 engine -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; options nonotes;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; libname v6data v6 "&amp;dir" access=readonly;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; options notes;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; %if &amp;dryrun EQ N %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; options nonotes;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; libname v8data v8 "&amp;dir";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; options notes;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; *- get a list of datasets -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; options nonotes;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; proc sql noprint;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let memnames=;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; select memname into :memnames separated
+by ' '</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; from dictionary.tables</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; where libname="V6DATA" and memtype="DATA"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; and memname not like '#TM%'</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; and indexw("&amp;baddsets",memname)=0;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; quit;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; options notes;</tt>
+<br>&nbsp;
+<p><tt>&nbsp;&nbsp;&nbsp; %put >>>> Datasets to convert and compare are
+&amp;memnames;</tt>
+<br>&nbsp;
+<p><tt>&nbsp;&nbsp;&nbsp; *- copy (and compare) the data -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %copycomp(&amp;memnames);</tt>
+<br>&nbsp;
+<p><tt>&nbsp;&nbsp;&nbsp; *- clear the source libref -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; options nonotes;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; libname v6data CLEAR;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; options notes;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; %if &amp;dryrun EQ N %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *- clear the target libref -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; options nonotes;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; libname v8data CLEAR;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; options notes;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+<p><tt>&nbsp; %end;</tt>
+<p><tt>&nbsp; %if &amp;comperr %then&nbsp;</tt>
+<br><tt>%put WARNING: There were some "proc compare" differences. Check
+the log and output;</tt></td>
+</tr>
+</table>
+
+<h2>
+Problems you might encounter</h2>
+You will be doing many dry runs for each top level directory you choose
+and you will encounter many problems with the data.
+<h3>
+sas v6.06 dataset warnings</h3>
+Sas 6.06 datasets can not be read directly by sas v8. PROC COPY will not
+complain if it encounters a 6.06 dataset as it is designed to cope with
+it but when you do the "proc compare" then PROC COMPARE will complain about
+it. There is no way you can suppress these warnings. They look like the
+following:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>WARNING: File V6DATA.XXX.DATA is in an older/inefficient format.
+Use the COPY procedure to migrate this data set to the more efficient Version
+8 format. The COMPARE procedure can be used for verification.</tt></td>
+</tr>
+</table>
+
+<p>The text of the warnings also endorses our decision to use PROC COMPARE
+after migration to validate the conversion.
+<h3>
+sas 6 dataset name longer than 8 characters</h3>
+You will not be able to convert the sas v6 dataset if its file name is
+longer than 8 characters. If you encounter these then what has happened
+is that a user has made a backup of a sas dataset and added some qualifying
+information to its name. You will still have to convert these. You might
+come up with an automated method to do this or just use the dry runs to
+identify these, note its directory and original name and then do a system
+rename to shorten it to 8 characters or less, do the conversion, then name
+it back again after the conversion.
+<p>The message you will get in the log will look something like this if
+you use the %copycomp macro above. The first two error message come from
+the proc copy step. The next two come from the proc compare step. The last
+is a user error message coming from the end of the %copycomp macro.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>ERROR: The file V6DATA.XXXX_SAVE.DATA has too long a member name
+for the V6DATA library.</tt>
+<br><tt>ERROR: File WORK.XXXX_SAVE.DATA has not been saved because copy
+could not be completed.</tt>
+<br><tt>ERROR: The file V6DATA.XXXX_SAVE.DATA has too long a member name
+for the V6DATA library.</tt>
+<br><tt>ERROR: File WORK.XXXX_SAVE.DATA does not exist.</tt>
+<br><tt>ERROR: "Proc compare" differences were found with XXXX_SAVE</tt></td>
+</tr>
+</table>
+
+<h3>
+Bus errors</h3>
+Bus errors are nasty. If you get these it can either mean that your v6
+dataset is corrupted or that you have run out of WORK space. Some of the
+datasets you are creating might be huge but they still have to be able
+for fit in the WORK library when you are doing dry runs. And you can't
+avoid doing dry runs - these are your route to a successful data conversion.
+Your sas session might have been configured to give you only a limited
+WORK space so at some stage you will have to ask the systems administrator
+to increase your allowance.
+<p>You will notice, if you look, that the %copycomp macro copies and convert
+on dataset at a time and deletes it at the end. This is to save space in
+the WORK library but this may not be enough for your needs.
+<p>Bus errors will crash your conversion code and leave a lock on the V6DATA
+libref or whatever named libref you are using as the source directory but
+you will be able to continue with other sas work. To rerun the conversion
+code, you will have to close the session and restart it. You will maybe
+want to assign the directory that gave the bus error to a different libref
+and do some diagnostic testing to find out what is wrong before closing
+the session and restarting.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>NOTE: Copying V6DATA.XXXX to WORK.XXXX (memtype=DATA).</tt>
+<br><tt>Bus Error In Task ( COPY&nbsp;&nbsp;&nbsp;&nbsp; ]</tt>
+<br><tt>Fault Occurred at [UNKNOWN at 0xC2E599F4]</tt>
+<p><tt>Task Traceback</tt>
+<p><tt>NOTE: The SAS System stopped processing this step because of errors.</tt>
+<br><tt>Bus Error In Task ( COPY&nbsp;&nbsp;&nbsp;&nbsp; ]</tt>
+<br><tt>Fault Occurred at [UNKNOWN at 0xC2E74014]</tt></td>
+</tr>
+</table>
+
+<h3>
+I/O errors reading past the end of dataset</h3>
+If you see error messages concerned with reading past the end of the dataset
+and it turns out that the source dataset has zero observations then you
+can ignore these as there is no data there to migrate.
+<h3>
+Others</h3>
+There may be other problems. Deal with these as you encounter them.
+<h2>
+The Final Run</h2>
+When all your dry runs are over then you do the final run. This should
+go through to completion but you may run into space limitation issues.
+Good luck!
+<h2>
+Conclusion</h2>
+You have been given a comprehensive description of issues relating to a
+sas v6 to v8 migration.
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<br>&nbsp;
+<br>&nbsp;
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/v6tov8mig.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+</html>

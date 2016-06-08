@@ -1,0 +1,84 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/solidlines.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:38 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <title>Solid lines with proc report</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Solid Lines with Proc Report</h1></center>
+<b>Author: Roland Rashleigh-Berry</b>
+<br><b>Updated: 11 Dec 2011</b>
+<h2>
+Introduction</h2>
+This page is about how best to define solid lines to "proc report" output
+as a "top line" or as a first footnote. It is only applicable to <b>sas
+9.2</b> and higher.
+<h2>
+The Problem</h2>
+The problem you have is that is you use underscores to give you a solid
+line in "proc report" output then the line is too low and to make your
+report look right you have to skip a line underneath it. This wastes one
+of the lines on your page that you could be using to display data. But
+if you used a line of dashes (miinus signs or hyphens) then the line is
+in the right positions but it is not solid. You see the gaps between the
+dashes.
+<p>What you would like is the line that "proc report" gives you if you
+use the option <b>headline</b>. This gives you a solid line in the middle
+height of the row which is perfect. This is the line that looks like "<tt>fffffffff</tt>"
+when you copy and paste to Notepad.
+<h2>
+The Solution</h2>
+The solution is to understand that "proc report" is using a special character
+that you can use as well. It is neither a hyphen (minus sign) nor an underscore.
+You can find out which character this is using my <b>%hexchars</b> macro
+if you coopy and paste into Notepad and save the file somewhere. %hexchars
+will reveal that this character is <b>"83"x</b> (hexadecimal) and <b>131</b>
+as decimal. Knowing that you can use it in your code.
+<h2>
+How to code it</h2>
+There are two ways of using it in your code. Either direct as the <b>"83"x</b>
+hex character (suitable for a top line in proc report) or as <b>%sysfunc(byte(131))</b>
+in macro code (suitable for use in a footnote).
+<p>Here is how to use it in your code:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>proc report etc........;</tt>
+<br><tt>&nbsp; *- a list of column veriables with a top line defined at
+the start -;</tt>
+<br><tt>&nbsp; columns ( "8383"x var1 var2 var3 etc. );</tt>
+<p><tt>*- a footnote that is a solid line the width of the report -;</tt>
+<br><tt>footnote1 "%sysfunc(repeat(%sysfunc(byte(131)),%eval(&amp;repwidth-1)))";</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+You have seen how to use the <b>"83"x</b> (decimal <b>131</b>) character
+to create solid lines in proc report that are shown at mid-row height.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<br>&nbsp;
+<br>&nbsp;
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/solidlines.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:38 GMT -->
+</html>

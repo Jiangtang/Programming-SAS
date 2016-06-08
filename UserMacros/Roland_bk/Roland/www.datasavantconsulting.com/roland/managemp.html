@@ -1,0 +1,2492 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+  
+<!-- Mirrored from www.datasavantconsulting.com/roland/managemp.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+<head>
+    <meta http-equiv="Content-Type" content="text/html;
+      charset=windows-1252">
+    <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U)
+      [Netscape]">
+    <meta name="Author" content="Roland Rashleigh-Berry">
+    <meta name="Description" content="Managing your Multiprocessing
+      Sessions">
+    <meta name="KeyWords" content="ad hoc Spectre PDF">
+    <title>Managing your Multiprocessing Sessions</title>
+  </head>
+  <body alink="#FF0080" bgcolor="#C0C0FF" link="#0000FF" text="#000000"
+    vlink="#800080">
+    <center>
+      <h1>
+        Managing your Multiprocessing Sessions</h1>
+    </center>
+    <b><font face="Arial,Helvetica">Last Updated: 04 Jun 2014</font></b>
+    <h2>
+      <font color="#663366">Pre-Introduction</font></h2>
+    <font color="#663366">
+      Multiprocessing using SAS can greatly speed up processing in the
+      right
+      circumstances but should not be used as a workaround for slow
+      running SAS
+      code. The strength of using multiprocessing lies in having
+      computers with
+      a low concurrent job occupancy that is made so by efficient code
+      running
+      "lean and mean". The jobs then run quickly and end quickly and the
+      concurrent
+      job occupancy is low. Even for a very powerful computer you will
+      then have
+      times, even during busy periods, where the computer is idle. You
+      then have
+      massive spare CPU capacity that can be exploited using
+      multiprocessing
+      to hugely reduce the elapsed time of your work. This will
+      especially be
+      appreciated for ad-hoc query work running on large amounts of
+      data. Conversely,
+      if you try using multiprocessing in a computer running inefficient
+      code,
+      then the effect it has is to increase CPU overheads through having
+      too
+      many tasks to manage and limits for resources might be exceeded,
+      causing
+      delays or even job failures.
+    </font>
+    <p><font color="#663366">You should only be using multiprocessing to
+        seek to gain a speed advantage
+        if your SAS code is already running at a throughput rate of <b>10,000
+          obs
+          per second</b> or more. If you are failing to achieve these
+        speeds then
+        your SAS code needs to be redesigned in a way to give you more
+        speed. If
+        you are not achieving a throughput rate of 10,000 obs per second
+        then you
+        should apply the speed tips on the following page and return to
+        this page
+        at a later date after this issue has been resolved.
+      </font></p>
+    <p><a href="speedtips.html" target="_blank">SAS Speed Tips</a>
+    </p>
+    <p><font color="#663366">This is a very advanced topic on managing
+        your multiprocessing sessions.
+        This page will be of no benefit to you unless you have read and
+        understood
+        the following two pages. If you have not read these two pages
+        then please
+        do so and return to this page at a later date.
+      </font></p>
+    <p><a href="MPConnect.html" target="_blank">Multiprocessing using MP
+        Connect</a>
+      <br>
+      <a href="sharerem.html" target="_blank">Sharing Resources with
+        Remote
+        Sessions</a>
+      <br>
+      &nbsp;
+      <br>
+      &nbsp;
+    </p>
+    <h2>
+      Introduction</h2>
+    This is a <b>technically detailed page</b> on managing your
+    multiprocessing
+    sessions. Firstly, I will explain why your multiprocessing sessions
+    <b>need</b>
+    to be managed. They <b>need</b> to be managed because if you have
+    many
+    tasks to perform and you want to perform these tasks in parallel
+    then there
+    is a limit to the number of computer processors that it is best to
+    use,
+    and that depends on how many processors are available to you and
+    being
+    mindful of other peoples work running on the same computer. Because
+    of
+    this, it is best to choose and control the number of remote
+    processes that
+    you have running at any time. Also, each process you submit takes up
+    valuable
+    computer resources in terms of allocated storage space so you need
+    to close
+    down these processes as soon as possible. And if you are gathering
+    output
+    back from these processes then they need to be closed down in the
+    correct
+    order - and this is not something easy to do, as some processes
+    might take
+    much longer than other processes to run and you have to wait for
+    these
+    long running processes to finish and to close it down before you
+    close
+    down the following processes that might have ended some time before.
+    The
+    logic to this is not easy.
+    <h2>
+      Checking that SAS/CONNECT is licensed</h2>
+    When developing code that uses multiprocessing it is wise to code in
+    such
+    a way that it works independently of whether the computer running
+    the code
+    has SAS/CONNECT licensed or not. You can test this with <b>%SYSPROD(connect)</b>
+    and if it returns <b>1</b> then SAS/CONNECT is licensed to run on
+    that
+    machine and multiprocessing is possible. Since you will most likely
+    be
+    giving rsubmit processes names and "<b>wait</b>"ing for them then it
+    is
+    not enough to follow the recommendations on the SAS Support website
+    (see
+    use of the "star" macro variable on <a
+href="http://support.sas.com/documentation/cdl/en/connref/61908/HTML/default/viewer.htm#a001584568.htm"
+      target="_blank">this
+      page</a>). You should instead aim to test for <b>%sysprod(connect)
+      EQ 1</b>
+    and that would mean turning your code into a macro so you could use
+    the
+    <b>%IF</b>
+    condition which is not allowed in normal SAS code. To make your code
+    work
+    independently of whether SAS/CONNECT is licensed or not is
+    especially important
+    if you are working in Clinical Reporting and your code is sent to a
+    client
+    or a regulatory authority that might have SAS licensed but not
+    SAS/CONNECT
+    licensed.
+    <p>An alternative to coding with %sysprod(connect) is to use the
+      macro
+      <a href="Spectre/utilmacros/rsubmitter.sas" target="_blank">%rsubmitter</a>
+      to submit multiple tasks which will work in both cases where
+      SAS/CONNECT
+      is licensed or not.
+    </p>
+    <h2>
+      A Pseudo Code Example</h2>
+    The logic for managing and controlling multiprocessing sessions is
+    complex
+    and you need to appreciate what is going on during a multiprocessing
+    environment.
+    The best way that you can come to an understanding of this is to
+    look at
+    a descriptive example where some non rigorous pseudo code explains
+    the
+    situation. Please study the following example carefully until you
+    understand
+    what is happening in it.
+    <br>
+    &nbsp;
+    <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+      <tbody>
+        <tr>
+          <td><tt>-- number of concurrent background processes --</tt>
+            <br>
+            <tt>streams=3</tt>
+            <p><tt>-- processes that need to run and their tasks and
+                times --</tt>
+              <br>
+              <tt>P1 TaskA 2 min</tt>
+              <br>
+              <tt>P2 TaskB 12 min</tt>
+              <br>
+              <tt>P3 TaskC 5 min</tt>
+              <br>
+              <tt>P4 TaskD 3 min</tt>
+              <br>
+              <tt>P5 TaskE 4 min</tt>
+              <br>
+              <tt>P6 TaskF 2 min</tt>
+              <br>
+              <tt>P7 TaskG 5 min</tt>
+              <br>
+              <tt>P8 TaskH 8 min</tt>
+              <br>
+              <tt>P9 TaskI 4 min</tt>
+              <br>
+              <tt>P10 TaskJ 2 min</tt>
+              <br>
+              &nbsp;
+            </p>
+            <p><tt>############# START #############</tt>
+            </p>
+            <p><tt>(do one for each stream)</tt>
+              <br>
+              <tt>P1 TaskA launch&nbsp; 2 min left</tt>
+              <br>
+              <tt>P2 TaskB launch 12 min left</tt>
+              <br>
+              <tt>P3 TaskC launch&nbsp; 5 min left</tt>
+              <br>
+              &nbsp;
+            </p>
+            <p><tt>------ after another 2 min ------</tt>
+              <br>
+              <tt>P1 ended</tt>
+              <br>
+              <tt>P2 10 min left</tt>
+              <br>
+              <tt>P3 3 min left</tt>
+            </p>
+            <p><tt>signoff P1</tt>
+              <br>
+              <tt>cannot signoff P2</tt>
+            </p>
+            <p><tt>(do one for each ended process)</tt>
+              <br>
+              <tt>P4 TaskD launch 3 min left</tt>
+              <br>
+              &nbsp;
+            </p>
+            <p><tt>------ after another 3 min ------</tt>
+              <br>
+              <tt>P2 7 min left</tt>
+              <br>
+              <tt>P3 ended</tt>
+              <br>
+              <tt>P4 ended</tt>
+            </p>
+            <p><tt>cannot signoff P2</tt>
+            </p>
+            <p><tt>(do one for each ended process)</tt>
+              <br>
+              <tt>P5 TaskE launch 4 min left</tt>
+              <br>
+              <tt>P6 TaskF launch 2 min left</tt>
+              <br>
+              &nbsp;
+            </p>
+            <p><tt>------ after another 2 min ------</tt>
+              <br>
+              <tt>P2 5 min left</tt>
+              <br>
+              <tt>P5 2 min left</tt>
+              <br>
+              <tt>P6 ended</tt>
+            </p>
+            <p><tt>cannot signoff P2</tt>
+            </p>
+            <p><tt>(do one for each ended process)</tt>
+              <br>
+              <tt>P7 TaskG launch 5 min left</tt>
+              <br>
+              &nbsp;
+            </p>
+            <p><tt>------ after another 2 min ------</tt>
+              <br>
+              <tt>P2 3 min left</tt>
+              <br>
+              <tt>P5 ended</tt>
+              <br>
+              <tt>P7 3 min left</tt>
+            </p>
+            <p><tt>cannot signoff P2</tt>
+            </p>
+            <p><tt>(do one for each ended process)</tt>
+              <br>
+              <tt>P8 TaskH launch 8 min left</tt>
+              <br>
+              &nbsp;
+            </p>
+            <p><tt>------ after another 3 min ------</tt>
+              <br>
+              <tt>P2 ended</tt>
+              <br>
+              <tt>P7 ended</tt>
+              <br>
+              <tt>P8 5 min left</tt>
+            </p>
+            <p><tt>signoff P2</tt>
+              <br>
+              <tt>signoff P3</tt>
+              <br>
+              <tt>signoff P4</tt>
+              <br>
+              <tt>signoff P5</tt>
+              <br>
+              <tt>signoff P6</tt>
+              <br>
+              <tt>signoff P7</tt>
+              <br>
+              <tt>cannot signoff P8</tt>
+            </p>
+            <p><tt>(do one for each ended process)</tt>
+              <br>
+              <tt>P9 TaskI launch 4 min left</tt>
+              <br>
+              <tt>P10 TaskJ launch 2 min left</tt>
+              <br>
+              &nbsp;
+            </p>
+            <p><tt>------ after another 2 min ------</tt>
+              <br>
+              <tt>P8 3 min left</tt>
+              <br>
+              <tt>P9 2 min left</tt>
+              <br>
+              <tt>P10 ended</tt>
+            </p>
+            <p><tt>cannot signoff P8</tt>
+            </p>
+            <p><tt>(do one for each ended process)</tt>
+              <br>
+              <tt>no more tasks to launch</tt>
+              <br>
+              &nbsp;
+            </p>
+            <p><tt>------ after another 2 min ------</tt>
+              <br>
+              <tt>P8 1 min left</tt>
+              <br>
+              <tt>P9 ended</tt>
+            </p>
+            <p><tt>cannot signoff P8</tt>
+            </p>
+            <p><tt>(do one for each ended process)</tt>
+              <br>
+              <tt>no more tasks to launch</tt>
+              <br>
+              &nbsp;
+            </p>
+            <p><tt>------ after another 1 min ------</tt>
+              <br>
+              <tt>P8 ended</tt>
+            </p>
+            <p><tt>signoff P8</tt>
+              <br>
+              <tt>signoff P9</tt>
+              <br>
+              <tt>signoff P10</tt>
+              <br>
+              <tt>no more processes to sign off</tt>
+            </p>
+            <p><tt>(do one for each ended process)</tt>
+              <br>
+              <tt>no more tasks to launch</tt>
+            </p>
+            <p><tt>all processes signed off so END</tt>
+            </p>
+            <p><tt>############## END ##############</tt>
+              <br>
+              &nbsp;</p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>
+      Some Comments on the Pseudo Code Example</h2>
+    Please notice the following things in the pseudo code example above.
+    Firstly,
+    that <b>controlling the number of streams is incredibly easy</b>.
+    It is
+    just a case of launching that number of processes at the start. At
+    no other
+    point in the process do we need to be aware of the number of streams
+    because
+    we count the number of processes that have finished at each
+    interruption
+    point and launch that same number of new processes (if we have any
+    left).
+    That is the easiest part and this may come as a surprise.
+    <p><b>We need to sign off the processes in the strict order P1, P2,
+        P3
+        etc. </b>such that we collect the outputs from the processes in
+      the correct
+      order. We never have to sign off the same process twice so we have
+      to keep
+      a value of the last process we signed off. At each interruption
+      (i.e. when
+      one or more of the running processes have completed) then we need
+      to sign
+      off as many processes as we can - up until the last process to be
+      submitted,
+      but we must do so in strict order and we have to stop signing off
+      processes
+      as soon as we hit one that is still running.
+    </p>
+    <p>The number identifiers of the processes running are in ascending
+      order
+      but the <b>process identifiers do not stay consecutive</b> such
+      as at one
+      stage we are running processes P2, P5 and P6 and not P2, P3 and P4
+      because
+      P3 and P4 have already finished. We need to keep a list somewhere
+      of the
+      currently running processes and refer to this list when we have an
+      interruption,
+      to check each process to see if they have finished, and we need to
+      produce
+      a new list at the end of processing after each interruption that
+      we can
+      refer to at the next interruption.
+    </p>
+    <p>At some point <b>we run out of tasks to submit</b> so we have to
+      keep
+      in mind this upper limit of processes to run so as to not launch
+      processes
+      that do not exist.
+    </p>
+    <p>If we can successfully sign off the last process that was
+      submitted
+      then all the processing is complete.
+    </p>
+    <h2>
+      A Real Code Example</h2>
+    Hopefully you have studied the logic above and a keen to see a real
+    code
+    example of the pseudo code. In this real code example, you can run
+    the
+    code yourself and play around with it. It uses my utility macros
+    which
+    you can download from this web site. Note that a macro is called
+    that has
+    a "task block" as a parameter. You might not have come across
+    anything
+    like this so I will explain. Suppose you have a macro which I will
+    call
+    XLAB. In this macro you want to get ready some datasets and formats
+    in
+    the WORK library and then you want to call several macros that
+    report on
+    the data. And some of these macros you might not want to run and so
+    you
+    want a way of commenting them out. This is what this "task block" is
+    doing.
+    If an element starts with a '#' then it means you want to run it. If
+    it
+    starts with a '*' then it means you do not want to run it (just like
+    it
+    has been commented out). You are calling reporting macros but
+    passing it
+    parameters with commas would cause syntax errors so you pass the
+    parameters
+    separated by spaces and the macro itself has to put the commas
+    in-between
+    the parameters when it calls the reporting macro proper. It is quite
+    a
+    good way of working when you get used to it.
+    <p>I hope you take the opportunity to run the macro and play around
+      with
+      it. You can change the number of streams it uses if you like and
+      check
+      on the timings for the complete run compared with adding up the
+      "sleep"
+      delays that are built in. You may be interested to know that the
+      system
+      macro variable <b>&amp;SYSNCPU</b> resolves to the number of
+      processing
+      cores in your computer and you will maybe want to set the number
+      of streams
+      to this value.
+    </p>
+    <p><b>The code:</b>
+      <br>
+      &nbsp;
+      <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+        <tbody>
+          <tr>
+            <td><tt>*- use explicit signon as explained in the comments
+                -;&nbsp;</tt>
+              <br>
+              <tt>options autosignon=no;&nbsp;</tt>
+              <br>
+              <tt>ods _all_ close;&nbsp;</tt>
+              <br>
+              <tt>ods listing;&nbsp;</tt>
+              <br>
+              <tt>ods results off;&nbsp;</tt>
+              <br>
+              &nbsp;
+              <p><tt>*- create a directory to store shared macros in
+                  -;&nbsp;</tt>
+                <br>
+                <tt>systask command "mkdir
+                  ""%sysfunc(pathname(work))\macros"" "
+                  taskname=mkdir;&nbsp;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>*- create a format locally that will be needed in
+                  remote sessions
+                  -;</tt>
+                <br>
+                <tt>proc format;</tt>
+                <br>
+                <tt>&nbsp; value $miss ' '='Missing';</tt>
+                <br>
+                <tt>run;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>*- create a dataset locally that will be needed in
+                  remote sessions
+                  -;</tt>
+                <br>
+                <tt>data class;</tt>
+                <br>
+                <tt>&nbsp; retain Miss ' ';</tt>
+                <br>
+                <tt>&nbsp; set sashelp.class;</tt>
+                <br>
+                <tt>&nbsp; format _character_ $miss.;</tt>
+                <br>
+                <tt>run;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>*- locally compiled reporting macro -;&nbsp;</tt>
+                <br>
+                <tt>%macro repsleep(repnum=,waitsec=);&nbsp;</tt>
+              </p>
+              <p><tt>&nbsp; %let srclib=work;</tt>
+                <br>
+                <tt>&nbsp; %look4lwork;</tt>
+              </p>
+              <p><tt>&nbsp; proc print data=&amp;srclib..class;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; title1 "Report from Session &amp;repnum that
+                  slept for &amp;waitsec
+                  seconds";&nbsp;</tt>
+                <br>
+                <tt>&nbsp; run;&nbsp;</tt>
+              </p>
+              <p><tt>&nbsp; data _null_;&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; rc=sleep(&amp;waitsec);&nbsp;</tt>
+                <br>
+                <tt>&nbsp; run;&nbsp;</tt>
+                <br>
+                <tt>%mend repsleep;&nbsp;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>*- make sure the shared macros directory creation
+                  has ended -;&nbsp;</tt>
+                <br>
+                <tt>waitfor mkdir;&nbsp;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>*- give the shared macros library the libref
+                  "sharemac" -;&nbsp;</tt>
+                <br>
+                <tt>libname sharemac
+                  "%sysfunc(pathname(work))\macros";&nbsp;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>*- Copy locally compiled macros needed by remote -;</tt>
+                <br>
+                <tt>*- sessions to the shared macros
+                  catalog.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  -;&nbsp;</tt>
+                <br>
+                <tt>proc catalog c=work.sasmacr et=macro;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; copy out=sharemac.sasmacr;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; select repsleep;&nbsp;</tt>
+                <br>
+                <tt>quit;&nbsp;</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>*###################&nbsp; DEFINE MAIN MACRO&nbsp;
+                  ###################;&nbsp;</tt>
+              </p>
+              <p><tt>%macro xrep(streams=,taskblock=);&nbsp;</tt>
+              </p>
+              <p><tt>&nbsp; %local i task tasknum old_plist plist
+                  next_signoff&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  pnum pval macname
+                  numended;&nbsp;</tt>
+              </p>
+              <p><tt>&nbsp; %let i=1;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; %let tasknum=0;&nbsp;</tt>
+              </p>
+              <p><tt>&nbsp; *---- Read in the active tasks from the task
+                  block parameter
+                  value&nbsp; ----;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; *---- into a macro array and set "tasknum" to
+                  the total
+                  valid tasks ----;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; *---- which will be those elements starting
+                  with
+'#'.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;----;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; %do %until(not %length(&amp;task));&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %let
+                  task=%scandlm(&amp;taskblock,&amp;i,*#);&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %if
+                  "%sysfunc(subpad(&amp;task,1,1))" EQ "#"
+                  %then %do;&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let
+                  tasknum=%eval(&amp;tasknum+1);&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %local
+                  task&amp;tasknum;&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let
+                  task&amp;tasknum=&amp;task;&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %end;&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %let i=%eval(&amp;i+1);&nbsp;</tt>
+                <br>
+                <tt>&nbsp; %end;&nbsp;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; *#########&nbsp; Define sub-macro that sets
+                  up the remote
+                  session&nbsp; #########;&nbsp;</tt>
+              </p>
+              <p><tt>&nbsp; %macro
+                  callrem(pnum=,macname=,params=);&nbsp;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; %local macrostr;&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %let
+                  macrostr=&amp;macname(%commaparms(%nrbquote(&amp;params)));&nbsp;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; *- we need an explicit signon so
+                  that we can
+                  "syslput" to -;&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; *- a remote session we are
+                  already in contact
+                  with.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -;&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; signon P&amp;pnum cwait=no
+                  inheritlib=(work=lwork
+                  sharemac=sharemac)&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; sascmd="!sascmd -sasuser work
+                  -nonotes -nosplash
+                  -noautoexec</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-sasautos
+                  %mysasautos";&nbsp;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; *- Make the contents of
+                  "macrostr" available
+                  to the remote session -;&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; *- as the contents of the remote
+                  local macro
+                  variable "task".&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  -;&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %syslput task=&amp;macrostr /
+                  remote=P&amp;pnum;&nbsp;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; RSUBMIT cmacvar=stat&amp;pnum;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; options notes nodate
+                  nonumber mstored
+                  sasmstore=sharemac;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %&amp;task;&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; ENDRSUBMIT;&nbsp;</tt>
+              </p>
+              <p><tt>&nbsp; %mend callrem;&nbsp;</tt>
+              </p>
+              <p><tt>&nbsp; *############ End of sub-macro definition
+                  ###########;&nbsp;</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; *###### initiate and manage the remote
+                  sessions ######;&nbsp;</tt>
+              </p>
+              <p><tt>&nbsp; %let pnum=0;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; %let next_signoff=1;&nbsp;</tt>
+              </p>
+              <p><tt>&nbsp; *--- launch tasks for each of the number of
+                  streams ---;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; %do i=1 %to &amp;streams;&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %if &amp;i LE &amp;tasknum %then
+                  %do;&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let
+                  pnum=%eval(&amp;pnum+1);&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let plist=&amp;plist
+                  &amp;pnum;&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let
+                  macname=%scan(%allafter(&amp;&amp;task&amp;pnum,=),1,%str(
+                  ));&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let
+                  params=%allafter(&amp;&amp;task&amp;pnum,=&amp;macname);&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  %callrem(pnum=&amp;pnum,macname=&amp;macname,params=&amp;params);&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %end;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; %end;&nbsp;</tt>
+              </p>
+              <p><tt>&nbsp; *--- point to keep jumping back to
+                  ---;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; %loop:&nbsp;</tt>
+              </p>
+              <p><tt>&nbsp; *-- stop and wait for any of the processes
+                  to end ---;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; waitfor _any_ %prefix(P,&amp;plist);&nbsp;</tt>
+              </p>
+              <p><tt>&nbsp; *- try to sign off as many processes as
+                  possible -;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; %do i=&amp;next_signoff %to &amp;pnum;&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %if &amp;&amp;stat&amp;i EQ 0
+                  %then %do;&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; signoff
+                  P&amp;i;&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let
+                  next_signoff=%eval(&amp;i+1);&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %end;&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %else %let i=&amp;pnum;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; %end;&nbsp;</tt>
+              </p>
+              <p><tt>&nbsp; *- if we have signed off all processes then
+                  exit the loop
+                  -;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; %if &amp;next_signoff GT &amp;tasknum %then
+                  %goto finish;&nbsp;</tt>
+              </p>
+              <p><tt>&nbsp; %let old_plist=&amp;plist;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; %let plist=;&nbsp;</tt>
+              </p>
+              <p><tt>&nbsp; *- count how many processes have ended
+                  -;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; %let numended=0;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; %do i=1 %to %words(&amp;old_plist);&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %let
+                  pval=%scan(&amp;old_plist,&amp;i,%str(
+                  ));&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %if &amp;&amp;stat&amp;pval EQ 0
+                  %then %let
+                  numended=%eval(&amp;numended+1);&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %else %let plist=&amp;plist
+                  &amp;pval;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; %end;&nbsp;</tt>
+              </p>
+              <p><tt>&nbsp; *- launch a new task for each ended process
+                  -;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; %do i=1 %to &amp;numended;&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %let
+                  pnum=%eval(&amp;pnum+1);&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %if &amp;pnum LE &amp;tasknum
+                  %then %do;&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let plist=&amp;plist
+                  &amp;pnum;&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let
+                  macname=%scan(%allafter(&amp;&amp;task&amp;pnum,=),1,%str(
+                  ));&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let
+                  params=%allafter(&amp;&amp;task&amp;pnum,=&amp;macname);&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  %callrem(pnum=&amp;pnum,macname=&amp;macname,params=&amp;params);&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %end;&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %else %let
+                  pnum=%eval(&amp;pnum-1);&nbsp;</tt>
+                <br>
+                <tt>&nbsp; %end;&nbsp;</tt>
+              </p>
+              <p><tt>&nbsp; *- go back and wait for another process to
+                  end -;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; %goto loop;&nbsp;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; *#######&nbsp; we have finished with all the
+                  remote sessions&nbsp;
+                  ######;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; %finish:&nbsp;</tt>
+              </p>
+              <p><tt>%mend xrep;&nbsp;</tt>
+              </p>
+              <p><tt>*###################&nbsp; DEFINE MAIN MACRO ENDED
+                  ###################;&nbsp;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>%put
+                  &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;
+                  STARTED AT %now
+                  &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;;&nbsp;</tt>
+              </p>
+              <p><tt>*------ Call Main Macro ------;</tt>
+                <br>
+                <tt>%xrep(streams=5,taskblock=&nbsp;</tt>
+                <br>
+                <tt>#table=repsleep repnum=1 waitsec=2&nbsp;</tt>
+                <br>
+                <tt>#table=repsleep repnum=2 waitsec=12&nbsp;</tt>
+                <br>
+                <tt>*table=dontdo1&nbsp;</tt>
+                <br>
+                <tt>#table=repsleep repnum=3 waitsec=5&nbsp;</tt>
+                <br>
+                <tt>#table=repsleep repnum=4 waitsec=3&nbsp;</tt>
+                <br>
+                <tt>#table=repsleep repnum=5 waitsec=4&nbsp;</tt>
+                <br>
+                <tt>#table=repsleep repnum=6 waitsec=2&nbsp;</tt>
+                <br>
+                <tt>*table=dontdo2&nbsp;</tt>
+                <br>
+                <tt>#table=repsleep repnum=7 waitsec=5&nbsp;</tt>
+                <br>
+                <tt>#table=repsleep repnum=8 waitsec=8&nbsp;</tt>
+                <br>
+                <tt>#table=repsleep repnum=9 waitsec=4&nbsp;</tt>
+                <br>
+                <tt>#table=repsleep repnum=10 waitsec=2&nbsp;</tt>
+                <br>
+                <tt>);&nbsp;</tt>
+              </p>
+              <p><tt>%put
+                  &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;
+                  ENDED AT %now
+                  &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;;&nbsp;</tt>
+              </p>
+              <p>&nbsp;</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </p>
+    <p><b>The log:</b>
+      <br>
+      &nbsp;
+      <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+        <tbody>
+          <tr>
+            <td><tt>1&nbsp;&nbsp;&nbsp; *- use explicit signon as
+                explained in the
+                comments -;</tt>
+              <br>
+              <tt>2&nbsp;&nbsp;&nbsp; options autosignon=no;</tt>
+              <br>
+              <tt>3&nbsp;&nbsp;&nbsp; ods _all_ close;</tt>
+              <br>
+              <tt>4&nbsp;&nbsp;&nbsp; ods listing;</tt>
+              <br>
+              <tt>5&nbsp;&nbsp;&nbsp; ods results off;</tt>
+              <br>
+              <tt>6</tt>
+              <br>
+              <tt>7</tt>
+              <br>
+              <tt>8&nbsp;&nbsp;&nbsp; *- create a directory to store
+                shared macros
+                in -;</tt>
+              <br>
+              <tt>9&nbsp;&nbsp;&nbsp; systask command "mkdir
+                ""%sysfunc(pathname(work))\macros""
+                " taskname=mkdir;</tt>
+              <br>
+              <tt>10</tt>
+              <br>
+              <tt>11</tt>
+              <br>
+              <tt>12&nbsp;&nbsp; *- create a format locally that will be
+                needed in
+                remote sessions -;</tt>
+              <br>
+              <tt>13&nbsp;&nbsp; proc format;</tt>
+              <br>
+              <tt>14&nbsp;&nbsp;&nbsp;&nbsp; value $miss ' '='Missing';</tt>
+              <br>
+              <tt>NOTE: Format $MISS has been output.</tt>
+              <br>
+              <tt>15&nbsp;&nbsp; run;</tt>
+              <p><tt>NOTE: PROCEDURE FORMAT used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.00 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.00 seconds</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>16</tt>
+                <br>
+                <tt>17</tt>
+                <br>
+                <tt>18&nbsp;&nbsp; *- create a dataset locally that will
+                  be needed
+                  in remote sessions -;</tt>
+                <br>
+                <tt>NOTE: Task "mkdir" produced no LOG/Output.</tt>
+                <br>
+                <tt>19&nbsp;&nbsp; data class;</tt>
+                <br>
+                <tt>20&nbsp;&nbsp;&nbsp;&nbsp; retain Miss ' ';</tt>
+                <br>
+                <tt>21&nbsp;&nbsp;&nbsp;&nbsp; set sashelp.class;</tt>
+                <br>
+                <tt>22&nbsp;&nbsp;&nbsp;&nbsp; format _character_
+                  $miss.;</tt>
+                <br>
+                <tt>23&nbsp;&nbsp; run;</tt>
+              </p>
+              <p><tt>NOTE: There were 19 observations read from the data
+                  set SASHELP.CLASS.</tt>
+                <br>
+                <tt>NOTE: The data set WORK.CLASS has 19 observations
+                  and 6 variables.</tt>
+                <br>
+                <tt>NOTE: DATA statement used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.01 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.01 seconds</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>24</tt>
+                <br>
+                <tt>25</tt>
+                <br>
+                <tt>26&nbsp;&nbsp; *- locally compiled reporting macro
+                  -;</tt>
+                <br>
+                <tt>27&nbsp;&nbsp; %macro repsleep(repnum=,waitsec=);</tt>
+                <br>
+                <tt>28</tt>
+                <br>
+                <tt>29&nbsp;&nbsp;&nbsp;&nbsp; %let srclib=work;</tt>
+                <br>
+                <tt>30&nbsp;&nbsp;&nbsp;&nbsp; %look4lwork;</tt>
+                <br>
+                <tt>31</tt>
+                <br>
+                <tt>32&nbsp;&nbsp;&nbsp;&nbsp; proc print
+                  data=&amp;srclib..class;</tt>
+                <br>
+                <tt>33&nbsp;&nbsp;&nbsp;&nbsp; title1 "Report from
+                  Session &amp;repnum
+                  that slept for &amp;waitsec seconds";</tt>
+                <br>
+                <tt>34&nbsp;&nbsp;&nbsp;&nbsp; run;</tt>
+                <br>
+                <tt>35</tt>
+                <br>
+                <tt>36&nbsp;&nbsp;&nbsp;&nbsp; data _null_;</tt>
+                <br>
+                <tt>37&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  rc=sleep(&amp;waitsec);</tt>
+                <br>
+                <tt>38&nbsp;&nbsp;&nbsp;&nbsp; run;</tt>
+                <br>
+                <tt>39&nbsp;&nbsp; %mend repsleep;</tt>
+                <br>
+                <tt>40</tt>
+                <br>
+                <tt>41</tt>
+                <br>
+                <tt>42&nbsp;&nbsp; *- make sure the shared macros
+                  directory creation
+                  has ended -;</tt>
+                <br>
+                <tt>43&nbsp;&nbsp; waitfor mkdir;</tt>
+                <br>
+                <tt>44</tt>
+                <br>
+                <tt>45</tt>
+                <br>
+                <tt>46&nbsp;&nbsp; *- give the shared macros library the
+                  libref "sharemac"
+                  -;</tt>
+                <br>
+                <tt>47&nbsp;&nbsp; libname sharemac
+                  "%sysfunc(pathname(work))\macros";</tt>
+                <br>
+                <tt>NOTE: Libref SHAREMAC was successfully assigned as
+                  follows:</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  Engine:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  V9</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Physical Name:
+                  C:\Users\rashleig\AppData\Local\Temp\SAS
+                  Temporary</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  Files\_TD7988_WKS0000520299_\macros</tt>
+                <br>
+                <tt>48</tt>
+                <br>
+                <tt>49</tt>
+                <br>
+                <tt>50&nbsp;&nbsp; *- Copy locally compiled macros
+                  needed by remote
+                  -;</tt>
+                <br>
+                <tt>51&nbsp;&nbsp; *- sessions to the shared macros
+                  catalog.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  -;</tt>
+                <br>
+                <tt>52&nbsp;&nbsp; proc catalog c=work.sasmacr et=macro;</tt>
+                <br>
+                <tt>53&nbsp;&nbsp;&nbsp;&nbsp; copy
+                  out=sharemac.sasmacr;</tt>
+                <br>
+                <tt>54&nbsp;&nbsp;&nbsp;&nbsp; select repsleep;</tt>
+                <br>
+                <tt>55&nbsp;&nbsp; quit;</tt>
+              </p>
+              <p><tt>NOTE: Copying entry REPSLEEP.MACRO from catalog
+                  WORK.SASMACR to
+                  catalog SHAREMAC.SASMACR.</tt>
+                <br>
+                <tt>NOTE: PROCEDURE CATALOG used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.01 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.01 seconds</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>56</tt>
+                <br>
+                <tt>57</tt>
+                <br>
+                <tt>58</tt>
+                <br>
+                <tt>59&nbsp;&nbsp; *###################&nbsp; DEFINE
+                  MAIN MACRO&nbsp;
+                  ###################;</tt>
+                <br>
+                <tt>60</tt>
+                <br>
+                <tt>61&nbsp;&nbsp; %macro xrep(streams=,taskblock=);</tt>
+                <br>
+                <tt>62</tt>
+                <br>
+                <tt>63&nbsp;&nbsp;&nbsp;&nbsp; %local i task tasknum
+                  old_plist plist
+                  next_signoff</tt>
+                <br>
+                <tt>64&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+pnum
+                  pval macname numended;</tt>
+                <br>
+                <tt>65</tt>
+                <br>
+                <tt>66&nbsp;&nbsp;&nbsp;&nbsp; %let i=1;</tt>
+                <br>
+                <tt>67&nbsp;&nbsp;&nbsp;&nbsp; %let tasknum=0;</tt>
+                <br>
+                <tt>68</tt>
+                <br>
+                <tt>69&nbsp;&nbsp;&nbsp;&nbsp; *---- Read in the active
+                  tasks from
+                  the task block parameter value&nbsp; ----;</tt>
+                <br>
+                <tt>70&nbsp;&nbsp;&nbsp;&nbsp; *---- into a macro array
+                  and set "tasknum"
+                  to the total valid tasks ----;</tt>
+                <br>
+                <tt>71&nbsp;&nbsp;&nbsp;&nbsp; *---- which will be those
+                  elements starting
+                  with
+'#'.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;----;</tt>
+                <br>
+                <tt>72&nbsp;&nbsp;&nbsp;&nbsp; %do %until(not
+                  %length(&amp;task));</tt>
+                <br>
+                <tt>73&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let
+                  task=%scandlm(&amp;taskblock,&amp;i,*#);</tt>
+                <br>
+                <tt>74&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %if
+                  "%sysfunc(subpad(&amp;task,1,1))"
+                  EQ "#" %then %do;</tt>
+                <br>
+                <tt>75&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  %let tasknum=%eval(&amp;tasknum+1);</tt>
+                <br>
+                <tt>76&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  %local task&amp;tasknum;</tt>
+                <br>
+                <tt>77&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  %let task&amp;tasknum=&amp;task;</tt>
+                <br>
+                <tt>78&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %end;</tt>
+                <br>
+                <tt>79&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let
+                  i=%eval(&amp;i+1);</tt>
+                <br>
+                <tt>80&nbsp;&nbsp;&nbsp;&nbsp; %end;</tt>
+                <br>
+                <tt>81</tt>
+                <br>
+                <tt>82</tt>
+                <br>
+                <tt>83&nbsp;&nbsp;&nbsp;&nbsp; *#########&nbsp; Define
+                  sub-macro that
+                  sets up the remote session&nbsp; #########;</tt>
+                <br>
+                <tt>84</tt>
+                <br>
+                <tt>85&nbsp;&nbsp;&nbsp;&nbsp; %macro
+                  callrem(pnum=,macname=,params=);</tt>
+                <br>
+                <tt>86</tt>
+                <br>
+                <tt>87&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %local
+                  macrostr;</tt>
+                <br>
+                <tt>88&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let
+                  macrostr=&amp;macname(%commaparms(%nrbquote(&amp;params)));</tt>
+                <br>
+                <tt>89</tt>
+                <br>
+                <tt>90&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *- we need an
+                  explicit signon
+                  so that we can "syslput" to -;</tt>
+                <br>
+                <tt>91&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *- a remote
+                  session we are
+                  already in contact
+                  with.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+                <br>
+                <tt>92&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; signon
+                  P&amp;pnum cwait=no
+                  inheritlib=(work=lwork sharemac=sharemac)</tt>
+                <br>
+                <tt>93&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  sascmd="!sascmd -sasuser
+                  work -nonotes -nosplash -noautoexec</tt>
+                <br>
+                <tt>94&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-sasautos
+                  %mysasautos";</tt>
+                <br>
+                <tt>95</tt>
+                <br>
+                <tt>96&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *- Make the
+                  contents of
+                  "macrostr" available to the remote session -;</tt>
+                <br>
+                <tt>97&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *- as the
+                  contents of the
+                  remote local macro variable
+                  "task".&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+                <br>
+                <tt>98&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %syslput
+                  task=&amp;macrostr
+                  / remote=P&amp;pnum;</tt>
+                <br>
+                <tt>99</tt>
+                <br>
+                <tt>100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RSUBMIT
+                  cmacvar=stat&amp;pnum;</tt>
+                <br>
+                <tt>101&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  options notes nodate
+                  nonumber mstored sasmstore=sharemac;</tt>
+                <br>
+                <tt>102&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  %&amp;task;</tt>
+                <br>
+                <tt>103&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ENDRSUBMIT;</tt>
+                <br>
+                <tt>104</tt>
+                <br>
+                <tt>105&nbsp;&nbsp;&nbsp; %mend callrem;</tt>
+                <br>
+                <tt>106</tt>
+                <br>
+                <tt>107&nbsp;&nbsp;&nbsp; *############ End of sub-macro
+                  definition
+                  ###########;</tt>
+                <br>
+                <tt>108</tt>
+                <br>
+                <tt>109</tt>
+                <br>
+                <tt>110</tt>
+                <br>
+                <tt>111&nbsp;&nbsp;&nbsp; *###### initiate and manage
+                  the remote sessions
+                  ######;</tt>
+                <br>
+                <tt>112</tt>
+                <br>
+                <tt>113&nbsp;&nbsp;&nbsp; %let pnum=0;</tt>
+                <br>
+                <tt>114&nbsp;&nbsp;&nbsp; %let next_signoff=1;</tt>
+                <br>
+                <tt>115</tt>
+                <br>
+                <tt>116&nbsp;&nbsp;&nbsp; *--- launch tasks for each of
+                  the number
+                  of streams ---;</tt>
+                <br>
+                <tt>117&nbsp;&nbsp;&nbsp; %do i=1 %to &amp;streams;</tt>
+                <br>
+                <tt>118&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %if &amp;i LE
+                  &amp;tasknum %then
+                  %do;</tt>
+                <br>
+                <tt>119&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let
+                  pnum=%eval(&amp;pnum+1);</tt>
+                <br>
+                <tt>120&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let
+                  plist=&amp;plist
+                  &amp;pnum;</tt>
+                <br>
+                <tt>121&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let
+                  macname=%scan(%allafter(&amp;&amp;task&amp;pnum,=),1,%str(
+                  ));</tt>
+                <br>
+                <tt>122&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let
+                  params=%allafter(&amp;&amp;task&amp;pnum,=&amp;macname);</tt>
+                <br>
+                <tt>123&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  %callrem(pnum=&amp;pnum,macname=&amp;macname,params=&amp;params);</tt>
+                <br>
+                <tt>124&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %end;</tt>
+                <br>
+                <tt>125&nbsp;&nbsp;&nbsp; %end;</tt>
+                <br>
+                <tt>126</tt>
+                <br>
+                <tt>127&nbsp;&nbsp;&nbsp; *--- point to keep jumping
+                  back to ---;</tt>
+                <br>
+                <tt>128&nbsp;&nbsp;&nbsp; %loop:</tt>
+                <br>
+                <tt>129</tt>
+                <br>
+                <tt>130&nbsp;&nbsp;&nbsp; *-- stop and wait for any of
+                  the processes
+                  to end ---;</tt>
+                <br>
+                <tt>131&nbsp;&nbsp;&nbsp; waitfor _any_
+                  %prefix(P,&amp;plist);</tt>
+                <br>
+                <tt>132</tt>
+                <br>
+                <tt>133&nbsp;&nbsp;&nbsp; *- try to sign off as many
+                  processes as possible
+                  -;</tt>
+                <br>
+                <tt>134&nbsp;&nbsp;&nbsp; %do i=&amp;next_signoff %to
+                  &amp;pnum;</tt>
+                <br>
+                <tt>135&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %if
+                  &amp;&amp;stat&amp;i EQ 0
+                  %then %do;</tt>
+                <br>
+                <tt>136&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  signoff P&amp;i;</tt>
+                <br>
+                <tt>137&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let
+                  next_signoff=%eval(&amp;i+1);</tt>
+                <br>
+                <tt>138&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %end;</tt>
+                <br>
+                <tt>139&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %else %let
+                  i=&amp;pnum;</tt>
+                <br>
+                <tt>140&nbsp;&nbsp;&nbsp; %end;</tt>
+                <br>
+                <tt>141</tt>
+                <br>
+                <tt>142&nbsp;&nbsp;&nbsp; *- if we have signed off all
+                  processes then
+                  exit the loop -;</tt>
+                <br>
+                <tt>143&nbsp;&nbsp;&nbsp; %if &amp;next_signoff GT
+                  &amp;tasknum %then
+                  %goto finish;</tt>
+                <br>
+                <tt>144</tt>
+                <br>
+                <tt>145&nbsp;&nbsp;&nbsp; %let old_plist=&amp;plist;</tt>
+                <br>
+                <tt>146&nbsp;&nbsp;&nbsp; %let plist=;</tt>
+                <br>
+                <tt>147</tt>
+                <br>
+                <tt>148&nbsp;&nbsp;&nbsp; *- count how many processes
+                  have ended -;</tt>
+                <br>
+                <tt>149&nbsp;&nbsp;&nbsp; %let numended=0;</tt>
+                <br>
+                <tt>150&nbsp;&nbsp;&nbsp; %do i=1 %to
+                  %words(&amp;old_plist);</tt>
+                <br>
+                <tt>151&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let
+                  pval=%scan(&amp;old_plist,&amp;i,%str(
+                  ));</tt>
+                <br>
+                <tt>152&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %if
+                  &amp;&amp;stat&amp;pval EQ
+                  0 %then %let numended=%eval(&amp;numended+1);</tt>
+                <br>
+                <tt>153&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %else %let
+                  plist=&amp;plist &amp;pval;</tt>
+                <br>
+                <tt>154&nbsp;&nbsp;&nbsp; %end;</tt>
+                <br>
+                <tt>155</tt>
+                <br>
+                <tt>156&nbsp;&nbsp;&nbsp; *- launch a new task for each
+                  ended process
+                  -;</tt>
+                <br>
+                <tt>157&nbsp;&nbsp;&nbsp; %do i=1 %to &amp;numended;</tt>
+                <br>
+                <tt>158&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let
+                  pnum=%eval(&amp;pnum+1);</tt>
+                <br>
+                <tt>159&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %if &amp;pnum LE
+                  &amp;tasknum
+                  %then %do;</tt>
+                <br>
+                <tt>160&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let
+                  plist=&amp;plist
+                  &amp;pnum;</tt>
+                <br>
+                <tt>161&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let
+                  macname=%scan(%allafter(&amp;&amp;task&amp;pnum,=),1,%str(
+                  ));</tt>
+                <br>
+                <tt>162&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let
+                  params=%allafter(&amp;&amp;task&amp;pnum,=&amp;macname);</tt>
+                <br>
+                <tt>163&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  %callrem(pnum=&amp;pnum,macname=&amp;macname,params=&amp;params);</tt>
+                <br>
+                <tt>164&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %end;</tt>
+                <br>
+                <tt>165&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %else %let
+                  pnum=%eval(&amp;pnum-1);</tt>
+                <br>
+                <tt>166&nbsp;&nbsp;&nbsp; %end;</tt>
+                <br>
+                <tt>167</tt>
+                <br>
+                <tt>168&nbsp;&nbsp;&nbsp; *- go back and wait for
+                  another process to
+                  end -;</tt>
+                <br>
+                <tt>169&nbsp;&nbsp;&nbsp; %goto loop;</tt>
+                <br>
+                <tt>170</tt>
+                <br>
+                <tt>171</tt>
+                <br>
+                <tt>172&nbsp;&nbsp;&nbsp; *#######&nbsp; we have
+                  finished with all
+                  the remote sessions&nbsp; ######;</tt>
+                <br>
+                <tt>173&nbsp;&nbsp;&nbsp; %finish:</tt>
+                <br>
+                <tt>174</tt>
+                <br>
+                <tt>175&nbsp; %mend xrep;</tt>
+                <br>
+                <tt>176</tt>
+                <br>
+                <tt>177&nbsp; *###################&nbsp; DEFINE MAIN
+                  MACRO ENDED ###################;</tt>
+                <br>
+                <tt>178</tt>
+                <br>
+                <tt>179</tt>
+                <br>
+                <tt>180&nbsp; %put
+                  &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;
+                  STARTED AT %now
+                  &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;;</tt>
+                <br>
+                <tt>MACRO CALLED: now v1.1</tt>
+                <br>
+                <tt>&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;
+                  STARTED AT 01JUN2014:07:10:45.98
+                  &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;</tt>
+                <br>
+                <tt>181</tt>
+                <br>
+                <tt>182&nbsp; *------ Call Main Macro ------;</tt>
+                <br>
+                <tt>183&nbsp; %xrep(streams=5,taskblock=</tt>
+                <br>
+                <tt>184&nbsp; #table=repsleep repnum=1 waitsec=2</tt>
+                <br>
+                <tt>185&nbsp; #table=repsleep repnum=2 waitsec=12</tt>
+                <br>
+                <tt>186&nbsp; *table=dontdo1</tt>
+                <br>
+                <tt>187&nbsp; #table=repsleep repnum=3 waitsec=5</tt>
+                <br>
+                <tt>188&nbsp; #table=repsleep repnum=4 waitsec=3</tt>
+                <br>
+                <tt>189&nbsp; #table=repsleep repnum=5 waitsec=4</tt>
+                <br>
+                <tt>190&nbsp; #table=repsleep repnum=6 waitsec=2</tt>
+                <br>
+                <tt>191&nbsp; *table=dontdo2</tt>
+                <br>
+                <tt>192&nbsp; #table=repsleep repnum=7 waitsec=5</tt>
+                <br>
+                <tt>193&nbsp; #table=repsleep repnum=8 waitsec=8</tt>
+                <br>
+                <tt>194&nbsp; #table=repsleep repnum=9 waitsec=4</tt>
+                <br>
+                <tt>195&nbsp; #table=repsleep repnum=10 waitsec=2</tt>
+                <br>
+                <tt>196&nbsp; );</tt>
+                <br>
+                <tt>MACRO CALLED: scandlm v1.0</tt>
+                <br>
+                <tt>MACRO CALLED: allafter v1.0</tt>
+                <br>
+                <tt>MACRO CALLED: commaparms v1.0</tt>
+                <br>
+                <tt>NOTE: Remote signon to P1 commencing (SAS Release
+                  9.03.01M2P081512).</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: Remote signon to P1 complete.</tt>
+                <br>
+                <tt>NOTE: Background remote submit to P1 in progress.</tt>
+                <br>
+                <tt>NOTE: Remote signon to P2 commencing (SAS Release
+                  9.03.01M2P081512).</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: Remote signon to P2 complete.</tt>
+                <br>
+                <tt>NOTE: Background remote submit to P2 in progress.</tt>
+                <br>
+                <tt>NOTE: Remote signon to P3 commencing (SAS Release
+                  9.03.01M2P081512).</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: Remote signon to P3 complete.</tt>
+                <br>
+                <tt>NOTE: Background remote submit to P3 in progress.</tt>
+                <br>
+                <tt>NOTE: Remote signon to P4 commencing (SAS Release
+                  9.03.01M2P081512).</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: Remote signon to P4 complete.</tt>
+                <br>
+                <tt>NOTE: Background remote submit to P4 in progress.</tt>
+                <br>
+                <tt>NOTE: Remote signon to P5 commencing (SAS Release
+                  9.03.01M2P081512).</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: Remote signon to P5 complete.</tt>
+                <br>
+                <tt>NOTE: Background remote submit to P5 in progress.</tt>
+                <br>
+                <tt>MACRO CALLED: prefix v1.0</tt>
+                <br>
+                <tt>NOTE: Remote submit to P1 commencing.</tt>
+                <br>
+                <tt>1&nbsp;&nbsp;&nbsp;&nbsp; options notes nodate
+                  nonumber mstored
+                  sasmstore=sharemac;</tt>
+                <br>
+                <tt>2&nbsp;&nbsp;&nbsp;&nbsp; %&amp;task;</tt>
+                <br>
+                <tt>MACRO CALLED: look4lwork v1.0</tt>
+                <br>
+                <tt>NOTE: There were 19 observations read from the data
+                  set LWORK.CLASS.</tt>
+                <br>
+                <tt>NOTE: The PROCEDURE PRINT printed page 1.</tt>
+                <br>
+                <tt>NOTE: PROCEDURE PRINT used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.01 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.01 seconds</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: DATA statement used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  2.02 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.01 seconds</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: Remote submit to P1 complete.</tt>
+                <br>
+                <tt>NOTE: Non-portable document will be produced. The
+                  current settings
+                  of FORMCHAR use nonstandard</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; line-drawing
+                  characters and the
+                  resulting output file will not render correctly unless
+                  all</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; readers of the
+                  document have the
+                  SAS Monospace font installed. To make your document</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portable, issue the
+                  following command:</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OPTIONS
+                  FORMCHAR="|----|+|---+=|-/\&lt;&gt;*";</tt>
+              </p>
+              <p><tt>NOTE: Remote signoff from P1 commencing.</tt>
+                <br>
+                <tt>NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC
+                  USA 27513-2414</tt>
+                <br>
+                <tt>NOTE: The SAS System used:</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  2.24 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.20 seconds</tt>
+              </p>
+              <p><tt>NOTE: Remote signoff from P1 complete.</tt>
+                <br>
+                <tt>MACRO CALLED: words v3.2</tt>
+                <br>
+                <tt>NOTE: Remote signon to P6 commencing (SAS Release
+                  9.03.01M2P081512).</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: Remote signon to P6 complete.</tt>
+                <br>
+                <tt>NOTE: Background remote submit to P6 in progress.</tt>
+                <br>
+                <tt>NOTE: Remote signon to P7 commencing (SAS Release
+                  9.03.01M2P081512).</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: Remote signon to P7 complete.</tt>
+                <br>
+                <tt>NOTE: Background remote submit to P7 in progress.</tt>
+                <br>
+                <tt>NOTE: Remote signon to P8 commencing (SAS Release
+                  9.03.01M2P081512).</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: Remote signon to P8 complete.</tt>
+                <br>
+                <tt>NOTE: Background remote submit to P8 in progress.</tt>
+                <br>
+                <tt>NOTE: Remote signon to P9 commencing (SAS Release
+                  9.03.01M2P081512).</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: Remote signon to P9 complete.</tt>
+                <br>
+                <tt>NOTE: Background remote submit to P9 in progress.</tt>
+                <br>
+                <tt>NOTE: Remote signon to P10 commencing (SAS Release
+                  9.03.01M2P081512).</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: Remote signon to P10 complete.</tt>
+                <br>
+                <tt>NOTE: Background remote submit to P10 in progress.</tt>
+                <br>
+                <tt>NOTE: Remote submit to P2 commencing.</tt>
+                <br>
+                <tt>1&nbsp;&nbsp;&nbsp;&nbsp; options notes nodate
+                  nonumber mstored
+                  sasmstore=sharemac;</tt>
+                <br>
+                <tt>2&nbsp;&nbsp;&nbsp;&nbsp; %&amp;task;</tt>
+                <br>
+                <tt>MACRO CALLED: look4lwork v1.0</tt>
+                <br>
+                <tt>NOTE: There were 19 observations read from the data
+                  set LWORK.CLASS.</tt>
+                <br>
+                <tt>NOTE: The PROCEDURE PRINT printed page 1.</tt>
+                <br>
+                <tt>NOTE: PROCEDURE PRINT used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.03 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.03 seconds</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: DATA statement used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  12.01 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.00 seconds</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: Remote submit to P2 complete.</tt>
+                <br>
+                <tt>NOTE: Remote signoff from P2 commencing.</tt>
+                <br>
+                <tt>NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC
+                  USA 27513-2414</tt>
+                <br>
+                <tt>NOTE: The SAS System used:</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  12.19 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.17 seconds</tt>
+              </p>
+              <p><tt>NOTE: Remote signoff from P2 complete.</tt>
+                <br>
+                <tt>NOTE: Remote submit to P3 commencing.</tt>
+                <br>
+                <tt>1&nbsp;&nbsp;&nbsp;&nbsp; options notes nodate
+                  nonumber mstored
+                  sasmstore=sharemac;</tt>
+                <br>
+                <tt>2&nbsp;&nbsp;&nbsp;&nbsp; %&amp;task;</tt>
+                <br>
+                <tt>MACRO CALLED: look4lwork v1.0</tt>
+                <br>
+                <tt>NOTE: There were 19 observations read from the data
+                  set LWORK.CLASS.</tt>
+                <br>
+                <tt>NOTE: The PROCEDURE PRINT printed page 1.</tt>
+                <br>
+                <tt>NOTE: PROCEDURE PRINT used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.03 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.03 seconds</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: DATA statement used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  5.00 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.00 seconds</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: Remote submit to P3 complete.</tt>
+                <br>
+                <tt>NOTE: Remote signoff from P3 commencing.</tt>
+                <br>
+                <tt>NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC
+                  USA 27513-2414</tt>
+                <br>
+                <tt>NOTE: The SAS System used:</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  12.04 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.18 seconds</tt>
+              </p>
+              <p><tt>NOTE: Remote signoff from P3 complete.</tt>
+                <br>
+                <tt>NOTE: Remote submit to P4 commencing.</tt>
+                <br>
+                <tt>1&nbsp;&nbsp;&nbsp;&nbsp; options notes nodate
+                  nonumber mstored
+                  sasmstore=sharemac;</tt>
+                <br>
+                <tt>2&nbsp;&nbsp;&nbsp;&nbsp; %&amp;task;</tt>
+                <br>
+                <tt>MACRO CALLED: look4lwork v1.0</tt>
+                <br>
+                <tt>NOTE: There were 19 observations read from the data
+                  set LWORK.CLASS.</tt>
+                <br>
+                <tt>NOTE: The PROCEDURE PRINT printed page 1.</tt>
+                <br>
+                <tt>NOTE: PROCEDURE PRINT used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.03 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.01 seconds</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: DATA statement used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  3.00 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.00 seconds</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: Remote submit to P4 complete.</tt>
+                <br>
+                <tt>NOTE: Remote signoff from P4 commencing.</tt>
+                <br>
+                <tt>NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC
+                  USA 27513-2414</tt>
+                <br>
+                <tt>NOTE: The SAS System used:</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  11.87 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.15 seconds</tt>
+              </p>
+              <p><tt>NOTE: Remote signoff from P4 complete.</tt>
+                <br>
+                <tt>NOTE: Remote submit to P5 commencing.</tt>
+                <br>
+                <tt>1&nbsp;&nbsp;&nbsp;&nbsp; options notes nodate
+                  nonumber mstored
+                  sasmstore=sharemac;</tt>
+                <br>
+                <tt>2&nbsp;&nbsp;&nbsp;&nbsp; %&amp;task;</tt>
+                <br>
+                <tt>MACRO CALLED: look4lwork v1.0</tt>
+                <br>
+                <tt>NOTE: There were 19 observations read from the data
+                  set LWORK.CLASS.</tt>
+                <br>
+                <tt>NOTE: The PROCEDURE PRINT printed page 1.</tt>
+                <br>
+                <tt>NOTE: PROCEDURE PRINT used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.01 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.01 seconds</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: DATA statement used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  4.00 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.00 seconds</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: Remote submit to P5 complete.</tt>
+                <br>
+                <tt>NOTE: Remote signoff from P5 commencing.</tt>
+                <br>
+                <tt>NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC
+                  USA 27513-2414</tt>
+                <br>
+                <tt>NOTE: The SAS System used:</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  11.68 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.18 seconds</tt>
+              </p>
+              <p><tt>NOTE: Remote signoff from P5 complete.</tt>
+                <br>
+                <tt>NOTE: Remote submit to P6 commencing.</tt>
+                <br>
+                <tt>1&nbsp;&nbsp;&nbsp;&nbsp; options notes nodate
+                  nonumber mstored
+                  sasmstore=sharemac;</tt>
+                <br>
+                <tt>2&nbsp;&nbsp;&nbsp;&nbsp; %&amp;task;</tt>
+                <br>
+                <tt>MACRO CALLED: look4lwork v1.0</tt>
+                <br>
+                <tt>NOTE: There were 19 observations read from the data
+                  set LWORK.CLASS.</tt>
+                <br>
+                <tt>NOTE: The PROCEDURE PRINT printed page 1.</tt>
+                <br>
+                <tt>NOTE: PROCEDURE PRINT used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.01 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.01 seconds</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: DATA statement used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  2.01 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.00 seconds</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: Remote submit to P6 complete.</tt>
+                <br>
+                <tt>NOTE: Remote signoff from P6 commencing.</tt>
+                <br>
+                <tt>NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC
+                  USA 27513-2414</tt>
+                <br>
+                <tt>NOTE: The SAS System used:</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  10.18 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.18 seconds</tt>
+              </p>
+              <p><tt>NOTE: Remote signoff from P6 complete.</tt>
+                <br>
+                <tt>NOTE: Remote submit to P7 commencing.</tt>
+                <br>
+                <tt>1&nbsp;&nbsp;&nbsp;&nbsp; options notes nodate
+                  nonumber mstored
+                  sasmstore=sharemac;</tt>
+                <br>
+                <tt>2&nbsp;&nbsp;&nbsp;&nbsp; %&amp;task;</tt>
+                <br>
+                <tt>MACRO CALLED: look4lwork v1.0</tt>
+                <br>
+                <tt>NOTE: There were 19 observations read from the data
+                  set LWORK.CLASS.</tt>
+                <br>
+                <tt>NOTE: The PROCEDURE PRINT printed page 1.</tt>
+                <br>
+                <tt>NOTE: PROCEDURE PRINT used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.01 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.01 seconds</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: DATA statement used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  5.02 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.01 seconds</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: Remote submit to P7 complete.</tt>
+                <br>
+                <tt>NOTE: Remote signoff from P7 commencing.</tt>
+                <br>
+                <tt>NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC
+                  USA 27513-2414</tt>
+                <br>
+                <tt>NOTE: The SAS System used:</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  8.62 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.20 seconds</tt>
+              </p>
+              <p><tt>NOTE: Remote signoff from P7 complete.</tt>
+                <br>
+                <tt>NOTE: Remote submit to P8 commencing.</tt>
+                <br>
+                <tt>1&nbsp;&nbsp;&nbsp;&nbsp; options notes nodate
+                  nonumber mstored
+                  sasmstore=sharemac;</tt>
+                <br>
+                <tt>2&nbsp;&nbsp;&nbsp;&nbsp; %&amp;task;</tt>
+                <br>
+                <tt>MACRO CALLED: look4lwork v1.0</tt>
+                <br>
+                <tt>NOTE: There were 19 observations read from the data
+                  set LWORK.CLASS.</tt>
+                <br>
+                <tt>NOTE: The PROCEDURE PRINT printed page 1.</tt>
+                <br>
+                <tt>NOTE: PROCEDURE PRINT used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.03 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.03 seconds</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: DATA statement used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  8.00 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.00 seconds</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: Remote submit to P8 complete.</tt>
+                <br>
+                <tt>NOTE: Remote signoff from P8 commencing.</tt>
+                <br>
+                <tt>NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC
+                  USA 27513-2414</tt>
+                <br>
+                <tt>NOTE: The SAS System used:</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  8.20 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.23 seconds</tt>
+              </p>
+              <p><tt>NOTE: Remote signoff from P8 complete.</tt>
+                <br>
+                <tt>NOTE: Remote submit to P9 commencing.</tt>
+                <br>
+                <tt>1&nbsp;&nbsp;&nbsp;&nbsp; options notes nodate
+                  nonumber mstored
+                  sasmstore=sharemac;</tt>
+                <br>
+                <tt>2&nbsp;&nbsp;&nbsp;&nbsp; %&amp;task;</tt>
+                <br>
+                <tt>MACRO CALLED: look4lwork v1.0</tt>
+                <br>
+                <tt>NOTE: There were 19 observations read from the data
+                  set LWORK.CLASS.</tt>
+                <br>
+                <tt>NOTE: The PROCEDURE PRINT printed page 1.</tt>
+                <br>
+                <tt>NOTE: PROCEDURE PRINT used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.01 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.01 seconds</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: DATA statement used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  4.02 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.01 seconds</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: Remote submit to P9 complete.</tt>
+                <br>
+                <tt>NOTE: Remote signoff from P9 commencing.</tt>
+                <br>
+                <tt>NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC
+                  USA 27513-2414</tt>
+                <br>
+                <tt>NOTE: The SAS System used:</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  7.87 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.15 seconds</tt>
+              </p>
+              <p><tt>NOTE: Remote signoff from P9 complete.</tt>
+                <br>
+                <tt>NOTE: Remote submit to P10 commencing.</tt>
+                <br>
+                <tt>1&nbsp;&nbsp;&nbsp;&nbsp; options notes nodate
+                  nonumber mstored
+                  sasmstore=sharemac;</tt>
+                <br>
+                <tt>2&nbsp;&nbsp;&nbsp;&nbsp; %&amp;task;</tt>
+                <br>
+                <tt>MACRO CALLED: look4lwork v1.0</tt>
+                <br>
+                <tt>NOTE: There were 19 observations read from the data
+                  set LWORK.CLASS.</tt>
+                <br>
+                <tt>NOTE: The PROCEDURE PRINT printed page 1.</tt>
+                <br>
+                <tt>NOTE: PROCEDURE PRINT used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.03 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.03 seconds</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: DATA statement used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  2.01 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.00 seconds</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: Remote submit to P10 complete.</tt>
+                <br>
+                <tt>NOTE: Remote signoff from P10 commencing.</tt>
+                <br>
+                <tt>NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC
+                  USA 27513-2414</tt>
+                <br>
+                <tt>NOTE: The SAS System used:</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  7.28 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.15 seconds</tt>
+              </p>
+              <p><tt>NOTE: Remote signoff from P10 complete.</tt>
+                <br>
+                <tt>197</tt>
+                <br>
+                <tt>198&nbsp; %put
+                  &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;
+                  ENDED AT %now
+                  &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;;</tt>
+                <br>
+                <tt>&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;
+                  ENDED AT 01JUN2014:07:10:59.12
+                  &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;</tt>
+                <br>
+                &nbsp;</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </p>
+    <h2>
+      Making your reporting code sensitive to remote sessions</h2>
+    I call a macro named <a href="Spectre/utilmacros/look4lwork.sas"
+      target="_blank">%look4lwork</a>
+    in the reporting code member. This is my crude attempt to make the
+    reporting
+    code work in both local sessions and remote sessions without needing
+    to
+    change any code. Suppose you have some code members or macros that
+    produce
+    tables for you then sometimes you might want to run them in your
+    local
+    session and at other times to use them in remote sessions. Let us
+    suppose
+    you created some datasets to report on in your WORK library and then
+    called
+    your reporting code remotely. For the code running remotely it would
+    have
+    to pick up these datasets from the LWORK library and not the WORK
+    library
+    so we need some way for it to tell if it is running locally or
+    remotely.
+    One such way, assuming we pass over WORK as LWORK in the <b>inheritlib()</b>
+    option is to check on the existence of the LWORK libref in the
+    remote session.
+    If it finds that a libref of LWORK exists then it can do some
+    processing
+    to change the source library ro "lwork" instead of "work" and to add
+    the
+    LWORK.FORMATS onto the format search path. To take a look inside
+    this macro
+    then <a href="Spectre/utilmacros/look4lwork.sas" target="_blank">click
+      here</a>.
+    <h2>
+      Managing the multiprocessing in a macro</h2>
+    Although it is good to see working code that manages the
+    multiprocessing
+    sessions, it makes the code look rather complicated. So what I have
+    done
+    is to move this code out into a macro named <a
+      href="Spectre/utilmacros/rsubmitter.sas" target="_blank">%rsubmitter</a>
+    to do the work for you behind the scenes. Also, I moved the code to
+    create
+    the shared macro library into the macro <a
+      href="Spectre/utilmacros/mksharemac.sas" target="_blank">%mksharemac</a>.
+    The code can then be reorganised to look a lot simpler, as you can
+    see
+    below.
+    <br>
+    &nbsp;
+    <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+      <tbody>
+        <tr>
+          <td>
+            <br>
+            <tt>ods _all_ close;&nbsp;</tt>
+            <br>
+            <tt>ods listing;&nbsp;</tt>
+            <br>
+            <tt>ods results off;&nbsp;</tt>
+            <br>
+            &nbsp;
+            <br>
+            &nbsp;
+            <p><tt>*- reporting macro needed by tasks -;&nbsp;</tt>
+              <br>
+              <tt>%macro repsleep(repnum=,waitsec=);&nbsp;</tt>
+            </p>
+            <p><tt>&nbsp; %let srclib=work;</tt>
+              <br>
+              <tt>&nbsp; %look4lwork;</tt>
+            </p>
+            <p><tt>&nbsp; proc print data=&amp;srclib..class;&nbsp;</tt>
+              <br>
+              <tt>&nbsp; title1 "Report from Session &amp;repnum that
+                slept for &amp;waitsec
+                seconds";&nbsp;</tt>
+              <br>
+              <tt>&nbsp; run;&nbsp;</tt>
+            </p>
+            <p><tt>&nbsp; data _null_;&nbsp;</tt>
+              <br>
+              <tt>&nbsp;&nbsp;&nbsp; rc=sleep(&amp;waitsec);&nbsp;</tt>
+              <br>
+              <tt>&nbsp; run;&nbsp;</tt>
+              <br>
+              <tt>%mend repsleep;&nbsp;</tt>
+              <br>
+              &nbsp;
+              <br>
+              &nbsp;
+            </p>
+            <p><tt>*- create the shared macro library and copy across
+                needed members
+                -;&nbsp;</tt>
+              <br>
+              <tt>%mksharemac(repsleep);</tt>
+              <br>
+              &nbsp;
+              <br>
+              &nbsp;
+            </p>
+            <p><tt>*###################&nbsp; DEFINE MAIN MACRO&nbsp;
+                ###################;&nbsp;</tt>
+            </p>
+            <p><tt>%macro xrep(streams=,taskblock=);&nbsp;</tt>
+            </p>
+            <p><tt>&nbsp; *- build formats and datasets in the WORK
+                library needed
+                by the tasks -;</tt>
+            </p>
+            <p><tt>&nbsp; *- create a format locally that will be needed
+                in remote
+                sessions -;</tt>
+              <br>
+              <tt>&nbsp; proc format;</tt>
+              <br>
+              <tt>&nbsp;&nbsp;&nbsp; value $miss ' '='Missing';</tt>
+              <br>
+              <tt>&nbsp; run;</tt>
+              <br>
+              &nbsp;
+            </p>
+            <p><tt>&nbsp; *- create a dataset locally that will be
+                needed in remote
+                sessions -;</tt>
+              <br>
+              <tt>&nbsp; data class;</tt>
+              <br>
+              <tt>&nbsp;&nbsp;&nbsp; retain Miss ' ';</tt>
+              <br>
+              <tt>&nbsp;&nbsp;&nbsp; set sashelp.class;</tt>
+              <br>
+              <tt>&nbsp;&nbsp;&nbsp; format _character_ $miss.;</tt>
+              <br>
+              <tt>&nbsp; run;</tt>
+            </p>
+            <p><tt>&nbsp; *- now call for the tasks to be run -;</tt>
+              <br>
+              <tt>&nbsp;
+                %rsubmitter(streams=&amp;streams,taskblock=&amp;taskblock);</tt>
+            </p>
+            <p><tt>%mend xrep;&nbsp;</tt>
+            </p>
+            <p><tt>*###################&nbsp; DEFINE MAIN MACRO ENDED
+                ###################;&nbsp;</tt>
+              <br>
+              &nbsp;
+            </p>
+            <p><tt>%put
+                &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;
+                STARTED AT %now
+                &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;;&nbsp;</tt>
+            </p>
+            <p><tt>*------ Call Main Macro ------;&nbsp;</tt>
+              <br>
+              <tt>%xrep(streams=5,taskblock=&nbsp;</tt>
+              <br>
+              <tt>#table=repsleep repnum=1 waitsec=2&nbsp;</tt>
+              <br>
+              <tt>#table=repsleep repnum=2 waitsec=12&nbsp;</tt>
+              <br>
+              <tt>*table=dontdo1&nbsp;</tt>
+              <br>
+              <tt>#table=repsleep repnum=3 waitsec=5&nbsp;</tt>
+              <br>
+              <tt>#table=repsleep repnum=4 waitsec=3&nbsp;</tt>
+              <br>
+              <tt>#table=repsleep repnum=5 waitsec=4&nbsp;</tt>
+              <br>
+              <tt>#table=repsleep repnum=6 waitsec=2&nbsp;</tt>
+              <br>
+              <tt>*table=dontdo2&nbsp;</tt>
+              <br>
+              <tt>#table=repsleep repnum=7 waitsec=5&nbsp;</tt>
+              <br>
+              <tt>#table=repsleep repnum=8 waitsec=8&nbsp;</tt>
+              <br>
+              <tt>#table=repsleep repnum=9 waitsec=4&nbsp;</tt>
+              <br>
+              <tt>#table=repsleep repnum=10 waitsec=2&nbsp;</tt>
+              <br>
+              <tt>);&nbsp;</tt>
+            </p>
+            <p><tt>%put
+                &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;
+                ENDED AT %now
+                &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;;&nbsp;</tt>
+              <br>
+              &nbsp;</p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>
+      Conclusion</h2>
+    You have been introduced to the logic of managing multiprocessing
+    sessions
+    and shown a working coded example of doing this. You have also been
+    introduced
+    to the idea of designing your reporting code members so that they
+    work
+    for both local and remote sessions.
+    <br>
+    &nbsp;
+    <br>
+    &nbsp;
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <center>
+      <p>Go back to the home <a href="index-2.html">page</a>.
+      </p>
+      <p>E-mail the macro and web site <a
+          href="mailto:rolandberry@hotmail.com">author</a>.</p>
+    </center>
+    <p><!-- Start of StatCounter Code -->
+      <script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+      <script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js">
+</script><noscript><a href="http://www.statcounter.com/" target="_blank"><img src="counter.html" alt="counter hit make" border="0"></a></noscript><!-- End of StatCounter Code -->
+    </p>
+  </body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/managemp.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+</html>

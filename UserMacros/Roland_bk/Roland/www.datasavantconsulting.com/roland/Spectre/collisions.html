@@ -1,0 +1,144 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/Spectre/collisions.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:31 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="%unistats Spectre lab">
+   <meta name="Description" content="Spectre collisions">
+   <title>Avoiding collisions with Spectre macros</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Avoiding "collisions" with Spectre Macros</h1></center>
+<b>Last updated: 21 Apr 2015</b>
+<h2>
+Introduction</h2>
+The Spectre macros give little consideration for care of the user's environment.
+The macros favour <b>speed</b> above all, and by "user's environment" is
+meant the macros that the user may define and the user's datasets and variable
+names. The Spectre macros might redefine a user's macro or delete a user's
+dataset unless a convention is followed to avoid such "collisions". The
+same goes for global macro variables. No checking of pre-existing datasets
+or macros is done when a macro is defined or a dataset created by the Spectre
+macros. Instead, the user needs to be aware of and follow the conventions
+used by Spectre to avoid their own datasets and macros being overwritten.
+To add such preventative coding would have merits but would slow down the
+macros - and Spectre macros need to be CPU efficient so they can run on
+low power PCs or servers or give maximum processing speed where very large
+datasets are concerned. Some systems of macros do use preventative coding
+but this comes at a cost of processing speed that might be justified in
+many cases. For example, every time a macro is called it might delete and
+reload all its needed sub-macros and reset its entire environment, and
+this might take up to two minutes for every macro call (from actual experience)
+- but such delays would be against the Spectre macro design philosophy
+of maximum speed.
+<h2>
+Dataset name collisions</h2>
+The Spectre convention with internally created temporary dataset is to
+start the dataset name with an underscore. What follows the underscore
+is usually the first part of the macro name. If you use the Spectre macros
+then your own datasets should not start with an underscore otherwise they
+risk being overwritten or deleted.
+<h2>
+Macro name collisions</h2>
+Obviously there are a lot of macros in Spectre with the clinical macros
+and the utility macros. You have to be careful what names to use to define
+your own macros if working with the Spectre macros. You are more likely
+to overwrite a Spectre macro than the other way round. For example, at
+a lot of sites they have a macro named "nobs" that finds out the number
+of observations in a dataset. Spectre also has a macro of this name and
+it is important it does not get overwritten in the <b>work.sasmacr</b>
+catalog by a user-defined macro.
+<p>Spectre follows the same macro naming convention as used in the SAS
+Institute supplied macro library in that all the macros have ordinary,
+meaningful names with no special prefix to identify them.You just have
+to know they are there and not accidentally redefine them.
+<p>Internally-defined macros (i.e. macros defined within macros) are not
+limited in scope to operating only within the macro. They are written to
+work.sasmacr where they might overwrite another macro. The Spectre convention
+to avoid this problem is that internally definned macros should start with
+an underscore followed by the first part of the macro name so this is a
+convention the user should avoid when defining their own macros. The clinical
+macros %npcttab and %unistats do a mass deletion of macros from <b>work.sasmacr</b>
+that start with "_npct" and "_uni" (using the Spectre %delmac macro) at
+execution end.
+<p>This is the most difficult area in avoiding collisions. If sites use
+a naming convention, such as a consistent start letter for a macro, then
+this is less likely to occur, but the possibility always exists so care
+should be taken.
+<h2>
+Global macro variable name collisions</h2>
+Spectre follows the commonly used naming convention for global macro variables
+for a system of macros in that they both start and end with an underscore.
+When such a variable is set then for the clinical reporting macros it writes
+a note to the log telling the user what global macro variables have been
+set and what value set to. It does not do this for the utility macros.
+<p>The recommendation to the user of the Spectre system is to not set up
+global macro variables both starting and ending with an underscore. If
+the user needs a convention to make global macro variable stand out then
+two suggestions are 1) to have global macro variables starting (but not
+ending) with an underscore or 2) starting with a double underscore.
+<p>If Spectre macros are called from an existing system of macros then
+check what global macro variable naming convention is used for the other
+system of macros. If this also uses the start and end underscore convention
+then problems are likely to occur and it may not be wise to use both systems
+together.
+<h2>
+Variable name collisions</h2>
+Some of the clinical reporting macros accept as parameters the variable
+names defined by the user and internally add other variables. These added
+variables will start with an underscore. There is a chance of a collision
+of variable names if the user's variable list supplied to the macro parameters
+also start with an underscore so the user should avoid having variable
+names starting with an underscore when passing these datasets to the Spectre
+clinical reporting macros.
+<h2>
+Conclusion</h2>
+You have learned about the Spectre naming conventions and how to avoid
+unwanted "collisions" within the user's environment.
+<br>&nbsp;
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../../www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/Spectre/collisions.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:31 GMT -->
+</html>

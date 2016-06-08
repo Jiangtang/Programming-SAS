@@ -1,0 +1,130 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/sed&awk.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="SAS tips and techniques by Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="sas tips techniques">
+   <title>whosgot</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Using sed &amp; awk &amp; other things</h1></center>
+<b>[last updated - 29 July 2003]</b>
+<h2>
+Introduction</h2>
+If you have carefully read all the Unix tips preceding this and tried out
+all the examples then you have already come a long way. You are at the
+stage where you can begin to write specialised scripts that run in your
+environment. Shortly, you are going to write a simple script called
+<b>hdr</b>
+that creates a standard header for your SAS program. I expect it is standard
+practise to fill in details like the protocol and project id in your header,
+your name and the date. Now, of course, I don't know what your standard
+header is supposed to look like. I don't know your file structure either
+so I don't know how to find your protocol and project id. Well here is
+where we learn to pull out pieces of information like that. You have gone
+through the crawling stage of Unix scripts and you are about to enter the
+walking stage. Learning how to run is another matter, but if you can walk
+then you can learn how to run all by yourself. And nobody is pushing you
+for time. All the information you need is out there to help you. You have
+just got to reach for it and persevere in your learning efforts.
+<h2>
+Stripping info out of a directory path</h2>
+I assume your protocol and study id is contained within your directory
+path when you are coding for a study. I am going to tell you how to strip
+out that information. You might have to change it to suit your file structure,
+however. But you should be able to do that based on the information here.
+Also, I am going to be slightly pessimistic. I am going to assume you work
+for a multinational and the there is a difference in directory structure
+in different locations. But since you are an up-and-coming script writer
+then you will not be perturbed by that. If there are differences in directory
+structures like that "each side of the pond" then I expect the root of
+the directory is defined to a system environment variable at each location.
+You will no doubt have a common set of tools at each location and so these
+utilities must be aware of this and using a work-around. So suppose this
+was a typical directory path in the US:
+<p><b><tt>/usr/local/stats/US/data/protocol/study/data/</tt></b>
+<p>and in the UK it was:
+<p><b><tt>/usr/local/ukstats/data/protocol/study/data</tt></b>
+<p>Then if that were the case there is almost certainly a system environmant
+variable set up that contains the correct root for your location. Suppose
+it were called RD (for root directory) then "echo $RD" at the US end would
+result in <b><tt>/usr/local/stats/US/data/</tt></b> and in the UK it would
+result in <b><tt>/usr/local/ukstats/data/</tt></b> . Now this is all hypothetical.
+The problem is that we need to know where to pick up the protocol and study
+from. They are at different positions. But if it were the case then we
+could remove that root directory from the path name then they would be
+at the same position. The protocol would be in position 1 and the study
+in position 2.
+<p>You have already used sed to remove .<b>sas</b>, <b>.log</b> and <b>.lst</b>
+from file names. We are going to do something similar here. If you remember,
+we used a call in the form sed <b><tt>'s/\.sas$//g'</tt></b> to remove
+the .sas at the end of program names. But note that the slashes used are
+the same as in our file path. Fortunately, sed is not forced to use these
+slashes. Whatever is defined as the first separator character will get
+used. We will use a percent sign in this case.
+<p>We know that pwd will give us the current working directory. So suppose
+we were programming in a study and our root directory was defined to the
+system environment variable RD (BTW, you can list these environment variable
+setting using the <b>env</b> command and pipe it through grep if you like)
+then would this get rid of the prefix (bearing in mind that the "^" symbol
+is used for matching starts of string)?
+<p><b><tt>pwd | sed 's%^$RD%%'</tt></b>
+<p>It looks right but it won't work. Let me make you feel at home. You
+know that macro variables like &amp;mac do not get resolved if they are
+in single quotes? Same thing for Unix variables. They stay as they are
+in single quotes but get resolved if they are in double quotes. So the
+above won't work but this will work instead:
+<p><b><tt>pwd | sed "s%^$RD%%"</tt></b>
+<p>Now I don't know what your directory structure looks like but I ran
+these commands seperated by semicolons and it worked just fine:
+<p><b><tt>RD=/usr/local/ukstats/ ; echo $RD ; echo /usr/local/ukstats/protocol/study/
+| sed "s%^$RD%%"</tt></b>
+<p>So suppose your directory strusture is just like this hypothetical one
+then we could use the do-it-now quotes to assign the protocol like this:
+<p><b><tt>protocol=`pwd | sed "s%^$RD%%" | awk -F/ '{print $1}'`</tt></b>
+<p>and the study like this:
+<p><b><tt>study=`pwd | sed "s%^$RD%%" | awk -F/ '{print $2}'`</tt></b>
+<p>How you do it for your site. I don't know, but if your protocol and
+study is in your path name then you need to work out the way to get them
+out so you can use them.
+<h2>
+Dates</h2>
+If you enter the <b>date</b> command you will see the date and time. There
+are almost countless ways of formatting this. I will leave it up to you
+to look them up. Try this command:
+<p><b><tt>date '+%d-%b-%Y'</tt></b>
+<p>Also try changing the %b and %Y entry to different cases. You need to
+find out the form of the date you are supposed to use in your program headers.
+Once you have got it then you can assign the date to a variable using the
+do-it-now quotes like this:
+<p><b><tt>date=`date '+%d-%b-%Y'`</tt></b>
+<h2>
+Person's name</h2>
+No need to ask them. Use the <b>getname</b> script for this. With no parameters
+supplied then it is the name of the user who invoked it. Again, use do-it-now
+quotes.
+<p><b><tt>name=`getname`</tt></b>
+<h2>
+Conclusion</h2>
+You have learnt a few things here that you will be able to apply in the
+<b>hdr</b> script that you will have to amend extensively to suit your
+site standards and directory structure.
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/sed&awk.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+</html>

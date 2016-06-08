@@ -1,0 +1,63 @@
+#!/bin/bash
+#<pre><b>
+# Script     : linesize_win
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 20-Feb-2007
+# Purpose    : To show the linesize for a sas program in the titles dataset
+#              (uses SAS).
+# SubScripts : calclsps linesize_win
+# SubMacros  : %allocr %protinfo %proginfo
+# Notes      : WINDOWS VERSION
+# Usage      : linesize_win progname
+#              linesize_win
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   (optional) Program name (case is important)
+#  2   (optional) Label to distinguish multiple outputs per program
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  20Feb07         Call %allocr macro
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# drop the .sas extension if there
+pgm=$(echo "$1" | awk -F. '{print $1}')
+
+
+# Write SAS code to a temporary file
+cat > $HOME/linesize_$$.sas << -----FINISH-----
+%allocr
+options validvarname=v7 nofmterr;
+filename _outfile "$HOMEW\linesize_$$.tmp";
+%protinfo
+%proginfo(program=$pgm,label=$2)
+%macro show;
+data _null_;
+  file _outfile notitles noprint;
+  put @1 "&_ls_"
+  %if not %length(&_repid_) %then %do;
+  "  (protocol default)"
+  %end;
+  ;
+run;
+%mend;
+%show
+-----FINISH-----
+
+
+# run the code
+sas -nosplash -nologo -icon -log "$HOMEW" -sysin "$HOMEW\linesize_$$.sas"
+
+# if output file exists then cat it and delete it
+if [ -f $HOME/linesize_$$.tmp ] ; then
+  cat $HOME/linesize_$$.tmp 
+  rm -f $HOME/linesize_$$.tmp 
+fi
+
+# tidy up
+rm -f $HOME/linesize_$$.sas $HOME/linesize_$$.log

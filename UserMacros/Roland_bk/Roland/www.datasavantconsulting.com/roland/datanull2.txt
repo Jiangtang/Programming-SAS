@@ -1,0 +1,81 @@
+                                       First title
+
+                                       Third title
+
+                                       Fifth title
+
+                          age/
+                         race/
+               subject/   sex/
+               invid.   weight   Lab parameter                          value
+               --------------------------------------------------------------
+                 1001/ 21 yrs/   AA This is a very long parameter and     11
+                10001  Asian/    you will have to flow it
+                       Male  /
+                        60 kg    BB This is a short parameter             21
+                                                                          22
+
+                                 CC This is a very long parameter and     30
+                                 you will have to flow it
+                                                                          31
+                                                                          32
+                                                                          33
+                                                                          34
+                                                                          35
+                                                                          36
+                                                                          37
+                                                                          38
+
+                 2001/ 32 yrs/   AA This is a very long parameter and     51
+                20001  White/    you will have to flow it
+                       Female/
+                        55 kg    BB This is a short parameter             61
+                                                                          62
+
+                                 CC This is a very long parameter and     70
+                                 you will have to flow it
+
+                                      First footnote
+
+                                      Third footnote
+                                       First title
+
+                                       Third title
+
+                                       Fifth title
+
+                          age/
+                         race/
+               subject/   sex/
+               invid.   weight   Lab parameter                          value
+               --------------------------------------------------------------
+                 2001/ 32 yrs/   CC This is a very long parameter and     71
+                20001  White/    you will have to flow it
+                       Female/                                            72
+                        55 kg                                             73
+                                                                          74
+                                                                          75
+                                                                          76
+                                                                          77
+                                                                          78
+
+                 3001/ 42 yrs/   AA This is a very long parameter and     51
+                30001  Black/    you will have to flow it
+                       Female/
+                        65 kg    BB This is a short parameter             61
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                      First footnote
+
+                                      Third footnote

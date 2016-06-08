@@ -1,0 +1,119 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/saslong.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="What to do when sas programs become too long">
+   <meta name="KeyWords" content="sas programs too long">
+   <title>When SAS programs become too long</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+When SAS programs become too long</h1></center>
+
+<h2>
+Introduction</h2>
+It can often happen that SAS programs grow and grow until they become an
+uncomfortable size. The author might still understand the code but what
+about maintaining the code by other programmers in the future? What can
+be done to make a long program that is becoming incomprehansible, more
+comprehensible and hopefully easier to maintain? This page is all about
+what to do about sas programs that become too long - both pros and cons.
+<h2>
+"%inc" or "%include"</h2>
+"%inc" is an alias of "%include". It "includes" a file that you specify.
+It can be a full file name in quotes, a fileref or a fileref followed immediately
+by a member name in brackets for when you have members of a library that
+you have assigned to a fileref. You might think it a good idea to split
+a long sas program up into separate files and then "include" them in the
+right order in a sas program that will run them all. Nice idea but don't
+do it! Splitting up a program like that does not help if you can't make
+sense of what one part of it is doing without looking at the previous parts.
+You might have split the program up into a manageable number of lines of
+code in each part, but your understanding of what it is doing overall will
+probably be much reduced. So this is usually a bad idea.
+<h2>
+Macroize it?</h2>
+The answer to this question is most likely "no". If code gets too long
+then it is likely messy code. You should not attempt to turn messy code
+into a macro. Whether you need a macro or not should be carefully thought
+out before you write code. You must not clutter your sas macro library
+with "problem fixes". If a lot of the code in your now over-long program
+is doing something that could benefit many other programs, and you can
+see a generic need for a macro to do this, then by all means write a macro.
+But be prepared to rewrite all your code as well that calls the macro so
+that the macro can stay as perfect and as generic as possible. Using this
+approach will most likely be of no help to you.
+<h2>
+Coping with long programs</h2>
+My suggested solution to over-long sas programs is to learn how to cope
+with long programs. There is a lot you can do to keep code understandable
+and maintainable no matter how long the code gets. It is all a matter of
+proper documenation and careful thinking. Here are some suggestions that
+keep things manageable and maintainable.
+<ul>
+<li>
+Split your code into logical sections and label each section clearly using
+a header box. The header box should be clear so that it catches the programmer's
+eye. There should be a very brief description in the box of only a few
+words saying what that section does.</li>
+
+<li>
+In a section suitably labelled near the top of your code (first or second
+section) set up your local working formats and informats if you need any.</li>
+
+<li>
+In a section suitably labelled near the top of your code (first or second
+section) read in all the external data you need into work datasets. Do
+not read in any external data in later sections</li>
+
+<li>
+Indent your code properly</li>
+
+<li>
+Leave a two line gap between each data step or procedure</li>
+</ul>
+Doing the above well might take a bit of practice. The above most certainly
+applies to long macros as well as straight sas code. I write some very
+long macros. I don't like my macros to be long but some of them do a lot
+and so get long. But I set them out in a way as described above and that
+way I can maintain them and I hope other people will be able to maintain
+them in my absence. Now, I am not terribly proud of the following macro
+-- for sure it is very long and complex -- but there is no useful way I
+can shorten it so I have set it out as carefully as I can. I have to come
+back to it from time to time to make changes but it never gives me a problem
+because for me, it is laid out carefully with each logical section explained.
+Again, this is probably way more complicated than anything you will ever
+write using SAS code, but you can see how I have split it into sections.
+You should learn to do the same and that way your over-long sas programs
+can still remain understandable and maintainable
+<p><a href="Spectre/clinmacros/unistats.sas">%unistats</a>
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/saslong.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+</html>

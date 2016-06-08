@@ -1,0 +1,779 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+  
+<!-- Mirrored from www.datasavantconsulting.com/roland/sharerem.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+<head>
+    <meta http-equiv="Content-Type" content="text/html;
+      charset=windows-1252">
+    <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U)
+      [Netscape]">
+    <meta name="Author" content="Roland Rashleigh-Berry">
+    <meta name="Description" content="Sharing Resources with Remote
+      Sessions">
+    <meta name="KeyWords" content="ad hoc Spectre PDF">
+    <title>Sharing Resources with Remote Sessions</title>
+  </head>
+  <body alink="#FF0080" bgcolor="#C0C0FF" link="#0000FF" text="#000000"
+    vlink="#800080">
+    <center>
+      <h1>
+        Sharing Resources with Remote Sessions</h1>
+    </center>
+    <b><font face="Arial,Helvetica">Last Updated: 04 Jun 2014</font></b>
+    <br>
+    &nbsp;
+    <h2>
+      <font color="#663366">Pre-Introduction</font></h2>
+    <font color="#663366">
+      Multiprocessing using SAS can greatly speed up processing in the
+      right
+      circumstances but should not be used as a workaround for slow
+      running SAS
+      code. The strength of using multiprocessing lies in having
+      computers with
+      a low concurrent job occupancy that is made so by efficient code
+      running
+      "lean and mean". The jobs then run quickly and end quickly and the
+      concurrent
+      job occupancy is low. Even for a very powerful computer you will
+      then have
+      times, even during busy periods, where the computer is idle. You
+      then have
+      massive spare CPU capacity that can be exploited using
+      multiprocessing
+      to hugely reduce the elapsed time of your work. This will
+      especially be
+      appreciated for ad-hoc query work running on large amounts of
+      data. Conversely,
+      if you try using multiprocessing in a computer running inefficient
+      code,
+      then the effect it has is to increase CPU overheads through having
+      too
+      many tasks to manage and limits for resources might be exceeded,
+      causing
+      delays or even job failures.
+    </font>
+    <p><font color="#663366">You should only be using multiprocessing to
+        seek to gain a speed advantage
+        if your SAS code is already running at a throughput rate of <b>10,000
+          obs
+          per second</b> or more. If you are failing to achieve these
+        speeds then
+        your SAS code needs to be redesigned in a way to give you more
+        speed. If
+        you are not achieving a throughput rate of 10,000 obs per second
+        then you
+        should apply the speed tips on the following page and return to
+        this page
+        at a later date after this issue has been resolved.
+      </font></p>
+    <p><a href="speedtips.html" target="_blank">SAS Speed Tips</a>
+      <br>
+      &nbsp;
+    </p>
+    <h2>
+      Introduction</h2>
+    If you are trying to speed up your processing using multiple <b>rsubmit</b>
+    blocks then you are maybe creating <b>datasets</b> in your local
+    session,
+    maybe with <b>formats</b> that were defined in your local session
+    and maybe
+    locally defined <b>macros</b> as well and you would like these to
+    be accessible
+    to your remote session. This page tells you how to do this.
+    <h2>
+      Checking that SAS/CONNECT is licensed</h2>
+    When developing code that uses multiprocessing it is wise to code in
+    such
+    a way that it works independently of whether the computer running
+    the code
+    has SAS/CONNECT licensed or not. You can test this with <b>%SYSPROD(connect)</b>
+    and if it returns <b>1</b> then SAS/CONNECT is licensed to run on
+    that
+    machine and multiprocessing is possible. Since you will most likely
+    be
+    giving rsubmit processes names and "<b>wait</b>"ing for them then it
+    is
+    not enough to follow the recommendations on the SAS Support website
+    (see
+    use of the "star" macro variable on <a
+href="http://support.sas.com/documentation/cdl/en/connref/61908/HTML/default/viewer.htm#a001584568.htm"
+      target="_blank">this
+      page</a>). You should instead aim to test for <b>%sysprod(connect)
+      EQ 1</b>
+    and that would mean turning your code into a macro so you could use
+    the
+    <b>%IF</b>
+    condition which is not allowed in normal SAS code. To make your code
+    work
+    independently of whether SAS/CONNECT is licensed or not is
+    especially important
+    if you are working in Clinical Reporting and your code is sent to a
+    client
+    or a regulatory authority that might have SAS licensed but not
+    SAS/CONNECT
+    licensed.
+    <p>An alternative to coding with %sysprod(connect) is to use the
+      macro
+      <a href="Spectre/utilmacros/rsubmitter.sas" target="_blank">%rsubmitter</a>
+      to submit multiple tasks which will work in both cases where
+      SAS/CONNECT
+      is licensed or not.
+    </p>
+    <h2>
+      Sharing datasets and formats</h2>
+    Sharing <b>datasets</b> is the easiest thing to do. You have an <b>inheritlib</b>
+    option when you call your rsubmit and you can supply a list of
+    librefs
+    and what to call them in your remote session. Suppose you want the
+    remote
+    session to be able to access some of your <b>WORK</b> datasets
+    (that will
+    no doubt be mapped to a very fast memory card). Your remote session
+    can't
+    refer to them as being in the library WORK, since it will have its
+    own
+    library of that name, but you could give that library a different
+    name
+    like <b>LWORK</b> using the inheritlib option like this:&nbsp; <b>inheritlib(work=lwork)</b>
+    so suppose you had a dataset in your local session named WORK.CLASS
+    then
+    in the remote session you could access it as LWORK.CLASS.
+    <p>Sharing local <b>formats</b> is also easy. These will be in your
+      work
+      library as the catalog WORK.FORMATS. If your WORK library is
+      inherited
+      as the LWORK library, as in the datasets example above in this
+      same section,
+      then all you need to do to make these formats available in your
+      remote
+      session is to declare them to the format search path as <b>fmtsearch=(lwork.formats)</b>
+      .
+    </p>
+    <p>I use a little macro to check for the existence of the LWORK
+      libref
+      and to change the value of the source library and to put
+      LWORK.FORMATS
+      on the search path if found. You can see this macro if you click
+      here <a href="Spectre/utilmacros/look4lwork.sas" target="_blank">%look4lwork</a>.
+    </p>
+    <h2>
+      Sharing your SASAUTOS option value</h2>
+    If your SASAUTOS option value is set in your autoexec file when you
+    sign
+    on and you are happy for the remote session to be using that same
+    autoexec
+    file when it starts up then there is no need to do anything. So long
+    as
+    you are not invoking sas using the -noautoexec option then the
+    session
+    will use that same autoexec and set the SASAUTOS option value for
+    the remote
+    session the same as it did for your local session. But if your
+    SASAUTOS
+    value was not set in the autoexec or maybe you do not want the
+    remote session
+    to use that autoexec file (maybe it does a lot of processing that
+    does
+    not need to be repeated) then you can explicitly pass your SASAUTOS
+    option
+    value to the process you are invoking. <b>But here you have to be a
+      little
+      bit careful.</b> You will almost certainly be invoking a remote
+    sas session
+    as a double quoted string in this case, such that you can resolve
+    your
+    SASAUTOS value using <b>%sysfunc(getoption(sasautos))</b> inside
+    the double
+    quoted string, <b>but</b> this SASAUTOS value of yours might itself
+    contain
+    double quotes around some file names you defined to it. So in these
+    cases
+    you have to put the SASAUTOS option value through a process to <b>translate
+double
+      quotes to single quotes</b>. There is a very simple macro that you
+    can download from this web site named <a
+      href="Spectre/utilmacros/mysasautos.sas" target="_blank">%mysasautos</a>
+    to do that for you.
+    <p><b>invoking sas with the normal autoexec file:</b>
+      <br>
+      &nbsp;
+      <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+        <tbody>
+          <tr>
+            <td><tt>rsubmit wait=no process1 sascmd="!sascmd -sasuser
+                work -nonotes
+                -nosplash";</tt></td>
+          </tr>
+        </tbody>
+      </table>
+    </p>
+    <p><b>invoking sas without the autoexec file and passing across the
+        SASAUTOS
+        option value:</b>
+      <br>
+      &nbsp;
+      <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+        <tbody>
+          <tr>
+            <td><tt>rsubmit wait=no process1 sascmd="!sascmd -sasuser
+                work -nonotes
+                -nosplash -noautoexec -sasautos %mysasautos";</tt></td>
+          </tr>
+        </tbody>
+      </table>
+    </p>
+    <h2>
+      Sharing locally compiled macros</h2>
+    Sharing locally compiled macros with your remote sessions requires a
+    bit
+    more work. Your locally compiled macros are stored in the catalog <b>WORK.SASMACR</b>
+    and the problem here is that there is an <b>exclusive lock</b> on
+    that
+    file. It can not even be<b> read</b> by another session, even if you
+    wanted
+    it to and even though it was you who spawned that remote session.
+    And there
+    is no way you can free that lock in your local SAS session using a "<b>lock
+
+...
+      clear</b>" statement. But this <b>exclusive lock</b> is only held
+    on
+    <b>WORK.SASMACR</b> and not all catalogs, not even another one named
+    <b>SASMACR</b>, so you can copy the macros you want to another <b>SASMACR</b>
+    catalog and then we can make that catalog avaialble to the remote
+    session.
+    You probably only want selected macros to be available to the remote
+    sessions
+    in any case so this is not inconvenient extra work. So a libref in
+    the
+    local session needs to be set up and the desired compiled macros
+    copied
+    to a catalog
+    <b>SASMACR</b> in that libref and they we can pass that libref
+    across to the remote session in the <b>inheritlib()</b> option.
+    Inside
+    the remote session we can then declare that macro catalog to <b>SASMSTORE</b>.
+    <h2>
+      An Example</h2>
+    This is quite a full example. It shows how WORK datasets and local
+    formats
+    can be shared and how selected compiled macros are copied to a
+    different
+    catalog and passed across to the remote session. We want a simple
+    locally
+    defined macro named %PRT to be used in the remote session to print a
+    dataset
+    in the local session using a format defined in the local session.
+    The code
+    and its log follow.
+    <p><b>The code:</b>
+      <br>
+      &nbsp;
+      <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+        <tbody>
+          <tr>
+            <td><tt>*- allow autosignon to remote sessions for this
+                example -;&nbsp;</tt>
+              <br>
+              <tt>options autosignon=yes;&nbsp;</tt>
+              <br>
+              <tt>ods _all_ close;&nbsp;</tt>
+              <br>
+              <tt>ods listing;&nbsp;</tt>
+              <br>
+              <tt>ods results off;&nbsp;</tt>
+              <br>
+              &nbsp;
+              <p><tt>*- the following macro is on the sasautos path
+                  -;&nbsp;</tt>
+                <br>
+                <tt>%put &gt;&gt;&gt;&gt;&gt; %now;&nbsp;</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>*- create a directory to store shared macros in
+                  -;&nbsp;</tt>
+                <br>
+                <tt>systask command "mkdir
+                  ""%sysfunc(pathname(work))\macros"" "
+                  taskname=mkdir;&nbsp;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>*- locally compiled macro -;&nbsp;</tt>
+                <br>
+                <tt>%macro prt(dset);&nbsp;</tt>
+              </p>
+              <p><tt>&nbsp; %let srclib=work;</tt>
+                <br>
+                <tt>&nbsp; %look4lwork</tt>
+              </p>
+              <p><tt>&nbsp; proc print
+                  data=&amp;srclib..&amp;dset;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; run;&nbsp;</tt>
+                <br>
+                <tt>%mend prt;&nbsp;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>*- create local format for the remote sessions to
+                  use -;&nbsp;</tt>
+                <br>
+                <tt>proc format;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; value $miss ' '='Missing';&nbsp;</tt>
+                <br>
+                <tt>run;&nbsp;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>*- create a local dataset for the remote sessions
+                  to use -;&nbsp;</tt>
+                <br>
+                <tt>data class;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; retain Miss ' ';&nbsp;</tt>
+                <br>
+                <tt>&nbsp; set sashelp.class;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; format _character_ $miss.;&nbsp;</tt>
+                <br>
+                <tt>run;&nbsp;</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>*- make sure the shared macro directory creation is
+                  complete;&nbsp;</tt>
+                <br>
+                <tt>waitfor mkdir;&nbsp;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>*- give the shared macros library the libref
+                  "sharemac" -;&nbsp;</tt>
+                <br>
+                <tt>libname sharemac
+                  "%sysfunc(pathname(work))\macros";&nbsp;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>*- Copy compiled macros needed by remote&nbsp;
+                  -;&nbsp;</tt>
+                <br>
+                <tt>*- sessions to the shared macros catalog. -;&nbsp;</tt>
+                <br>
+                <tt>proc catalog c=work.sasmacr et=macro;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; copy out=sharemac.sasmacr;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; select prt;&nbsp;</tt>
+                <br>
+                <tt>quit;&nbsp;</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>*- call the remote process -;&nbsp;</tt>
+                <br>
+                <tt>rsubmit wait=no process1 inheritlib=(work=lwork
+                  sharemac=sharemac)&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  sascmd="!sascmd -sasuser
+                  work -nonotes -nosplash&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  -noautoexec -sasautos
+                  %mysasautos";&nbsp;</tt>
+              </p>
+              <p><tt>&nbsp; options notes nodate nonumber mstored
+                  sasmstore=sharemac;&nbsp;</tt>
+              </p>
+              <p><tt>&nbsp; *- this works good -;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; %put &gt;&gt;&gt;&gt;&gt; %now;&nbsp;</tt>
+              </p>
+              <p><tt>&nbsp; *- this works good -;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; %prt(class);&nbsp;</tt>
+              </p>
+              <p><tt>endrsubmit;&nbsp;</tt>
+              </p>
+              <p><tt>signoff process1;&nbsp;</tt>
+              </p>
+              <p>&nbsp;</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </p>
+    <p><b>The log:</b>
+      <br>
+      &nbsp;
+      <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+        <tbody>
+          <tr>
+            <td><tt>1&nbsp;&nbsp;&nbsp; *- allow autosignon to remote
+                sessions for
+                this example -;</tt>
+              <br>
+              <tt>2&nbsp;&nbsp;&nbsp; options autosignon=yes;</tt>
+              <br>
+              <tt>3&nbsp;&nbsp;&nbsp; ods _all_ close;</tt>
+              <br>
+              <tt>4&nbsp;&nbsp;&nbsp; ods listing;</tt>
+              <br>
+              <tt>5&nbsp;&nbsp;&nbsp; ods results off;</tt>
+              <br>
+              <tt>6</tt>
+              <br>
+              <tt>7</tt>
+              <br>
+              <tt>8&nbsp;&nbsp;&nbsp; *- the following macro is on the
+                sasautos path
+                -;</tt>
+              <br>
+              <tt>9&nbsp;&nbsp;&nbsp; %put &gt;&gt;&gt;&gt;&gt; %now;</tt>
+              <br>
+              <tt>MACRO CALLED: now v1.1</tt>
+              <br>
+              <tt>&gt;&gt;&gt;&gt;&gt; 01JUN2014:07:30:19.93</tt>
+              <br>
+              <tt>10</tt>
+              <br>
+              <tt>11</tt>
+              <br>
+              <tt>12</tt>
+              <br>
+              <tt>13&nbsp;&nbsp; *- create a directory to store shared
+                macros in
+                -;</tt>
+              <br>
+              <tt>14&nbsp;&nbsp; systask command "mkdir
+                ""%sysfunc(pathname(work))\macros""
+                " taskname=mkdir;</tt>
+              <br>
+              <tt>15</tt>
+              <br>
+              <tt>16</tt>
+              <br>
+              <tt>17&nbsp;&nbsp; *- locally compiled macro -;</tt>
+              <br>
+              <tt>18&nbsp;&nbsp; %macro prt(dset);</tt>
+              <br>
+              <tt>19</tt>
+              <br>
+              <tt>20&nbsp;&nbsp;&nbsp;&nbsp; %let srclib=work;</tt>
+              <br>
+              <tt>21&nbsp;&nbsp;&nbsp;&nbsp; %look4lwork</tt>
+              <br>
+              <tt>22</tt>
+              <br>
+              <tt>23&nbsp;&nbsp;&nbsp;&nbsp; proc print
+                data=&amp;srclib..&amp;dset;</tt>
+              <br>
+              <tt>24&nbsp;&nbsp;&nbsp;&nbsp; run;</tt>
+              <br>
+              <tt>25&nbsp;&nbsp; %mend prt;</tt>
+              <br>
+              <tt>26</tt>
+              <br>
+              <tt>27</tt>
+              <br>
+              <tt>28&nbsp;&nbsp; *- create local format for the remote
+                sessions to
+                use -;</tt>
+              <br>
+              <tt>29&nbsp;&nbsp; proc format;</tt>
+              <br>
+              <tt>30&nbsp;&nbsp;&nbsp;&nbsp; value $miss ' '='Missing';</tt>
+              <br>
+              <tt>NOTE: Format $MISS has been output.</tt>
+              <br>
+              <tt>31&nbsp;&nbsp; run;</tt>
+              <p><tt>NOTE: PROCEDURE FORMAT used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.03 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.01 seconds</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>32</tt>
+                <br>
+                <tt>33</tt>
+                <br>
+                <tt>34&nbsp;&nbsp; *- create a local dataset for the
+                  remote sessions
+                  to use -;</tt>
+                <br>
+                <tt>NOTE: Task "mkdir" produced no LOG/Output.</tt>
+                <br>
+                <tt>35&nbsp;&nbsp; data class;</tt>
+                <br>
+                <tt>36&nbsp;&nbsp;&nbsp;&nbsp; retain Miss ' ';</tt>
+                <br>
+                <tt>37&nbsp;&nbsp;&nbsp;&nbsp; set sashelp.class;</tt>
+                <br>
+                <tt>38&nbsp;&nbsp;&nbsp;&nbsp; format _character_
+                  $miss.;</tt>
+                <br>
+                <tt>39&nbsp;&nbsp; run;</tt>
+              </p>
+              <p><tt>NOTE: There were 19 observations read from the data
+                  set SASHELP.CLASS.</tt>
+                <br>
+                <tt>NOTE: The data set WORK.CLASS has 19 observations
+                  and 6 variables.</tt>
+                <br>
+                <tt>NOTE: DATA statement used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.01 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.01 seconds</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>40</tt>
+                <br>
+                <tt>41</tt>
+                <br>
+                <tt>42</tt>
+                <br>
+                <tt>43&nbsp;&nbsp; *- make sure the shared macro
+                  directory creation
+                  is complete;</tt>
+                <br>
+                <tt>44&nbsp;&nbsp; waitfor mkdir;</tt>
+                <br>
+                <tt>45</tt>
+                <br>
+                <tt>46</tt>
+                <br>
+                <tt>47&nbsp;&nbsp; *- give the shared macros library the
+                  libref "sharemac"
+                  -;</tt>
+                <br>
+                <tt>48&nbsp;&nbsp; libname sharemac
+                  "%sysfunc(pathname(work))\macros";</tt>
+                <br>
+                <tt>NOTE: Libref SHAREMAC was successfully assigned as
+                  follows:</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  Engine:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  V9</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Physical Name:
+                  C:\Users\rashleig\AppData\Local\Temp\SAS
+                  Temporary</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  Files\_TD3908_WKS0000520299_\macros</tt>
+                <br>
+                <tt>49</tt>
+                <br>
+                <tt>50</tt>
+                <br>
+                <tt>51&nbsp;&nbsp; *- Copy compiled macros needed by
+                  remote&nbsp; -;</tt>
+                <br>
+                <tt>52&nbsp;&nbsp; *- sessions to the shared macros
+                  catalog. -;</tt>
+                <br>
+                <tt>53&nbsp;&nbsp; proc catalog c=work.sasmacr et=macro;</tt>
+                <br>
+                <tt>54&nbsp;&nbsp;&nbsp;&nbsp; copy
+                  out=sharemac.sasmacr;</tt>
+                <br>
+                <tt>55&nbsp;&nbsp;&nbsp;&nbsp; select prt;</tt>
+                <br>
+                <tt>56&nbsp;&nbsp; quit;</tt>
+              </p>
+              <p><tt>NOTE: Copying entry PRT.MACRO from catalog
+                  WORK.SASMACR to catalog
+                  SHAREMAC.SASMACR.</tt>
+                <br>
+                <tt>NOTE: PROCEDURE CATALOG used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.01 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.01 seconds</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>57</tt>
+                <br>
+                <tt>58</tt>
+                <br>
+                <tt>59</tt>
+                <br>
+                <tt>60&nbsp;&nbsp; *- call the remote process -;</tt>
+                <br>
+                <tt>61&nbsp;&nbsp; rsubmit wait=no process1
+                  inheritlib=(work=lwork
+                  sharemac=sharemac)</tt>
+                <br>
+                <tt>62&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+sascmd="!sascmd
+                  -sasuser work -nonotes -nosplash</tt>
+                <br>
+                <tt>63&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-noautoexec
+                  -sasautos %mysasautos";</tt>
+                <br>
+                <tt>NOTE: Remote signon to PROCESS1 commencing (SAS
+                  Release 9.03.01M2P081512).</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: Remote signon to PROCESS1 complete.</tt>
+                <br>
+                <tt>NOTE: Background remote submit to PROCESS1 in
+                  progress.</tt>
+                <br>
+                <tt>64</tt>
+                <br>
+                <tt>65&nbsp;&nbsp; signoff process1;</tt>
+                <br>
+                <tt>NOTE: Remote submit to PROCESS1 commencing.</tt>
+                <br>
+                <tt>1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; options notes nodate
+                  nonumber mstored
+                  sasmstore=sharemac;</tt>
+                <br>
+                <tt>2</tt>
+                <br>
+                <tt>3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *- this works good
+                  -;</tt>
+                <br>
+                <tt>4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %put
+                  &gt;&gt;&gt;&gt;&gt; %now;</tt>
+                <br>
+                <tt>MACRO CALLED: now v1.1</tt>
+                <br>
+                <tt>&gt;&gt;&gt;&gt;&gt; 01JUN2014:07:30:20.28</tt>
+                <br>
+                <tt>5</tt>
+                <br>
+                <tt>6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *- this works good
+                  -;</tt>
+                <br>
+                <tt>7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %prt(class);</tt>
+                <br>
+                <tt>MACRO CALLED: look4lwork v1.0</tt>
+              </p>
+              <p><tt>NOTE: Non-portable document will be produced. The
+                  current settings
+                  of FORMCHAR use nonstandard</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; line-drawing
+                  characters and the
+                  resulting output file will not render correctly unless
+                  all</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; readers of the
+                  document have the
+                  SAS Monospace font installed. To make your document</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portable, issue the
+                  following command:</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OPTIONS
+                  FORMCHAR="|----|+|---+=|-/\&lt;&gt;*";</tt>
+              </p>
+              <p><tt>NOTE: There were 19 observations read from the data
+                  set LWORK.CLASS.</tt>
+                <br>
+                <tt>NOTE: The PROCEDURE PRINT printed page 1.</tt>
+                <br>
+                <tt>NOTE: PROCEDURE PRINT used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.01 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.01 seconds</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: Remote submit to PROCESS1 complete.</tt>
+                <br>
+                <tt>NOTE: Remote signoff from PROCESS1 commencing.</tt>
+                <br>
+                <tt>NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC
+                  USA 27513-2414</tt>
+                <br>
+                <tt>NOTE: The SAS System used:</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.20 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.20 seconds</tt>
+              </p>
+              <p><tt>NOTE: Remote signoff from PROCESS1 complete.</tt>
+                <br>
+                &nbsp;</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </p>
+    <h2>
+      Conclusion</h2>
+    You have seen on this page how you can share your local resources
+    with
+    your remote sessions.
+    <br>
+    &nbsp;
+    <br>
+    &nbsp;
+    <br>
+    <br>
+    <br>
+    <center>
+      <p>Go back to the home <a href="index-2.html">page</a>.
+      </p>
+      <p>E-mail the macro and web site <a
+          href="mailto:rolandberry@hotmail.com">author</a>.</p>
+    </center>
+    <p><!-- Start of StatCounter Code -->
+      <script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+      <script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js">
+</script><noscript><a href="http://www.statcounter.com/" target="_blank"><img src="counter.html" alt="counter hit make" border="0"></a></noscript><!-- End of StatCounter Code -->
+    </p>
+  </body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/sharerem.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+</html>

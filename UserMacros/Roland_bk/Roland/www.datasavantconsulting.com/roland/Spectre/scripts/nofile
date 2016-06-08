@@ -1,0 +1,37 @@
+#!/bin/bash
+#<pre><b>
+# Script     : nofile
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 17-May-2004
+# Purpose    : Production script to echo a file name if it does not exist
+# SubScripts : none
+# Notes      : You must pipe into this script. Only one filename per line
+#              allowed.
+# Usage      : cat filelist | nofile
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# No parameters - must be piped into
+if [ $# -gt 0 ] ; then
+  echo "Error: Script nofile does not accept parameters -- you must pipe into it" 1>&2
+  exit 2
+fi
+
+# echo the file name to standard output if it does not exist
+while read filename
+do
+  if [ ! -f "$filename" ] ; then
+    echo "$filename"
+  fi
+done

@@ -1,0 +1,437 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/hashobj.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="Hash Objects for Fast Merging">
+   <title>Hash Objects for Fast Merging</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Hash Objects for Fast Merging</h1></center>
+<b><font face="Arial,Helvetica">Last Updated: 19 Apr 2015</font></b>
+<h2>
+Introduction</h2>
+<b>Hash objects</b> are used in data steps to allow for the sort of fast
+hash merging you get from PROC SQL when you do INNER joins. What you are
+effectively doing is loading a small dataset into memory and telling it
+what keys to merge on and what data variables to use and then the data
+step will find the entry in this table corresponding to the same key variables
+in your input dataset and so make available the data variables for that
+entry. It is effectively doing a merge in memory, which is very fast. As
+previously mentioned, PROC SQL only does this hash merging for INNER joins.
+Quite often, you want to avoid INNER joins as you want all your input observations
+kept, whether they match with values in a small table or not. If your large
+dataset were your "left" dataset then you would achieve keeping the observations
+in your "left" dataset by doing a "LEFT" join which is a shorthand way
+of requesting a "LEFT OUTER" join. But OUTER joins in PROC SQL won't use
+this fast hash join. But luckily for us, we can use this technique in a
+data step using a <b>hash object</b> and then we have no problem if we
+can not find a match in the small table in memory.
+<p>There is a speed advantage in using hash objects. If you are trying
+to do a join on a very large datasets then it takes time to sort this data
+to do a merge using BY variables. You might want to save time in avoiding
+this sort by using a hash object instead, so long as you know the smaller
+dataset you are merging on can fit into memory.
+<p>The syntax for setting up a hash object is far from being simple, but
+you will find a macro on this web site to make life easier for you so that
+you can forget about the syntax and just get on with using it.
+<p>You will be taken though some examples and <b>we will hit syntax errors</b>
+and learn how to overcome these until we are using hash objects in the
+correct way.
+<h2>
+Using SASHELP.CLASS in our Hash Object</h2>
+The following examples will all use SASHELP.CLASS as our "small table"
+that we will load into memory and use as our hash object. Our "large dataset"
+will in fact be a small dataset just ti illustrate the examples. It will
+be a short list of class pupil names and their ages that we will try to
+merge on. Some of these pupils will have no match in SASHELP.CLASS. We
+will only show this "test" dataset of pupils once in the code below. Just
+assume for all the other examples that this test dataset is available in
+the WORK library. Here is the first example. You see out test dataset being
+created that we wish to hash merge with SASHELP.CLASS. In the second data
+step you see some strange syntax for declaring SASHELP.CLASS to a hash
+object called "<b>class</b>", we define the <b>key</b> variables to merge
+on as <b>name </b>and<b> age</b> and the <b>data </b>variables that contain
+the value we want merged with as the variables <b>sex, height </b>and<b>
+weight.</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>data test;</tt>
+<br><tt>&nbsp; length name $ 8 age 8;</tt>
+<br><tt>&nbsp; name="William";age=15;output;</tt>
+<br><tt>&nbsp; name="Sally";age=10;output;</tt>
+<br><tt>&nbsp; name="Janet";age=15;output;</tt>
+<br><tt>&nbsp; name="Fred";age=14;output;</tt>
+<br><tt>run;</tt>
+<p><tt>data test2;</tt>
+<br><tt>&nbsp; if _n_=1 then do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; declare hash class(dataset: 'sashelp.class');</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; _rc = class.defineKey('name', 'age');</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; _rc = class.defineData('sex', 'height', 'weight');</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; _rc = class.defineDone();</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>&nbsp; set test;</tt>
+<br><tt>&nbsp; _rc=class.find();</tt>
+<br><tt>&nbsp; if _rc ne 0 then put "No match " (_all_) (=);</tt>
+<br><tt>&nbsp; DROP _rc;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>Next you will see what appears in the log. We will hit syntax errors
+and we will learn what needs to be added to avoid these.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>8</tt>
+<br><tt>9&nbsp;&nbsp;&nbsp; data test2;</tt>
+<br><tt>10&nbsp;&nbsp;&nbsp;&nbsp; if _n_=1 then do;</tt>
+<br><tt>11&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; declare hash class(dataset:
+'sashelp.class');</tt>
+<br><tt>12&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _rc = class.defineKey('name',
+'age');</tt>
+<br><tt>13&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _rc = class.defineData('sex',
+'height', 'weight');</tt>
+<br><tt>14&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _rc = class.defineDone();</tt>
+<br><tt>15&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>16&nbsp;&nbsp;&nbsp;&nbsp; set test;</tt>
+<br><tt>17&nbsp;&nbsp;&nbsp;&nbsp; _rc=class.find();</tt>
+<br><tt>18&nbsp;&nbsp;&nbsp;&nbsp; if _rc ne 0 then put "No match " (_all_)
+(=);</tt>
+<br><tt>19&nbsp;&nbsp;&nbsp;&nbsp; DROP _rc;</tt>
+<br><tt>20&nbsp;&nbsp; run;</tt>
+<p><tt>ERROR: Undeclared data symbol sex for hash object at line 14 column
+11.</tt>
+<br><tt>ERROR: DATA STEP Component Object failure.&nbsp; Aborted during
+the EXECUTION phase.</tt>
+<br><tt>NOTE: The SAS System stopped processing this step because of errors.</tt>
+<br><tt>WARNING: The data set WORK.TEST2 may be incomplete.&nbsp; When
+this step was stopped there were 0</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; observations and
+2 variables.</tt>
+<br><tt>NOTE: DATA statement used (Total process time):</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.04 seconds</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.01 seconds</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>What SAS is complaining about in the log is the character variable <b>sex</b>
+which is one of the <b>data variables</b>. It does not complain about the
+variable <b>name</b> which is a <b>key</b> variable as well as being character.
+Some extra coding is required to get around any <b>data variables</b> that
+are <b>character</b>. We can use a <b>LENGTH</b> statement for that so
+long as we know which of the data variables are character and what their
+lengths are. The <b>sex</b> variable is a one byte character variable so
+we need to put this in a LENGTH statement.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>data test2;</tt>
+<br><tt>&nbsp; LENGTH sex $ 1;</tt>
+<br><tt>&nbsp; if _n_=1 then do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; declare hash class(dataset: 'sashelp.class');</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; _rc = class.defineKey('name', 'age');</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; _rc = class.defineData('sex', 'height', 'weight');</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; _rc = class.defineDone();</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>&nbsp; set test;</tt>
+<br><tt>&nbsp; _rc=class.find();</tt>
+<br><tt>&nbsp; if _rc ne 0 then put "No match " (_all_) (=);</tt>
+<br><tt>&nbsp; DROP _rc;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>Let us see what SAS complains about next:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>21&nbsp;&nbsp; data test2;</tt>
+<br><tt>22&nbsp;&nbsp;&nbsp;&nbsp; LENGTH sex $ 1;</tt>
+<br><tt>23&nbsp;&nbsp;&nbsp;&nbsp; if _n_=1 then do;</tt>
+<br><tt>24&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; declare hash class(dataset:
+'sashelp.class');</tt>
+<br><tt>25&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _rc = class.defineKey('name',
+'age');</tt>
+<br><tt>26&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _rc = class.defineData('sex',
+'height', 'weight');</tt>
+<br><tt>27&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _rc = class.defineDone();</tt>
+<br><tt>28&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>29&nbsp;&nbsp;&nbsp;&nbsp; set test;</tt>
+<br><tt>30&nbsp;&nbsp;&nbsp;&nbsp; _rc=class.find();</tt>
+<br><tt>31&nbsp;&nbsp;&nbsp;&nbsp; if _rc ne 0 then put "No match " (_all_)
+(=);</tt>
+<br><tt>32&nbsp;&nbsp;&nbsp;&nbsp; DROP _rc;</tt>
+<br><tt>33&nbsp;&nbsp; run;</tt>
+<p><tt>NOTE: Variable sex is uninitialized.</tt>
+<br><tt>ERROR: Undeclared data symbol height for hash object at line 27
+column 11.</tt>
+<br><tt>ERROR: DATA STEP Component Object failure.&nbsp; Aborted during
+the EXECUTION phase.</tt>
+<br><tt>NOTE: The SAS System stopped processing this step because of errors.</tt>
+<br><tt>WARNING: The data set WORK.TEST2 may be incomplete.&nbsp; When
+this step was stopped there were 0</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; observations and
+3 variables.</tt>
+<br><tt>WARNING: Data set WORK.TEST2 was not replaced because this step
+was stopped.</tt>
+<br><tt>NOTE: DATA statement used (Total process time):</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.01 seconds</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.01 seconds</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>What SAS is complaining about this time is that the <b>data</b> variables
+are <b>uninitialized</b>. The <b>sex</b> variable is specifically mentioned.
+The <b>height</b> variable appears as an "Undeclared data symbol" error
+but again this is its way of complaining about <b>height</b> being uninitialized.
+It would complain about <b>weight </b>as well but it isn't seeing that
+far ahead. So let us try again by setting all the data variables to missing
+in a "call missing".
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>data test2;</tt>
+<br><tt>&nbsp; LENGTH sex $ 1;</tt>
+<br><tt>&nbsp; if _n_=1 then do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; declare hash class(dataset: 'sashelp.class');</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; _rc = class.defineKey('name', 'age');</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; _rc = class.defineData('sex', 'height', 'weight');</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; _rc = class.defineDone();</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; call missing(sex, height, weight);</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>&nbsp; set test;</tt>
+<br><tt>&nbsp; _rc=class.find();</tt>
+<br><tt>&nbsp; if _rc ne 0 then put "No match " (_all_) (=);</tt>
+<br><tt>&nbsp; DROP _rc;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>And now we get this in the log:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>49</tt>
+<br><tt>50&nbsp;&nbsp; data test2;</tt>
+<br><tt>51&nbsp;&nbsp;&nbsp;&nbsp; LENGTH sex $ 1;</tt>
+<br><tt>52&nbsp;&nbsp;&nbsp;&nbsp; if _n_=1 then do;</tt>
+<br><tt>53&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; declare hash class(dataset:
+'sashelp.class');</tt>
+<br><tt>54&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _rc = class.defineKey('name',
+'age');</tt>
+<br><tt>55&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _rc = class.defineData('sex',
+'height', 'weight');</tt>
+<br><tt>56&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _rc = class.defineDone();</tt>
+<br><tt>57&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; call missing(sex, height,
+weight);</tt>
+<br><tt>58&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>59&nbsp;&nbsp;&nbsp;&nbsp; set test;</tt>
+<br><tt>60&nbsp;&nbsp;&nbsp;&nbsp; _rc=class.find();</tt>
+<br><tt>61&nbsp;&nbsp;&nbsp;&nbsp; if _rc ne 0 then put "No match " (_all_)
+(=);</tt>
+<br><tt>62&nbsp;&nbsp;&nbsp;&nbsp; DROP _rc;</tt>
+<br><tt>63&nbsp;&nbsp; run;</tt>
+<p><tt>NOTE: There were 19 observations read from the data set SASHELP.CLASS.</tt>
+<br><tt>No match sex=&nbsp; _rc=160038 height=. weight=. name=Sally age=10</tt>
+<br><tt>No match sex=&nbsp; _rc=160038 height=. weight=. name=Fred age=14</tt>
+<br><tt>NOTE: There were 4 observations read from the data set WORK.TEST.</tt>
+<br><tt>NOTE: The data set WORK.TEST2 has 4 observations and 5 variables.</tt>
+<br><tt>NOTE: DATA statement used (Total process time):</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.03 seconds</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.01 seconds</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>There are no problems in the log above. The code is working as we wanted
+it to. The code puts out a message to the log where there are no matches
+but that is not SAS complaining. This is what we have chosen to do in the
+code.
+<h2>
+How to make the above example better</h2>
+A weakness I pointed out above was in the LENGTH statement where we must
+declare the lengths of all the character data variables. This is easier
+said than done if there are a lot of variables. You would have to carefully
+check which of the data variables are character and exactly what their
+lengths were supposed to be, There is room for making mistakes here. Luckily,
+there is a utility macro named <b><a href="Spectre/utilmacros/cvarlens.sas" target="_blank">%cvarlens</a></b>
+that you can find in the utility macros library on this web site that will
+do this work for you. See the code below.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>data test2;</tt>
+<br><tt>&nbsp; LENGTH %cvarlens(sashelp.class,sex height weight);</tt>
+<br><tt>&nbsp; if _n_=1 then do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; declare hash class(dataset: 'sashelp.class');</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; _rc = class.defineKey('name', 'age');</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; _rc = class.defineData('sex', 'height', 'weight');</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; _rc = class.defineDone();</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; call missing(sex, height, weight);</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>&nbsp; set test;</tt>
+<br><tt>&nbsp; _rc=class.find();</tt>
+<br><tt>&nbsp; if _rc ne 0 then put "No match " (_all_) (=);</tt>
+<br><tt>&nbsp; DROP _rc;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>Nothing unusual in the log except a message from the <b>%cvarlens</b>
+macro when it was compiled:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>79</tt>
+<br><tt>80&nbsp;&nbsp; data test2;</tt>
+<br><tt>81&nbsp;&nbsp;&nbsp;&nbsp; LENGTH %cvarlens(sashelp.class,sex height
+weight);</tt>
+<br><tt>MACRO CALLED: cvarlens v1.0</tt>
+<br><tt>82&nbsp;&nbsp;&nbsp;&nbsp; if _n_=1 then do;</tt>
+<br><tt>83&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; declare hash class(dataset:
+'sashelp.class');</tt>
+<br><tt>84&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _rc = class.defineKey('name',
+'age');</tt>
+<br><tt>85&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _rc = class.defineData('sex',
+'height', 'weight');</tt>
+<br><tt>86&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _rc = class.defineDone();</tt>
+<br><tt>87&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; call missing(sex, height,
+weight);</tt>
+<br><tt>88&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>89&nbsp;&nbsp;&nbsp;&nbsp; set test;</tt>
+<br><tt>90&nbsp;&nbsp;&nbsp;&nbsp; _rc=class.find();</tt>
+<br><tt>91&nbsp;&nbsp;&nbsp;&nbsp; if _rc ne 0 then put "No match " (_all_)
+(=);</tt>
+<br><tt>92&nbsp;&nbsp;&nbsp;&nbsp; DROP _rc;</tt>
+<br><tt>93&nbsp;&nbsp; run;</tt></td>
+</tr>
+</table>
+
+<p>Now that everything is running smoothly I will introduce a macro that
+sets up the hash. It is called <b><a href="Spectre/utilmacros/makehash.sas" target="_blank">%makehash</a></b>
+. All you have to remember about the macro is the order of the positional
+parameters which goes: <b>hash name, dataset, key variables, data variables</b>.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>data test2;</tt>
+<br><tt>&nbsp; %makehash(class,sashelp.class,name age,sex height weight);</tt>
+<br><tt>&nbsp; set test;</tt>
+<br><tt>&nbsp; _rc=class.find();</tt>
+<br><tt>&nbsp; if _rc ne 0 then put "No match " (_all_) (=);</tt>
+<br><tt>&nbsp; DROP _rc;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>Again, the only surprises in the log are messages from the %makehash
+macro when compiled and the other macros it calls being compiled:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>94</tt>
+<br><tt>95&nbsp;&nbsp; data test2;</tt>
+<br><tt>96&nbsp;&nbsp;&nbsp;&nbsp; %makehash(class,sashelp.class,name age,sex
+height weight);</tt>
+<br><tt>MACRO CALLED: makehash v1.1</tt>
+<br><tt>MACRO CALLED: commas v1.0</tt>
+<br><tt>MACRO CALLED: quotelst v1.1</tt>
+<br><tt>97&nbsp;&nbsp;&nbsp;&nbsp; set test;</tt>
+<br><tt>98&nbsp;&nbsp;&nbsp;&nbsp; _rc=class.find();</tt>
+<br><tt>99&nbsp;&nbsp;&nbsp;&nbsp; if _rc ne 0 then put "No match " (_all_)
+(=);</tt>
+<br><tt>100&nbsp;&nbsp;&nbsp; DROP _rc;</tt>
+<br><tt>101&nbsp; run;</tt></td>
+</tr>
+</table>
+
+<p>If you find the syntax of the "find" difficult to remember then there
+is another macro for that called <b><a href="Spectre/utilmacros/findinhash.sas" target="_blank">%findinhash</a></b>
+. This has only one positional parameter which is the hash name:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>data test2;</tt>
+<br><tt>&nbsp; %makehash(class,sashelp.class,name age,sex height weight);</tt>
+<br><tt>&nbsp; set test;</tt>
+<br><tt>&nbsp; %findinhash(class);</tt>
+<br><tt>&nbsp; if _rc ne 0 then put "No match " (_all_) (=);</tt>
+<br><tt>&nbsp; DROP _rc;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>Again, there is a message from this new macro in the log:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>102</tt>
+<br><tt>103&nbsp; data test2;</tt>
+<br><tt>104&nbsp;&nbsp;&nbsp; %makehash(class,sashelp.class,name age,sex
+height weight);</tt>
+<br><tt>105&nbsp;&nbsp;&nbsp; set test;</tt>
+<br><tt>106&nbsp;&nbsp;&nbsp; %findinhash(class);</tt>
+<br><tt>MACRO CALLED: findinhash v1.0</tt>
+<br><tt>107&nbsp;&nbsp;&nbsp; if _rc ne 0 then put "No match " (_all_)
+(=);</tt>
+<br><tt>108&nbsp;&nbsp;&nbsp; DROP _rc;</tt>
+<br><tt>109&nbsp; run;</tt></td>
+</tr>
+</table>
+
+<p>These messages from macros when they are compiled will only appear once
+in the code so they should not be a distraction.
+<h2>
+Conclusion</h2>
+You have been introduced to data step hash objects that can be used for
+fast merging. You have seen what code is needed to make these work properly
+and have seen a shorthand way of setting up a hash object using utility
+macros.
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<center>
+<p>Go back to the home <a href="index-2.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/hashobj.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+</html>

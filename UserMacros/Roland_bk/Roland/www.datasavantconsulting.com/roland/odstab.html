@@ -1,0 +1,278 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/odstab.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:39 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="Using ODS to make your tables look pretty">
+   <meta name="KeyWords" content="ODS sas tables pretty">
+   <title>Using ODS to make your tables look pretty</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Using ODS to make your tables look pretty</h1></center>
+
+<h2>
+Introduction</h2>
+The introduction of ODS into the SAS programming language at version 7
+onwards was one of the most major and far-reaching changes the software
+ever went through. The SAS language, up until that point, had acquired
+the reputation as being a "back-office system" and by that is meant that
+the "management" in an organisation are kept away from its rather dull
+plain-text reports, generated and kept in a back office somewhere, and
+the results from those reports get rewritten into a more attractive form,
+such as colorful tables, that then get presented to management. It was
+not good for the SAS Institute to have their software relegated to the
+background in this way and not good for the future of the organisation,
+so the decision was made to redesign the software so that the values coming
+out of sas procedures could be more easily accessed and the presentation
+of the results improved to match those of less expensive existing office
+software.
+<p>As a programmer, I arrived very late onto the scene of using ODS.&nbsp;
+My initial use for it, as a clinical programmer, was picking up the statistical
+values coming out of stats procedures. Only in 2007 did I turn my attentions
+into using ODS to improve the layout of what were previously purely text
+tables. I expected to have to learn a lot, to get out what I wanted but
+was pleasantly surprised to discover that I did not need to learn anything
+at all. ODS does all the work for you.
+<p>I am assuming that your tables are coming out of "proc report" or perhaps
+"proc tabulate" (that I haven't used in years) because it is only sas procedures
+that have ODS support. If you produce reports using "data _null_" then
+ODS facilities exist but it is no easy matter.
+<h2>
+The Big Secret</h2>
+The big secret about using ODS to make attractive tables is.................................................
+<b>there
+IS no big secret</b>.
+<p>All you have to do is declare an RTF ("Rich Text Format") file name
+and optionally a template style before you call a sas procedures and then
+close the RTF stream after the procedure ends. Like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>ods rtf file="file-destination" style=name-of-style;</tt>
+<p><tt>proc report ...... ;</tt>
+<br><tt>...;</tt>
+<br><tt>run;</tt>
+<p><tt>ods rtf close;</tt></td>
+</tr>
+</table>
+
+<p>What you end up with is your normal plain-text output but with an extra
+output in "Rich Text Format" (RTF) in the file name you specified that
+can be incorporated into a word processor document. There you will be able
+to manipulate the table, edit it, color it, change its text, its font,
+its size etc..
+<p>Many other output formats are available. For example, "ods html" will
+give you html output.
+<p>As I mentioned previously, I am very late onto the scene of ODS for
+table output and I assumed it would have only limited capabilities. I was
+wrong. I am going to show you an example that I thought ODS would not be
+able to cope with but it coped with it perfectly.
+<h2>
+An example</h2>
+This is a complicated example of a table being converted to RTF format
+by ODS. If ODS can cope with this then I expect it to cope with anything.
+The complicated thing about this table is that some of the important rows,
+the variable label lines, are put there by a "line" statement in "proc
+report" and they are given a start column. I thought that that would make
+these lines entirely independent from ODS handling and outside the cell
+structure of tables but it turns out not to be the case. Here is the example
+code that will need some explaining. It is not the complete code and is
+copied and amended from the %unistats PowerPoint demonstration that can
+be linked to from the main page.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><b><tt>footnote1 j=l "^ Fisher's exact test" "%sysfunc(repeat(%str(
+),200))" ;</tt></b>
+<br><b><tt>footnote2 j=l "# Student's t test" "%sysfunc(repeat(%str( ),200))"
+;</tt></b>
+<p><tt>%unistats(dsin=demog,unicatrep=yes,total=yes,&nbsp;</tt>
+<br><tt>trtlabel="Number of Patients (%) /" "Descriptive Statistics" "
+",&nbsp;</tt>
+<br><tt>lowcasevarlist=sexcd racecd,&nbsp;</tt>
+<br><tt>stats=N Min Mean Max STD.,minfmt=3.,maxfmt=3.,&nbsp;</tt>
+<br><tt>varlist=sexcd racecd agecat age weight/m,&nbsp;</tt>
+<br><tt>pvarlist=sexcd racecd agecat age weight,</tt>
+<br><tt>topline=no,pctsign=yes,</tt>
+<br><tt>allcatvars=racecd agecat,</tt>
+<br><b><tt>odsrtf=file="C:\spectre\tab1.rtf" bodytitle,</tt></b>
+<br><b><tt>odshtml=file="C:\spectre\tab1.html"</tt></b>
+<br><tt>);</tt></td>
+</tr>
+</table>
+
+<p>What you see above is a call to my <a href="Spectre/clinmacros/unistats.sas" target="_blank">%unistats</a>
+macro. It will produce a plain text table, an RTF table and an HTML table.
+You can see near the end of the call to the macro the two parameters odsrtf=
+and odshtml= and this gets used inside the macro just before the "proc
+report" step. It has to be done this way, rather than set up the "ods rtf"
+and "ods html" statements before the macro call, as the macro calls stats
+procedures that would be affected by the "ods" statements and I do not
+want to capture their output. I just want the table so that is why these
+statements must be enacted<b> inside</b> the macro just before the "proc
+report" step. Notice that the odsrtf= parameter value contains the word
+"<b>bodytitle</b>" at the end (works with SAS v9.1.3). This is to force
+titles and footnotes to be shown with the table rather than in document
+header and trailer lines. The odshtml= call does not need this. Now, if
+you look at the start of the code, I will explain the footnote statements.
+I have the option "center" in effect so I left-align the footnotes for
+the plain text report by padding out with spaces. This is what the %sysfunc()
+call is doing. However, this technique of padding out with spaces will
+get ignored in the RTF and HTML output so I have to use the "j=l" (justification
+equals left) statement. For the plain text report, the "j=l" will be ignored
+but it will be used for the RTF and HTML output. If I didn't want the plain
+text output then I could suppress it with the statement "<b>ods listing
+close;</b>" before the call to the macro and reinstate listing output using
+"<b>ods listing;</b>" afterwards but the plain text output is useful for
+a comparison with the rtf table and html table.
+<p>When I run the code, these are the outputs I get:
+<p><b>Plain text table</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Number of Patients (%) /</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Descriptive Statistics</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Ambicor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Betamaxin</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(1g/day)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (500mg/day)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Total</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=9)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (N=8)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N=17)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; p-value</tt>
+<br><tt>__________________________________________________________________________________________________</tt>
+<p><tt>Gender</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Male&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+7 ( 77.8%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 ( 12.5%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8 ( 47.1%)&nbsp;&nbsp;&nbsp;&nbsp; 0.015^</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Female&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7 ( 87.5%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+9 ( 52.9%)</tt>
+<p><tt>Race</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Caucasian&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 ( 12.5%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+6 ( 35.3%)&nbsp;&nbsp;&nbsp;&nbsp; 0.239^</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Black&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3 ( 37.5%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 29.4%)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Asian&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2 ( 22.2%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3 ( 37.5%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 29.4%)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Hispanic&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0 (&nbsp; 0.0%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 (&nbsp; 0.0%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0 (&nbsp; 0.0%)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Other&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0 (&nbsp; 0.0%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 ( 12.5%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1 (&nbsp; 5.9%)</tt>
+<p><tt>Age (yrs)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; &lt;16 yrs&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0 (&nbsp; 0.0%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 (&nbsp; 0.0%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0 (&nbsp; 0.0%)&nbsp;&nbsp;&nbsp; >0.999^</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; 16 - 25 yrs&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4 ( 44.4%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4 ( 50.0%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8 ( 47.1%)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; 26 - 40 yrs&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5 ( 55.6%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4 ( 50.0%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+9 ( 52.9%)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; 41 - 65 yrs&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0 (&nbsp; 0.0%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 (&nbsp; 0.0%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0 (&nbsp; 0.0%)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; >65 years&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0 (&nbsp; 0.0%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 (&nbsp; 0.0%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0 (&nbsp; 0.0%)</tt>
+<p><tt>&nbsp;&nbsp;&nbsp; N&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+17&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Min&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+16&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+16&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+16&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Mean&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+26.3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+24.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+25.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.569#</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Max&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+40&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+36&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+40&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; STD.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8.03&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8.49&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8.07&nbsp;</tt>
+<p><tt>Weight (kg)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; N&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+17&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Min&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+65.5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+65.5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+65.5&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Mean&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+76.6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+70.8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+73.8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.031#</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Max&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+79.6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+78.1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+79.6&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; STD.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4.36&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5.69&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5.71&nbsp;</tt>
+<br>&nbsp;
+<br>&nbsp;
+<p><tt>^ Fisher's exact test</tt>
+<br><tt># Student's t test</tt></td>
+</tr>
+</table>
+
+<p><b>html table</b>
+<p>The html output looks good but note that the column headers for "Total"
+and "p-value" do not go down to the bottom line as they should do. You
+can link to the html table <a href="tab1.html" target="_blank">here</a>.
+<p><b>rtf table</b>
+<p>What you will see is the default layout for the rtf table. You can specify
+a style if you want to to improve the look but you can edit the table to
+change colors and fonts from within a word processor. The rtf table is
+best viewed using a word processor such as MS Word so that you can see
+how easy it is to edit the table and improve its layout. You can link to
+the rtf table <a href="tab1.rtf">here</a>.
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/odstab.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:42 GMT -->
+</html>

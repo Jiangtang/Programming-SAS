@@ -1,0 +1,1993 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+  
+<!-- Mirrored from www.datasavantconsulting.com/roland/lstattrib.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+<head>
+    <meta http-equiv="Content-Type" content="text/html;
+      charset=windows-1252">
+    <meta name="Description" content="User Guide to %lstattrib">
+    <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U)
+      [Netscape]">
+    <meta name="Author" content="Roland Rashleigh-Berry">
+    <meta name="KeyWords" content="User Guide to %lstattrib">
+    <title>User Guide to %lstattrib</title>
+  </head>
+  <body alink="#FF0080" bgcolor="#C0C0FF" link="#0000FF" text="#000000"
+    vlink="#800080">
+    <center>
+      <h1>
+        User Guide to %lstattrib</h1>
+    </center>
+    <b>Last updated: 28 Feb 2014</b>
+    <h2>
+      Introduction</h2>
+    The %lstattrib macro was written as a tool for use in a data pooling
+    exercise.
+    Its purpose was to list the full attributes of a correctly
+    structured dataset
+    to the log in a form that could be copied and pasted from the log
+    and emailed
+    to programmers who could then use the code in a final step to apply
+    the
+    correct attributes to the dataset(s) they were building. Then when
+    all
+    these datasets were brought together, the structure and attributes
+    of the
+    collection of these datasets would be correct.
+    <p>Correct attributes includes keeping only the required variables,
+      making
+      sure the variables were in the correct order with the correct
+      lengths and
+      making sure all the correct formats, informats and variable labels
+      were
+      assigned.
+    </p>
+    <p>Some programmers reading this might think this is easy because
+      the characteristics
+      of the first dataset in the list of datasets being "SET"ted
+      together will
+      pass on the attributes to all the following datasets.
+      Unfortunately, this
+      is only partly true. If all variable characteristics are assigned
+      in the
+      first dataset then these will be assigned to the other datasets
+      but if
+      some attributes are&nbsp; intentionally left unassigned, such as
+      labels,
+      formats and informats, then these will be picked up from the first
+      following
+      dataset where these are given a value. And if the later datasets
+      contain
+      variables that do not exist in the first dataset then these
+      variables will
+      be added in the accumulated dataset. These extra variables might
+      be the
+      misspelled name of valid variables. In a pooling exercise, with
+      data coming
+      from many sources and where there are many variables, there is a
+      lot of
+      room for errors that will cause an error in the final structure.
+      Hence,
+      a tool is required to help make sure that all datasets being
+      pooled have
+      the same correct structure.
+    </p>
+    <p>The macro can be linked to <a
+        href="Spectre/utilmacros/lstattrib.sas" target="_blank">here</a>.
+    </p>
+    <h2>
+      The Evolution of %lstattrib</h2>
+    As stated in the above section, the tool was meant to be used
+    interactively.
+    The macro is run on a dataset which you are sure is fully correct,
+    it writes
+    the structure to the log, then you copy and paste what is written to
+    the
+    log and email it to the programmers. But the tool is interactive and
+    can
+    not be used programmatically. In the end, the macro needed to be
+    used programmatically
+    so many enhancements were made to the macro to allow this. To
+    understand
+    the macro and to know how to use it, we will need to retrace its
+    usage
+    from the way it used to work interactively through to the way it can
+    be
+    used programmatically. For programmatic use, a full User Guide is
+    required
+    which is the subject of this page. But the User Guide will only make
+    sense
+    if we go through the evolution of the macro.
+    <h2>
+      The Beginnings</h2>
+    Here we see the macro being used to list the contents of
+    sashelp.class
+    to the log.&nbsp; The macro was enhanced from the earliest version
+    to add
+    code to initialize all the variables. It now does this by default.
+    So to
+    reconstruct how the macro would have originally worked I have to
+    tell it
+    not to create the initialization code by setting the parameter<b>
+      init=no</b>.
+    The original version of the macro did not have this parameter.
+    <p>You will see that the log output is neatly indented so that it
+      can be
+      copied and pasted as code. In the top code line you can see it has
+      found
+      that the dataset has a label 'Student Data' so it assign that. The
+      LENGTH
+      statement makes sure the variables are in the correct order with
+      the correct
+      length. Where the list of variables flows onto multiple lines, the
+      macro
+      will structure the list in a pleasing way.
+    </p>
+    <p>The SET statement can be turned into a merge statement if
+      required.
+      This is where the input data is defined. It needs to go after the
+      LENGTH
+      statement and before where the formats and informats get cancelled
+      out.
+    </p>
+    <p>The attributes are assigned to the variables in alphabetical
+      order,
+      not the variable position order, to make it easier to find the
+      variable
+      in the list. If there are formats and informats then these will be
+      displayed
+      in a pleasing layout.
+    </p>
+    <p>Lastly, the KEEP list names only those variables that were in
+      sashelp.class
+      so that if extra variables were introduced in the SET or MERGE
+      then these
+      extra variables will not be kept. Again, this is in alphabetical
+      order
+      to make it easier to find variable names. It is the LENGTH
+      statement that
+      defines the order of the variables.
+      <br>
+      &nbsp;
+      <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+        <tbody>
+          <tr>
+            <td><tt>12738&nbsp; %lstattrib(sashelp.class,init=no);</tt>
+              <p><tt>******&nbsp; Attributes obtained from
+                  sashelp.class&nbsp; ******;</tt>
+                <br>
+                <tt>DATA xxxxxx(label='Student Data');</tt>
+                <br>
+                <tt>&nbsp; *- The order of the variables in the
+                  following LENGTH statement
+                  matches -;</tt>
+                <br>
+                <tt>&nbsp; *- the variable order in the original dataset
+                  so do not
+                  change.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  -;</tt>
+                <br>
+                <tt>&nbsp; LENGTH NAME $ 8 SEX $ 1 AGE 8 HEIGHT 8 WEIGHT
+                  8</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+              </p>
+              <p><tt>&nbsp; *- The MERGE or SET statement for the input
+                  dataset(s) should
+                  go here. -;</tt>
+                <br>
+                <tt>&nbsp; SET yyyyyy;</tt>
+              </p>
+              <p><tt>&nbsp; *- Cancel existing formats and informats in
+                  the input dataset(s)
+                  -;</tt>
+                <br>
+                <tt>&nbsp; FORMAT&nbsp;&nbsp; _all_ ;</tt>
+                <br>
+                <tt>&nbsp; INFORMAT _all_ ;</tt>
+              </p>
+              <p><tt>&nbsp; *- Assign output variable attributes -;</tt>
+                <br>
+                <tt>&nbsp; ATTRIB</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; AGE&nbsp;&nbsp;&nbsp; label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; HEIGHT label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; NAME&nbsp;&nbsp; label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; SEX&nbsp;&nbsp;&nbsp; label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; WEIGHT label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; ;</tt>
+              </p>
+              <p><tt>&nbsp; *- KEEP statement for the variables listed
+                  above -;</tt>
+                <br>
+                <tt>&nbsp; KEEP AGE HEIGHT NAME SEX WEIGHT</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+                <br>
+                <tt>RUN;</tt></p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </p>
+    <h2>
+      The Initialization Code</h2>
+    The next enhancement the macro received was for it to also create
+    initialization
+    code and this was made to be the default. The reason this was done
+    was
+    because it became a requirement to populate the variables and not
+    just
+    assume they were already in the input dataset(s). There might be a
+    lot
+    of these variables and if so then there is a chance of variable
+    names being
+    misspelled or numeric variables being given character values and
+    vice versa.
+    So the macro by default will list out all these variables and
+    initialize
+    them with a space or a missing value depending on whether they are
+    numeric
+    or character variables. The order used is the order in the output
+    dataset
+    as defined in the LENGTH statement. The reason for using this order
+    if
+    because "decodes" of variables often follow the coded form so it is
+    better
+    and more logical if these are kept in variable order.
+    <br>
+    &nbsp;
+    <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+      <tbody>
+        <tr>
+          <td><tt>12739&nbsp; %lstattrib(sashelp.class);</tt>
+            <p><tt>******&nbsp; Attributes obtained from
+                sashelp.class&nbsp; ******;</tt>
+              <br>
+              <tt>DATA xxxxxx(label='Student Data');</tt>
+              <br>
+              <tt>&nbsp; *- The order of the variables in the following
+                LENGTH statement
+                matches -;</tt>
+              <br>
+              <tt>&nbsp; *- the variable order in the original dataset
+                so do not
+                change.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                -;</tt>
+              <br>
+              <tt>&nbsp; LENGTH NAME $ 8 SEX $ 1 AGE 8 HEIGHT 8 WEIGHT 8</tt>
+              <br>
+              <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+            </p>
+            <p><tt>&nbsp; *- The MERGE or SET statement for the input
+                dataset(s) should
+                go here. -;</tt>
+              <br>
+              <tt>&nbsp; SET yyyyyy;</tt>
+            </p>
+            <p><tt>&nbsp; *- Overwrite the following missing values with
+                what you are
+                populating the&nbsp; -;</tt>
+              <br>
+              <tt>&nbsp; *- variables with. You may have to change the
+                order of the
+                variables where&nbsp; -;</tt>
+              <br>
+              <tt>&nbsp; *- there are dependencies such that the source
+                variable
+                is populated first. -;</tt>
+              <br>
+              <tt>&nbsp; *- If you follow this method then when you get
+                notes in
+                the log about&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+              <br>
+              <tt>&nbsp; *- uninitialised variables you will know that
+                you are trying
+                to populate a&nbsp; -;</tt>
+              <br>
+              <tt>&nbsp; *- variable with another variable that does not
+                exist. You
+                also avoid the&nbsp;&nbsp; -;</tt>
+              <br>
+              <tt>&nbsp; *- problem of spelling a variable name
+                incorrectly when
+                you assign a value&nbsp; -;</tt>
+              <br>
+              <tt>&nbsp; *- to it which can easily happen if there are a
+                large number
+                of variables.&nbsp; -;</tt>
+            </p>
+            <p><tt>&nbsp; NAME&nbsp;&nbsp; = ' ';</tt>
+              <br>
+              <tt>&nbsp; SEX&nbsp;&nbsp;&nbsp; = ' ';</tt>
+              <br>
+              <tt>&nbsp; AGE&nbsp;&nbsp;&nbsp; = .&nbsp; ;</tt>
+              <br>
+              <tt>&nbsp; HEIGHT = .&nbsp; ;</tt>
+              <br>
+              <tt>&nbsp; WEIGHT = .&nbsp; ;</tt>
+            </p>
+            <p><tt>&nbsp; *- Cancel existing formats and informats in
+                the input dataset(s)
+                -;</tt>
+              <br>
+              <tt>&nbsp; FORMAT&nbsp;&nbsp; _all_ ;</tt>
+              <br>
+              <tt>&nbsp; INFORMAT _all_ ;</tt>
+            </p>
+            <p><tt>&nbsp; *- Assign output variable attributes -;</tt>
+              <br>
+              <tt>&nbsp; ATTRIB</tt>
+              <br>
+              <tt>&nbsp;&nbsp;&nbsp; AGE&nbsp;&nbsp;&nbsp; label=" "</tt>
+              <br>
+              <tt>&nbsp;&nbsp;&nbsp; HEIGHT label=" "</tt>
+              <br>
+              <tt>&nbsp;&nbsp;&nbsp; NAME&nbsp;&nbsp; label=" "</tt>
+              <br>
+              <tt>&nbsp;&nbsp;&nbsp; SEX&nbsp;&nbsp;&nbsp; label=" "</tt>
+              <br>
+              <tt>&nbsp;&nbsp;&nbsp; WEIGHT label=" "</tt>
+              <br>
+              <tt>&nbsp;&nbsp;&nbsp; ;</tt>
+            </p>
+            <p><tt>&nbsp; *- KEEP statement for the variables listed
+                above -;</tt>
+              <br>
+              <tt>&nbsp; KEEP AGE HEIGHT NAME SEX WEIGHT</tt>
+              <br>
+              <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+              <br>
+              <tt>RUN;</tt></p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>
+      A Reminder Why we Need this Tool</h2>
+    Before we get into the topic of using the macro programmatically I
+    would
+    like to remind you why we need such a tool. Although the
+    characteristics
+    of the first dataset, where datasets are being SET'ted together, get
+    passed
+    onto the later datasets, then where attributes are not assigned, it
+    will
+    pick these attributes up from later datasets where they are
+    assigned. Also,
+    if variables are introduced in later datasets that were not there in
+    the
+    first datasets then these will be added to the resulting output
+    dataset.
+    These new variables might be an accidental misspelling of a valid
+    variable.
+    Only a tool such as %lstattrib can avoid this from happening.
+    <p>Assume that %lstattrib is giving you the correct contents of a
+      dataset
+      and see what happens when we concatenate the three test datasets.
+      <br>
+      &nbsp;
+      <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+        <tbody>
+          <tr>
+            <td><tt>12740&nbsp; *- first template dataset with hardly
+                any attributes
+                defined -;</tt>
+              <br>
+              <tt>12741&nbsp; data test1;</tt>
+              <br>
+              <tt>12742&nbsp; length str $ 2;</tt>
+              <br>
+              <tt>12743&nbsp; x=1;</tt>
+              <br>
+              <tt>12744&nbsp; str="aa";</tt>
+              <br>
+              <tt>12745&nbsp; run;</tt>
+              <p><tt>NOTE: The data set WORK.TEST1 has 1 observations
+                  and 2 variables.</tt>
+                <br>
+                <tt>NOTE: DATA statement used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.00 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.00 seconds</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>12746</tt>
+                <br>
+                <tt>12747</tt>
+                <br>
+                <tt>12748&nbsp; *- length of "x" changed to 4 and given
+                  a format -;</tt>
+                <br>
+                <tt>12749&nbsp; data test2;</tt>
+                <br>
+                <tt>12750&nbsp; length x 4;</tt>
+                <br>
+                <tt>12751&nbsp; x=2;</tt>
+                <br>
+                <tt>12752&nbsp; format x 2.;</tt>
+                <br>
+                <tt>12753&nbsp; run;</tt>
+              </p>
+              <p><tt>NOTE: The data set WORK.TEST2 has 1 observations
+                  and 1 variables.</tt>
+                <br>
+                <tt>NOTE: DATA statement used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.00 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.00 seconds</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>12754</tt>
+                <br>
+                <tt>12755</tt>
+                <br>
+                <tt>12756&nbsp; *- length of "str" changed to 6, -;</tt>
+                <br>
+                <tt>12757&nbsp; *- "str" misspelled at "srt" -;</tt>
+                <br>
+                <tt>12758&nbsp; *- and "x" given a label. -;</tt>
+                <br>
+                <tt>12759&nbsp; data test3;</tt>
+                <br>
+                <tt>12760&nbsp; length x 6 str $ 8;</tt>
+                <br>
+                <tt>12761&nbsp; x=3;</tt>
+                <br>
+                <tt>12762&nbsp; srt="ccc";</tt>
+                <br>
+                <tt>12763&nbsp; format x 6.;</tt>
+                <br>
+                <tt>12764&nbsp; Label x="This is the X label";</tt>
+                <br>
+                <tt>12765&nbsp; run;</tt>
+              </p>
+              <p><tt>NOTE: Variable STR is uninitialized.</tt>
+                <br>
+                <tt>NOTE: The data set WORK.TEST3 has 1 observations and
+                  3 variables.</tt>
+                <br>
+                <tt>NOTE: DATA statement used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.00 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.00 seconds</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>12766</tt>
+                <br>
+                <tt>12767</tt>
+                <br>
+                <tt>12768&nbsp; *- "set" the three test dataset together
+                  -;</tt>
+                <br>
+                <tt>12769&nbsp; data test;</tt>
+                <br>
+                <tt>12770&nbsp; set test1 test2 test3;</tt>
+                <br>
+                <tt>12771&nbsp; run;</tt>
+              </p>
+              <p><tt>WARNING: Multiple lengths were specified for the
+                  variable STR by
+                  input data set(s). This may cause truncation of data.</tt>
+                <br>
+                <tt>NOTE: There were 1 observations read from the data
+                  set WORK.TEST1.</tt>
+                <br>
+                <tt>NOTE: There were 1 observations read from the data
+                  set WORK.TEST2.</tt>
+                <br>
+                <tt>NOTE: There were 1 observations read from the data
+                  set WORK.TEST3.</tt>
+                <br>
+                <tt>NOTE: The data set WORK.TEST has 3 observations and
+                  3 variables.</tt>
+                <br>
+                <tt>NOTE: DATA statement used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.00 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.00 seconds</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>12772</tt>
+                <br>
+                <tt>12773&nbsp; *- display the attributes of the
+                  combined dataset -;</tt>
+                <br>
+                <tt>12774&nbsp; %lstattrib(test,init=no);</tt>
+              </p>
+              <p><tt>******&nbsp; Attributes obtained from test&nbsp;
+                  ******;</tt>
+                <br>
+                <tt>DATA xxxxxx;</tt>
+                <br>
+                <tt>&nbsp; *- The order of the variables in the
+                  following LENGTH statement
+                  matches -;</tt>
+                <br>
+                <tt>&nbsp; *- the variable order in the original dataset
+                  so do not
+                  change.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  -;</tt>
+                <br>
+                <tt>&nbsp; LENGTH STR $ 2 X 8 SRT $ 3</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+              </p>
+              <p><tt>&nbsp; *- The MERGE or SET statement for the input
+                  dataset(s) should
+                  go here. -;</tt>
+                <br>
+                <tt>&nbsp; SET yyyyyy;</tt>
+              </p>
+              <p><tt>&nbsp; *- Cancel existing formats and informats in
+                  the input dataset(s)
+                  -;</tt>
+                <br>
+                <tt>&nbsp; FORMAT&nbsp;&nbsp; _all_ ;</tt>
+                <br>
+                <tt>&nbsp; INFORMAT _all_ ;</tt>
+              </p>
+              <p><tt>&nbsp; *- Assign output variable attributes -;</tt>
+                <br>
+                <tt>&nbsp; ATTRIB</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;
+                  SRT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;
+                  STR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; X&nbsp;&nbsp; format=2.
+                  label="This is the X
+                  label"</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; ;</tt>
+              </p>
+              <p><tt>&nbsp; *- KEEP statement for the variables listed
+                  above -;</tt>
+                <br>
+                <tt>&nbsp; KEEP SRT STR X</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+                <br>
+                <tt>RUN;</tt></p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </p>
+    <p>If we look at the above then we can see what has gone wrong.
+      Although
+      the variable "X" was intended to have no format or label assigned,
+      it has
+      picked up the format from the second dataset and the label from
+      the third
+      dataset.
+    </p>
+    <p>The lengths have been set correctly according to the first
+      dataset.
+      The length for "str" has been used and even though the length of
+      the numeric
+      variable was not set in the first dataset, its default value of 8
+      has been
+      used.
+    </p>
+    <p>There was a misspelling of the variable "str" as "srt" and this
+      has
+      been added to the output dataset.
+    </p>
+    <p>You can see from the above how easy it is for incorrect
+      attributes to
+      the introduced. If you imagine datasets being pooled from many
+      sources
+      with many variables then inconsistencies become likely and the
+      only way
+      to avoid this is to use a tool to help make sure the source
+      datasets all
+      have the same correct structure.
+    </p>
+    <h2>
+      Setting Out Down the Path of Programmatic Use</h2>
+    As stated near the beginning, %lstattrib was intended purely as an
+    interactive
+    tool to write sas code to the log that would ensure datasets had the
+    correct
+    structure. This code was then intended to be emailed to the other
+    programmers
+    to use so that the datasets they were pooling all had the correct
+    structure.
+    But then the need to use the tool in a programmatic way arose and so
+    the
+    macro needed to be enhanced to do this. The first thing to be
+    changed was
+    to enable the output to be routed to a location other than the log.
+    The
+    logfile= parameter was introduced as the first step on this path. It
+    is
+    an easy thing to do to route it to print output like this:
+    <br>
+    &nbsp;
+    <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+      <tbody>
+        <tr>
+          <td>
+            <br>
+            <tt>options nodate nonumber;</tt>
+            <br>
+            <tt>title1;</tt>
+            <br>
+            <tt>footnote1;</tt>
+            <p><tt>%lstattrib(sashelp.class,logfile=print);</tt>
+              <br>
+              &nbsp;</p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>And in the output window we see this:
+      <br>
+      &nbsp;
+      <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+        <tbody>
+          <tr>
+            <td>
+              <br>
+              <tt>******&nbsp; Attributes obtained from
+                sashelp.class&nbsp; ******;</tt>
+              <br>
+              <tt>DATA xxxxxx(label='Student Data');</tt>
+              <br>
+              <tt>&nbsp; *- The order of the variables in the following
+                LENGTH statement
+                matches -;</tt>
+              <br>
+              <tt>&nbsp; *- the variable order in the original dataset
+                so do not
+                change.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                -;</tt>
+              <br>
+              <tt>&nbsp; LENGTH NAME $ 8 SEX $ 1 AGE 8 HEIGHT 8 WEIGHT 8</tt>
+              <br>
+              <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+              <p><tt>&nbsp; *- The MERGE or SET statement for the input
+                  dataset(s) should
+                  go here. -;</tt>
+                <br>
+                <tt>&nbsp; SET yyyyyy;</tt>
+              </p>
+              <p><tt>&nbsp; *- Overwrite the following missing values
+                  with what you are
+                  populating the&nbsp; -;</tt>
+                <br>
+                <tt>&nbsp; *- variables with. You may have to change the
+                  order of the
+                  variables where&nbsp; -;</tt>
+                <br>
+                <tt>&nbsp; *- there are dependencies such that the
+                  source variable
+                  is populated first. -;</tt>
+                <br>
+                <tt>&nbsp; *- If you follow this method then when you
+                  get notes in
+                  the log about&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+                <br>
+                <tt>&nbsp; *- uninitialised variables you will know that
+                  you are trying
+                  to populate a&nbsp; -;</tt>
+                <br>
+                <tt>&nbsp; *- variable with another variable that does
+                  not exist. You
+                  also avoid the&nbsp;&nbsp; -;</tt>
+                <br>
+                <tt>&nbsp; *- problem of spelling a variable name
+                  incorrectly when
+                  you assign a value&nbsp; -;</tt>
+                <br>
+                <tt>&nbsp; *- to it which can easily happen if there are
+                  a large number
+                  of variables.&nbsp; -;</tt>
+              </p>
+              <p><tt>&nbsp; NAME&nbsp;&nbsp; = ' ';</tt>
+                <br>
+                <tt>&nbsp; SEX&nbsp;&nbsp;&nbsp; = ' ';</tt>
+                <br>
+                <tt>&nbsp; AGE&nbsp;&nbsp;&nbsp; = .&nbsp; ;</tt>
+                <br>
+                <tt>&nbsp; HEIGHT = .&nbsp; ;</tt>
+                <br>
+                <tt>&nbsp; WEIGHT = .&nbsp; ;</tt>
+              </p>
+              <p><tt>&nbsp; *- Cancel existing formats and informats in
+                  the input dataset(s)
+                  -;</tt>
+                <br>
+                <tt>&nbsp; FORMAT&nbsp;&nbsp; _all_ ;</tt>
+                <br>
+                <tt>&nbsp; INFORMAT _all_ ;</tt>
+              </p>
+              <p><tt>&nbsp; *- Assign output variable attributes -;</tt>
+                <br>
+                <tt>&nbsp; ATTRIB</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; AGE&nbsp;&nbsp;&nbsp; label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; HEIGHT label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; NAME&nbsp;&nbsp; label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; SEX&nbsp;&nbsp;&nbsp; label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; WEIGHT label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; ;</tt>
+              </p>
+              <p><tt>&nbsp; *- KEEP statement for the variables listed
+                  above -;</tt>
+                <br>
+                <tt>&nbsp; KEEP AGE HEIGHT NAME SEX WEIGHT</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+                <br>
+                <tt>RUN;</tt>
+                <br>
+                &nbsp;</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </p>
+    <p>If we are going to make this tool programmatic then we will need
+      to
+      at least override the "xxxxxx" and "yyyyyy" dataset names. There
+      were two
+      parameters added to allow you to do this. They are dsset= for the
+      dataset
+      name in the SET statement to override the "yyyyyy" and dsout= for
+      the output
+      dataset to override "xxxxxx". Here is the same call again with
+      these two
+      dataset names overridden.
+    </p>
+    <p>This time we do not want the initialization code so we set <b>init=no</b>.
+      <br>
+      &nbsp;
+      <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+        <tbody>
+          <tr>
+            <td>
+              <br>
+              <tt>options nodate nonumber;</tt>
+              <br>
+              <tt>title1;</tt>
+              <br>
+              <tt>footnote1;</tt>
+              <p><tt>%lstattrib(sashelp.class,logfile=print,init=no,</tt>
+                <br>
+                <tt>dsset=sashelp.class,dsout=myclass);</tt>
+                <br>
+                &nbsp;</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </p>
+    <p>And now for the output in the output window. Take a look.
+      Syntactically
+      it is correct. We should be able to run that code somehow.
+      <br>
+      &nbsp;
+      <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+        <tbody>
+          <tr>
+            <td>
+              <br>
+              <tt>******&nbsp; Attributes obtained from
+                sashelp.class&nbsp; ******;</tt>
+              <br>
+              <tt>DATA myclass(label='Student Data');</tt>
+              <br>
+              <tt>&nbsp; *- The order of the variables in the following
+                LENGTH statement
+                matches -;</tt>
+              <br>
+              <tt>&nbsp; *- the variable order in the original dataset
+                so do not
+                change.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                -;</tt>
+              <br>
+              <tt>&nbsp; LENGTH NAME $ 8 SEX $ 1 AGE 8 HEIGHT 8 WEIGHT 8</tt>
+              <br>
+              <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+              <p><tt>&nbsp; *- The MERGE or SET statement for the input
+                  dataset(s) should
+                  go here. -;</tt>
+                <br>
+                <tt>&nbsp; SET sashelp.class;</tt>
+              </p>
+              <p><tt>&nbsp; *- Cancel existing formats and informats in
+                  the input dataset(s)
+                  -;</tt>
+                <br>
+                <tt>&nbsp; FORMAT&nbsp;&nbsp; _all_ ;</tt>
+                <br>
+                <tt>&nbsp; INFORMAT _all_ ;</tt>
+              </p>
+              <p><tt>&nbsp; *- Assign output variable attributes -;</tt>
+                <br>
+                <tt>&nbsp; ATTRIB</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; AGE&nbsp;&nbsp;&nbsp; label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; HEIGHT label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; NAME&nbsp;&nbsp; label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; SEX&nbsp;&nbsp;&nbsp; label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; WEIGHT label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; ;</tt>
+              </p>
+              <p><tt>&nbsp; *- KEEP statement for the variables listed
+                  above -;</tt>
+                <br>
+                <tt>&nbsp; KEEP AGE HEIGHT NAME SEX WEIGHT</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+                <br>
+                <tt>RUN;</tt>
+                <br>
+                &nbsp;</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </p>
+    <p>So how can we run the above code? It should work and give us a
+      dataset
+      "myclass" that is a copy of "sashelp.class" if we can do this.
+    </p>
+    <p>What we can do is to redirect logfile= to a temporary flat file
+      that
+      contains the generated sas code for creating the dataset and to
+      "%include"
+      it and then this code will run in our sas session.
+      <br>
+      &nbsp;
+      <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+        <tbody>
+          <tr>
+            <td>
+              <br>
+              <tt>filename codegen TEMP;</tt>
+              <p><tt>%lstattrib(sashelp.class,logfile=codegen,init=no,</tt>
+                <br>
+                <tt>dsset=sashelp.class,dsout=myclass);</tt>
+              </p>
+              <p><tt>%include codegen / source;</tt>
+              </p>
+              <p><tt>filename codegen CLEAR;</tt>
+                <br>
+                &nbsp;</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </p>
+    <p>Here is what gets written to the log:
+      <br>
+      &nbsp;
+      <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+        <tbody>
+          <tr>
+            <td><tt>12898</tt>
+              <br>
+              <tt>12899&nbsp; filename codegen TEMP;</tt>
+              <br>
+              <tt>12900</tt>
+              <br>
+              <tt>12901&nbsp;
+                %lstattrib(sashelp.class,logfile=codegen,init=no,</tt>
+              <br>
+              <tt>12902&nbsp; dsset=sashelp.class,dsout=myclass);</tt>
+              <p><tt>12903</tt>
+                <br>
+                <tt>12904&nbsp; %include codegen / source;</tt>
+                <br>
+                <tt>NOTE: %INCLUDE (level 1) file CODEGEN is file
+                  E:\DATA\MedSas\SASWork\_TD10860\#LN00321.</tt>
+                <br>
+                <tt>12905 +</tt>
+                <br>
+                <tt>12906 +******&nbsp; Attributes obtained from
+                  sashelp.class&nbsp;
+                  ******;</tt>
+                <br>
+                <tt>12907 +DATA myclass(label='Student Data');</tt>
+                <br>
+                <tt>12908 +&nbsp; *- The order of the variables in the
+                  following LENGTH
+                  statement matches -;</tt>
+                <br>
+                <tt>12909 +&nbsp; *- the variable order in the original
+                  dataset so
+                  do not
+                  change.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  -;</tt>
+                <br>
+                <tt>12910 +&nbsp; LENGTH NAME $ 8 SEX $ 1 AGE 8 HEIGHT 8
+                  WEIGHT 8</tt>
+                <br>
+                <tt>12911
+                  +&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+                <br>
+                <tt>12912 +</tt>
+                <br>
+                <tt>12913 +&nbsp; *- The MERGE or SET statement for the
+                  input dataset(s)
+                  should go here. -;</tt>
+                <br>
+                <tt>12914 +&nbsp; SET sashelp.class;</tt>
+                <br>
+                <tt>12915 +</tt>
+                <br>
+                <tt>12916 +&nbsp; *- Cancel existing formats and
+                  informats in the input
+                  dataset(s) -;</tt>
+                <br>
+                <tt>12917 +&nbsp; FORMAT&nbsp;&nbsp; _all_ ;</tt>
+                <br>
+                <tt>12918 +&nbsp; INFORMAT _all_ ;</tt>
+                <br>
+                <tt>12919 +</tt>
+                <br>
+                <tt>12920 +&nbsp; *- Assign output variable attributes
+                  -;</tt>
+                <br>
+                <tt>12921 +&nbsp; ATTRIB</tt>
+                <br>
+                <tt>12922 +&nbsp;&nbsp;&nbsp; AGE&nbsp;&nbsp;&nbsp;
+                  label=" "</tt>
+                <br>
+                <tt>12923 +&nbsp;&nbsp;&nbsp; HEIGHT label=" "</tt>
+                <br>
+                <tt>12924 +&nbsp;&nbsp;&nbsp; NAME&nbsp;&nbsp; label=" "</tt>
+                <br>
+                <tt>12925 +&nbsp;&nbsp;&nbsp; SEX&nbsp;&nbsp;&nbsp;
+                  label=" "</tt>
+                <br>
+                <tt>12926 +&nbsp;&nbsp;&nbsp; WEIGHT label=" "</tt>
+                <br>
+                <tt>12927 +&nbsp;&nbsp;&nbsp; ;</tt>
+                <br>
+                <tt>12928 +</tt>
+                <br>
+                <tt>12929 +&nbsp; *- KEEP statement for the variables
+                  listed above
+                  -;</tt>
+                <br>
+                <tt>12930 +&nbsp; KEEP AGE HEIGHT NAME SEX WEIGHT</tt>
+                <br>
+                <tt>12931 +&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+                <br>
+                <tt>12932 +RUN;</tt>
+              </p>
+              <p><tt>NOTE: There were 19 observations read from the data
+                  set SASHELP.CLASS.</tt>
+                <br>
+                <tt>NOTE: The data set WORK.MYCLASS has 19 observations
+                  and 5 variables.</tt>
+                <br>
+                <tt>NOTE: DATA statement used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.00 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.00 seconds</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>NOTE: %INCLUDE (level 1) ending.</tt>
+                <br>
+                <tt>12933</tt>
+                <br>
+                <tt>12934&nbsp; filename codegen CLEAR;</tt>
+                <br>
+                <tt>NOTE: Fileref CODEGEN has been deassigned.</tt></p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </p>
+    <p>You can see from the log that when we "%include" the fileref then
+      it
+      has run the code for us and created the MYCLASS dataset that is a
+      copy
+      of SASHELP.CLASS . You can run this code yourself to convince
+      yourself
+      that it works.
+    </p>
+    <h2>
+      The Next Step Down the Path of Programmatic Use</h2>
+    Hopefully you can see that the above way of using %lstattrib, i.e.
+    writing
+    the generated code to a temporary flat file and to "%include" it
+    will run
+    the code. This is true programmatic use of the macro. But it is a
+    bit limited.
+    Suppose we wanted to MERGE two or more datasets together instead of
+    using
+    the SET statement. We can not do this using the dsset= parameter. So
+    there
+    are more parameters to allow us to do this. We can use lenfile=,
+    initfile=
+    and attrfile= to receive the LENGTH code, the initialization code
+    and attrfile
+    will contain the code for cancelling the formats and informats right
+    down
+    to the final KEEP statement.
+    <p>As for the input datasets and output dataset then we can code
+      this ourselves.
+      That way we are free from any limitations of the macro.
+    </p>
+    <p>Note that in the code below we have no need to redirect the
+      initialization
+      code as we have set init=no. By setting dsset= to a null then we
+      prevent
+      the macro from writing the SET statement.
+      <br>
+      &nbsp;
+      <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+        <tbody>
+          <tr>
+            <td>
+              <br>
+              <tt>filename lengen&nbsp; TEMP;</tt>
+              <br>
+              <tt>filename attrgen TEMP;</tt>
+              <br>
+              &nbsp;
+              <p><tt>%lstattrib(sashelp.class,dsset=,init=no,</tt>
+                <br>
+                <tt>lenfile=lengen,attrfile=attrgen);</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>data myclass;</tt>
+                <br>
+                <tt>&nbsp; %include lengen / source;</tt>
+                <br>
+                <tt>&nbsp; set sashelp.class;</tt>
+                <br>
+                <tt>&nbsp; %include attrgen / source;</tt>
+                <br>
+                <tt>run;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>filename lengen&nbsp; CLEAR;</tt>
+                <br>
+                <tt>filename attrgen CLEAR;</tt>
+                <br>
+                &nbsp;</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </p>
+    <p>And here is what gets written to the log as we expect:
+      <br>
+      &nbsp;
+      <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+        <tbody>
+          <tr>
+            <td><tt>13213</tt>
+              <br>
+              <tt>13214&nbsp; filename lengen&nbsp; TEMP;</tt>
+              <br>
+              <tt>13215&nbsp; filename attrgen TEMP;</tt>
+              <br>
+              <tt>13216</tt>
+              <br>
+              <tt>13217</tt>
+              <br>
+              <tt>13218&nbsp; %lstattrib(sashelp.class,dsset=,init=no,</tt>
+              <br>
+              <tt>13219&nbsp; lenfile=lengen,attrfile=attrgen);</tt>
+              <p><tt>13220</tt>
+                <br>
+                <tt>13221</tt>
+                <br>
+                <tt>13222&nbsp; data myclass;</tt>
+                <br>
+                <tt>13223&nbsp;&nbsp;&nbsp; %include lengen / source;</tt>
+                <br>
+                <tt>NOTE: %INCLUDE (level 1) file LENGEN is file
+                  E:\DATA\MedSas\SASWork\_TD10860\#LN00342.</tt>
+                <br>
+                <tt>13224 +&nbsp; LENGTH NAME $ 8 SEX $ 1 AGE 8 HEIGHT 8
+                  WEIGHT 8</tt>
+                <br>
+                <tt>13225
+                  +&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+                <br>
+                <tt>NOTE: %INCLUDE (level 1) ending.</tt>
+                <br>
+                <tt>13226&nbsp;&nbsp;&nbsp; set sashelp.class;</tt>
+                <br>
+                <tt>13227&nbsp;&nbsp;&nbsp; %include attrgen / source;</tt>
+                <br>
+                <tt>NOTE: %INCLUDE (level 1) file ATTRGEN is file
+                  E:\DATA\MedSas\SASWork\_TD10860\#LN00343.</tt>
+                <br>
+                <tt>13228 +&nbsp; *- Cancel existing formats and
+                  informats in the input
+                  dataset(s) -;</tt>
+                <br>
+                <tt>13229 +&nbsp; FORMAT&nbsp;&nbsp; _all_ ;</tt>
+                <br>
+                <tt>13230 +&nbsp; INFORMAT _all_ ;</tt>
+                <br>
+                <tt>13231 +</tt>
+                <br>
+                <tt>13232 +&nbsp; *- Assign output variable attributes
+                  -;</tt>
+                <br>
+                <tt>13233 +&nbsp; ATTRIB</tt>
+                <br>
+                <tt>13234 +&nbsp;&nbsp;&nbsp; AGE&nbsp;&nbsp;&nbsp;
+                  label=" "</tt>
+                <br>
+                <tt>13235 +&nbsp;&nbsp;&nbsp; HEIGHT label=" "</tt>
+                <br>
+                <tt>13236 +&nbsp;&nbsp;&nbsp; NAME&nbsp;&nbsp; label=" "</tt>
+                <br>
+                <tt>13237 +&nbsp;&nbsp;&nbsp; SEX&nbsp;&nbsp;&nbsp;
+                  label=" "</tt>
+                <br>
+                <tt>13238 +&nbsp;&nbsp;&nbsp; WEIGHT label=" "</tt>
+                <br>
+                <tt>13239 +&nbsp;&nbsp;&nbsp; ;</tt>
+                <br>
+                <tt>13240 +</tt>
+                <br>
+                <tt>13241 +&nbsp; *- KEEP statement for the variables
+                  listed above
+                  -;</tt>
+                <br>
+                <tt>13242 +&nbsp; KEEP AGE HEIGHT NAME SEX WEIGHT</tt>
+                <br>
+                <tt>13243 +&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+                <br>
+                <tt>NOTE: %INCLUDE (level 1) ending.</tt>
+                <br>
+                <tt>13244&nbsp; run;</tt>
+              </p>
+              <p><tt>NOTE: There were 19 observations read from the data
+                  set SASHELP.CLASS.</tt>
+                <br>
+                <tt>NOTE: The data set WORK.MYCLASS has 19 observations
+                  and 5 variables.</tt>
+                <br>
+                <tt>NOTE: DATA statement used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.00 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.00 seconds</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>13245</tt>
+                <br>
+                <tt>13246</tt>
+                <br>
+                <tt>13247&nbsp; filename lengen&nbsp; CLEAR;</tt>
+                <br>
+                <tt>NOTE: Fileref LENGEN has been deassigned.</tt>
+                <br>
+                <tt>13248&nbsp; filename attrgen CLEAR;</tt>
+                <br>
+                <tt>NOTE: Fileref ATTRGEN has been deassigned</tt></p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </p>
+    <h2>
+      Fixing your dataset</h2>
+    If you have generated code for the sas lengths and attributes, as
+    was done
+    in the example in the previous section, then you could keep the code
+    to
+    apply a final fix to your data if you have been doing some
+    manipulation
+    of the dataset and you want to make sure that the characteristics of
+    the
+    dataset have not changed in any way. What follows is a real life
+    example
+    from a program I have been working on where I have to plug some
+    missing
+    values such as adding a sequence number and populating some variable
+    values
+    and I want to be 100% sure that the data is left in the correct
+    structure.
+    I have kept the generated code for lengths and attrributes and I
+    reapply
+    it to the dataset when I write it out to the target library.
+    <br>
+    &nbsp;
+    <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+      <tbody>
+        <tr>
+          <td><tt></tt>
+            <br>
+            <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              /***************************************</tt>
+            <br>
+            <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              Fix any
+              problems due to data plugging</tt>
+            <br>
+            <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              ***************************************/</tt>
+            <br>
+            <tt>*- Reapply the correct lengths and variable
+              order&nbsp;&nbsp; -;</tt>
+            <br>
+            <tt>*- and reapply the correct attributes and KEEP list -;</tt>
+            <br>
+            <tt>*- so that any changes or additions due to
+              data&nbsp;&nbsp;&nbsp;&nbsp;
+              -;</tt>
+            <br>
+            <tt>*- plugging are corrected. Data finally written to&nbsp;
+              -;</tt>
+            <br>
+            <tt>*- TARGET library at this
+point.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-;</tt>
+            <br>
+            <tt>data TARGET.&amp;target;</tt>
+            <br>
+            <tt>&nbsp; %include lencode;</tt>
+            <br>
+            <tt>&nbsp; SET &amp;target;</tt>
+            <br>
+            <tt>&nbsp; %include attrcode;</tt>
+            <br>
+            <tt>run;</tt>
+            <br>
+            <tt></tt>&nbsp;</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>
+      Towards Being Metadata Driven</h2>
+    Up until now we have used the first positional parameter as the
+    source
+    of the correct dataset attributes. If you remember, that is how the
+    macro
+    first started out - as a tool to write the attributes of a correct
+    dataset
+    to the log where it could then be copied and emailed to programmers.
+    But
+    if we are going to use %lstattrib programmatically then there will
+    be times
+    that this correct dataset is not an actual dataset but rather a
+    description
+    of one that it held as data in a dataset (<b>I am using the term
+      "metadata"
+      in the sense that it is not purely "data about data" but also
+      includes
+      instructions on what to do with data</b>). The macro has a
+    parameter named
+    dsattr= where you can specify that it should use this dataset as the
+    source
+    of the attributes held <b>as data</b> in columns that are named "<b>name,
+length,
+      type, format, informat, label, varnum</b>". The structure has to
+    be the same as you would get from <b>DICTIONARY.COLUMNS</b> or <b>SASHELP.VCOLUMN</b>
+    and not the structure you get from "proc contents".
+    <p>The code below will use DICTIONARY.COLUMNS to give the structure
+      of
+      the SASHELP.CLASS dataset instead of using SASHELP.CLASS directly.
+      Output
+      will be written to the output window.
+    </p>
+    <p>For this example I am asking for the initialization code and
+      removing
+      the SET statement by setting dsset= to null. If this code is run
+      it will
+      give me a one observation dataset with missing values that has the
+      same
+      structure as SASHELP.CLASS.
+      <br>
+      &nbsp;
+      <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+        <tbody>
+          <tr>
+            <td>
+              <br>
+              <tt>options nodate nonumber;</tt>
+              <br>
+              <tt>title1;</tt>
+              <br>
+              <tt>footnote1;</tt>
+              <p><tt>PROC SQL NOPRINT;</tt>
+                <br>
+                <tt>&nbsp; create table classattr as</tt>
+                <br>
+                <tt>&nbsp; select * from DICTIONARY.COLUMNS</tt>
+                <br>
+                <tt>&nbsp; where libname="SASHELP" and memname="CLASS";</tt>
+                <br>
+                <tt>QUIT;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>%lstattrib(dsattr=classattr,logfile=print,init=yes,</tt>
+                <br>
+                <tt>dsset=,dsout=myclass);</tt>
+                <br>
+                &nbsp;</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </p>
+    <p>And here is the code written to the output window:
+      <br>
+      &nbsp;
+      <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+        <tbody>
+          <tr>
+            <td>
+              <br>
+              <tt>******&nbsp; Attributes obtained from classattr&nbsp;
+                ******;</tt>
+              <br>
+              <tt>DATA myclass;</tt>
+              <br>
+              <tt>&nbsp; *- The order of the variables in the following
+                LENGTH statement
+                matches -;</tt>
+              <br>
+              <tt>&nbsp; *- the variable order in the original dataset
+                so do not
+                change.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                -;</tt>
+              <br>
+              <tt>&nbsp; LENGTH NAME $ 8 SEX $ 1 AGE 8 HEIGHT 8 WEIGHT 8</tt>
+              <br>
+              <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+              <p><tt>&nbsp; *- Overwrite the following missing values
+                  with what you are
+                  populating the&nbsp; -;</tt>
+                <br>
+                <tt>&nbsp; *- variables with. You may have to change the
+                  order of the
+                  variables where&nbsp; -;</tt>
+                <br>
+                <tt>&nbsp; *- there are dependencies such that the
+                  source variable
+                  is populated first. -;</tt>
+                <br>
+                <tt>&nbsp; *- If you follow this method then when you
+                  get notes in
+                  the log about&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+                <br>
+                <tt>&nbsp; *- uninitialised variables you will know that
+                  you are trying
+                  to populate a&nbsp; -;</tt>
+                <br>
+                <tt>&nbsp; *- variable with another variable that does
+                  not exist. You
+                  also avoid the&nbsp;&nbsp; -;</tt>
+                <br>
+                <tt>&nbsp; *- problem of spelling a variable name
+                  incorrectly when
+                  you assign a value&nbsp; -;</tt>
+                <br>
+                <tt>&nbsp; *- to it which can easily happen if there are
+                  a large number
+                  of variables.&nbsp; -;</tt>
+              </p>
+              <p><tt>&nbsp; NAME&nbsp;&nbsp; = ' ';</tt>
+                <br>
+                <tt>&nbsp; SEX&nbsp;&nbsp;&nbsp; = ' ';</tt>
+                <br>
+                <tt>&nbsp; AGE&nbsp;&nbsp;&nbsp; = .&nbsp; ;</tt>
+                <br>
+                <tt>&nbsp; HEIGHT = .&nbsp; ;</tt>
+                <br>
+                <tt>&nbsp; WEIGHT = .&nbsp; ;</tt>
+              </p>
+              <p><tt>&nbsp; *- Cancel existing formats and informats in
+                  the input dataset(s)
+                  -;</tt>
+                <br>
+                <tt>&nbsp; FORMAT&nbsp;&nbsp; _all_ ;</tt>
+                <br>
+                <tt>&nbsp; INFORMAT _all_ ;</tt>
+              </p>
+              <p><tt>&nbsp; *- Assign output variable attributes -;</tt>
+                <br>
+                <tt>&nbsp; ATTRIB</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; AGE&nbsp;&nbsp;&nbsp; label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; HEIGHT label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; NAME&nbsp;&nbsp; label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; SEX&nbsp;&nbsp;&nbsp; label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; WEIGHT label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; ;</tt>
+              </p>
+              <p><tt>&nbsp; *- KEEP statement for the variables listed
+                  above -;</tt>
+                <br>
+                <tt>&nbsp; KEEP AGE HEIGHT NAME SEX WEIGHT</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+                <br>
+                <tt>RUN;</tt>
+                <br>
+                &nbsp;</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </p>
+    <h2>
+      The Namepref= Parameter</h2>
+    There is one last parameter to tell you about before this User Guide
+    is
+    complete. That is the <b>namepref=</b> parameter where you can
+    specify
+    a prefix for all the variable names. The reason you might want to
+    use this
+    is where there is a possibility of assigning variables values where
+    they
+    are dependent on variables in an input dataset that might possibly
+    have
+    the same name. I will explain further for this very important topic:
+    <p>Suppose you had gone down the "metadata driven" path and you are
+      using
+      data not purely in the sense of "data about data" but also
+      including the
+      sense of "instructions what to do with data". You have metadata to
+      tell
+      you what variables should be in what datasets and what their
+      attributes
+      should be. You also have metadata mapping information that tells
+      you how
+      to populate the variables in the dataset in terms of setting
+      contents or
+      deriving information from variables in an input dataset. Now
+      suppose you
+      were populating a <b>character</b> variable named "<b>gender</b>"
+      based
+      on a <b>numeric</b> "<b>gender</b>" variable in the input dataset
+      then
+      this would cause a syntax error. But by setting <b>namepref=</b>
+      to a value
+      you can avoid this situation. If you set <b>namepref=NEW_</b>
+      then if you
+      had a gender variable in your input dataset then there would be no
+      syntax
+      error because you would be populating the variable <b>NEW_GENDER</b>
+      with
+      the value instead of GENDER. And at the end of the data step, only
+      the
+      <b>NEW_</b>
+      variables would be kept so the "gender" variable in the input
+      dataset would
+      be dropped. Problem solved, except now all your variables begin
+      with "<b>NEW_</b>".
+      But it is an easy thing to drop that prefix in a later data step
+      for all
+      the variables.
+    </p>
+    <p>This topic is important enough for a thorough example on how to
+      use
+      it. Below is code from a previous example to create a MYCLASS
+      dataset except
+      now we will call it NEW_CLASS instead and prefix all the variables
+      with
+      NEW_ .
+      <br>
+      &nbsp;
+    </p>
+    <p>SASHELP.CLASS will be read but all the variable names will be
+      prefixed
+      with NEW_ in a "rename" clause using the macros <a
+        href="Spectre/utilmacros/editlist.sas" target="_blank">%editlist</a>
+      and <a href="Spectre/utilmacros/varlist.sas" target="_blank">%varlist</a>
+      (that you can find on this web site).
+      <br>
+      &nbsp;
+    </p>
+    <p>%lstattrib will be used to list the attributes of NEW_class to
+      the log.
+      <br>
+      &nbsp;
+    </p>
+    <p>The dataset NEW_class will be read in with a "rename" clause that
+      drops
+      the NEW_ prefix, again using the %editlist and %varlist macros
+      (that you
+      can find on this web site).
+      <br>
+      &nbsp;
+    </p>
+    <p>Finally, the attributes of the "class" dataset are listed to the
+      log
+      using %lstattrib.
+      <br>
+      &nbsp;
+    </p>
+    <p>If you run the code then you will see that both the New_class and
+      Class
+      datasets in the work library have the same contents as
+      SASHELP.CLASS .
+      <br>
+      &nbsp;
+      <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+        <tbody>
+          <tr>
+            <td>
+              <br>
+              <tt>filename lengen&nbsp; TEMP;</tt>
+              <br>
+              <tt>filename attrgen TEMP;</tt>
+              <br>
+              &nbsp;
+              <p><tt>%lstattrib(sashelp.class,dsset=,init=no,</tt>
+                <br>
+                <tt>lenfile=lengen,attrfile=attrgen,namepref=NEW_);</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>*- This is a rename list that will be used for
+                  sashelp.class -;</tt>
+                <br>
+                <tt>*- to add a NEW_ prefix to the variable names. -;</tt>
+                <br>
+                <tt>%PUT &gt;&gt;&gt;&gt;&gt;&gt;
+                  %editlist(%varlist(sashelp.class),'&amp;item=NEW_&amp;item');</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>data NEW_class;</tt>
+                <br>
+                <tt>&nbsp; %include lengen / source;</tt>
+                <br>
+                <tt>&nbsp; set
+sashelp.class(rename=(%editlist(%varlist(sashelp.class),'&amp;item=NEW_&amp;item')));</tt><br>
+                <tt>&nbsp; %include attrgen / source;</tt>
+                <br>
+                <tt>run;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>filename lengen&nbsp; CLEAR;</tt>
+                <br>
+                <tt>filename attrgen CLEAR;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>%lstattrib(NEW_class,init=no,dsset=);</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>*- This is a rename list that will be used for
+                  new_class -;</tt>
+                <br>
+                <tt>*- to drop the NEW_ prefix from the variable names.
+                  -;</tt>
+                <br>
+                <tt>%PUT &gt;&gt;&gt;&gt;&gt;&gt;
+                  %editlist(%varlist(new_class),'&amp;item=%substr(&amp;item,5)');</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>data class;</tt>
+                <br>
+                <tt>&nbsp; set
+new_class(rename=(%editlist(%varlist(new_class),'&amp;item=%substr(&amp;item,5)')));</tt><br>
+                <tt>run;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>%lstattrib(class,init=no,dsset=);</tt>
+                <br>
+                &nbsp;</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </p>
+    <p>And here is the log. You can take my word for it that the
+      contents of
+      the New_class and Class datasets in the WORK library have the same
+      contents
+      as SASHELP.CLASS if you can not check this yourself.
+      <br>
+      &nbsp;
+      <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+        <tbody>
+          <tr>
+            <td><tt>13690</tt>
+              <br>
+              <tt>13691&nbsp; filename lengen&nbsp; TEMP;</tt>
+              <br>
+              <tt>13692&nbsp; filename attrgen TEMP;</tt>
+              <br>
+              <tt>13693</tt>
+              <br>
+              <tt>13694</tt>
+              <br>
+              <tt>13695&nbsp; %lstattrib(sashelp.class,dsset=,init=no,</tt>
+              <br>
+              <tt>13696&nbsp;
+                lenfile=lengen,attrfile=attrgen,namepref=NEW_);</tt>
+              <p><tt>13697</tt>
+                <br>
+                <tt>13698</tt>
+                <br>
+                <tt>13699&nbsp; *- This is a rename list that will be
+                  used for sashelp.class
+                  -;</tt>
+                <br>
+                <tt>13700&nbsp; *- to add a NEW_ prefix to the variable
+                  names. -;</tt>
+                <br>
+                <tt>13701&nbsp; %PUT &gt;&gt;&gt;&gt;&gt;&gt;
+                  %editlist(%varlist(sashelp.class),'&amp;item=NEW_&amp;item');</tt>
+                <br>
+                <tt>&gt;&gt;&gt;&gt;&gt;&gt; NAME=NEW_NAME SEX=NEW_SEX
+                  AGE=NEW_AGE HEIGHT=NEW_HEIGHT
+                  WEIGHT=NEW_WEIGHT</tt>
+                <br>
+                <tt>13702</tt>
+                <br>
+                <tt>13703</tt>
+                <br>
+                <tt>13704&nbsp; data NEW_class;</tt>
+                <br>
+                <tt>13705&nbsp;&nbsp;&nbsp; %include lengen / source;</tt>
+                <br>
+                <tt>NOTE: %INCLUDE (level 1) file LENGEN is file
+                  E:\DATA\MedSas\SASWork\_TD10860\#LN00358.</tt>
+                <br>
+                <tt>13706 +&nbsp; LENGTH NEW_NAME $ 8 NEW_SEX $ 1
+                  NEW_AGE 8 NEW_HEIGHT
+                  8 NEW_WEIGHT 8</tt>
+                <br>
+                <tt>13707
+                  +&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+                <br>
+                <tt>NOTE: %INCLUDE (level 1) ending.</tt>
+                <br>
+                <tt>13708&nbsp;&nbsp;&nbsp; set
+sashelp.class(rename=(%editlist(%varlist(sashelp.class),'&amp;item=NEW_&amp;item')));</tt><br>
+                <tt>13709&nbsp;&nbsp;&nbsp; %include attrgen / source;</tt>
+                <br>
+                <tt>NOTE: %INCLUDE (level 1) file ATTRGEN is file
+                  E:\DATA\MedSas\SASWork\_TD10860\#LN00359.</tt>
+                <br>
+                <tt>13710 +&nbsp; *- Cancel existing formats and
+                  informats in the input
+                  dataset(s) -;</tt>
+                <br>
+                <tt>13711 +&nbsp; FORMAT&nbsp;&nbsp; _all_ ;</tt>
+                <br>
+                <tt>13712 +&nbsp; INFORMAT _all_ ;</tt>
+                <br>
+                <tt>13713 +</tt>
+                <br>
+                <tt>13714 +&nbsp; *- Assign output variable attributes
+                  -;</tt>
+                <br>
+                <tt>13715 +&nbsp; ATTRIB</tt>
+                <br>
+                <tt>13716 +&nbsp;&nbsp;&nbsp; NEW_AGE&nbsp;&nbsp;&nbsp;
+                  label=" "</tt>
+                <br>
+                <tt>13717 +&nbsp;&nbsp;&nbsp; NEW_HEIGHT label=" "</tt>
+                <br>
+                <tt>13718 +&nbsp;&nbsp;&nbsp; NEW_NAME&nbsp;&nbsp;
+                  label=" "</tt>
+                <br>
+                <tt>13719 +&nbsp;&nbsp;&nbsp; NEW_SEX&nbsp;&nbsp;&nbsp;
+                  label=" "</tt>
+                <br>
+                <tt>13720 +&nbsp;&nbsp;&nbsp; NEW_WEIGHT label=" "</tt>
+                <br>
+                <tt>13721 +&nbsp;&nbsp;&nbsp; ;</tt>
+                <br>
+                <tt>13722 +</tt>
+                <br>
+                <tt>13723 +&nbsp; *- KEEP statement for the variables
+                  listed above
+                  -;</tt>
+                <br>
+                <tt>13724 +&nbsp; KEEP NEW_AGE NEW_HEIGHT NEW_NAME
+                  NEW_SEX NEW_WEIGHT</tt>
+                <br>
+                <tt>13725 +&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+                <br>
+                <tt>NOTE: %INCLUDE (level 1) ending.</tt>
+                <br>
+                <tt>13726&nbsp; run;</tt>
+              </p>
+              <p><tt>NOTE: There were 19 observations read from the data
+                  set SASHELP.CLASS.</tt>
+                <br>
+                <tt>NOTE: The data set WORK.NEW_CLASS has 19
+                  observations and 5 variables.</tt>
+                <br>
+                <tt>NOTE: DATA statement used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.00 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.01 seconds</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>13727</tt>
+                <br>
+                <tt>13728</tt>
+                <br>
+                <tt>13729&nbsp; filename lengen&nbsp; CLEAR;</tt>
+                <br>
+                <tt>NOTE: Fileref LENGEN has been deassigned.</tt>
+                <br>
+                <tt>13730&nbsp; filename attrgen CLEAR;</tt>
+                <br>
+                <tt>NOTE: Fileref ATTRGEN has been deassigned.</tt>
+                <br>
+                <tt>13731</tt>
+                <br>
+                <tt>13732</tt>
+                <br>
+                <tt>13733&nbsp; %lstattrib(NEW_class,init=no,dsset=);</tt>
+              </p>
+              <p><tt>******&nbsp; Attributes obtained from
+                  NEW_class&nbsp; ******;</tt>
+                <br>
+                <tt>DATA xxxxxx;</tt>
+                <br>
+                <tt>&nbsp; *- The order of the variables in the
+                  following LENGTH statement
+                  matches -;</tt>
+                <br>
+                <tt>&nbsp; *- the variable order in the original dataset
+                  so do not
+                  change.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  -;</tt>
+                <br>
+                <tt>&nbsp; LENGTH NEW_NAME $ 8 NEW_SEX $ 1 NEW_AGE 8
+                  NEW_HEIGHT 8 NEW_WEIGHT
+                  8</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+              </p>
+              <p><tt>&nbsp; *- Cancel existing formats and informats in
+                  the input dataset(s)
+                  -;</tt>
+                <br>
+                <tt>&nbsp; FORMAT&nbsp;&nbsp; _all_ ;</tt>
+                <br>
+                <tt>&nbsp; INFORMAT _all_ ;</tt>
+              </p>
+              <p><tt>&nbsp; *- Assign output variable attributes -;</tt>
+                <br>
+                <tt>&nbsp; ATTRIB</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; NEW_AGE&nbsp;&nbsp;&nbsp; label="
+                  "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; NEW_HEIGHT label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; NEW_NAME&nbsp;&nbsp; label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; NEW_SEX&nbsp;&nbsp;&nbsp; label="
+                  "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; NEW_WEIGHT label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; ;</tt>
+              </p>
+              <p><tt>&nbsp; *- KEEP statement for the variables listed
+                  above -;</tt>
+                <br>
+                <tt>&nbsp; KEEP NEW_AGE NEW_HEIGHT NEW_NAME NEW_SEX
+                  NEW_WEIGHT</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+                <br>
+                <tt>RUN;</tt>
+              </p>
+              <p><tt>13734</tt>
+                <br>
+                <tt>13735</tt>
+                <br>
+                <tt>13736&nbsp; *- This is a rename list that will be
+                  used for new_class
+                  -;</tt>
+                <br>
+                <tt>13737&nbsp; *- to drop the NEW_ prefix from the
+                  variable names.
+                  -;</tt>
+                <br>
+                <tt>13738&nbsp; %PUT &gt;&gt;&gt;&gt;&gt;&gt;
+                  %editlist(%varlist(new_class),'&amp;item=%substr(&amp;item,5)');</tt>
+                <br>
+                <tt>&gt;&gt;&gt;&gt;&gt;&gt; NEW_NAME=NAME NEW_SEX=SEX
+                  NEW_AGE=AGE NEW_HEIGHT=HEIGHT
+                  NEW_WEIGHT=WEIGHT</tt>
+                <br>
+                <tt>13739</tt>
+                <br>
+                <tt>13740</tt>
+                <br>
+                <tt>13741&nbsp; data class;</tt>
+                <br>
+                <tt>13742&nbsp;&nbsp;&nbsp; set
+new_class(rename=(%editlist(%varlist(new_class),'&amp;item=%substr(&amp;item,5)')));</tt><br>
+                <tt>13743&nbsp; run;</tt>
+              </p>
+              <p><tt>NOTE: There were 19 observations read from the data
+                  set WORK.NEW_CLASS.</tt>
+                <br>
+                <tt>NOTE: The data set WORK.CLASS has 19 observations
+                  and 5 variables.</tt>
+                <br>
+                <tt>NOTE: DATA statement used (Total process time):</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.00 seconds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu
+                  time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  0.00 seconds</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>13744</tt>
+                <br>
+                <tt>13745</tt>
+                <br>
+                <tt>13746&nbsp; %lstattrib(class,init=no,dsset=);</tt>
+              </p>
+              <p><tt>******&nbsp; Attributes obtained from class&nbsp;
+                  ******;</tt>
+                <br>
+                <tt>DATA xxxxxx;</tt>
+                <br>
+                <tt>&nbsp; *- The order of the variables in the
+                  following LENGTH statement
+                  matches -;</tt>
+                <br>
+                <tt>&nbsp; *- the variable order in the original dataset
+                  so do not
+                  change.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  -;</tt>
+                <br>
+                <tt>&nbsp; LENGTH NAME $ 8 SEX $ 1 AGE 8 HEIGHT 8 WEIGHT
+                  8</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+              </p>
+              <p><tt>&nbsp; *- Cancel existing formats and informats in
+                  the input dataset(s)
+                  -;</tt>
+                <br>
+                <tt>&nbsp; FORMAT&nbsp;&nbsp; _all_ ;</tt>
+                <br>
+                <tt>&nbsp; INFORMAT _all_ ;</tt>
+              </p>
+              <p><tt>&nbsp; *- Assign output variable attributes -;</tt>
+                <br>
+                <tt>&nbsp; ATTRIB</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; AGE&nbsp;&nbsp;&nbsp; label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; HEIGHT label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; NAME&nbsp;&nbsp; label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; SEX&nbsp;&nbsp;&nbsp; label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; WEIGHT label=" "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; ;</tt>
+              </p>
+              <p><tt>&nbsp; *- KEEP statement for the variables listed
+                  above -;</tt>
+                <br>
+                <tt>&nbsp; KEEP AGE HEIGHT NAME SEX WEIGHT</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+                <br>
+                <tt>RUN;</tt></p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </p>
+    <h2>
+      Conclusion</h2>
+    This completes the User Guide to the %lstattrib macro.
+    <br>
+    &nbsp;
+    <br>
+    &nbsp;
+    <br>
+    &nbsp;
+    <p><!-- Start of StatCounter Code -->
+      <script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+      <script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+      <noscript><a href="http://www.statcounter.com/" target="_blank"><img src="counter.html" alt="statistics" border="0"></a></noscript><!-- End of StatCounter Code -->
+    </p>
+    <center>
+      <p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+      </p>
+      <p>E-mail the macro and web site <a
+          href="mailto:rolandberry@hotmail.com">author</a>.</p>
+    </center>
+  </body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/lstattrib.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+</html>

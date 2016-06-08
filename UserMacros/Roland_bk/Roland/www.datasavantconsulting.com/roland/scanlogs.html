@@ -1,0 +1,109 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/scanlogs.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="Utility to scan sas logs">
+   <meta name="KeyWords" content="scan sas logs">
+   <title>Scanlogs</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+scanlogs</h1></center>
+<b>[last updated - 27 July 2003]</b>
+<p>Scanning SAS logs for important messages is a very neglected thing in
+the QC process. Maybe this is because there is not an easy-to-use utility
+to do this. Well I have written one and it uses <b>awk</b> which you can
+think of as a better version of <b>grep</b> that is also a lot more complicated.
+<pre><b>#!/bin/sh
+# Script&nbsp;&nbsp;&nbsp;&nbsp; : scanlogs
+# Version&nbsp;&nbsp;&nbsp; : 1.0
+# Author&nbsp;&nbsp;&nbsp;&nbsp; : Roland Rashleigh-Berry
+# Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 27 July 2003
+# Contact&nbsp;&nbsp;&nbsp; : rolandberry@hotmail.com
+# Purpose&nbsp;&nbsp;&nbsp; : To scan SAS logs for important warnings, notes and errors&nbsp;
+# SubScripts : none
+# Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : This is an important QC tool to ensure your SAS programs have run
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; correctly.
+# Usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : scanlogs *.log
+#&nbsp;
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+#&nbsp; 1&nbsp;&nbsp; logs to scan
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+#&nbsp;
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+if [ $# -lt 1 ]
+then
+&nbsp; echo "Usage: scanlogs *.log" 1>&amp;2
+&nbsp; exit 1
+fi
+
+while [ $# -gt 0 ]
+do
+awk '{if ( ( index($0,"ERROR") == 1 \
+|| index($0,"WARNING") == 1 \
+|| index($0,"MERGE statement") > 0&nbsp; \
+|| index($0,"W.D format") > 0&nbsp; \
+|| index($0,"truncated ") > 0&nbsp; \
+|| index($0," 0 observations and ") > 0&nbsp; \
+|| index($0,"outside the axis range") > 0&nbsp; \
+|| index($0,"NOTE: Invalid") == 1 \
+|| index($0,"uninitialized") > 0 ) \
+&amp;&amp; index($0,"Errors printed on") == 0 \
+&amp;&amp; index($0,"scheduled to expire on") == 0 \
+&amp;&amp; index($0,"product with which") == 0 \
+&amp;&amp; index($0,"representative to have") == 0 )
+{printf "%-30s %-80s\n","'$1'",$0}}' $1
+shift
+done</b></pre>
+You should be familiar with everything that precedes the call to <b>awk</b>
+if you have studied the previous examples. For a start-off, look at all
+the lines that end with a "\". I mentioned before that shell interpreters
+expect one statement per line. But when a statement has to go over one
+line then you have got to use a continuation character which is the "\"
+that I have used. Note that for awk, testing for equality is done with
+a double equals symbol. "Or" is a double "|" symbol and "and" is a double
+"&amp;" symbol. It is testing for important message lines but ignoring
+lines that are not helpful, especially licence expiry warnings. If these
+conditions are met the it uses the <b>printf</b> statement to print out
+<b>formatted</b>
+values. The first 30 spaces it uses for the file name it is working on
+and the next 80 spaces it uses for the whole line in the log file. Note
+that <b>awk</b> refers to the entire input line as $0. $1 would be the
+first field in that line but we don't want to display that. We DO, however,
+want to display the file name that is also referred to as $1. To make this
+distinction, note the file name is referred to as <b><tt>"'$1'"</tt></b>
+to indicate that it is a variable outside awk and not and internal awk
+variable.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/scanlogs.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+</html>

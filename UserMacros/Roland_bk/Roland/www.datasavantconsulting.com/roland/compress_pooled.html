@@ -1,0 +1,45 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/compress_pooled.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <title>Compressing Pooled Datasets</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Compressing Pooled Datasets</h1></center>
+<b>Updated: 11 May 2014</b>
+<p>There is a belief that by storing data as compressed SAS datasets then
+you can get shorter elapsed times since the data can be read in quicker.
+This is logical. Unfortunately, the SAS language is horrendously inefficient
+at reading and writing its own compressed datasets so this is actually
+a huge disadvantage in speed. <b>Never use compressed datasets</b>. Don't
+store them as compressed. Don't read them in as compressed. The only time
+it makes sense to use them is in transferring files across to other systems
+but then zipping them will turn them into smaller files than compressed
+sas datasets.
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<br>&nbsp;
+<br>&nbsp;
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/compress_pooled.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+</html>

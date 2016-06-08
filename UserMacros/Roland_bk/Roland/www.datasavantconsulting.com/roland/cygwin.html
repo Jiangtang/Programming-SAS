@@ -1,0 +1,318 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/cygwin.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="SAS tips and techniques by Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="cygwin sas">
+   <title>Cygwin and SAS</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Cygwin and SAS</h1></center>
+<b>[last updated - 17 November 2007]</b>
+<h2>
+Introduction</h2>
+At long last I can run Unix (well, Linux) on my PC and for free. I can
+develop shell scripts including scripts that call SAS/LE on my PC. It took
+some setting up though and is not without its frustrations. I will go into
+the details of how to set up Cygwin but first I wanted to blow my trumpet
+over Unix. The essence of Unix is having <b>small utilities that "talk"
+to one another</b>. Utilities that pass their output to another utility
+using piping and other means. You can build very impressive applications
+like this even though it is not easy to conceive how a collection of simple
+things can be built up into complex applications. As SAS programmers we
+are used to seeing monolithic code grow and grow to enable us to meet our
+reporting needs. Most of us "think big" to achieve our aims and so we tend
+to go down the path of ever-increasing complexity. Unix is a refreshing
+change from that and also a challenge to our method of working. Unix achieves
+more by "thinking small". Its utilities give information in a simple form,
+writing it to "standard output" (by default, the terminal) and reading
+its information, often, from "standard input". By reading from and writing
+to understood locations and by having the output format simple, then it
+allows utilities to work togther. And when they can work together you have
+the chance to build complex applications that go beyond what you can imagine
+with the "think big" approach. If you write Unix shell scripts then you
+too should follow this ideal. Output should always go to "standard output"
+(and not a file) and the format of the data should always be simple. The
+"end user" you aim to keep happy is no longer a person. Instead it is other
+script writers who may someday need to read in the information that your
+shell script writes out. That is why you write to standard output and why
+you keep the presentation of results crude and simple. If need be, a final
+extra utility could be written to beautify the output, but it should not
+be part of the utility that provides the information. Enter the world of
+Unix and you enter a realm where <b>"think simple" works</b> and can pay
+great dividends. You may not be able to see that far at this stage -- you
+will just have to take it on trust for now. This "think small" approach
+will ultimately manifest itself in the SAS code you write. You will think
+of simple utility macros that you can write and call. Your code will turn
+into calls to macros and passing on the output to other macros. Instead
+of your code turning into complex macros itself, it will tend to take the
+form of simple code calling utility macros. Macros can obscure or clarify.
+It depends how they are written and how they are used. Calling utility
+macros in open code tends to clarify, whereas turning all your code into
+macros that call other macros tends to obscure. The Unix "think simple"
+approach can reap rewards in your SAS code as well.
+<h2>
+Downloading Cygwin</h2>
+Cygwin can be downloaded from <a href="http://www.cygwin.com/">www.cygwin.com</a>
+for free. You will download a setup.exe file. When you run that file and
+opt to install from the Internet then you will be offered a number of download
+sites to choose from. Here it starts to get complicated. There are different
+versions on these sites. If you are a non-US keyboard users then you will
+require a utility named "rxvt" which is an enhanced terminal emulator.
+This is because, due to a bug in the software, the default emulator will
+not accept the "pipe" character that looks like | (note that is not the
+same as another character with a break in the line that looks like &brvbar;
+). You will get nowhere learning Unix unless you can type this character,
+so all non-US users need "rxvt" instead which does accept this pipe character.
+In any case, if you are a US user, the "rxvt" terminal emulator is much
+better than the default terminal emulator-- you can highlight and paste,
+for example, so you are recommended to use it. So what happens is that
+you double click on setup.exe and then you select a site. It then reads
+pakage information from that site and displays a window where yu can select
+what packages you want. "Rxvt" is in the "shells" set of packages. Expand
+that directory and make sure "rxvt" is listed. If it is not then quit,
+start again by double clicking on setup.exe and choose another download
+site. Keep doing this until you see "rxvt" listed in the shells. Tick the
+box to say you want it installed. You should go for the default install
+but with "rxvt" added. Once you have selected what you want then the install
+will take its course. At the end you will be asked if you want the Cygwin
+icon on your desktop and you should reply that you do.
+<h2>
+A Cygwin installation problem</h2>
+When I installed Cygwin on my PC it automatically put my <b>.bashrc</b>
+member in my home directory. This is the correct situation. However, I
+am hearing of plenty of cases where a Cygwin installation was done but
+this <b>.bashrc</b> member <b>was found to be missing</b>. This is an error
+and how to correct this will be explained here.
+<p>A number of edits has to be made to your <b>.bashrc</b> file in your
+home directory but you have got to be sure this <b>.bashrc</b> member is
+being called and run (sourced). If you have just completed a Cygwin installtion
+then check that this file is in your home directory. You can either use
+the Windows Explorer or list the files that start with a period in your
+Cygwin home directory using the command:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>echo .*</tt></td>
+</tr>
+</table>
+
+<p>If your <b>.bashrc</b> member is missing or empty then you should copy
+it from <b>/etc/defaults/etc/skel/.bashrc</b>
+<p>To test that your <b>.bashrc</b> in your home directory is being called
+then add the following command near the top of the file:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>echo Hello from my .bashrc</tt></td>
+</tr>
+</table>
+
+<p>....then when you start up your Cygwin session next time this "<b>Hello
+from my .bashrc</b>" message should be displayed. If it is, then that is
+good. You can delete this test message from your <b>.bashrc</b> member
+when you make the edits to it as detailed in the next section "Changes
+to .bashrc".
+<p><b>If you do not see this message</b> when you start Cygwin, even though
+you put the above command in your <b>.bashrc</b> member, then something
+is wrong. You will be given instructions here to resolve this situation
+to make sure your <b>.bashrc</b> member in your home directory is actually
+being run (sourced) when you start Cygwin.
+<p>First check your home directory and what shell is defined to you in
+the <b>/etc/passwd</b> file. Browse this file and take a look. I have an
+"Roland" entry shown below. The last two field members (separated by colons)
+are "/home/Roland" that says where my home directory is and "/bin/bash"
+that says my start-up shell is "bash".
+<b>If your home directory entry
+is not in the form /home/something then edit this file to correct it</b>
+(after making a backup). Also, your start-up shell must be "/bin/bash"
+otherwise it will not call your <b>.bashrc</b> member so change it to this
+if it is not.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt><font size=-1>Roland:unused_by_nt/2000/xp:1006:513:U-DELL1\Roland,S-1-5-21-2888820645-753754486-1581935503-1006:/home/Roland:/bin/bash</font></tt></td>
+</tr>
+</table>
+
+<p>Your <b>.bashrc</b> member is "sourced" from your <b>.bash_profile</b>
+member in your home directory. If your <b>.bash_profile</b> member is missing
+or empty then you should copy it from <b>/etc/defaults/etc/skel/.bash_profile</b>
+<p>It could be that the problem is in your <b>.bash_profile</b> member.
+Near the top of that member you should see it "sourcing" the <b>.bashrc</b>
+file as follows:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt># source the users bashrc if it exists</tt>
+<br><tt>if [ -e "${HOME}/.bashrc" ] ; then</tt>
+<br><tt>&nbsp; source "${HOME}/.bashrc"</tt>
+<br><tt>fi</tt></td>
+</tr>
+</table>
+
+<p>Maybe you see something like that in your <b>.bash_profile</b> member
+but for some reason it is commented out. Try uncommenting it by removing
+the leading "#" from the script code so it looks the same as above. Also,
+make sure your system environment variable HOME is resolving OK by using
+this command.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>$ echo $HOME</tt>
+<br><tt>/home/Roland</tt></td>
+</tr>
+</table>
+
+<p>Do you get a "/home/something" result like I do? If you get nothing
+then your HOME environment variable is not set and bash will look for the
+.bashrc file in the top directory /.bashrc
+<p><b>You must get your .bashrc member active and working</b> before you
+can continue. I believe the actions above will resolve all situations where
+your <b>.bashrc</b> is not being sourced. I am no Cygwin expert, though,
+so if you have tried the above and you still can not get out your "Hello
+from my .bashrc" test message from the command you put in your <b>.bashrc</b>
+member then you will have to <b>ask for help on the Cygwin mailing list</b>
+aimed at getting your <b>.bashrc</b> member sourced, after you have tried
+searching through the archives at
+<a href="http://www.cygwin.com/" target="_blank">www.cygwin.com</a>
+to try to resolve your problem. Nothing less than this will get your problem
+resolved. When you do resolve it fully, in the sense that you get your
+<b>.bashrc</b>
+working, rather than using a workaround, then please let me know by email
+what your problem was and how it was resolved so I can expand this section
+to help other installers.
+<h2>
+Cygwin Installation Options</h2>
+At the start of installing Cygwin you will be shown a screen that shows
+the directory it will download to and below it on the left will be "Install
+For" for which you should choose the recommended "All Users" (unless you
+really don't want other people to have access to it) and on the right "Default
+Text File Type" for which you should change the default so that it becomes
+the non-recommended "DOS /text". You use this latter option where you are
+freely mixing use of Windows and Cygwin such as editing scripts using a
+Windows editor such as Wordpad. I assume you will be doing this.
+<h2>
+Wordpad</h2>
+You are going to have to do some editing. Never use Notepad for this. Always
+use Wordpad. This is going to be your sole editor for all your Unix work
+and you should keep to plain text. You should make sure you have it on
+your desktop so that you can drag and drop Unix files onto it. You can
+create a shortcut to Wordpad using one of the options in the right mouse
+button. Once you have created the shortcut you can drag it onto your desktop.
+The idea is that you will have your Windows Explorer open and can drag
+and drop files from there onto yur Wordpad icon on your desktop. But please
+remember that you will be using Wordpad for all your Unix work and never
+Notepad.
+<h2>
+cygwin.bat</h2>
+If everthing is downloaded, then, by default, "rxvt" is not invoked when
+you start up Cygwin by double-clicking on the icon but feel free to start
+up Cygwin, anyhow, to make sure it has installed correctly and then exit
+with the command "exit". In the cygwin directory is the DOS start-up file
+named "cygwin.bat". This is a DOS file and so can be edited with Notepad,
+if you like. Make a backup of this file and edit the original. Here you
+will need to reference an Internet site where there is a copy of the cygwin.bat
+file you will need. It is <a href="http://www.freemode.net/archives/000121.html">here</a>.
+This will enable the rxvt terminal next time you start up. We are not done
+with editing yet, though. If you are using Wordpad then copy the text on
+the Internet page and when you paste it into Wordpad select "paste special"
+from the Edit pull-down menu and select "Unformatted text". You will always
+be using this option with Wordpad. Replace what is in your file with exactly
+what is listed for the cygwin.bat file on the Internet page.
+<h2>
+.Xdefaults</h2>
+You can customise the rxvt session for colors, font, size etc. and you
+should do this to suit your needs. You will need to create a file in the
+cygwin/home/Defaults directory (that will be your home directory) named
+.Xdefaults (with a period in front of the name). Here is where you use
+your first Unix command for real. Log onto Cygwin. You will be in your
+home directory (you can check by entering the command "pwd"). List all
+the files, including the "hidden" files by entering the command "ls -a".
+You will see one named <b>.bashrc </b>. Make a copy of this file and call
+it .Xdefaults using the command "<b>cp .bashrc .Xdefaults</b>" (period
+in front of each name). Once you have done that you can drag it onto the
+Wordpad icon and edit it. Delete everything that is there and replace using
+the code on the Internet page for .Xdefaults. Again use "paste special"
+from the Edit pull-down menu and "Unformatted text". There are a few changes
+to what is on the Internate page that I would recommend. Change the "geometry"
+value to 80x25 instead of 80x80. Change the Lucida font size to 14, instead
+of 12 and change the background color to 000040 instead of 000020. Once
+this is done then save the file and start up Cygwin again. Try out the
+pipe character (remember it looks like | and not &brvbar;) using the command
+"<b>ls -a | cat</b>".
+<h2>
+.bashrc</h2>
+I have written a number of shell scripts which I keep in their own directory.
+It hangs off the C: drive and is not part of the cygwin directory structure.
+My directory is named "shellscripts". I want to invoke them by name so
+in order for Unix to find these I have to add it to my PATH at startup.
+To do this you have to edit your <b>.bashrc</b> file and I have added the
+line:
+<p><b>PATH=$PATH:/cygdrive/c/shellscripts</b>
+<p>Note that the C: drive is referred to as /cygdrive/c . This is cygwin's
+way of mapping the drives so that Linux can understand it. Also note the
+colon. You use colons to separate directories on the PATH. What this is
+doing is setting PATH to be what it was before ($PATH) but with a new directory
+added on the end.
+<h2>
+Linking to SAS</h2>
+Unix has got to find SAS, somehow, if you have SAS on your PC. You can
+add the directory with the sas executable (sas.exe) to the end of the PATH
+like this:
+<p><b>PATH=$PATH:/cygdrive/c/shellscripts:/cygdrive/c/PROGRA~1/SASINS~1/SAS/v8</b>
+<p>Note that because Unix will not accept spaces in directory names, you
+have to use the pure DOS notation for some of the directories. You can
+see that I have done this for "Program Files" and "SAS Institute".
+<h2>
+Running SAS in batch</h2>
+Some of the shell scripts on this site run SAS in batch. It is supposed
+to be done discretely so that the user is not aware that they are running
+sas. In order to suppress the pop-up windows you get with PC sas then you
+can disable them using the following options:
+<p><b>sas -nosplash -nologo -icon</b>
+<p>When you call sas in one of your scripts then set these options to suppress
+the windows. I do not know of a shorthand way of doing this. There is no
+point setting up an alias in your .bashrc as this will not get exported
+to any sub-processes like you get for a shell script.
+<p>The second problem running SAS in batch is that it will have is locating
+the program files. Your PC sas will not understand the Unix directory structure.
+It will expect a DOS file name. The scripts I write that call SAS, generate
+program code in my home directory and then invokes SAS to run the code.
+I have set up a HOMEW variable in my .bashrc and exported it so that I
+can use it in shell scripts.
+<p><b>HOMEW=C:\\\cygwin\\\home\\\Default\\</b>
+<br><b>export HOMEW</b>
+<p>In the shell script I then use $HOMEW as both the destination of the
+log and to indicate where the program code is stored.
+<p><b># Run the SAS code</b>
+<br><b>sas -nosplash -nologo -icon -log "$HOMEW" -sysin "$HOMEW\contents.sas"</b>
+<p>If you are developing shell scripts that call SAS on your PC and they
+are intnded eventually for a Unix platform then you have to change $HOMEW
+to $HOME and change the backslash to a forward slash in the program location.
+You may have to remove the "-nosplash -nologo -icon" options as well.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<center>
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/cygwin.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+</html>

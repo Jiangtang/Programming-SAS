@@ -1,0 +1,124 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/ddiff.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="SAS tips and techniques by Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="sas tips techniques">
+   <title>whosgot</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+ddiff</h1></center>
+<b>[last updated - 29 July 2003]</b>
+<p>There is a file comparison utility on Unix called <b>diff</b>. This
+is an extremely useful utility if you are a Clinical SAS programmer for
+when you want to compare table or listing output. It is a simple matter
+to compare one output with another using this utility. You can look up
+how to do this. But it becomes even more useful when you can compare an
+old set of outputs with a new set of outputs. Suppose you have downloaded
+new data and you want to know what changes resulted in the tables or listings.
+It would be great if you could move all the old outputs to a subdirectory
+and then rerun and compare identically named outputs in the subdirectory
+with those in the parent directory. Of course, when you do a new run, there
+will be a line on each page saying who ran it and when. So there will be
+a difference on every page that you are not interested in. It would be
+better if that difference were ignored and just the actual results were
+compared.
+<p>This is easy to do once you understand how to handle loops in scripts
+and "pattern matching". You can loop through the files you have in your
+subdirectory and compare them with those in the parent directory and use
+what you know about pattern matching to mask the unimportant differences.
+If a utility is useful on one file then it can be made to work on many
+files with little effort except a bit of script writing. And if you have
+studied all the examples up to this point and done the exercises then you
+will have come to the conclusion that script writing is not difficult.
+But you won't have seen an example yet of one useful utility being made
+to work on many files and the resulting extra power at your disposal. This
+is where you will see a very practical and useful application of this.
+<p>This utility is called <b>ddiff</b>, rather than <b>diff</b>, because
+it compares whole directories. It is <b>d</b>irectory <b>diff</b>erence
+rather than just the <b>diff</b>erence between two files. The user makes
+the subdirectory the current directory and types in the file pattern of
+outputs they want to compare with in the parent directory. Temporary copies
+will be made in the home directory where superficial information such as
+run date will be removed and a comparison between like-named files can
+be done. Output, as always, will go to the terminal window, and it is up
+to the user to redirect the output.
+<p>But here we have to know pattern matching well. In the example below,
+I am assuming people use my <b>pagexofy</b> utility to add "Page x of Y"
+labels to output and that all the extra transient information such as date
+and time and who ran it is on that line. I am going to mask that line using
+sed to make a substitution and will explain the pattern I have used. But
+for now, here is the utility:
+<pre><b>#!/bin/sh
+# Script&nbsp;&nbsp;&nbsp;&nbsp; : ddiff
+# Version&nbsp;&nbsp;&nbsp; : 1.0
+# Author&nbsp;&nbsp;&nbsp;&nbsp; : Roland Rashleigh-Berry
+# Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 29 July 2003
+# Contact&nbsp;&nbsp;&nbsp; : rolandberry@hotmail.com
+# Purpose&nbsp;&nbsp;&nbsp; : To compare all the outputs in a subdirectory with identically
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; named outputs in a parent directory.&nbsp;
+# SubScripts : none
+# Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Refer to documentation on diff. Note that this utility has&nbsp;
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pattern matching and substitution in it to mask lines that will
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; always change for each run. You need to amend this for your own
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; standard outputs.
+# Usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : ddiff *.lst
+#&nbsp;
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+#&nbsp; 1&nbsp;&nbsp; file or list of files to compare
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+#&nbsp;
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+if [ $# -lt 1 ] ; then
+&nbsp; echo "Usage: ddiff t*.lst" 1>&amp;2
+&nbsp; exit 1
+fi
+
+for file in "$@" ; do
+&nbsp; echo ; echo ; echo
+&nbsp; echo '========================================================================='
+&nbsp; echo 'Comparing ' $file ': &lt; = lower directory > = upper directory'
+&nbsp; echo '========================================================================='
+&nbsp; sed 's/.*Page .* of .*//'&nbsp;&nbsp;&nbsp; $file > $HOME/file1.tmp
+&nbsp; sed 's/.*Page .* of .*//' ../$file > $HOME/file2.tmp
+&nbsp; diff -b $HOME/file1.tmp $HOME/file2.tmp&nbsp;
+done
+
+rm -f $HOME/file1.tmp $HOME/file2.tmp</b>
+
+</pre>
+Now to explain the pattern matching in the sed calls. <b><tt>".*Page .*
+of .*"</tt></b> will match any number of characters greater than zero up
+to the word "Page" and then a space and one character at least and then
+a space and then "of" and then a space and then one or more characters.
+It will substitute that whole line with nothing. I am sure I am going to
+match my lines with "Page x of Y" on and blank it out so that these lines
+will not be compared. If your changeable line in outputs is different then
+you will have to amend this utility to suit.
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/ddiff.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+</html>

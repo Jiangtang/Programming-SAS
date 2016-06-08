@@ -1,0 +1,149 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/macro_visioning.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <title>Macro Visioning</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Macro Visioning</h1></center>
+<b>Updated: 10 Aug 2014</b>
+<h2>
+Introduction</h2>
+If you are a SAS programmer about to write your first macro then I have
+some precious advice to give you - <b>"don't".</b>
+<p>Go ahead if it is only you who is going to use it and never somebody
+else but be absolutely sure it will not end up in the hands of other users.
+<b>The
+problem with macros is that they are very useful things that persist and
+spread. If there are weaknesses in your macro design philosophy then these
+weaknesses will spread to the whole area of macro writing and poison what
+could have been a perfect future scenario.</b>
+<p>If you are wanting your macros to be used by other programmers then
+you must first get your <b>"Visioning"</b> done thoroughly. And I mean
+<b>"thoroughly"</b>.
+<h2>
+Visioning</h2>
+On the www.businessdictionary.com web site I find this definition of "Visioning":
+<p><b>"Mental process in which images of the desired future (goals, objectives,
+outcomes) are made intensely real and compelling to act as motivators for
+the present action."</b>
+<p>As to the desired future then I see "5 years" mentioned on other web
+sites. So what you need to do is to visualize your collection of macros
+being used by people/programmers five years down the line. Their daily
+use, bug fixes, maintenance, new programmer training, enhancement requests,
+support, key users, roll out plans, presentations - to image this all in
+your mind. This is your desired future and it must be compelling and real
+such that you are inspired by it to the extent that it can <b>"act as motivators
+for the present action"</b>.
+<p>Getting this detailed vision is going to take a few weeks. Some areas
+will be fuzzy and grey and you will have to push through this and get those
+flashes of inspiration that will clarify things. Parts of your vision will
+change and rearrange as you illuminate those areas. It could take months
+before you can see all parts clearly and all the activities in action.
+<h2>
+Visioning in action</h2>
+If you do the job of Visioning properly then you will have solved nearly
+all your problems before they have the chance to occur in real life. Here
+are some of the things that could go through your mind. It is to show you
+the rewards you get if you do the Visioning thoroughly so that your dream
+is actually achieved 5 years down the line.
+<br>&nbsp;
+<p>You will have imagined a programmer sending a change request to the
+maintenance team and saw that was not optimum so you imagine a programmer
+sending a change request to a key user instead. So you need "key users".
+Then you see these "key users" being the point of contact for the other
+programmers when they need help and support. You see your key users, maybe
+spread in different parts of the globe, having a teleconference to exchange
+problems and discuss ideas and coming up with a priority list for enhancements
+to the macros.
+<p>You will have imagined your macro names prefixed by "m_" but being changed
+to be prefixed by "p_" when moved into production. But then you will have
+seen that more complex macros that call these "m_" macros will have to
+be amended to call the "p_" version when this happens. So you might have
+all your macros staying prefixed as "m_" even when in production. Or you
+may drop the idea of a prefix completely.
+<p>You may have imagined a naming structure for macro parameters such that
+they are eight characters long with the first of these being an underscore
+for clarity. Then you will have imagined these macros calling some important
+externally supplied macro that have eight character parameters and you
+will see it is better to stick to the same convention and even keep the
+same parameter names when these parameter values are being passed through
+to the external macros.
+<p>You will have seen the need to check that supplied variable names actually
+exist in the input dataset. You will have seen the code in the macros that
+do this. You will have seen the need to have a <b>utility macro</b> to
+do this work such that you can report the full list of variables that are
+not present, rather than just one at a time.
+<p>You will have seen a macro detecting a parameter error, reporting it
+and exiting the macro. You will have seen the programmer correcting it,
+running the macro again and it exiting with another parameter error. You
+can see it is better if the macro checks on all the parameters and reports
+on all the errors before exiting.
+<p>You will have seen a macro to run a Unix command on the remote host.
+You like that as many of the programmers don't have the Unix knowledge
+to do it. Then you see one for another Unix command, and another, and another
+so you see the need for a general macro to pass Unix commands to the remote
+host with the Unix command macro being shell macros that call this general
+macro.
+<p>You see the macro header and the section at the bottom where changes
+and amendments are documented. You see this macro header after 5 years
+with a hundred of changes and you see the header has become longer than
+the code so you see that section of the header restructured so most changes
+can be documented in one line.
+<h2>
+Now the Visioning is done</h2>
+Your Visioning has identified some standards that must be put in place
+and some utility macros written. When this is done and you have looked
+at the results and maybe given it further thought and maybe put it few
+a few more design iterations - and when you are sure it is perfect and
+there are no possible future problems - <b>you are ready to "craft" your
+first macro</b>. The work you did Visioning will force your first macro
+to be a success. But note I used the word ' "<b>craft</b>" your first macro
+'.
+<h2>
+"Crafting" your macro</h2>
+When I say that I <b>write</b> sas macros, what I am actually thinking
+about the process I am doing is that I <b>"craft"</b> sas macros. I use
+"craft" in the sense of <b>"to make or produce with care, skill, or ingenuity"</b>
+and I like to think I employ all three of those listed things in creating
+a sas macro. I put my all into achieving those three things. When I have
+finished then I want somebody to look at it and not just think, "wow, that
+is complicated" or "wow, that's a lot of lines of code". I want them to
+think "wow, that is so elegant and clear - I didn't believe it possible
+to do it in such a neat way". I want them to be able to see at a glance
+that I have created something special and used techniques to make things
+better that they would never have thought of or would never had put in
+the effort to get it as good as they are looking at. This is something
+to keep in mind. It may not be clear to you what the difference is as you
+start out writing sas macros but you will find that things fit together,
+work better, is easier to maintain and has greater longevity if you "craft"
+your macros rather than just write them.
+<h2>
+Conclusion</h2>
+You have seen how the business idea of "Visioning" can be applied to macro
+development.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<br>&nbsp;
+<br>&nbsp;
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/macro_visioning.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+</html>

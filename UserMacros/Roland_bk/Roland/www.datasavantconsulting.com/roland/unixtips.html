@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<!-- Mirrored from www.datasavantconsulting.com/roland/unixtips.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:02:52 GMT -->
+<head>
+
+
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="Unix tips for clinical sas programmers">
+   <meta name="KeyWords" content="unix tips clinical sas"><title>Unix tips for clinical sas programmers</title></head><body alink="#ff0080" bgcolor="#c0c0ff" link="#0000ff" text="#000000" vlink="#800080">
+
+<center>
+<h1>
+Unix tips for Clinical SAS Programmers</h1></center>
+<b>[last updated - 30 September 2007]</b>
+<h2>
+Introduction</h2>
+Note the title of this page. These are Unix tips especially for Clinical
+SAS programmers. If you are one, like me, and all you want is some useful
+shell scripts that you can use when working on Clinical trials then you
+need look no further than this page. And I'll tell you when you might need
+to use them as well. Sometimes there will be a shell script that you might
+like to put in your shell script library. Sometimes it will just be a command
+or a few combined commands that do not warrant a shell script being written.
+If there is a shell script, then I will briefly describe what it is doing
+in an understandable way. At some time in the future, I will add a link
+to the bottom of this page where you can find out more about writing shell
+scripts. But you will learn a lot from studying these examples here and
+I suggest you go through all of these before getting into the more complicated
+stuff. You are better off learning by example rather than making an academic
+exercise out of it. It is the way of thinking you need to learn more than
+anything else. Getting a feel for what should be possible and how simple
+commands, combined, make it possible.
+<h2>
+Cygwin</h2>
+Cygwin is free software that emulates Linux running on a PC (Linux is the
+same as Unix as far as we SAS programmers are concerned). I highly recommend
+downloading Cygwin and installing it on your personal PC so that you can
+play around with Unix and learn it. Learning Unix should be a very practical
+activity or you will never be good at it. You can run SAS from Unix as
+well, so long as you have a version on your PC. There are a number of steps
+to getting Cygwin set up correctly and calling SAS, so it has its own page
+<a href="cygwin.html">here</a>.
+<h2>
+"Unix in a Nutshell" book and "man"</h2>
+You need a good book on Unix to hand, if you work on a Unix platform, and
+you want to "do" anything useful. And the book will only go so far, so
+you need extra help as well. I highly recommend the O'Reilly book "Unix
+in a Nutshell" as a concise source of Unix information. The book can not
+cover everything but you will find you have a facility called "man" at
+your Unix installation (mine is "info" instead on Cygwin). Suppose you
+want to find out more about the "tr" command (mentioned in the first tip),
+then at the prompt type in "man tr" and you will see more. In the following
+tips and scripts, I am going to assume you know a little something about
+commonly-used Unix utilities. But maybe you don't so a book would help
+but "man" might be enough.
+<h2>
+Learning Documents</h2>
+The following learning documents are fairly complete. They are copies of
+the documents on the Spectre (Clinical) e-book. The links will all work
+if you use the e-book but not always for the pages below. You are recommended
+to download and install the Spectre (Clincal) e-book and study them there.
+You will find much more there than on this page.
+<p>The first document, "Common Unix commands", needs to be carefully read
+and understood as it lays the foundations for all the other material. It
+has taken me four years to get it in its current form so it is carefully
+thought out and thorough. You should keep re-reading that document until
+you understand it and can apply everything in it as it will be a waste
+of time going further if you do not. It does not cover all Unix commands
+but enough for you as an end-user, especially in the field of clinical
+reporting on a Unix platform. Once you know everything in that single document
+then you can consider yourself to be "good" with Unix as an end-user. It
+might be the only document you will ever have to read, depending on how
+far you want to take things.
+</p><p><a href="Spectre/unixcom.html">Common Unix commands</a>
+<br><a href="Spectre/bashscr.html">Writing bash shell scripts</a>
+<br><a href="Spectre/sasscr.html">Writing sas shell scripts</a>
+<br><a href="Spectre/gawk.html">Writing gawk programs</a>
+</p><h2>
+Shell scripting tips and scripts</h2>
+I have ordered the following tips so that they tend to build upon each
+other. For that reason I recommend you go through them sequentially. If
+I have marked any as IMPORTANT then you must not skip them or you might
+not be able to understand the following ones.
+<p><tt><a href="piping.html">piping</a> - </tt>Tutorial on "piping" and
+"redirection" (IMPORTANT)
+<br><tt><a href="getname.html">getname</a> - </tt>Script to match a userid
+to a person's name
+<br><tt><a href="whosgot.html">whosgot</a> - </tt>Script to find out who's
+got a lock on SAS datasets or other files
+<br><tt><a href="fsv.html">fsv</a>&nbsp;&nbsp;&nbsp; - </tt>fsview a SAS
+dataset
+<br><tt><a href="listempty.html">listempty</a> - </tt>Script to list out
+all "empty" files
+<br><tt><a href="scanlogs.html">scanlogs</a> - </tt>Script to scan all
+the lines in a SAS log looking for important messages
+<br><tt><a href="rescue.html">rescue</a> - </tt>Script to "rescue" sas
+programs from their logs
+<br><tt><a href="antigrep.html">antigrep</a> - </tt>Script to tell you
+what files DO NOT contain a character string
+<br><tt><a href="pages.html">pages</a> - </tt>Script to select a specified
+page range from a list of files
+<br><tt><a href="pagexofy.html">pagexofy</a> - </tt>Script to add "Page
+x of Y" labels in output tables and listings
+<br><tt><a href="delsome.html">delsome</a> - </tt>Tutorial/Script on optionally
+deleting a list of files (IMPORTANT)
+<br><tt><a href="delall.html">delall</a> - </tt>Script to delete a list
+of files
+<br><tt><a href="dirtidy.html">dirtidy</a> - </tt>Tutorial/Script on spotting
+widowed <b>.log</b> and <b>.lst</b> files in a directory (IMPORTANT)
+<br><tt><a href="killjobs.html">killjobs</a> - </tt>Script to optionally
+kill Unix processes that you own
+<br><tt><a href="sed%26awk.html">sed &amp; awk</a> - </tt>Tutorial on sed,
+awk and the do-it-now quotes (IMPORTANT)
+<br><tt><a href="ddiff.html">ddiff</a> - </tt>Script to compare an old
+set of outputs with new ones
+<br><tt><a href="hdr.html">hdr</a> - </tt>Script to create a standard SAS
+program header with details filled in
+<br><tt><a href="xargs.html">xargs</a> - </tt>Tutorial on passing arguments
+to Unix utilities
+<br><tt><a href="basename.html">basename</a> - </tt>Tutorial on when and
+when not to use basename
+</p><h2>
+SAS/Unix scripts</h2>
+These are scripts that invoke SAS. These have been developed under Cygwin
+running on a PC and then converted to run under Unix. As a consequence,
+there could be obvious errors in them that will cause them to fail under
+Unix. Please help the author by emailing him if you have run this on a
+full-blown Unix platform and you have found errors that cause it not to
+run.
+<p><tt><a href="skeleton.html">sasunixskeleton</a> - </tt>the utility that
+writes utilites that call SAS
+<br><tt><a href="contents.html">contents</a> - </tt>List the contents in
+short form of one or more datasets or a whole library
+<br><tt><a href="contentsl.html">contentsl</a> - </tt>Long form of <b>contents</b>
+<br><tt><a href="clash.html">clash</a> - </tt>Identify where differences
+exist in identically-named variables between datasets in a library
+<br><tt><a href="printalln.html">printalln</a> - </tt>Print all occurences
+of a numeric variable meeting the specified condition
+<br><tt><a href="printallc.html">printallc</a> - </tt>Same as <b>printalln</b>
+but for character variables
+<br><tt><a href="allmiss.html">allmiss</a> - </tt>Notify for all-missing
+variables in a dataset, list of datasets or a whole library
+<br><tt><a href="misscnt.html">misscnt</a> - </tt>Notify number of missing
+variable observations in a dataset, list of datasets or a whole library
+<br><tt><a href="titleprogs.html">titleprogs</a> - </tt>YOUR CALL. You
+need to write this yourself because I don't know your setup (IMPORTANT)
+<br><tt><a href="intitlesnoprogs.html">intitlesnoprogs</a> - </tt>YOUR
+CALL AGAIN. Searches program directories assuming you wrote <b>titleprogs</b>
+but will need more work
+<br><tt><a href="intitles.html">intitles</a> - </tt>YOUR CALL AGAIN. List
+all programs in your current directory that match with those in your titles
+dataset
+</p><h2>
+<br>
+Other Unix tips</h2>
+<a href="fileperm.html">File permissions (<b>umask</b> and <b>chmod</b>)</a>
+(IMPORTANT)
+<br><a href="tr.html">Using <b>tr</b> to remove Windows carriage-returns</a>(IMPORTANT)
+<br><a href="symblinks.html">Symbolic links</a>
+<br><a href="makefiles.html">Makefiles vs. Scripts for running SAS program
+suites</a>
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img src="counter.html" alt="statistics" border="0"></a></noscript><!-- End of StatCounter Code -->
+</p><center>
+<p>Go back to the home <a href="index-2.html">page</a>.
+</p><p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</p></center>
+
+<p><br>
+<br>
+<br>
+</p><!-- GoFTP Free Version Start -->
+  <div
+  
+    style="bottom:-15px; position:relative; text-align:center;">
+  
+  
+    <a style="font-size:10px; text-decoration:none; color:#CCCCCC;"
+  
+
+ href="http://www.askmefast.com/"> 
+  
+    
+      Check here for 
+    unix and
+    
+      related to 
+    script
+  
+  </a><br />
+  
+    <a style="font-size:10px; text-decoration:none; color:#CCCCCC;"
+  
+  href="http://www.goftp.com/">
+  
+    Page provided by 
+  
+    FREE GoFTP Client
+  
+  </a></div>
+
+<!-- GoFTP Free Version End --></body>
+<!-- Mirrored from www.datasavantconsulting.com/roland/unixtips.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:02 GMT -->
+</html>

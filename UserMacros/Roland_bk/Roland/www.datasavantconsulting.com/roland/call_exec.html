@@ -1,0 +1,194 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/call_exec.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <title>Use %nrstr() when you "call execute" a macro</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Use %nrstr() when you "call execute" a macro</h1></center>
+<b>Author: Roland Rashleigh-Berry</b>
+<br><b>Updated: 22 Oct 2012</b>
+<h2>
+Introduction</h2>
+<b>Assuming you want to call a macro specified to "call execute" after
+that data step has finished then you need to mask the macro call with %nrstr()</b>
+in your "call execute" code otherwise it will take effect within the data
+step itself. This is mentioned in the SAS online documentation but insufficient
+emphasis is given to it. Without the %nrstr() to stop it, the macro call
+will be resolved internally and then, in the following step, the resolved
+content of the macro (if any) will be executed instead of the macro itself.
+<p>"Call execute" is difficult for many programmers to use because it is
+a challenge to get the brackets balanced, remembering to use double quote
+marks within single quote marks where a value needs to be quoted, remembering
+to put semicolons inside quotes so that your executed code ends with a
+semicolon as well as ending the call with a semicolon etc.. It is counter
+to the logic you use in coding data steps and so requires a lot of thought
+and practise. You can waste a lot of time getting "call execute" to work
+in complex cases and time is often limited. Perhaps it would be better
+if there were an alternative to "call execute" - and there is!
+<p>What will be explained on this page is the problem of not using %nrstr()
+and an alternative method to using "call execute".
+<h2>
+Background</h2>
+"Call execute" used to be a non supported feature of sas 5.18 and was useful
+where you wanted to avoid writing generated sas code to a fileref and then
+%including it at a later point. This was because in sas 5.18 the %include
+file had to be given a location, unlike now when you can define the file
+as TEMP, so there was a remote possibility that this file might be changed
+or deleted before the code was %included back in again and so this was
+a security issue. When sas 6.02 was released, "call execute" had been dropped.
+It got reinstated in sas 6.07, through user pressure, but no effort had
+been made to improve ease of use of this feature.
+<h2>
+The problem</h2>
+The following log shows the problem where %nrstr() is not used. In the
+first call without %nrstr() you will see that the macro "test" prints "TWO",
+which is the value assigned to "mvar" in the line above the "call execute".
+But if %nrstr() is used to mask the macro call then the value "THREE" is
+printed which is what you would expect if the macro were truly being executed
+after the data step has ended. The macro printing "THREE" is the usual
+and correct way you expect the macro to work if the macro were called after
+the data step and yet you only get that by using %nrstr(). And because
+the macro gets resolved internally with the %nrstr() it could be the source
+of strange memory problems that can occur. An example of this might be
+that sas skips over data steps in the code following the macro call. Sometimes
+these problems are incomprehensible and there will be no useful diagnostics
+written to the log.
+<p>Look at the log below carefully and see where without %nrstr() we get
+the value "TWO" but with %nrstr() we get the expected value "THREE". See
+how in the first case "call execute" did not generate the line we were
+expecting which would be "1 + %test;" and instead it generated "1 +;" which
+means that all it generated was a semicolon. In other words, it had processed
+the macro internally. But in the second case it has generated the line
+we were expecting and we get the expected result.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>81 %macro test;</tt>
+<br><tt>82 %put >>>> &amp;mvar;</tt>
+<br><tt>83 %mend test;</tt>
+<br><tt>84</tt>
+<br><tt>85 %let mvar=ONE;</tt>
+<br><tt>86</tt>
+<br><tt>87</tt>
+<br><tt>88 data _null_;</tt>
+<br><tt>89 call symput('mvar',"TWO");</tt>
+<br><tt>90 call execute('%test;');</tt>
+<br><tt>91 call symput('mvar',"THREE");</tt>
+<br><tt>92 run;</tt>
+<br><tt>>>>> TWO</tt>
+<br><tt>NOTE: DATA statement used (Total process time):</tt>
+<br><tt>real time 0.00 seconds</tt>
+<br><tt>cpu time 0.00 seconds</tt>
+<p><tt>NOTE: CALL EXECUTE generated line.</tt>
+<br><tt>1 +;</tt>
+<br><tt>93 %macro test;</tt>
+<br><tt>94 %put >>>> &amp;mvar;</tt>
+<br><tt>95 %mend test;</tt>
+<br><tt>96</tt>
+<br><tt>97 %let mvar=ONE;</tt>
+<br><tt>98</tt>
+<br><tt>99</tt>
+<br><tt>100 data _null_;</tt>
+<br><tt>101 call symput('mvar',"TWO");</tt>
+<br><tt>102 call execute('%nrstr(%test);');</tt>
+<br><tt>103 call symput('mvar',"THREE");</tt>
+<br><tt>104 run;</tt>
+<br><tt>NOTE: DATA statement used (Total process time):</tt>
+<br><tt>real time 0.00 seconds</tt>
+<br><tt>cpu time 0.00 seconds</tt>
+<p><tt>NOTE: CALL EXECUTE generated line.</tt>
+<br><tt>1 + %test;</tt>
+<br><tt>>>>> THREE</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>Here is another simple example that proves that "call execute" will
+execute a macro immediately if not protected by %nrstr(). Here we have
+a simple macro giving values to macro variables "a" and "b" and we can
+see the two lines in the data step following the "call execute" of the
+macro "symget" these macro values and display them as set in the macro
+just executed.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>15920</tt>
+<br><tt>15921 %let a=;</tt>
+<br><tt>15922 %let b=;</tt>
+<br><tt>15923</tt>
+<br><tt>15924 %macro test;</tt>
+<br><tt>15925 %let a=AAAA;</tt>
+<br><tt>15926 %let b=BBBB;</tt>
+<br><tt>15927 %mend test;</tt>
+<br><tt>15928</tt>
+<br><tt>15929 %let a=;</tt>
+<br><tt>15930 %let b=;</tt>
+<br><tt>15931</tt>
+<br><tt>15932 data _null_;</tt>
+<br><tt>15933 call execute('%test');</tt>
+<br><tt>15934 a=symget('a');</tt>
+<br><tt>15935 b=symget('b');</tt>
+<br><tt>15936 put a= b=;</tt>
+<br><tt>15937 run;</tt>
+<br><tt>A=AAAA B=BBBB</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>The lesson to be learned from this is that <b>macro calls in "call execute"
+code need to be masked with %nrstr() in order for them to work correctly</b>
+if you are expecting your macro to be called after the data step.
+<p>There might be very rare cases where you do not want to use %nrstr()
+because you need your macro to resolve within the data step (it might be
+doing a macro read of a dataset and assigning needed macro variables, for
+example) but these should be rare such that you never need to do it in
+your whole programming career. Use %nrstr() for protecting macro calls
+unless you know you have a clear need not to do so.
+<h2>
+The alternative to "call execute"</h2>
+It is sometimes clearer and simpler to loop through a dataset using macros
+and to call a macro within that loop. This is what I wrote the <a href="Spectre/utilmacros/getvalue.sas" target="_blank">%getvalue</a>
+macro for many years ago. I use it in conjunction with my <a href="Spectre/utilmacros/nobs.sas" target="_blank">%nobs</a>
+macro. This is how it is done:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%do i=1 %to %nobs(mydset);</tt>
+<br><tt>&nbsp; %let varn=%getvalue(mydset,nvalue,&amp;i);</tt>
+<br><tt>&nbsp; %let varc=%getvalue(mydset,cvalue,&amp;i);</tt>
+<br><tt>&nbsp; %mymacro(&amp;varn,&amp;varc);</tt>
+<br><tt>%end;</tt></td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+You have read about how you should use %nrstr() when calling a sas macro
+in "call execute" code to ensure the macro is only called after the data
+step and seen an alternative method that uses the %nobs and %getvalue macros.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<br>&nbsp;
+<br>&nbsp;
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/call_exec.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+</html>

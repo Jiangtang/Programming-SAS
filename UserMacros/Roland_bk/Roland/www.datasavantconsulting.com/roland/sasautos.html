@@ -1,0 +1,509 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/sasautos.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:12 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Generator" content="Microsoft Word 97">
+   <meta name="keywords" content="sas macros, sasautos extensions">
+   <meta name="Description" content="SAS macros written by Roland Rashleigh-Berry">
+   <meta name="Template" content="C:\PROGRAM FILES\MSOFFICE\OFFICE\html.dot">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <title>sasautos extensions</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+sasautos extensions</h1></center>
+
+<center><b>[This site is not connected with the SAS Institute]</b></center>
+
+<p><b>(Last updated: 08 September 2007)</b>
+<p><b>[Please note that the code on this web site is intended to run under
+SAS version 8.1 or later]</b>
+<p><b><i>[Disclaimer: You will be able to access and download public domain
+code from this page. Although efforts have been made to test the code,
+no guarantee as to suitability or accuracy is either given or implied.
+If you use the code, you do so at your own risk. You should test this code
+yourself and thoroughly satisfy yourself that it is working correctly before
+using it in a production environment. If you find problems in the code
+then please inform the author using the contact email address in the header
+of the macro].</i></b>
+<p><b>Note that these were written on a Windows PC. If you download these
+files directly to a different platform such as Unix then you might get
+problems with the control characters at the end of the lines. You might
+be better off just copying and pasting if you are not running Windows.
+If you do copy and paste then choose the browser option to view the source
+of the macro and copy and paste that. This is because some of the macro
+variable references get translated into something else by the browser.</b>
+<p><b>All these macros have html tags as part of the header box and will
+appear as &lt;pre>&lt;b> in the first line. They are not part of the code.
+They just help them to display correctly when you browse them using web
+pages. You should remove these tag markers if you intend to use the macros,
+although they will not affect the code since they are part of the commented-out
+header.</b>
+<p><b>The entire set of sasautos extensions (as well as some clinical reporting
+macros) can be downloaded in zipped format by clicking on this <a href="macros.zip">link</a>.</b>
+<h2>
+Introduction</h2>
+Let me explain very briefly why I have titled this page "<b>sasautos extensions</b>".
+Simply, these are <b>the macros I wish I had</b> in my sasautos library.
+What you find in the sasautos library, as supplied, is arbitrary. You have
+utility macros like %lowcase there but the very useful %words macro is
+missing. There is no logic to it. Instead, it is up to you to decide what
+to make available. A set of useful utility macros could save you a lot
+of time as a programmer, and if you are intending to write more complex
+macros then you will often wish you had a set of utility macros to use
+as building blocks as sometimes this is the only way you can cope with
+the complexity of the task. So my suggestion is for you to <b>create your
+own sasautos library</b> with all the macros you need in it and either
+use that instead of the SI supplied library or add it to the sasautos path
+before the SI supplied sasautos library.
+<p>On this page I have split the macros into three sections as some are
+clearly to do with getting data set and variable information and some are
+function-style macros that distill into a result that you assign to a macro
+variable so I have shown these first. This may or may not be of help to
+you. If you want to browse the <b>alphabetical list of all macros</b> on
+this web site, as well as their purposes, and be able to link to them,
+then click on the link <a href="maclist2.html">here</a>.
+<h2>
+Data set and variable information macros</h2>
+<b>Test Pack - Actual Macro - Description of function</b>
+<br><font face="Courier New"><font size=-1><a href="testattrc.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="attrc.sas" target="_blank">attrc</a></font></font><tt>
+- </tt>low level macro called by other macros that returns character information
+about a data set
+<br><font face="Courier New"><font size=-1><a href="testattrn.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="attrn.sas" target="_blank">attrn</a></font></font><tt>
+- </tt>low level macro called by other macros that returns numeric information
+about a data set
+<br><font face="Courier New"><font size=-1><a href="testattrv.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="attrv.sas" target="_blank">attrv</a></font></font><tt>
+- </tt>low level macro called by other macros that returns variable information
+<br><font face="Courier New"><font size=-1><a href="testcrdte.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="crdte.sas" target="_blank">crdte</a></font></font><tt>
+- </tt>return the creation date of a data set as a number
+<br><font face="Courier New"><font size=-1><a href="testdslabel.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="dslabel.sas" target="_blank">dslabel</a></font></font><tt>
+- </tt>return a data set label
+<br><font face="Courier New"><font size=-1><a href="testdsall.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="dsall.sas" target="_blank">dsall</a></font></font><tt>
+- </tt>expands out the _all_ notation into data set names
+<br><font face="Courier New"><font size=-1><a href="testdslist.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="dslist.sas" target="_blank">dslist</a></font></font><tt>
+- </tt>list all data sets under a given libref
+<br><font face="Courier New"><font size=-1><a href="testgetvalue.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="getvalue.sas" target="_blank">getvalue</a></font></font><tt>
+- </tt>returns the value of a variable
+<br><font face="Courier New"><font size=-1><a href="testhasvars.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="hasvars.sas" target="_blank">hasvars</a></font></font><tt>
+- </tt>returns true if data set has all variables in supplied list
+<br><font face="Courier New"><font size=-1><a href="testhasvarsc.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="hasvarsc.sas" target="_blank">hasvarsc</a></font></font><tt>
+- </tt>returns true if data set has all character variables in supplied
+list
+<br><font face="Courier New"><font size=-1><a href="testhasvarsn.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="hasvarsn.sas" target="_blank">hasvarsn</a></font></font><tt>
+- </tt>returns true if data set has all numeric variables in supplied list
+<br><font face="Courier New"><font size=-1><a href="testmodte.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="modte.sas" target="_blank">modte</a></font></font><tt>
+- </tt>return the modification date of a data set as a number
+<br><font face="Courier New"><font size=-1><a href="testnlobs.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="nlobs.sas" target="_blank">nlobs</a></font></font><tt>
+- </tt>return the number of logical observations (i.e. not marked for deletion)
+in a data set
+<br><font face="Courier New"><font size=-1><a href="testnobs.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="nobs.sas" target="_blank">nobs</a></font></font><tt>
+- </tt>return the number of observations in a data set
+<br><font face="Courier New"><font size=-1><a href="testnvars.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="nvars.sas" target="_blank">nvars</a></font></font><tt>
+- </tt>return the number of variables in a data set
+<br><font face="Courier New"><font size=-1><a href="testnvarsc.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="nvarsc.sas" target="_blank">nvarsc</a></font></font><tt>
+- </tt>return the number of character variables in a data set
+<br><font face="Courier New"><font size=-1><a href="testnvarsn.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="nvarsn.sas" target="_blank">nvarsn</a></font></font><tt>
+- </tt>return the number of numeric variables in a data set
+<br><font face="Courier New"><font size=-1><a href="testputvars.html" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="putvars.sas" target="_blank">putvars</a></font></font><tt>
+- </tt>lists all dataset variables followed by an equals sign for use in
+a put statement <b>(NEW !!)</b>
+<br><font face="Courier New"><font size=-1><a href="testsortedby.html" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="sortedby.sas" target="_blank">sortedby</a></font></font><tt>
+- </tt>lists the variables a dataset is sorted by <b>(NEW !!)</b>
+<br><font face="Courier New"><font size=-1><a href="testvarfmt.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="varfmt.sas" target="_blank">varfmt</a></font></font><tt>
+- </tt>return a variable's format
+<br><font face="Courier New"><font size=-1><a href="testvarinfmt.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="varinfmt.sas" target="_blank">varinfmt</a></font></font><tt>
+- </tt>return a variable's informat
+<br><font face="Courier New"><font size=-1><a href="testvarlabel.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="varlabel.sas" target="_blank">varlabel</a></font></font><tt>
+- </tt>return a variable's label
+<br><font face="Courier New"><font size=-1><a href="testvarlen.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="varlen.sas" target="_blank">varlen</a></font></font><tt>
+- </tt>return a variable's length
+<br><font face="Courier New"><font size=-1><a href="testvarlist.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="varlist.sas" target="_blank">varlist</a></font></font><tt>
+- </tt>return a list of all variables in a data set
+<br><font face="Courier New"><font size=-1><a href="testvarlistc.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="varlistc.sas" target="_blank">varlistc</a></font></font><tt>
+- </tt>return a list of all character variables in a data set
+<br><font face="Courier New"><font size=-1><a href="testvarlistn.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="varlistn.sas" target="_blank">varlistn</a></font></font><tt>
+- </tt>return a list of all numeric variables in a data set
+<br><font face="Courier New"><font size=-1><a href="testvarnum.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="varnum.sas" target="_blank">varnum</a></font></font><tt>
+- </tt>return a variable's position in a data set (or 0 if not present)
+<br><font face="Courier New"><font size=-1><a href="testvartype.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="vartype.sas" target="_blank">vartype</a></font></font><tt>
+- </tt>return a "C" or "N" depending on the type of a variable
+<h2>
+Other function-style small utility macros</h2>
+<b>Test Pack - Actual Macro - Description of function</b>
+<br><font face="Courier New"><font size=-1><a href="testaddautos.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="addautos.sas" target="_blank">addautos</a></font></font><tt>
+- </tt>adds an extra library to the front or back of the sasautos search
+path
+<br><font face="Courier New"><font size=-1><a href="testafter.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="after.sas" target="_blank">after</a></font></font><tt>
+- </tt>returns the word or quote that directly follows a target string
+<br><font face="Courier New"><font size=-1><a href="testcapmac.html" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="capmac.sas" target="_blank">capmac</a></font></font><tt>
+- </tt>to capitalize the first letter of each word in a macro string <b>(NEW
+!!)</b>
+<br><font face="Courier New"><font size=-1><a href="testcasestrmac.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="casestrmac.sas" target="_blank">casestrmac</a></font></font><tt>
+- </tt>change a mixed-case version of a string to the string itself for
+a macro expression
+<br><font face="Courier New"><font size=-1><a href="testchompw.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="chompw.sas" target="_blank">chompw</a></font></font><tt>
+- </tt>to "chomp" a word and optionally before and/or after words out of
+a macro string
+<br><font face="Courier New"><font size=-1><a href="testcompress.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="compress.sas" target="_blank">compress</a></font></font><tt>
+- </tt>compress a macro string for specified characters
+<br><font face="Courier New"><font size=-1><a href="testcommas.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="commas.sas" target="_blank">commas</a></font></font><tt>
+- </tt>delimits elements of a list with commas
+<br><font face="Courier New"><font size=-1><a href="testendwith.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="endwith.sas" target="_blank">endwith</a></font></font><tt>
+- </tt>ensures a macro string ends with a specified character if not null
+<br><font face="Courier New"><font size=-1><a href="testeqsuff.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="eqsuff.sas" target="_blank">eqsuff</a></font></font><tt>
+- </tt>suffix elements of a list with equal signs
+<br><font face="Courier New"><font size=-1><a href="testfmtpath.html" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="fmtpath.sas" target="_blank">fmtpath</a></font></font><tt>
+- </tt>gives the current full fmtsearch path <b>(NEW !!)</b>
+<br><font face="Courier New"><font size=-1><a href="testglobexist.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="globexist.sas" target="_blank">globexist</a></font></font><tt>
+- </tt>test for the existence of all of one or more global macro variables
+<br><font face="Courier New"><font size=-1><a href="testgloblist.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="globlist.sas" target="_blank">globlist</a></font></font><tt>
+- </tt>return a list of all current global macro variables in uppercase
+<br><font face="Courier New"><font size=-1><a href="testleft.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="left.sas" target="_blank">left</a></font></font><tt>
+-&nbsp; </tt>left-aligns a macro variable string
+<br><font face="Courier New"><font size=-1><a href="testlowcase.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="lowcase.sas" target="_blank">lowcase</a></font></font><tt>
+- </tt>lower-case the contents of a macro variable
+<br><font face="Courier New"><font size=-1><a href="testmatch.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="match.sas" target="_blank">match</a></font></font><tt>
+- </tt>return elements of a list that match with those in a reference list
+<br><font face="Courier New"><font size=-1><a href="testnodup.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="nodup.sas" target="_blank">nodup</a></font></font><tt>
+- </tt>return a list with duplicate items removed
+<br><font face="Courier New"><font size=-1><a href="testnoquotes.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="noquotes.sas" target="_blank">noquotes</a></font></font><tt>
+- </tt>removes all quoted strings from a macro expression
+<br><font face="Courier New"><font size=-1><a href="testqcompress.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="qcompress.html" target="_blank">qcompress</a></font></font><tt>
+- </tt>compresses a macro variable and returns results quoted
+<br><font face="Courier New"><font size=-1><a href="testqleft.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="qleft.sas" target="_blank">qleft</a></font></font><tt>
+- </tt>left-aligns a macro string and returns the result quoted
+<br><font face="Courier New"><font size=-1><a href="testqtrim.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="qtrim.sas" target="_blank">qtrim</a></font></font><tt>
+- </tt>trims a macro variable string and returns the results quoted
+<br><font face="Courier New"><font size=-1><a href="testquotelst.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="quotelst.sas" target="_blank">quotelst</a></font></font><tt>
+- </tt>quotes elements of a list
+<br><font face="Courier New"><font size=-1><a href="testquotecnt.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="quotecnt.sas" target="_blank">quotecnt</a></font></font><tt>
+- </tt>counts quoted elements in a macro expression
+<br><font face="Courier New"><font size=-1><a href="testquotescan.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="quotescan.sas" target="_blank">quotescan</a></font></font><tt>
+- </tt>scans for quoted elements in a macro expression
+<br><font face="Courier New"><font size=-1><a href="testreadfile.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="readfile.sas" target="_blank">readfile</a></font></font><tt>
+- </tt>reads in a file and assigns the contents to a macro variable
+<br><font face="Courier New"><font size=-1><a href="testreadpipe.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="readpipe.sas" target="_blank">readpipe</a></font></font><tt>
+- </tt>reads in the output of a System command and assigns it to a macro
+variable
+<br><font face="Courier New"><font size=-1><a href="testremove.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="remove.sas" target="_blank">remove</a></font></font><tt>
+- </tt>removes a target string from another string
+<br><font face="Courier New"><font size=-1><a href="testrxmatch.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="rxmatch.sas" target="_blank">rxmatch</a></font></font><tt>
+- </tt>return matching elements of a list according to the specified RX
+pattern
+<br><font face="Courier New"><font size=-1><a href="testsplitmac.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="splitmac.sas" target="_blank">splitmac</a></font></font><tt>
+- </tt>insert split characters into a macro string
+<br><font face="Courier New"><font size=-1><a href="testsubstrw.html" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="substrw.sas" target="_blank">substrw</a></font></font><tt>
+- </tt>works like the %substr() function but acts on words in a macro string
+<b>(NEW
+!!)</b>
+<br><font face="Courier New"><font size=-1><a href="testtherest.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="therest.sas" target="_blank">therest</a></font></font><tt>
+- </tt>returns everything in a macro expression following one of the target
+characters
+<br><font face="Courier New"><font size=-1><a href="testtrim.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="trim.sas" target="_blank">trim</a></font></font><tt>
+-&nbsp; </tt>trims a macro variable string
+<br><font face="Courier New"><font size=-1><a href="testunimap.html" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="unimap.sas" target="_blank">unimap</a></font></font><tt>
+- </tt>maps freestyle stats labels to their statistics keywords <b>(NEW
+!!)</b>
+<br><font face="Courier New"><font size=-1><a href="testverify.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="verify.sas" target="_blank">verify</a></font></font><tt>
+- </tt>returns the first position in a macro string where the character
+does not match a supplied list
+<br><font face="Courier New"><font size=-1><a href="testverifyb.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="verifyb.sas" target="_blank">verifyb</a></font></font><tt>
+- </tt>backwards equivalent of the verify macro
+<br><font face="Courier New"><font size=-1><a href="testwindex.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="windex.sas" target="_blank">windex</a></font></font><tt>
+- </tt>return the position of a word count in a string
+<br><font face="Courier New"><font size=-1><a href="testwords.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="words.sas" target="_blank">words</a></font></font><tt>
+- </tt>counts the number of words (strings delimited by spaces) in a list
+<h2>
+other utility macros</h2>
+<b>Test Pack - Actual Macro - Description of function</b>
+<br><font face="Courier New"><font size=-1><a href="testage.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="age.sas" target="_blank">age</a></font></font><tt>
+- </tt>returns the age of a person at a specified date (for use in a data
+step)
+<br><font face="Courier New"><font size=-1><a href="testaligndp.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="aligndp.sas" target="_blank">aligndp</a></font></font><tt>
+- </tt>formats numeric values into a text field aligning decimal points
+<br><font face="Courier New"><font size=-1><a href="testallfmtvals.html" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="allfmtvals.sas" target="_blank">allfmtvals</a></font></font><tt>
+- </tt>creates a dataset with all the start values of a format in it <b>(NEW
+!!)</b>
+<br><font face="Courier New"><font size=-1><a href="testalluniq.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="alluniq.sas" target="_blank">alluniq</a></font></font><tt>
+- </tt>writes all unique values of a variable in a whole library to a data
+set
+<br><font face="Courier New"><font size=-1><a href="testasciinop.html" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="asciinonp.sas" target="_blank">asciinonp</a></font></font><tt>
+- </tt>show up all non-printable ascii character in a flat file <b>(NEW
+!!)</b>
+<br><font face="Courier New"><font size=-1><a href="testbydrop.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="bydrop.sas" target="_blank">bydrop</a></font></font><tt>
+- </tt>drop by-group residual observations
+<br><font face="Courier New"><font size=-1><a href="testbytitle.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="bytitle.sas" target="_blank">bytitle</a></font></font><tt>
+- </tt>drop the last title if it is a "by" title and write the contents
+away
+<br><font face="Courier New"><font size=-1><a href="testcapvar.html" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="capvar.sas" target="_blank">capvar</a></font></font><tt>
+- </tt>to capitalize the first letter of each word of a string assigned
+to a character variable <b>(NEW !!)</b>
+<br><font face="Courier New"><font size=-1><a href="testcasestrvar.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="casestrvar.sas" target="_blank">casestrvar</a></font></font><tt>
+- </tt>change a mixed-case version of a string to the string itself for
+a text variable (for use in a data step)
+<br><font face="Courier New"><font size=-1><a href="testchar2num.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="char2num.sas" target="_blank">char2num</a></font></font><tt>
+- </tt>to "effectively" change numeric-containing character variables to
+numeric variables
+<br><font face="Courier New"><font size=-1><a href="testchkuniq.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="chkuniq.sas" target="_blank">chkuniq</a></font></font><tt>
+- </tt>check for uniqueness in key variables
+<br><font face="Courier New"><font size=-1><a href="testclashvars.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="clashvars.sas" target="_blank">clashvars</a></font></font><tt>
+- </tt>to identify where there is a clash of variable characteristics within
+a library
+<br><font face="Courier New"><font size=-1><a href="testclength.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="clength.sas" target="_blank">clength</a></font></font><tt>
+- </tt>to create a length statement for the maximum length of identical
+character variables in multiple data sets
+<br><font face="Courier New"><font size=-1><a href="testcomplibs.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="complibs.sas" target="_blank">complibs</a></font></font><tt>
+- </tt>compares like-named data sets in two libraries
+<br><font face="Courier New"><font size=-1><a href="testdelhex.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="delhex.sas" target="_blank">delhex</a></font></font><tt>
+- </tt>remove a specified hex character from a flat file
+<br><font face="Courier New"><font size=-1><a href="testdelzero.html" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="delzero.sas" target="_blank">delzero</a></font></font><tt>
+- </tt>illustration macro to delete all datasets with zero observations
+in a library <b>(NEW !!)</b>
+<br><font face="Courier New"><font size=-1><a href="testdoallitem.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="doallitem.sas" target="_blank">doallitem</a></font></font><tt>
+- </tt>execute code for each item in a space-delimited list
+<br><font face="Courier New"><font size=-1><a href="testdropvars.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="dropvars.sas" target="_blank">dropvars</a></font></font><tt>
+- </tt>drop unwanted variables in a list of data sets
+<br><font face="Courier New"><font size=-1><a href="testdsattrib.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="dsattrib.sas" target="_blank">dsattrib</a></font></font><tt>
+- </tt>assigns the attributes of one data set onto another data set
+<br><font face="Courier New"><font size=-1><a href="testdtscale.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="dtscale.sas" target="_blank">dtscale</a></font></font><tt>
+- </tt>calculates a suitable haxis date scale given a min and max date
+<br><font face="Courier New"><font size=-1><a href="testduplvars.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="duplvars.sas" target="_blank">duplvars</a></font></font><tt>
+- </tt>identifies which variables are duplicated in a second data set
+<br><font face="Courier New"><font size=-1><a href="testequals.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="equals.sas" target="_blank">equals</a></font></font><tt>
+- </tt>tests for equality or very near equality (for use in a data step)
+<br><font face="Courier New"><font size=-1><a href="testfixvars.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="fixvars.sas" target="_blank">fixvars</a></font></font><tt>
+- </tt>"fixes" variables throughout a library so that the label, format
+and length is the same
+<br><font face="Courier New"><font size=-1><a href="testflatten.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="flatten.sas" target="_blank">flatten</a></font></font><tt>
+- </tt>"flattens" data so that there is only one observation per by group
+<br><font face="Courier New"><font size=-1><a href="testfmtord.html" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="fmtord.sas" target="_blank">fmtord</a></font></font><tt>
+- </tt>create a numeric informat that maps a format label to its position
+<b>(NEW
+!!)</b>
+<br><font face="Courier New"><font size=-1><a href="testfmts2fda.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="fmts2fda.sas" target="_blank">fmts2fda</a></font></font><tt>
+- </tt>creates code to create formats you use so you can send it to the
+FDA
+<br><font face="Courier New"><font size=-1><a href="testhexchars.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="hexchars.sas" target="_blank">hexchars</a></font></font><tt>
+- </tt>displays non-printable ascii characters in a flat file as hex codes
+<br><font face="Courier New"><font size=-1><a href="testhexcnt.html" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="hexcnt.sas" target="_blank">hexcnt</a></font></font><tt>
+- </tt>counts strange hex characters in character variables <b>(NEW !!)</b>
+<br><font face="Courier New"><font size=-1><a href="testjobinfo.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="jobinfo.sas" target="_blank">jobinfo</a></font></font><tt>
+- </tt>stores important job information in global macro variables
+<br><font face="Courier New"><font size=-1><a href="testlafootnote.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="lafootnote.sas" target="_blank">lafootnote</a></font></font><tt>
+- </tt>left-aligns a footnote for a plain text report
+<br><font face="Courier New"><font size=-1><a href="testlatitle.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="latitle.sas" target="_blank">latitle</a></font></font><tt>
+- </tt>left-aligns a title for a plain text report
+<br><font face="Courier New"><font size=-1><a href="testlrafootnote.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="lrafootnote.sas" target="_blank">lrafootnote</a></font></font><tt>
+- </tt>left and right-aligns a two part footnote for a plain text report
+<br><font face="Courier New"><font size=-1><a href="testlratitle.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="lratitle.sas" target="_blank">lratitle</a></font></font><tt>
+- </tt>left and right-aligns a two part title for a plain text report
+<br><font face="Courier New"><font size=-1><a href="testljustify.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="ljustify.sas" target="_blank">ljustify</a></font></font><tt>
+- </tt>left-justifies all character fields in a data set
+<br><font face="Courier New"><font size=-1><a href="testlookahead.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="lookahead.sas" target="_blank">lookahead</a></font></font><tt>
+- </tt>the opposite of lag(), this looks ahead in a data set
+<br><font face="Courier New"><font size=-1><a href="testltgtm1.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="ltgtm1.sas" target="_blank">ltgtm1</a></font></font><tt>
+- </tt>adjusts for leading ">" and "&lt;" signs
+<br><font face="Courier New"><font size=-1><a href="testmaxtitle.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="maxtitle.sas" target="_blank">maxtitle</a></font></font><tt>
+- </tt>gives the number of the maximum title and footnote
+<br><font face="Courier New"><font size=-1><a href="testmisscnt.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="misscnt.sas" target="_blank">misscnt</a></font></font><tt>
+- </tt>identifies variables and their missing-value count
+<br><font face="Courier New"><font size=-1><a href="testmissvars.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="missvars.sas" target="_blank">missvars</a></font></font><tt>
+- </tt>identifies variables that are all-missing
+<br><font face="Courier New"><font size=-1><a href="testmkformat.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="mkformat.sas" target="_blank">mkformat</a></font></font><tt>
+- </tt>make a format out of a data set coded and decoded variable
+<br><font face="Courier New"><font size=-1><a href="testnodata.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="nodata.sas" target="_blank">nodata</a></font></font><tt>
+- </tt>produces a "no data" report if there are no observation to meet
+a criterion
+<br><font face="Courier New"><font size=-1><a href="testnodupkey.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="nodupkey.sas" target="_blank">nodupkey</a></font></font><tt>
+- </tt>sorts "nodupkey" and lists all observations being dropped
+<br><font face="Courier New"><font size=-1><a href="testnumchars.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="numchars.sas" target="_blank">numchars</a></font></font><tt>
+- </tt>identifies character variables that likely contain text numbers
+only
+<br><font face="Courier New"><font size=-1><a href="testoptlength.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="optlength.sas" target="_blank">optlength</a></font></font><tt>
+- </tt>creates a length statement for character variables that take up
+less space than allotted
+<br><font face="Courier New"><font size=-1><a href="testpagexofy.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="pagexofy.sas" target="_blank">pagexofy</a></font></font><tt>
+- </tt>puts "Page x of y" labels in a flat file
+<br><font face="Courier New"><font size=-1><a href="testprintall.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="printall.sas" target="_blank">printall</a></font></font><tt>
+- </tt>prints every observation in a library that satisfies a condition
+on a variable
+<br><font face="Courier New"><font size=-1><a href="testrafootnote.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="rafootnote.sas" target="_blank">rafootnote</a></font></font><tt>
+- </tt>right-aligns a footnote for a plain text report
+<br><font face="Courier New"><font size=-1><a href="testratitle.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="ratitle.sas" target="_blank">ratitle</a></font></font><tt>
+- </tt>right-aligns a title for a plain text report
+<br><font face="Courier New"><font size=-1><a href="testreplhex.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="replhex.sas" target="_blank">replhex</a></font></font><tt>
+- </tt>replace all occurrences of a specified hex character in a flat file
+with another specified character
+<br><font face="Courier New"><font size=-1><a href="testround.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="round.sas" target="_blank">round</a></font></font><tt>
+- </tt>round all the numeric variables in a list of data sets
+<br><font face="Courier New"><font size=-1><a href="testsasindex.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="sasindex.html" target="_blank">sasindex</a></font></font><tt>
+- </tt>utility to index your sas programs
+<br><font face="Courier New"><font size=-1><a href="testshowhex.html" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="showhex.sas" target="_blank">showhex</a></font></font><tt>
+- </tt>creates a new dataset where hex characters in character variables
+are highlighted <b>(NEW !!)</b>
+<br><font face="Courier New"><font size=-1><a href="testsplitvar.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="splitvar.sas" target="_blank">splitvar</a></font></font><tt>
+- </tt>insert split characters into variable text (for use in a data step)
+<br><font face="Courier New"><font size=-1><a href="testsubspace.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="subspace.sas" target="_blank">subspace</a></font></font><tt>
+- </tt>substitutes a space for a special character in a flat file
+<br><font face="Courier New"><font size=-1><a href="testsupasort.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="supasort.sas" target="_blank">supasort</a></font></font><tt>
+- </tt>sorts a list of data sets by the specified "by" variablesif they
+exist in the data sets
+<br><font face="Courier New"><font size=-1><a href="testtitlelen.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="titlelen.sas" target="_blank">titlelen</a></font></font><tt>
+- </tt>makes a copy of sashelp.vtitle but with the original length added
+<br><font face="Courier New"><font size=-1><a href="testvaxis.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="vaxis.sas" target="_blank">vaxis</a></font></font><tt>
+- </tt>calculates a suitable vaxis scale given a min and max value
+<br><font face="Courier New"><font size=-1><a href="testyrcutoff.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="yrcutoff.sas" target="_blank">yrcutoff</a></font></font><tt>
+- </tt>sets the yearcutoff option to one suitable for clinical reporting
+<br><font face="Courier New"><font size=-1><a href="testzerogrid.sas" target="_blank">testpack</a></font></font><tt>
+- </tt><font face="Courier New"><font size=-1><a href="zerogrid.sas" target="_blank">zerogrid</a></font></font><tt>
+- </tt>zeroize a variable for all combinations of distinct variable values
+in multiple data sets
+<center>
+<p>Go back to the home <a href="index-2.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/sasautos.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:05:02 GMT -->
+</html>

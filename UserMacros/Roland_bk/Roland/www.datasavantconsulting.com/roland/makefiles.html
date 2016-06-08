@@ -1,0 +1,333 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/makefiles.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:11 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="makefiles versus scripts">
+   <meta name="KeyWords" content="makefile versus scripts">
+   <title>Makefiles vs. Scripts</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Makefiles vs. Scripts</h1></center>
+<b>[last updated - 06 August 2003]</b>
+<h2>
+The "make" utility</h2>
+I admire the "make" utility that comes with Unix. It's an impressive piece
+of software that, given the dependencies between programs and files, will
+run generate a script to run programs in the correct order so that all
+the dependencies are met. Also in the way that it knows when files have
+been updated and will run from that point. If I had written the "make"
+utility then I would be a proud person. But, I feel there is a problem
+behind its use. Pharmaceutical companies will have written a utilitiy that
+will generate the makefile from the dependencies in the program. But the
+program it trawls through to find these dependencies may call other macros
+or "include" files where dependencies are hidden. To overcome this it may
+then become a "standard" to add all dependencies in the header of the macro
+so this can be spotted by the utility to create the "makefile". But if
+you do that then you are adding an overhead onto your maintenance in order
+to service a utility. And if whatever it produces might be incomplete and
+require programmer intervention then perhaps a simpler system would do
+the job more efficiently and effectively. So if your "makefile" utility
+at your site is working fine and requires no further input then carry on
+as you are. But if you are having major problems with it that are not easily
+resolved then perhaps you could look at running all your programs in a
+generated script. I have written such scripts in the past. And where it
+has not been a regulatory requirement to use a "makefile", I have always
+opted for a script solution. I feel it is simpler and better. It does its
+job and saves time and effort.
+<h2>
+intermediate dataset script</h2>
+I assume you report from "value added" intermediate datasets. I have discussed
+this approach on another page on this website. These will be in a directory
+somewhere. You might have only one directory for all your programs. You
+might have several. In using a script approach for running a suite of programs
+then without the dependencies that the "make" utility can find then you
+will have to name your programs in alphabetical order so that the correct
+dependencies are met. In other words, the program that creates a dataset
+that all the other programs need needs to have an alphabetically lower
+value. Say <b>a0pat.sas</b> for creating a "pat" dataset that the other
+programs need. The other programs could be <b>a1xxx.sas</b> or <b>a2zzz.sas,</b>
+or whatever, so long as the alphabetic sequence was the correct one for
+the dependencies. I am going to suggest a script for creating the intermediate
+datasets you report from but of course I don't know your setup. If you
+have studied all the Unix tips and scripts on this website then you will
+be in a position to code this yourself based on the example I have supplied.
+<p>So my assumption is that all the programs that build your intermediate
+datasets are in their own library called "idsbuild". Of course, it won't
+be like that where you are, but I hope you will be able to follow my logic
+and adapt it to your own site. I am going to assume that you have all sorts
+of test programs in the directory that hosts the real programs that build
+your intermediate datasets. And that all the "real" programs begin with
+an "a", "b" or "c" and are immediately followed by a numeric digit in the
+program name. That may not fit your site but you need to know the techniques
+for picking out your programs based on criteria like this. In the case
+of the above, where a SAS program begins with either "a", "b" or "c" and
+is immediately followed by a numeric digit then this command will list
+them all:
+<p><b><tt>ls [a,b,c][0-9]*.sas</tt></b>
+<p>(You are learning about "file name matching" which is something different
+to "pattern matching" in Unix and this is a very important thing to learn.
+I will only teach you how to "walk" with scripts. Learning how to "run"
+is something I am leaving you to learn on your own).
+<p>So let's think about what we want our script to do. This program suite
+will be creating intermediate dataset so we will want to delete these intermediate
+datasets before we start. We will also want to delete any log and list
+files for these programs. And if any of these log or list files or intermediate
+datsets do not already exist then we are not bothered about it so we can
+route any error messages to the Unix dustbin <b>/dev/null</b> . We are
+going to generate the script to do this. So the generated script should
+explain that it has been generated so that people do not amend it because
+the next time it is generated their version will get wiped out. Presumably
+some "raw" datasets exist in a directory. Let us suppose we have a root
+directory defined to the environment variable RD (environment variables
+shoudl always be uppercase) and that our protocol is the next on the directory
+and the study is next and that our raw data is in the "raw" directory underneath
+that then this would be a script to generate the script to build all your
+intermediate datasets. There is another thing. If any of these intermediate
+dataset build programs fail then we had better abandon the rest since it
+is not going to work for the tables and listings programs at some stage.
+Better to abandon the rest if this happens.
+<p>Please take time to study the following script. Feel free to amend it.
+It won't try to run the programs unless you launch it. One day you will
+be asked to write a script like this.
+<pre><b>#!/bin/sh
+# Script&nbsp;&nbsp;&nbsp;&nbsp; : mkbuild
+# Version&nbsp;&nbsp;&nbsp; : 1.0
+# Author&nbsp;&nbsp;&nbsp;&nbsp; : Roland Rashleigh-Berry
+# Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 06 August 2003
+# Contact&nbsp;&nbsp;&nbsp; : rolandberry@hotmail.com
+# Purpose&nbsp;&nbsp;&nbsp; : To create the script for building intermediate datasets
+# SubScripts : none
+# Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Make the directory with the intermediate dataset build programs in
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; the current directory before invoking this script.
+# Usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : mkbuild
+#&nbsp;
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+# N/A&nbsp; (none)
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+#&nbsp;
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+proj=`pwd | sed "s%$RD%%" | awk -F/ '{print $2}'`
+
+prot=`pwd | sed "s%$RD%%" | awk -F/ '{print $3}'`
+
+rm -f build 2>/dev/null
+
+ls -1 [a,b,c][a-z]*.sas 2> /dev/null | awk -F. '{print $1}' | sort > $HOME/progs.tmp
+
+if [ -s $HOME/progs.tmp ] ; then
+
+cat > build &lt;&lt; FINISH
+#!/bin/sh
+# This script was automatically generated by the "mkbuild" utility. Do not edit this
+# member as it will likely be overwritten by the same utility that created it.
+
+echo \$USER \`date\` 1>&amp;2
+
+# Delete the output datasets
+rm $RD/$proj/$prot/ids/*.sas7bdat 2> /dev/null
+
+
+# Delete the .log and .lst files
+rm [a,b,c][a-z]*.log 2>/dev/null
+rm [a,b,c][a-z]*.lst 2>/dev/null
+
+
+# Run each program and exit if there is an error.
+
+FINISH
+#==============================================================
+
+exec &lt; $HOME/progs.tmp
+while read prog
+do
+#==============================================================
+cat >> build &lt;&lt; FINISH
+# Program: $prog
+sas -sasuser work -sysin $prog
+if [ \$? -gt 0 ] ; then exit 2 ; fi
+
+FINISH
+#==============================================================
+done
+
+echo "echo 'finished' 1>&amp;2" >> build
+
+# Make "build" an executable file
+chmod +x build
+
+fi</b></pre>
+
+<h2>
+Tables/Listings report script</h2>
+That is the intermediate dataset build taken care of. As for the tables
+and listings then these should match with the entries in your "titles"
+dataset, wherever that is stored. You should have already created the "intitles"
+script. Like I've said in a few places - "It's your call". If you have
+followed me this far then you are already a script programmer. There may
+be plenty for you to fix in the scripts I have given you but you should
+be up to maintaining them by now. Use this as a basis only:
+<pre><b>#!/bin/sh
+# Script&nbsp;&nbsp;&nbsp;&nbsp; : mkrep
+# Version&nbsp;&nbsp;&nbsp; : 1.0
+# Author&nbsp;&nbsp;&nbsp;&nbsp; : Roland Rashleigh-Berry
+# Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 06 August 2003
+# Contact&nbsp;&nbsp;&nbsp; : rolandberry@hotmail.com
+# Purpose&nbsp;&nbsp;&nbsp; : To create the script for running reports
+# SubScripts : intitles
+# Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Make the directory with the report code in the current directory
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; before invoking this script. This assumes the "intitles" script
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; has been written.
+# Usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : mkrep
+#&nbsp;
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+# N/A&nbsp; (none)
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+#&nbsp;
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+proj=`pwd | sed "s%$RD%%" | awk -F/ '{print $2}'`
+
+prot=`pwd | sed "s%$RD%%" | awk -F/ '{print $3}'`
+
+rm -f rep 2>/dev/null
+
+intitles > $HOME/progs.tmp
+
+if [ -s $HOME/progs.tmp ] ; then
+
+cat > rep &lt;&lt; FINISH
+#!/bin/sh
+# This script was automatically generated by the "mkrep" utility. Do not edit this
+# member as it will likely be overwritten by the same utility that created it.
+
+echo \$USER \`date\` 1>&amp;2
+
+# Delete the output datasets
+rm *.lst 2> /dev/null
+rm *.log 2> /dev/null
+
+
+# Run each program in turn.
+
+FINISH
+#==============================================================
+
+exec &lt; $HOME/progs.tmp
+while read prog
+do
+#==============================================================
+cat >> build &lt;&lt; FINISH
+# Program: $prog
+sas -sasuser work -sysin $prog
+
+FINISH
+#==============================================================
+done
+
+echo "echo 'finished' 1>&amp;2" >> rep
+
+# Make it an executable file
+chmod +x rep
+
+fi</b>
+
+</pre>
+
+<h2>
+Running the whole suite</h2>
+At this point you will have a "build" script to build your intermediate
+datasets and a "run" script in each tables/listings directory to run your
+tables and listings. The final step is to create a script to run all of
+them. You will be running the intermediate dataset build first and if that
+fails then you might as well abandon the whole lot. But if that runs to
+complaetion then maybe you don't care if the odd table or listing fails.
+You can look at the output from the script to ascertain whether it completed
+or not. Here is a very short script that you can amend to run the build
+of the intermediate datasets and the reports. Amend it as required.
+<pre><b>#!/bin/sh
+# Script&nbsp;&nbsp;&nbsp;&nbsp; : runsuite
+# Version&nbsp;&nbsp;&nbsp; : 1.0
+# Author&nbsp;&nbsp;&nbsp;&nbsp; : Roland Rashleigh-Berry
+# Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 06 August 2003
+# Contact&nbsp;&nbsp;&nbsp; : rolandberry@hotmail.com
+# Purpose&nbsp;&nbsp;&nbsp; : To run the intermediate dataset build plus report build
+# SubScripts : mkbuild mkrun
+# Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Make the directory with the report code in the current directory
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; before invoking this script.&nbsp;
+# Usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : sh runsuite
+#&nbsp;
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+# N/A&nbsp; (none)
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+#&nbsp;
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+proj=`pwd | sed "s%$RD%%" | awk -F/ '{print $2}'`
+
+prot=`pwd | sed "s%$RD%%" | awk -F/ '{print $3}'`
+
+cd $RD/$proj/$prot/programs/build
+mkbuild
+sh build 1>build.msg 2>build.err
+if [ $? -gt 0 ] ; then exit 2 ; fi
+
+cd $RD/$proj/$prot/programs/efficacy
+mkrun
+sh run 1>run.msg 2>run.err &amp;
+
+cd $RD/$proj/$prot/programs/safety
+mkrun
+sh run 1>run.msg 2>run.err &amp;
+
+echo "Finished"</b></pre>
+&nbsp;
+<p>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/makefiles.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:11 GMT -->
+</html>

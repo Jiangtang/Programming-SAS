@@ -1,0 +1,33 @@
+#!/bin/bash
+#<pre><b>
+# Script     : donefiles
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 04-Jul-2005
+# Purpose    : Production script to list out the files in donelist.txt
+# SubScripts : none
+# Notes      : none
+# Usage      : donefiles 
+#              lis2ps -p john $(donefiles)
+#              cp -p $(donefiles) statusYYMMDD
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not supply any parameters
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Edit the test below for the number of expected parameters and put out
+# a usage note if an incorrect number supplied. Remove if not required.
+if [ $# -gt 0 ] ; then
+  echo "Usage: donefiles # do not supply any parameters" 1>&2
+  exit 1
+fi
+
+grep -v '^#' donelist.txt | gawk '{print $2}'

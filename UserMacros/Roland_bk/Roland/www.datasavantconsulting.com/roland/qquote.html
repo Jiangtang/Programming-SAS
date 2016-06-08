@@ -1,0 +1,98 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/qquote.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:05 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Generator" content="Microsoft Word 97">
+   <meta name="keywords" content="sas tips techniques">
+   <meta name="Description" content="Quoting quoted text using SAS">
+   <meta name="Template" content="C:\PROGRAM FILES\MSOFFICE\OFFICE\html.dot">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="quoting quoted text sas">
+   <title>Quoting quoted text</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Quoting quoted text</h1></center>
+<b>[This site is not connected with the SAS Institute]</b>
+<p><b>[last updated - 15 September 2007]</b>
+<p>Sometimes, doing advanced progranmming, you may want to generate SAS
+code or macro statements that contain the contents of a character variable
+or perhaps the label of a variable and you need to put it in quotes. <b>Always
+bear in mind that a string you are quoting may itself contain quotes.</b>
+The following short code segment and its log will show you how to code
+for this for both generated SAS code and macro code.
+<p>Firstly, here is the pure code submitted:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data test;<br>
+&nbsp; str='Larry''s cat''s "meow" sounded more like a ''woof''';<br>
+&nbsp; put str=;<br>
+&nbsp; call symput('str',str);<br>
+&nbsp; call execute('data _null_;str2='''||trim(tranwrd(str,"'","''"))||''';put
+str2=;run;');<br>
+run;<br>
+%put >>>> str=%str(%')%sysfunc(tranwrd(&amp;str,%str(%'),%str(%'%')))%str(%');</tt></td>
+</tr>
+</table>
+
+<p>And here is the log output:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>23&nbsp;&nbsp; data test;<br>
+24&nbsp;&nbsp;&nbsp;&nbsp; str='Larry''s cat''s "meow" sounded more like
+a ''woof''';<br>
+25&nbsp;&nbsp;&nbsp;&nbsp; put str=;<br>
+26&nbsp;&nbsp;&nbsp;&nbsp; call symput('str',str);<br>
+27&nbsp;&nbsp;&nbsp;&nbsp; call execute('data _null_;str2='''||trim(tranwrd(str,"'","''"))||''';put
+str2=;run;');<br>
+<br>
+28&nbsp;&nbsp; run;<br>
+<br>
+str=Larry's cat's "meow" sounded more like a 'woof'<br>
+NOTE: The data set WORK.TEST has 1 observations and 1 variables.<br>
+NOTE: DATA statement used:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.05 seconds<br>
+<br>
+<br>
+NOTE: CALL EXECUTE generated line.<br>
+1&nbsp;&nbsp; + data _null_;str2='Larry''s cat''s "meow" sounded more like
+a ''woof''';put str2=;run;<br>
+<br>
+str2=Larry's cat's "meow" sounded more like a 'woof'<br>
+NOTE: DATA statement used:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.00 seconds<br>
+<br>
+<br>
+29&nbsp;&nbsp; %put >>>> str=%str(%')%sysfunc(tranwrd(&amp;str,%str(%'),%str(%'%')))%str(%');<br>
+<br>
+>>>> str='Larry''s cat''s "meow" sounded more like a ''woof'''</tt></td>
+</tr>
+</table>
+
+<pre><b></b></pre>
+
+<p><br><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/qquote.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:05 GMT -->
+</html>

@@ -1,0 +1,904 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/hacking.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:06 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="Hacking using sas">
+   <meta name="KeyWords" content="hacking using sas">
+   <meta name="robots" content="noindex,nofollow">
+   <meta name="author" content="Roland Rashleigh-Berry">
+   <meta name="description" content="Hacking using sas">
+   <title>Hacking using sas</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Hacking using SAS</h1></center>
+<b>[last updated: 02 Aug 2008]</b><b></b>
+<p>"All that is required for evil to prevail is for good men to do nothing."&nbsp;
+--&nbsp; Edmund Burke<b></b>
+<h2>
+Introduction</h2>
+Before moving over to the field of clinical reporting in 1996 I had spent
+ten years as an MVS Capacilty Planner/Performance tuner, again using sas.
+In that job you sometimes come across hacking attempts or use of the computer
+that borders on hacking. As a "performance tuner" it was my job, if assigned
+to me, to thoroughly investigate any hacking attempts done by any user
+and to investigate their activities, possibly going back many months, using
+the archived system logs. My first experience was to see the JES3 print
+spool queue replaced by a sas output. This was most likely an inventive
+programmer's attempt to do a print in a novel way, except it knocked out
+everybody else's print jobs. The second was seeing a task with the seemingly
+obligatory name <b>IAMGOD</b> doing something it should definitely not
+be doing. In the second case, the person had their account cancelled with
+immediate effect, was dismissed and marched off the premises. In the first
+case, it was yet another entry on that person's file that stretched back
+for years. I bet he is still wondering why he never got a promotion. Since
+those times, hacking has become a worldwide pasttime.Nothing is sacred
+and nowhere is safe. <b>Your sas jobs can be hacked too.</b> What I intend
+to do on this page is increase the awareness of hacking for those in an
+IT position who look after sas production work. That is if anyone is in
+that position. Perhaps companies feel that no such post is needed. After
+reading this page, they might reconsider.
+<h2>
+old-style macros</h2>
+Most sas programmers have never heard of "old-style macros". If you have
+heard of these then it is likely you have worked with <a href="http://www.mxg.com/" target="_blank">MXG
+software</a> that is used for databasing performance and usage data from
+IBM mainframes (and now others). MXG uses old-style macros. What these
+old-style macros do is substitute a word (up to 8 characters) with what
+follows it until a "%" is encountered. MXG software uses an underscore
+as the start of a name where it is making a substitution, but it doesn't
+have to be an underscore for it to work. Firstly, I would like to wake
+you up to the existence of this macro style. Below I have created a deliberate
+syntax error in the old-style macro name and the sas compiler has warned
+me about it.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>1&nbsp;&nbsp;&nbsp; macro (bad) dummy dummy %</tt>
+<br><tt>ERROR: Old-style macro name ( must contain only letters, digits,
+and underscores.</tt></td>
+</tr>
+</table>
+
+<p>In this next example I have got the syntax correct and you can see what
+the old-style macro is doing.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>2&nbsp;&nbsp;&nbsp; macro naughty DUMMY DUMMY %</tt>
+<br><tt>3&nbsp;&nbsp;&nbsp; %put >>>>>> You are a naughty hacker >>>>>>>;</tt>
+<br><tt>>>>>>> You are a&nbsp; DUMMY DUMMY&nbsp;&nbsp; hacker >>>>>>></tt></td>
+</tr>
+</table>
+
+<p>Can you see that it has found the word "naughty", which is the macro
+name, and has substituted that word with what follows "naughty" in the
+macro definition. It's substitution powers are limited. <b>This is really
+important to know</b>. See what happens when I put "naughty" in quotes.
+No substitution is made.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>1&nbsp;&nbsp;&nbsp; macro naughty DUMMY DUMMY %</tt>
+<br><tt>2&nbsp;&nbsp;&nbsp; %put >>>>>> You are a naughty "naughty" hacker
+>>>>>>>;</tt>
+<br><tt>>>>>>> You are a&nbsp;&nbsp; DUMMY DUMMY&nbsp;&nbsp; "naughty"
+hacker >>>>>>></tt></td>
+</tr>
+</table>
+
+<p>We will use that bit of good news (i.e. the substitution is not made
+inside quotes) later.
+<p>Old-style macros are limited to 8 characters in length. You will see
+that the following attempt at a substitution does not work. Note that sas
+did not produce any diagnostics to say that the name was too long.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>4&nbsp;&nbsp;&nbsp; macro mendacious DUMMY DUMMY %</tt>
+<br><tt>5&nbsp;&nbsp;&nbsp; %put >>>>>> You are a mendacious hacker >>>>>>>;</tt>
+<br><tt>>>>>>> You are a mendacious hacker >>>>>>></tt></td>
+</tr>
+</table>
+
+<p>Substitutions are made for words and not part of a string. Here is the
+"naughty" example again but with "naughty" inside "z"s. No substitution
+is made.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>6&nbsp;&nbsp;&nbsp; macro naughty DUMMY DUMMY %</tt>
+<br><tt>7&nbsp;&nbsp;&nbsp; %put >>>>>> You are znaughtyz hacker >>>>>>>;</tt>
+<br><tt>>>>>>> You are znaughtyz hacker >>>>>>></tt></td>
+</tr>
+</table>
+
+<p>Now we come to the part where we substitute a name with another one
+with a different meaning. Firstly, here is the output with no old-style
+macro substitution being made. The result is as expected.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>5&nbsp;&nbsp;&nbsp; %put >>>>>> %sysfunc(trim(hacker)) >>>>>>>;</tt>
+<br><tt>>>>>>> hacker >>>>>>></tt>
+<br><tt>6&nbsp;&nbsp;&nbsp; %put >>>>>> %trim(hacker) >>>>>>>;</tt>
+<br><tt>>>>>>> hacker >>>>>>></tt>
+<br><tt>7&nbsp;&nbsp;&nbsp; run;</tt></td>
+</tr>
+</table>
+
+<p>Now an old-style macro makes a substitution. Look at the output carefully.
+Do you see that the first "trim" has been substituted but the send "trim"
+not. <b>Old-style macros will not substitute for macro names. </b>This
+is important.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>8&nbsp;&nbsp;&nbsp; macro trim reverse %</tt>
+<br><tt>9&nbsp;&nbsp;&nbsp; %put >>>>>> %sysfunc(trim(hacker)) >>>>>>>;</tt>
+<br><tt>>>>>>> rekcah >>>>>>></tt>
+<br><tt>10&nbsp;&nbsp; %put >>>>>> %trim(hacker) >>>>>>>;</tt>
+<br><tt>>>>>>> hacker >>>>>>></tt>
+<br><tt>11&nbsp;&nbsp; run;</tt></td>
+</tr>
+</table>
+
+<p>In the above case the %trim macro had already been complied. Now what
+I will do is save the code, quit the sas session, restart it and rerun
+it. This is what I got.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>1&nbsp;&nbsp;&nbsp; macro trim reverse %</tt>
+<br><tt>2&nbsp;&nbsp;&nbsp; %put >>>>>> %sysfunc(trim(hacker)) >>>>>>>;</tt>
+<br><tt>>>>>>> rekcah >>>>>>></tt>
+<br><tt>3&nbsp;&nbsp;&nbsp; %put >>>>>> %trim(hacker) >>>>>>>;</tt>
+<br><tt>MACRO CALLED:&nbsp;&nbsp; reverse&nbsp;&nbsp; v1.0</tt>
+<br><tt>NOTE: Autocall member, TRIM, has not been compiled by the macro
+processor. It may contain a macro</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; syntax error or not define a macro
+with the same name as the member.&nbsp; To autocall this</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; member again, set OPTION MRECALL.</tt>
+<br><tt>>>>>>> (hacker) >>>>>>></tt>
+<br><tt>4&nbsp;&nbsp;&nbsp; run;</tt></td>
+</tr>
+</table>
+
+<p>The difference in the above case is that as the %trim macro is being
+compiled, the old-style macro is acting on it before the compilation stage
+and has replaces the name of the macro "trim" with "reverse" and so the
+macro name is not the same as the autocall program name and so a compilation
+error occurs.
+<p>You are not encouraged to use old-style macros. You should <b>never</b>
+use them, in fact, for any new work you do but you may have to maintain
+some old code where they are used and you might be confused as to how they
+work. If you want to know more about these old-style macros and their syntax
+then follow this link on the sas support site.
+<p><a href="http://support.sas.com/techsup/technote/ts289.html" target="_blank">Syntax
+for old style macros</a>
+<p>Hopefully you now know that there exists a different style of macro
+than the ones you are used to, called "old-style macros" and you can see
+how they work and their limitations. Next you will see how they can be
+used for hacking.
+<h2>
+Using old-style macros for hacking</h2>
+Consider that your organisation has spent a great deal of money writing
+some reporting macros. They think these macros are very valuable and they
+don't want anybody to see the code that underlies them. So somewhere in
+their macro they try to hide the code from the outside user by resetting
+system options as follows.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>options nomprint nosymbolgen nomlogic nomacrogen nospool nosource
+nosource2 nonotes;</tt></td>
+</tr>
+</table>
+
+<p>Note that some of the option names above are 8 characters or less. They
+are ripe for being substituted by old-style macros. Suppose the hacker
+uses this code before calling this precious macro.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>macro macrogen nomacrogen %</tt>
+<br><tt>macro nomprint mprint %</tt>
+<br><tt>macro nomlogic mlogic %</tt>
+<br><tt>macro nospool spool %</tt>
+<br><tt>macro nosource source %</tt>
+<br><tt>macro nonotes notes %</tt></td>
+</tr>
+</table>
+
+<p>Let's try this out and look at the MPRINT option setting. Do you see
+that MPRINT is in effect even though, within the macro, NOMPRINT was specified.
+I checked in sashelp.voption and indeed, MPRINT is in effect and not NOMPRINT.
+Macro hacked! Do you see how easy it is?
+<p>And look at the hacker turning <b>macrogen</b> into <b>nomacrogen</b>.
+Why are they doing that? The answer is that "<b>macrogen</b>" is for old-style
+macros and shows where these old-style macros are being used. The hacker
+does not want the user to see this. If they want some real macro code then
+they will want the MPRINT option setting.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>1&nbsp;&nbsp;&nbsp; macro nomprint mprint %</tt>
+<br><tt>2&nbsp;&nbsp;&nbsp; macro nomlogic mlogic %</tt>
+<br><tt>3&nbsp;&nbsp;&nbsp; macro nospool spool %</tt>
+<br><tt>4&nbsp;&nbsp;&nbsp; macro nosource source %</tt>
+<br><tt>5&nbsp;&nbsp;&nbsp; macro nonotes notes %</tt>
+<br><tt>6</tt>
+<br><tt>7&nbsp;&nbsp;&nbsp; options nomprint nosymbolgen nomlogic nomacrogen
+nospool nosource nosource2 nonotes;</tt>
+<br><tt>8</tt>
+<br><tt>9&nbsp;&nbsp;&nbsp; %put >>> %sysfunc(getoption(mprint)) >>>>>;</tt>
+<br><tt>>>> MPRINT >>>>></tt></td>
+</tr>
+</table>
+
+<p>The possibilities for using old-style macros to substitute words like
+that are endless. You may think that a "compiled" macro is something that
+can not be looked at. Well, unless you are using sas v9.2 or later with
+the "secure" option for the macro compilation then all a person has to
+do is to open the compiled macro in a text editor. Most of the code can
+be seen. The hacker can decide exactly what substitutions will be of benefit
+to them and make those substitutions if they so wish, so long as the words
+are 8 characters or less. There is not much you can do about it. However,
+remember that these old-style macros will not substitute macro names. They
+will not make substitutions in other old-style macros either. So if you
+have this in your macro code at the top of the code then these hacking
+attempts are thwarted and will never give honest sas code a problem.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>macro nomprint NOMPRINT %</tt>
+<br><tt>macro nomlogic NOMLOGIC %</tt>
+<br><tt>macro nospool NOSPOOL %</tt>
+<br><tt>macro nosource NOSOURCE %</tt>
+<br><tt>macro nonotes NONOTES %</tt></td>
+</tr>
+</table>
+
+<h2>
+An anti-hack that won't work</h2>
+Old-style macros are applied right at the end of all other processing,
+including all normal macro and macro variable processing, so you see that
+assigning the word "nomprint" to two macro variables will fail and the
+old-style macro will take effect only after "nomprint" has been resolved
+-- which then gets hacked. Take a look.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>26&nbsp;&nbsp; options macrogen;</tt>
+<br><tt>27</tt>
+<br><tt>28&nbsp;&nbsp; macro nomprint mprint %</tt>
+<br><tt>29</tt>
+<br><tt>30&nbsp;&nbsp; %let var1=nom;</tt>
+<br><tt>31&nbsp;&nbsp; %let var2=print;</tt>
+<br><tt>32</tt>
+<br><tt>33&nbsp;&nbsp; options &amp;var1.&amp;var2;</tt>
+<br><tt>NOTE: The old-style macro NOMPRINT is beginning resolution.</tt>
+<br><tt>34&nbsp; + mprint</tt>
+<br><tt>NOTE: The old-style macro NOMPRINT is ending resolution.</tt>
+<br><tt>35</tt>
+<br><tt>36&nbsp;&nbsp; run;</tt>
+<br><tt>37</tt>
+<br><tt>38&nbsp;&nbsp; %put >>>>> %sysfunc(getoption(mprint)) >>>> ;</tt>
+<br><tt>>>>>> MPRINT >>>></tt></td>
+</tr>
+</table>
+
+<h2>
+Using %listm (or %mlist)</h2>
+If you have sas then you have both of the macros <b>%listm</b> amd <b>%mlist</b>.
+Isn't it strange that you can't find them in the online documentation?
+There is a reason for that, from what I have read, and that is the SI wished
+they could have gotten rid of old-style macros many years ago. As I said,
+they can't, as MXG uses them and they sell a lot of site licenses on the
+back of MXG. They just hope, maybe, that it would all be forgotten -- yet
+MXG users certainly know they are there -- and so will any hacker worth
+their salt, who is intent on hacking sas code. If you are an IT person
+looking after production sas jobs then you are at a disadvantage against
+hackers. Hackers know old-style macros exist and what they can do with
+them. As an IT person with no experience of MXG software -- you don't have
+a clue that old-style macros exist! Luckily, you can use %listm (or %mlist)
+to thwart attempts to hack your sas code by detecting the existence of
+old-style macros.
+<p>Up until now you have very likely never heard of <b>%listm</b> so I
+will start up a fresh sas session and see what I get when I call the macro.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>1&nbsp;&nbsp;&nbsp; %listm;</tt>
+<br><tt>NOTE: Old-style macro directory is empty.</tt></td>
+</tr>
+</table>
+
+<p>Now I will set up an old-style macro that I hope will do a bit of good
+hacking for me and call %listm again. I'll quit sas and start a new session.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>1&nbsp;&nbsp;&nbsp; macro nomprint mprint %</tt>
+<br><tt>2&nbsp;&nbsp;&nbsp; %listm;</tt>
+<br><tt>Old-style macro directory:</tt>
+<br><tt>&nbsp;&nbsp; NOMPRINT</tt></td>
+</tr>
+</table>
+
+<p>You can see that if the old-style macro directory is empty then we get
+a "NOTE" statement of the above form with the word "empty" in it and if
+it has members then it is not a "NOTE". The messages are written to the
+log and we can redirect the log if we want to. We want to in this case.
+Note that I have set up the macro variable "osmempty" (old-style macros
+empty) to determine or not whether the macro library is empty.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>3&nbsp;&nbsp;&nbsp; macro nomprint mprint %</tt>
+<br><tt>4&nbsp;&nbsp;&nbsp; proc printto log="C:\spectre\osmacros.txt"
+new;</tt>
+<br><tt>5&nbsp;&nbsp;&nbsp; run;</tt>
+<p><tt>NOTE: PROCEDURE PRINTTO used (Total process time):</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.00 seconds</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.00 seconds</tt>
+<br>&nbsp;
+<p><tt>9</tt>
+<br><tt>10&nbsp;&nbsp; %let osmempty=0;</tt>
+<br><tt>11&nbsp;&nbsp; data _null_;</tt>
+<br><tt>12&nbsp;&nbsp;&nbsp;&nbsp; infile "C:\spectre\osmacros.txt";</tt>
+<br><tt>13&nbsp;&nbsp;&nbsp;&nbsp; input;</tt>
+<br><tt>14&nbsp;&nbsp;&nbsp;&nbsp; if not index(_infile_,"Old-style") then
+delete;</tt>
+<br><tt>15&nbsp;&nbsp;&nbsp;&nbsp; put _infile_;</tt>
+<br><tt>16&nbsp;&nbsp;&nbsp;&nbsp; if index(_infile_,"NOTE: Old-style macro
+directory is empty.")=1 then call</tt>
+<br><tt>16 ! symput("osmempty","1");</tt>
+<br><tt>17&nbsp;&nbsp; run;</tt>
+<p><tt>NOTE: The infile "C:\spectre\osmacros.txt" is:</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; File Name=C:\spectre\osmacros.txt,</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RECFM=V,LRECL=256</tt>
+<p><tt>Old-style macro directory:</tt>
+<br><tt>NOTE: 11 records were read from the infile "C:\spectre\osmacros.txt".</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The minimum record length was 0.</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The maximum record length was 50.</tt>
+<br><tt>NOTE: DATA statement used (Total process time):</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.04 seconds</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.04 seconds</tt>
+<br>&nbsp;
+<p><tt>18</tt>
+<br><tt>19&nbsp;&nbsp; %put osmempty=&amp;osmempty;</tt>
+<br><tt>osmempty=0</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>The old-style macro library is not empty in the above case due to the
+presence of the "nomprint" macro. I will now delete this macro, using the
+<b>%delete</b>
+macro, and rerun. This time the library is empty and this is reflected
+in the value of the "osmempty" macro variable.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>20&nbsp;&nbsp; %delete nomprint;</tt>
+<br><tt>21&nbsp;&nbsp; proc printto log="C:\spectre\osmacros.txt" new;</tt>
+<br><tt>22&nbsp;&nbsp; run;</tt>
+<p><tt>NOTE: PROCEDURE PRINTTO used (Total process time):</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.01 seconds</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.01 seconds</tt>
+<br>&nbsp;
+<p><tt>26</tt>
+<br><tt>27&nbsp;&nbsp; %let osmempty=0;</tt>
+<br><tt>28&nbsp;&nbsp; data _null_;</tt>
+<br><tt>29&nbsp;&nbsp;&nbsp;&nbsp; infile "C:\spectre\osmacros.txt";</tt>
+<br><tt>30&nbsp;&nbsp;&nbsp;&nbsp; input;</tt>
+<br><tt>31&nbsp;&nbsp;&nbsp;&nbsp; if not index(_infile_,"Old-style") then
+delete;</tt>
+<br><tt>32&nbsp;&nbsp;&nbsp;&nbsp; put _infile_;</tt>
+<br><tt>33&nbsp;&nbsp;&nbsp;&nbsp; if index(_infile_,"NOTE: Old-style macro
+directory is empty.")=1 then call</tt>
+<br><tt>33 ! symput("osmempty","1");</tt>
+<br><tt>34&nbsp;&nbsp; run;</tt>
+<p><tt>NOTE: The infile "C:\spectre\osmacros.txt" is:</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; File Name=C:\spectre\osmacros.txt,</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RECFM=V,LRECL=256</tt>
+<p><tt>NOTE: Old-style macro directory is empty.</tt>
+<br><tt>NOTE: 10 records were read from the infile "C:\spectre\osmacros.txt".</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The minimum record length was 0.</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The maximum record length was 50.</tt>
+<br><tt>NOTE: DATA statement used (Total process time):</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.00 seconds</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.00 seconds</tt>
+<br>&nbsp;
+<p><tt>35</tt>
+<br><tt>36&nbsp;&nbsp; %put osmempty=&amp;osmempty;</tt>
+<br><tt>osmempty=1</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>So it looks as though we have a way of thwarting the hacker. But then,
+any hacker worth his salt will suspect you have such a check in place and
+will attempt to negate both the %listm and the %mlist macros. I'll start
+a fresh session, define the old-style macro, and attempt to cancel out
+the %listm and %mlist macro.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>1&nbsp;&nbsp;&nbsp; macro nomprint mprint %</tt>
+<br><tt>2</tt>
+<br><tt>3&nbsp;&nbsp;&nbsp; %macro listm;</tt>
+<br><tt>ERROR: Macro LISTM has been given a reserved name.</tt>
+<br><tt>ERROR: A dummy macro will be compiled.</tt>
+<br><tt>4&nbsp;&nbsp;&nbsp; %put NOTE: Old-style macro directory is empty.;</tt>
+<br><tt>5&nbsp;&nbsp;&nbsp; %mend listm;</tt>
+<br><tt>6&nbsp;&nbsp;&nbsp; %macro mlist;</tt>
+<br><tt>ERROR: Macro MLIST has been given a reserved name.</tt>
+<br><tt>ERROR: A dummy macro will be compiled.</tt>
+<br><tt>7&nbsp;&nbsp;&nbsp; %put NOTE: Old-style macro directory is empty.;</tt>
+<br><tt>8&nbsp;&nbsp;&nbsp; %mend mlist;</tt>
+<br><tt>9</tt>
+<br><tt>10&nbsp;&nbsp; proc printto log="C:\spectre\osmacros.txt" new;</tt>
+<br><tt>11&nbsp;&nbsp; run;</tt>
+<p><tt>NOTE: PROCEDURE PRINTTO used (Total process time):</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.00 seconds</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.00 seconds</tt>
+<br>&nbsp;
+<p><tt>15</tt>
+<br><tt>16&nbsp;&nbsp; %let osmempty=0;</tt>
+<br><tt>17&nbsp;&nbsp; data _null_;</tt>
+<br><tt>18&nbsp;&nbsp;&nbsp;&nbsp; infile "C:\spectre\osmacros.txt";</tt>
+<br><tt>19&nbsp;&nbsp;&nbsp;&nbsp; input;</tt>
+<br><tt>20&nbsp;&nbsp;&nbsp;&nbsp; if not index(_infile_,"Old-style") then
+delete;</tt>
+<br><tt>21&nbsp;&nbsp;&nbsp;&nbsp; put _infile_;</tt>
+<br><tt>22&nbsp;&nbsp;&nbsp;&nbsp; if index(_infile_,"NOTE: Old-style macro
+directory is empty.")=1 then call</tt>
+<br><tt>22 ! symput("osmempty","1");</tt>
+<br><tt>23&nbsp;&nbsp; run;</tt>
+<p><tt>NOTE: The infile "C:\spectre\osmacros.txt" is:</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; File Name=C:\spectre\osmacros.txt,</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RECFM=V,LRECL=256</tt>
+<p><tt>Old-style macro directory:</tt>
+<br><tt>NOTE: 11 records were read from the infile "C:\spectre\osmacros.txt".</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The minimum record length was 0.</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The maximum record length was 50.</tt>
+<br><tt>NOTE: DATA statement used (Total process time):</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.04 seconds</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.04 seconds</tt>
+<br>&nbsp;
+<p><tt>24</tt>
+<br><tt>25&nbsp;&nbsp; %put osmempty=&amp;osmempty;</tt>
+<br><tt>osmempty=0</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>The hacker has been foiled in the above case. They can not replace the
+macros %listm or %mlist with their own versions. It looks as though we
+have beaten the hacker so long as we test for old-style macros and abort
+the sas job if any are detected. If <b>osmempty=1</b> we carry on, if <b>osmempty=0</b>
+we abort, running %listm again to give us a list of the old-style macros
+used in attempting the hack.
+<p>This looks good! It looks like we have beaten the hacker. <b>Have we
+won? Have we beaten the hacker? Have we, have we?</b> The answer is "<b>maybe</b>".
+There is an attack point in your solution that the hacker can try to exploit.
+That is the macro variable name you use to do the check --&nbsp; "<b>osmempty</b>"
+to be specific. Even if your macro is compiled, the hacker can find the
+name of the macro variable you are using by opening up your compiled macro
+in a text editor. And you have used the unique name "<b>osmempty</b>" that
+is a perfect target for attack, especially because your macro variable
+name is <b>8 characters or less</b> and so is available to be substituted
+using an old-style macro. They can try to substitute that name with another
+macro variable name that they have set to "1" before calling your macro.
+The hacker stands a chance here but will the hacker succeed? Let's see.
+Here is the code followed by the log message.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>macro osmempty haha %</tt>
+<br><tt>macro nomprint mprint %</tt>
+<p><tt>%let haha = 1;</tt>
+<p><tt>options mprint;</tt>
+<p><tt>%macro test;</tt>
+<br><tt>&nbsp; proc printto log="C:\spectre\osmacros.txt" new;</tt>
+<br><tt>&nbsp; run;</tt>
+<br><tt>&nbsp; %listm;</tt>
+<br><tt>&nbsp; proc printto log=log;</tt>
+<br><tt>&nbsp; run;</tt>
+<p><tt>&nbsp; %let osmempty = 0;</tt>
+<br><tt>&nbsp; data _null_;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; infile "C:\spectre\osmacros.txt";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; input;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if not index(_infile_,"Old-style") then delete;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; put _infile_;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if index(_infile_,"NOTE: Old-style macro directory
+is empty.") = 1&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; then call symput("osmempty","1");</tt>
+<br><tt>&nbsp; run;</tt>
+<p><tt>&nbsp; %put >>> osmempty = &amp;osmempty >>>>;</tt>
+<p><tt>&nbsp; %if &amp;osmempty = 1 %then %put It is safe to carry on;</tt>
+<br><tt>&nbsp; %else %put We have been hacked - we must abort;</tt>
+<br><tt>%mend test;</tt>
+<br><tt>%test</tt>
+<br>&nbsp;
+<p><tt>>>> osmempty = 0 >>>></tt>
+<br><tt>We have been hacked - we must abort</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>The hack against the counter-hack should have worked in the above case
+but it didn't. But to be on the safe side, if you are going to use a macro
+variable in this way to detect the presence of old-style macros then you
+should take precautions and <b>make it more than 8 characters long</b>
+so that there is no way it can be substituted. <b>"osmempty" was a stupid
+macro variable name to use</b> due to it being 8 characters long or less.
+<b>When
+you counter-hack, you have got to put yourself in the position of the hacker
+who is going to attempt to hack your counter-hack. </b>Leave no vulnerabilities.
+Thoroughly attempt to hack your solution yourself in any way you can. Better
+still, get another competent programmer to attempt to hack your solution
+as it is human nature to be unaware of our own weaknesses and failings.
+<h2>
+Can we relax now?</h2>
+You can use <b>%listm</b> to detect whether there have been any old-style
+macros set up. Using the above methods you should be able to keep that
+door closed. <b>But if you did all those things, would you be safe?</b>
+<p>The answer is <b>"no"</b>. There are data sets.....................................&nbsp;
+and then there are <b>views</b>.
+<h2>
+Hacks inside Views</h2>
+A data set is a fairly safe thing. A <b>view</b> is not. You can put extra
+processing in views. You could have a "call execute" in your view or a
+"call symput". In the "call execute" you could reset system options if
+you wanted to. In the "call symput" you could reset the contents of one
+or more very important macro variables. Using a "call execute", what you
+can achieve is limited only by your imagination.. Let's see an example
+of this at work used against the NOMPRINT option.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>18&nbsp;&nbsp; options nonotes;</tt>
+<br><tt>19&nbsp;&nbsp; data class / view = class;</tt>
+<br><tt>20&nbsp;&nbsp;&nbsp;&nbsp; if _n_ eq 1 then call execute('options
+mprint;');</tt>
+<br><tt>21&nbsp;&nbsp;&nbsp;&nbsp; set sashelp.class;</tt>
+<br><tt>22&nbsp;&nbsp; run;</tt>
+<br><tt>23</tt>
+<br><tt>24&nbsp;&nbsp; options mprint;</tt>
+<br><tt>25</tt>
+<br><tt>26&nbsp;&nbsp; %macro test(data=);</tt>
+<br><tt>27&nbsp;&nbsp;&nbsp;&nbsp; options nomprint;</tt>
+<br><tt>28&nbsp;&nbsp;&nbsp;&nbsp; %put >>>>>> Before data step: %sysfunc(getoption(mprint))
+>>>>>>>>>>>;</tt>
+<br><tt>29&nbsp;&nbsp;&nbsp;&nbsp; data _null_;</tt>
+<br><tt>30&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set class;</tt>
+<br><tt>31&nbsp;&nbsp;&nbsp;&nbsp; run;</tt>
+<br><tt>32&nbsp;&nbsp;&nbsp;&nbsp; %put >>>>>> After data step: %sysfunc(getoption(mprint))
+>>>>>>>>>;</tt>
+<br><tt>33&nbsp;&nbsp; %mend test;</tt>
+<br><tt>34</tt>
+<br><tt>35&nbsp;&nbsp; %test(data=class);</tt>
+<br><tt>MPRINT(TEST):&nbsp;&nbsp; options nomprint;</tt>
+<br><tt>>>>>>> Before data step: NOMPRINT >>>>>>>>>>></tt>
+<br><tt>1&nbsp;&nbsp; + options mprint;</tt>
+<br><tt>>>>>>> After data step: MPRINT >>>>>>>>></tt></td>
+</tr>
+</table>
+
+<p>To negate this hack attempt, then if we allow Views, we must reset system
+options to what they should be directly after the data step. I have added
+"options nomprint" after the data step and this is what we get.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>36&nbsp;&nbsp; options nonotes;</tt>
+<br><tt>37&nbsp;&nbsp; data class / view = class;</tt>
+<br><tt>38&nbsp;&nbsp;&nbsp;&nbsp; if _n_ eq 1 then call execute('options
+mprint;');</tt>
+<br><tt>39&nbsp;&nbsp;&nbsp;&nbsp; set sashelp.class;</tt>
+<br><tt>40&nbsp;&nbsp; run;</tt>
+<br><tt>41</tt>
+<br><tt>42&nbsp;&nbsp; options mprint;</tt>
+<br><tt>43</tt>
+<br><tt>44&nbsp;&nbsp; %macro test(data=);</tt>
+<br><tt>45&nbsp;&nbsp;&nbsp;&nbsp; options nomprint;</tt>
+<br><tt>46&nbsp;&nbsp;&nbsp;&nbsp; %put >>>>>> Before data step: %sysfunc(getoption(mprint))
+>>>>>>>>>>>;</tt>
+<br><tt>47&nbsp;&nbsp;&nbsp;&nbsp; data _null_;</tt>
+<br><tt>48&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set class;</tt>
+<br><tt>49&nbsp;&nbsp;&nbsp;&nbsp; run;</tt>
+<br><tt>50&nbsp;&nbsp;&nbsp;&nbsp; options nomprint;</tt>
+<br><tt>51&nbsp;&nbsp;&nbsp;&nbsp; %put >>>>>> After data step: %sysfunc(getoption(mprint))
+>>>>>>>>>;</tt>
+<br><tt>52&nbsp;&nbsp; %mend test;</tt>
+<br><tt>53</tt>
+<br><tt>54&nbsp;&nbsp; %test(data=class);</tt>
+<br><tt>MPRINT(TEST):&nbsp;&nbsp; options nomprint;</tt>
+<br><tt>>>>>>> Before data step: NOMPRINT >>>>>>>>>>></tt>
+<br><tt>1&nbsp;&nbsp; + options mprint;</tt>
+<br><tt>MPRINT(TEST):&nbsp;&nbsp; options nomprint;</tt>
+<br><tt>>>>>>> After data step: NOMPRINT >>>>>>>></tt></td>
+</tr>
+</table>
+
+<p>In the above case we seemed to have solved the problem. The answer is
+to reset system options after each data step where the foreign data comes
+in first time. But what if there is a <b>double hack attempt</b> and the
+<b>View
+contains an old-style macro</b> definition? Here it is again but with an
+old-style macro defined in the View. MPRINT is back again!!
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>55&nbsp;&nbsp; options nonotes;</tt>
+<br><tt>56&nbsp;&nbsp; data class / view = class;</tt>
+<br><tt>57&nbsp;&nbsp;&nbsp;&nbsp; if _n_ eq 1 then call execute('options
+mprint; macro nomprint mprint %');</tt>
+<br><tt>58&nbsp;&nbsp;&nbsp;&nbsp; set sashelp.class;</tt>
+<br><tt>59&nbsp;&nbsp; run;</tt>
+<br><tt>60</tt>
+<br><tt>61&nbsp;&nbsp; options mprint;</tt>
+<br><tt>62</tt>
+<br><tt>63&nbsp;&nbsp; %macro test(data=);</tt>
+<br><tt>64&nbsp;&nbsp;&nbsp;&nbsp; options nomprint;</tt>
+<br><tt>65&nbsp;&nbsp;&nbsp;&nbsp; %put >>>>>> Before data step: %sysfunc(getoption(mprint))
+>>>>>>>>>>>;</tt>
+<br><tt>66&nbsp;&nbsp;&nbsp;&nbsp; data _null_;</tt>
+<br><tt>67&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set class;</tt>
+<br><tt>68&nbsp;&nbsp;&nbsp;&nbsp; run;</tt>
+<br><tt>69&nbsp;&nbsp;&nbsp;&nbsp; options nomprint;</tt>
+<br><tt>70&nbsp;&nbsp;&nbsp;&nbsp; %put >>>>>> After data step: %sysfunc(getoption(mprint))
+>>>>>>>>>;</tt>
+<br><tt>71&nbsp;&nbsp; %mend test;</tt>
+<br><tt>72</tt>
+<br><tt>73&nbsp;&nbsp; %test(data=class);</tt>
+<br><tt>MPRINT(TEST):&nbsp;&nbsp; options nomprint;</tt>
+<br><tt>>>>>>> Before data step: NOMPRINT >>>>>>>>>>></tt>
+<br><tt>1&nbsp;&nbsp; + options mprint; macro nomprint mprint %</tt>
+<br><tt>MPRINT(TEST):&nbsp;&nbsp; macro nomprint</tt>
+<br><tt>MPRINT(TEST):&nbsp;&nbsp; mprint&nbsp; %</tt>
+<br><tt>MPRINT(TEST):&nbsp;&nbsp; options mprint ;</tt>
+<br><tt>>>>>>> After data step: MPRINT >>>>>>>>></tt></td>
+</tr>
+</table>
+
+<p><b>Is there a lesson to be learned from this? Yes</b> there is. That
+is, if you are allowing Views, to have data steps at the top of your macro
+where they are read in and then follow that with your old-style macros
+that thwart hack attempts followed by your desired system options or used
+%listm, as shown above, to abort your job if any old-style macros are detected.
+<p>What about banning the use of Views? It's up to you. I have&nbsp; macro
+named <a href="http://www.datasavantconsulting.com/roland/mtype.sas" target="_blank">%mtype</a> which will test a
+dataset and return VIEW or DATA - but be careful when you test for the
+word VIEW. Maybe your hacker has added this to his armoury:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>macro view DATA %</tt></td>
+</tr>
+</table>
+
+<p>Maybe this one extra, old-style macro inside your own macro would be
+a good idea or, instead, use %listm in the way described above.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>macro view VIEW %</tt></td>
+</tr>
+</table>
+
+<h2>
+The ultimate anti-hack macro?</h2>
+I have written what I think is the ultimate anti-hack macro, but I might
+be proven wrong. You will see its code soon. <b>It has no comments</b>
+and therefore no explanation of how it works as <b>I consider comment lines
+to be vulnerable to hacking attack</b>. To be fair to the old-style macro
+language, a substitution will never be made in a comment line, but I can't
+be sure that somebody has found a way around this so I don't want any comment
+lines to be a target. The macro is called <b>%osMacrosExist</b> and it
+sets up a global macro variable of the same name (note that this is more
+than 8 characters so it can not be substituted using an old-style macro).
+It also sets up a fileref named <b>capturel</b> for capturing log output
+and then "clears" it. The intention is to call it as the first line of
+code within an important macro. If you are doing clinical reporting then
+nobody should be using old-style macros. They shouldn't have even heard
+of them, as they belong to sas version 5 or earlier. If any exist then
+you should <b>abort</b>. Also, any input data sets should be <b>data sets</b>
+and not <b>views</b>. Only then will you be safe from hacking attempts.
+You can use my <a href="http://www.datasavantconsulting.com/roland/mtype.sas" target="_blank">%mtype</a> macro for
+this but remember to put the test in quotes to prevent old-style macros
+from making substitutions. The following is <b>safe</b>:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%if "%mtype(dataset)" EQ "VIEW" %then %do;</tt></td>
+</tr>
+</table>
+
+<p>But the following is <b>not safe</b>:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%if %mtype(dataset) EQ VIEW %then %do;</tt></td>
+</tr>
+</table>
+
+<p>And now for the anti-hack macro, which time alone will tell whether
+I have made it hack-proof or not. It is simple enough to use. You should
+use it right at the start of your macro code and then test the setting
+of osMacrosExist and if it is set to 1 then exit the macro. But you have
+got to think.The code below <b>shows a very big mistake</b>.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%if "%mtype(dataset)" NE "VIEW" %then %goto allok;</tt></td>
+</tr>
+</table>
+
+<p>There is a <b>huge exposure to hacking </b>in the above code. The hacker
+will find out that you have a label named <b>allok</b> that you jump to
+if everything is OK and they maybe have the chance to jump to that point
+directly using a "call execute" hidden inside their view, if the view gets
+the chance to run. You have got to be cleverer than that. Test tight and
+jump right to the macro exit, if you think anything is wrong.
+<p>So here comes the anti-hacking macro. It should be the first line of
+code inside your production macro and you should very carefully code the
+aborting of the macro if old-style macros are determined to be in existence.
+Remember, the reason there are no comments in the macro is because comment
+lines
+can also be the target of hacking attempts.
+<p>If anyone manages to hack this macro then please send me details.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%macro osMacrosExist;</tt>
+<br><tt>%listm;</tt>
+<br><tt>macro filename filename %</tt>
+<br><tt>macro capturel capturel %</tt>
+<br><tt>macro temp TEMP %</tt>
+<br><tt>macro log log %</tt>
+<br><tt>macro printto printto %</tt>
+<br><tt>filename capturel TEMP;</tt>
+<br><tt>proc printto log=capturel;</tt>
+<br><tt>run;</tt>
+<br><tt>%delete filename capturel temp log printto;</tt>
+<br><tt>%listm;</tt>
+<br><tt>proc printto log=log;</tt>
+<br><tt>run;</tt>
+<br><tt>macro capturel capturel %</tt>
+<br><tt>macro infile infile %</tt>
+<br><tt>macro _infile_ _infile_ %</tt>
+<br><tt>macro index index %</tt>
+<br><tt>macro call call %</tt>
+<br><tt>macro symput symput %</tt>
+<br><tt>macro then then %</tt>
+<br><tt>macro do do %</tt>
+<br><tt>macro input input %</tt>
+<br><tt>macro put put %</tt>
+<br><tt>macro end end %</tt>
+<br><tt>macro data data %</tt>
+<br><tt>macro warning WARNING %</tt>
+<br><tt>macro clear clear %</tt>
+<br><tt>%global osMacrosExist ;</tt>
+<br><tt>%let osMacrosExist=0;</tt>
+<br><tt>data _null_;</tt>
+<br><tt>infile capturel;</tt>
+<br><tt>input;</tt>
+<br><tt>if index(_infile_,"Old-style") then do;</tt>
+<br><tt>if index(_infile_,"Old-style")=1 then do;</tt>
+<br><tt>call symput("osMacrosExist","1");</tt>
+<br><tt>end;</tt>
+<br><tt>end;</tt>
+<br><tt>run;</tt>
+<br><tt>filename capturel clear;</tt>
+<br><tt>%delete capturel infile _infile_ index call symput then do input
+put end data warning clear;</tt>
+<br><tt>%mend osMacrosExist;</tt></td>
+</tr>
+</table>
+
+<p>Here is how I expect the <b>%osMacrosExist</b> macro to be used.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%macro secretmacro;</tt>
+<br><tt>&nbsp; %osMacrosExist;</tt>
+<br><tt>&nbsp; %if &amp;osMacrosExist=1 %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %put ERROR: Disallowed old-style macros have
+been detected and the list written to the log.;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %let error=1;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %goto error;</tt>
+<br><tt>&nbsp; %end;</tt>
+<br><tt>&nbsp; ...... etc.</tt></td>
+</tr>
+</table>
+
+<p>But don't forget the views. Check for views and abort if you find any.
+And don't forget to use double quotes around the word in the form "VIEW"
+to thwart the hacker's attempt to hack your solution.
+<h2>
+Should you be worried?</h2>
+I would say that you have to consider the circumstances and work out whether
+it is worthwhile to protect your macros against hacking. It all depends
+on the risk. If these are financial macros and money is changing hands
+then it would be a good idea to fully protect your code against hacking
+attempts. If your SAS code had to produce the correct results otherwise
+some major accident could occur (like if it were doing calculations for
+a nuclear facility) then again it is best to protect your code fully.
+<p>I am very disappointed that the SAS Institute has chosen to cover up
+this weakness with SAS software. On the theme of the nuclear industry again,
+supposing a SAS system were in place to track the storage, location and
+movements of dangerous nuclear materials. Supposing this were controlled
+by read-only sas code. It would be the easiest thing in the world for a
+hacker to substitute the code, using old-style macros and views, to disguise
+the disappearance and theft of nuclear materials. And all done right under
+the noses of those who control the code, due to their being unaware of
+this weakness and the ease with which this weakness can be exploited.
+<p>Covering up a weakness in software does nobody any favours. Instead,
+it betrays an ignorance of the way hackers work and plays into their hands.
+Hackers have networks that share information about application or code
+weakness. Once one hacker knows then any interested hackers will know about
+it within days or hours. Not all hackers are up to mischief, however. If
+you look up "hacking" on Wiki you will learn that there are "white hat",
+"grey hat" and "black hat" hackers. A "white hat" hacker will attempt to
+find weaknesses in software and inform the software vendor about it and
+give them sufficient time to remedy the situation or to document the weakness
+so that IT staff can protect against it. If the software vendor refuses
+to do anything then the "white hat" hacker will document the weakness and
+explain how to combat hacking attempts. Hopefully, this document has achieved
+that.
+<h2>
+Conclusion</h2>
+On this page my aim was to make you aware about how hacking can be achieved
+using sas code and how this could affect your production environment. I
+have suggested some solutions but I can not guarantee that they will save
+you from some serious hacking attempts. If people are determined to hack
+your system, then they will eventually find a way. This is an eternal battle
+between IT administrators and the hacker.
+<br>&nbsp;
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="http://www.datasavantconsulting.com/roland/counter.php" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/roland/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/hacking.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:06 GMT -->
+</html>

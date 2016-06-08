@@ -1,0 +1,96 @@
+#!/bin/bash
+#<pre><b>
+# Script     : contents_win
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 11-Feb-2007
+# Purpose    : To list the contents (in short form) of one or more SAS datasets
+#              (or a whole library) in the current directory (uses SAS).
+# SubScripts : none
+# Notes      : WINDOWS VERSION
+#              Must be run with data directory as current directory. Dataset
+#              file extensions will be ignored. This is for Linux on Windows
+#              calling SAS installed on Windows. You need to set up and export
+#              a system environment variable in your .bashrc named HOMEW like
+#              this:
+#                    HOMEW=C:\\cygwin\\home\\rrash     # for Cygwin
+#                    export HOMEW
+#              ...where "rrash" is your user id (it might be "Default")
+# Usage      : contents_win adv
+#              contents_win adv acct
+#              contents_win    # all datasets are listed
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   one or more datasets (optional - will work on whole library by default)
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+if [ $# -lt 1 ]
+then
+
+###### no datasets specified so do for the whole library #####
+
+# Write sas code to a temporary file
+cat > $HOME/contents_$$.sas << -----FINISH-----
+options validvarname=any nofmterr;
+libname here './' access=readonly;
+filename _outfile "$HOMEW\contents_$$.tmp";
+proc contents noprint data=here._all_ out=contents;
+data _null_;
+  file _outfile notitles noprint;
+  set contents;
+  put @1 memname @10 name @22 label;
+run;
+-----FINISH-----
+
+sas -nosplash -nologo -icon -sasuser work -log "$HOMEW" -sysin "$HOMEW\contents_$$.sas"
+
+if [ -f $HOME/contents_$$.tmp ] ; then
+  cat   $HOME/contents_$$.tmp
+  rm -f $HOME/contents_$$.tmp
+fi
+
+rm -f   $HOME/contents_$$.sas  $HOME/contents_$$.log
+
+
+
+else
+
+########### one or more dataset specified so do for each #########
+
+for dataset in "$@" ; do
+
+dset=$(echo $dataset | cut -d. -f1)
+
+# Write sas code to a temporary file
+cat > $HOME/contents_$$.sas << -----FINISH-----
+options validvarname=any nofmterr;
+libname here './' access=readonly;
+filename _outfile "$HOMEW\contents_$$.tmp";
+proc contents noprint data=here.$dset out=contents;
+data _null_;
+  file _outfile notitles noprint;
+  set contents;
+  put @1 memname @10 name @22 label;
+run;
+-----FINISH-----
+
+sas -nosplash -nologo -icon -sasuser work -log "$HOMEW" -sysin "$HOMEW\contents_$$.sas"
+
+if [ -f $HOME/contents_$$.tmp ] ; then
+  cat   $HOME/contents_$$.tmp
+  rm -f $HOME/contents_$$.tmp
+fi
+
+rm -f   $HOME/contents_$$.sas  $HOME/contents_$$.log
+
+done
+
+fi

@@ -1,0 +1,209 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/fancyprint.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:42 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="Fancy Printing using ODS html to MS Office">
+   <meta name="KeyWords" content="Fancy Printing ODS html Excel Word">
+   <meta name="robots" content="noindex,nofollow">
+   <meta name="author" content="Roland Rashleigh-Berry">
+   <meta name="description" content="Roland's Graphical Patient Profiler">
+   <title>Fancy Printing - ODS->html->MS Office</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Fancy Printing - ODS->html->MS Office</h1></center>
+<b>[last updated: 24 Aug 2015]</b>
+<h2>
+Introduction</h2>
+I will make a prediction about <b>ascii reports</b> as of May 2008 and
+that is that this form of reporting will have been mostly phased out by
+the end of 2009. At the current time, ascii reports are largely converted
+to rtf - usually by a macro. You might get a better looking title and a
+"Page x of Y" label as a result but it still does not look too good. You
+also get "<b>in-text tables</b>" that are produced seperately that are
+incorporated into a study report but these tend to look very different
+from the rtf-style converted ascii tables. Some people have trouble creating
+these in-text tables. There are various ways of doing it. What I have been
+doing with my reporting macros <a href="http://www.datasavantconsulting.com/roland/Spectre/clinmacros/unistats.sas" target="_blank">%unistats</a>
+and <a href="http://www.datasavantconsulting.com/roland/Spectre/clinmacros/unicatrep.sas" target="_blank">%unicatrep</a>
+is to allow them to produce reports that look like "<b>fancy printer</b>"
+reports suitable to both be printed as they are and also to be incorporated
+as "in-text tables" into study reports. For me, it is better to have one
+method for achieving both as greater consistency can be achieved.
+<h2>
+ODS->html->Excel</h2>
+You can use ODS to produce html output using "<b>ODS html</b>". If you
+know what you are doing, you can get this html output to look like "fancy
+printer" output, which is to say that the output looks better than plain
+ascii output even though it is just black and white reports. What most
+people <b>don't know</b> is that <b>html can be read in by a number of
+spreadsheets</b>. This is because html output of this sort is also tabular
+output and it is easy for spreadsheets to convert them to their own internal
+format. If you read in an html table using Excel, you then have the choice
+of incorporating it into a <b>Word document</b>, using copy and paste,
+and voil&agrave; - you have your in-text table! Alternatively, if you wanted
+to, you could edit it and even save it as an html file that a browser like
+Internet Explorer could read. Html and Excel spreadsheets have crossed
+into each other's territory. You can use "ODS html" to create a file with
+the Excel extension
+<b>.xls</b> . It won't <b><i>really </i></b>be an Excel
+spreadsheet, it will be html, because that is what "ODS html" gives you,
+but Excel will accept it as a spreadsheet file.
+<h2>
+Avoiding the Excel trap</h2>
+There is something annoying that Excel does that complicates the process
+of reading in html tables. That is, it looks at what is in the table cell
+and decides whether it is a number, a date etc. and formats it accordingly.
+Suppose you have a table and that it contains cigarettes smoked per day.
+It might show the ranges "01-05", "06-10" and "11-20". Excel will convert
+these into the dates "01-May", "06-October" and "20-November". It will
+drop trailing zeroes for numbers as well as drop leading zeroes. There
+are tricks you can use to prevent this but the correct method is to tell
+MS Office that the numeric fields are to be treated as text fields. This
+is done when you create the html file - it is not done when you read it
+in, which would be more convenient. The instruction is assigned to the
+variable<b> mso-number-format</b>. The "mso" at the start is short for
+"Microsoft Office". This variable is added automatically by %unistats and
+%unicatrep when you create html files. It is mentioned in the header of
+both macros as follows.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>/ rrb&nbsp; 08May08&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+style(COLUMN)={HTMLSTYLE="mso-number-format:'\@'"} added</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+to proc report call so that MS Office treats the cells as</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+text-formatted cells. The same can be achieved using</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+headtext="&lt;style> td {mso-number-format:\@}&lt;/style>"</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+in the ODS statement but it is hard to remember.</tt></td>
+</tr>
+</table>
+
+<h2>
+The code</h2>
+What I will show you is the code I have used to produce both an ascii file
+and an html file, showing the same table. And I have copied the html file
+to give it an .xls extension so you can click on it and read it into Excel.
+I could have given the output file an extension of ".xls" in my code below,
+if I wanted to. It would not change the contents of the file in any way
+by giving it a different extension. Firstly, here is the code I ran to
+produce the output.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>options ls=90;</tt>
+<p><tt>proc format;&nbsp;</tt>
+<br><tt>&nbsp; value trtnarr&nbsp;</tt>
+<br><tt>&nbsp; 1="Ambicor@(1g/day)"&nbsp;</tt>
+<br><tt>&nbsp; 2="Betamaxin@(500mg/day)"&nbsp;</tt>
+<br><tt>&nbsp; 3="No@treatment"&nbsp;</tt>
+<br><tt>&nbsp; ;</tt>
+<br><tt>&nbsp; value agecat&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; 0-15="&lt;16 yrs"&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; 16-25=" 16 - 25 yrs"&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; 26-40=" 26 - 40 yrs"&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; 41-65=" 41 - 65 yrs"&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; 66-high=">65 years"&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; ;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<br>&nbsp;
+<p><tt>proc sort data=sasuser.demog(where=(fascd=1))&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; out=demog(drop=fascd);&nbsp;</tt>
+<br><tt>&nbsp; by patno invid;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>data demog;&nbsp;</tt>
+<br><tt>&nbsp; set demog;&nbsp;</tt>
+<br><tt>&nbsp; agecat=age;&nbsp;</tt>
+<br><tt>&nbsp; format trtcd trtnarr. agecat agecat.;&nbsp;</tt>
+<br><tt>&nbsp; label sexcd="Gender"&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; racecd="Race"&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; agecat="Age (yrs)"&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; age="A0"x&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; weight="Weight (kg)"&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;&nbsp;</tt>
+<br><tt>run;&nbsp;</tt>
+<p><tt>%popfmt(demog,trtcd,uniqueid=patno invid)&nbsp;</tt>
+<p><tt>%unistats(dsin=demog,unicatrep=yes,total=yes,</tt>
+<br><tt>odshtml=file="C:\spectre\unitest2.html",</tt>
+<br><tt>lowcasevarlist=sexcd racecd,nbspaces=yes,outputwidthpct=calc,</tt>
+<br><tt>stats=N Min Mean Max STD.,minfmt=3.,maxfmt=3.,compskip=yes,</tt>
+<br><tt>varlist=sexcd racecd agecat age weight/m,&nbsp;</tt>
+<br><tt>pvarlist=sexcd racecd agecat age weight,</tt>
+<br><tt>allcatvars=racecd agecat);</tt></td>
+</tr>
+</table>
+
+<h2>
+ODS->html->Word</h2>
+Microsoft Word can receive Excel output using copy and paste. But if we
+want to do things the optimum way then we can insert an html file directly
+into MS Word. It works much better that way. MS Word can understand html,
+which
+is hardly surprising, since you can save Word documents as html files.
+Html and Word documents have crossed into each other's territory. You will
+be able to see a Word document in the outputs in the next section where
+I have given the document two titles and then inserted the html file created
+by the above code.
+<h2>
+ODS html vs. ODS rtf</h2>
+You may wonder why I am not using <b>ODS rtf</b> to create output to be
+inserted into Word. It's for a very good reason. At the time of writing,
+ODS rtf does not work as well as ODS html. And the output from ODS html
+can easily be incorporated into both Excel and Word and retain the same
+look as it does as html (given the right circumstances). The only downside
+is that you have got to insert the html file into Word yourself.
+<h2>
+The output</h2>
+Here is the output. There is a text file, an html file, the html file copied
+and given the extension .xls and the Word document where I have inserted
+the html file. For the text file, you might see a mass of "a"s in the fields
+where the stats values are. This is the way some versions of browsers work.
+These "a"s are the non-breaking space character "A0"x that I have used
+to preserve alignment. To see this as it should then download the text
+file and view using Notepad (or Blocnotes).
+<p><a href="http://www.datasavantconsulting.com/roland/unitest2.txt" target="_blank">text</a>&nbsp; (you might have
+to download this file and read it using Notepad)
+<br><a href="http://www.datasavantconsulting.com/roland/unitest2.html" target="_blank">html</a>
+<br><a href="http://www.datasavantconsulting.com/roland/unitest2.xls">xls</a>&nbsp; (this will only look correct in
+Excel)
+<br><a href="http://www.datasavantconsulting.com/roland/unitest2.doc">doc</a>&nbsp; (this will only look correct using
+Word)
+<h2>
+Conclusion</h2>
+You have seen that "fancy printer" output can be created using "ODS html"
+and that this html output can be read in by both Excel and Word where they
+can look good as "in-text" tables.
+<br>&nbsp;
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="http://www.datasavantconsulting.com/roland/counter.php" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/fancyprint.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:42 GMT -->
+</html>

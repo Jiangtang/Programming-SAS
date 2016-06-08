@@ -1,0 +1,65 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/putall.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:09 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="SAS tips and techniques put lists">
+   <meta name="KeyWords" content="sas tips techniques put lists">
+   <title>put (_all_) (=)</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+put (_all_) (=)</h1></center>
+<b>[last updated - 08 September 2007]</b>
+<h2>
+Introduction</h2>
+You will certainly be familiar with the "put" statement that you use in
+data steps. You have probably used the "put _all_=;" statement to put out
+a list of all your dataset variable names with their values but what about
+"put (_all_) (=);"? If you have easy access to sas then try out "put _all_=;"
+and compare it with what you get with "put (_all_) (=);". If you do this
+then you will probably notice that there is no _ERROR_= and _N_= in the
+list of variables in the second case. Why should that be?
+<h2>
+put (_all_) (=) explained</h2>
+"put" can work with lists of variables and lists of formats. The list of
+variables goes in round brackets followed by the list of formats, again
+in round brackets. So what the "(_all_)" gives you is a list of all the
+variables in the dataset (not including the automatic variables) and the
+"(=)" sign says to use the equals sign after each variable in the list.
+The result is the same as what you get with "put _all_=" but without the
+automatic variables.
+<h2>
+Put Statement, Formatted</h2>
+There are many forms of the humble "put statement". Using a "put" statement
+in the form "put (_all_) (=)" falls under the title "Put Statement, Formatted"
+that you can read about in the sas documentation. I'll let you look that
+up for more details but once you know about this you will find yourself
+using this technique for putting values to the log in a more convenient
+form, especially when you are debugging code.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/putall.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:09 GMT -->
+</html>

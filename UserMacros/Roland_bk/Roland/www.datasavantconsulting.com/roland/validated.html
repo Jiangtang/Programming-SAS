@@ -1,0 +1,225 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/validated.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:38 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="Criticism of validated clinical reporting systems">
+   <meta name="KeyWords" content="validated clinical reporting systems">
+   <title>Your validated clinical reporting system</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Your "validated" clinical reporting system</h1></center>
+<b>[Last updated - 02 Jan 2008]</b>
+<h2>
+Introduction</h2>
+I thought I would make clear my point of view about <b><i>supposed </i></b>"validated"
+clinical reporting systems. I want to set the record straight and say up
+front that <b>there is probably no such thing as a validated clinical reporting
+system</b>. It is a near impossibility due to the complexity of applications
+software (in this case "SAS") running on a computer controlled by a complex
+operating system. The two complexities combined ("combined" because an
+application will call operating system services) make it impossible to
+validate to a level thorough enough to cover all operational possibilities.
+It would be impossible to know what combinations of application calls and
+operating system calls and in what circumstances could lead to an error
+and therefore test for them. Later, I include a "proc append" story that
+illustrates this situation perfectly. Where all these possibilities are
+not covered by testing then, to my mind, it is inaccurate to claim a system
+is "validated". And the changing state of the application software, as
+patches are applied, plus operating system patches applied, mean that whatever
+limited validation was done was done only for the state the system was
+in at the time the validation was run. The next time you use the clinical
+reporting system, something might have changed and so the reporting system
+is no longer "validated" for the changed environment it is now running
+in. That doesn't mean you should not <b><i>try
+</i></b>to validate your
+clinical reporting system -- putting even the most reliable of clinical
+reporting systems through a full validation process will uncover many problems,
+errors and weaknesses -- but understand that at the end of the process
+it isn't really <b><i>validated
+</i></b>as such -- it just means that you
+trust it more and so have more confidence in what it produces.
+<p>You might wonder what gives me the right to make the above claim regarding
+system complexity. Well, if you browse my <a href="CV.doc">CV.doc</a> ,
+you will see that before I got into clinical reporting I spent many years
+working on computer performance (some "Capacity Planners" spend most of
+their time working on performance issues which was true in my case) and
+most of that work was to do with operating system performance and operating
+system internals. It is a very complex field that requires an in-depth
+knowledge.
+<h2>
+Software vs. machine validation</h2>
+Machines are limited and hopefully predictable. You can control them, or
+at least you can try to. They are physical devices with perhaps only a
+few parameters for operation and performance. You might have software running
+on the machine to control it - typically written in the Forth language
+-- that is old software and you can trust it to do its job if you have
+written the code correctly. Simple software talking to a simple machine
+is understandable and predictable. It is still a lot of work but you can
+<b>validate
+it</b>. If you are manufacturing drugs then any machine or software running
+on it <b>has to be validated</b>. It is a lot of work -- but doable. But
+what about a "clinical reporting system"?
+<h2>
+A clinical reporting system</h2>
+This is where it gets messy. I mean <b>messy</b> machines, <b>messy</b>
+operating software running them and a <b>messy</b> application running
+on it called "SAS". If you have "validated" your sas-based clinical reporting
+system then you have only performed <b><i>limited validation</i></b> of
+that software given limited functionality for that <b><i>particular </i></b>version
+of sas and for that <b><i>particular </i></b>software patch level. You
+will probably never be able to reproduce that patch level. More than that,
+you have to realise that sas software calls the operating system to do
+tasks so, for example, using "proc append" calls the operating system file
+handling and I/O capabilities. Your operating system might be updated daily
+with patches. It might even be updating itself as you use your computer
+without your knowing. You will probably never be able to reproduce that
+operating system patch level. And there is the hardware too. Attach a new
+disk to the system and that has to talk to the operating system and you
+have to hope that it is all working perfectly. Sometimes that is not the
+case. So you have sas software changing, running on a machine that has
+its hardware changing, supported by an operating system that is changing
+and so you get the drift -- that is <b>there is probably no such thing
+as a "validated" clinical reporting system</b>. You just trust it -- that
+is all -- and you have all sorts of procedures in place to make sure it
+can not, under any circumstances, give a false impression to a regulatory
+agency or your own clinical staff.
+<h2>
+My "proc append" story</h2>
+I will tell you a story about "proc append" that illustrates the complex
+system that is sas software, patch levels and the operating system. When
+I was doing Capacity Planning work on IBM mainframes I had written a system
+that stored CPU usage and appended to datasets once a week. It became clear
+to me at some stage that some of this data had gone missing. So I wrote
+a simple test case and I found out that exactly one in sixteen times, "proc
+append" was not appending records even though the message in the log indicated
+that it had. So I contacted the SAS Institute to report the problem and
+sent them my test case that always reproduced the fault at my end. I told
+them the patch level of the IBM operating system and the patch level of
+SAS but try as they might, even using a system with the same patch levels,
+they could not reproduce this fault. I had changed my recording sytem to
+get round the problem but about two weeks later I reran my test pack out
+of curiosity and <b>the fault was gone</b>. I asked if anyone had updated
+the sas software or the operating system and the answer came back that
+no changes had been made. Fortunately, no harm had been done, but if this
+had been a chargeback system charging clients real money for computer utilisation
+then this could have been very embarrasing. So the point of this story
+is that in the complex world of sas running on a machine that uses operating
+system services (which would have been the case for "proc append") then
+it is impossible to have total control and knowledge of the system and
+sometimes things can go wrong. In fact, you should <b><i>expect </i></b>things
+to go wrong and so have <b>systems with procedures</b> in place to correct
+matters if things go wrong. If you think about your own bank account and
+the money transfers done, then sometimes you get an incorrect transfer
+done out of your account or into it. Usually, these errors gets spotted
+and corrected by the banking staff. I am sure that their banking system
+is thoroughly tested and validated but it can still go wrong. The bank
+staff know it can go wrong so the bank will have <b>systems with procedures</b>
+in place to detect these errors and correct them.
+<h2>
+Keeping a system validated</h2>
+Supposing you have "validated" a clinical reporting system then to keep
+it validated, you would have to rerun a validation suite of programs from
+time to time. It might be a good idea to have a set of original outputs
+and compare before with afterwards. How often you do this is arguable.
+On a complex system that you are not in full control of you should maybe
+rerun the validation once a week as a precaution. Certainly, if any known
+change had been applied to sas software or the operating system, then the
+validation should be rerun directly afterwards. This could be a scheduled
+overnight job so it did not get in the way of other people using the system.
+<h2>
+What the regulations say</h2>
+There are some rules governing clinical reporting systems but after weeks
+of searching I have found nothing that specifically covers <b>clinical
+reporting system validation</b>. My own personal interpretation of that
+is that I think the people writing those rules have been advised that a
+full and complete validation of such a system is an impossibility. That's
+just my personal view. The only rules I can find governing clinical reporting
+systems are part of ICH GCP as follows. 2.13 seems to be the operative
+principle so I have highlighted it below.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>2. THE PRINCIPLES OF ICH GCP&nbsp;
+<br>2.1 Clinical trials should be conducted in accordance with the ethical
+principles that have their origin in the Declaration of Helsinki, and that
+are consistent with GCP and the applicable regulatory requirement(s).&nbsp;
+<br>2.2 Before a trial is initiated, foreseeable risks and inconveniences
+should be weighed against the anticipated benefit for the individual trial
+subject and society. A trial should be initiated and continued only if
+the anticipated benefits justify the risks.&nbsp;
+<br>2.3 The rights, safety, and well-being of the trial subjects are the
+most important considerations and should prevail over interests of science
+and society.&nbsp;
+<br>2.4 The available nonclinical and clinical information on an investigational
+product should be adequate to support the proposed clinical trial.&nbsp;
+<br>2.5 Clinical trials should be scientifically sound, and described in
+a clear, detailed protocol.&nbsp;
+<br>2.6 A trial should be conducted in compliance with the protocol that
+has received prior institutional review board (IRB)/independent ethics
+committee (IEC)
+<br>approval/favourable opinion.&nbsp;
+<br>2.7 The medical care given to, and medical decisions made on behalf
+of, subjects should always be the responsibility of a qualified physician
+or, when appropriate, of a qualified dentist.&nbsp;
+<br>2.8 Each individual involved in conducting a trial should be qualified
+by education, training, and experience to perform his or her respective
+task(s).&nbsp;
+<br>2.9 Freely given informed consent should be obtained from every subject
+prior to clinical trial participation.&nbsp;
+<br>2.10 All clinical trial information should be recorded, handled, and
+stored in a way that allows its accurate reporting, interpretation and
+verification.&nbsp;
+<br>2.11 The confidentiality of records that could identify subjects should
+be protected, respecting the privacy and confidentiality rules in accordance
+with the applicable regulatory requirement(s).&nbsp;
+<br>2.12 Investigational products should be manufactured, handled, and
+stored in accordance with applicable good manufacturing practice (GMP).
+They should be used in accordance with the approved protocol.&nbsp;
+<br><b>2.13 Systems with procedures that assure the quality of every aspect
+of the trial should be implemented.</b></td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+The conclusion I have come to is that you have to make sure your clinical
+reporting system is telling the true story. That you must have <b>systems
+with procedures </b>in place that "assure the quality" of the reports being
+produced and the inference of the effectiveness of the drug and its safety.
+I am not suggesting that validation of a clinical reporting system should
+not be done. If it buys you greater confidence in its accuracy and reliability
+then it is worth doing and worth maintaining the validated state. Clinical
+reporting system "validation", to me, is a desirable thing but only a minor
+aspect of the greater purpose of ensuring the integrity of the results
+it produces.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/validated.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:38 GMT -->
+</html>

@@ -1,0 +1,276 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/select_count.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <title>Do not use SELECT COUNT(*) unless you really need to</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Do not use SELECT COUNT(*) unless you really need to</h1></center>
+<b>Updated: 06 May 2014</b>
+<h2>
+Introduction</h2>
+A lot of SAS programmers are moving away from using data steps towards
+SQL programming. This is a good thing. SQL is a standard query language
+used across many industries. It is a useful skill to have. However, if
+you are not aware of the performance aspects of SQL then the SQL code you
+write might take longer to run than the equivalent data step code. Perhaps
+much longer. So as you learn SQL syntax you should learn the performance
+consequences of using it. If you do this well then your SQL code will run
+as fast as your data step code and perhaps a little faster.
+<h2>
+count(*)</h2>
+You know what "count" means. It means count things. For count(*) then the
+"*" means the rows so count(*) means count the number of rows. But if you
+want to check for an empty or non-empty table then you are not interested
+in a count of anything. You just want to know if it has one row with something
+there or no rows at all. If you wanted to check for the existence of any
+row with a missing value then you will have this information when you come
+across the first row with a missing value. You do not need a count of them.
+A count of something implies you are going to read through a whole table
+when maybe just one row will do. SQL works differently to data step code
+and SQL can stop after finding what it is looking for. It's like it issues
+a "stop" by itself that you would have to code in a data step.
+<h2>
+Quiz question</h2>
+What number will be displayed when the macro variable is resolved? Will
+it be "1" or "10000000"?
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data test;</tt>
+<br><tt>&nbsp; do x=1 to 10000000;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; output;</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>run;</tt>
+<p><tt>proc sql noprint;</tt>
+<br><tt>select x into :mvar from test;</tt>
+<br><tt>%put mvar=&amp;mvar;</tt>
+<br><tt>quit;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>If you thought the correct answer was 10000000 then you could not be
+blamed for thinking so - but you would be <b>wrong</b>. The SQL code will
+stop as soon as it finds what it is looking for. It is looking to put something
+in the macro variable "mvar" and it uses whatever value for x it finds
+from the first row of the table (dataset) "test". The value displayed will
+be "1" (actually "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1").
+<p>Please allow the above to sink into your thinking until you become comfortable
+with this idea. It is very important and it affects the way you will design
+your SQL code to keep it efficient.
+<h2>
+count(*) vs. count(x)</h2>
+Some people trick themselves into thinking that using count(*) is efficient
+but that is because of a shortcut that SAS uses. In the following code
+then which SQL <b>select</b> statement will run the fastest?
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data test;</tt>
+<br><tt>&nbsp; do x=1 to 10000000;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; output;</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>run;</tt>
+<p><tt>proc sql noprint;</tt>
+<br><tt>&nbsp; select count(*) into :mvar from test;</tt>
+<br><tt>&nbsp; %put mvar=&amp;mvar;</tt>
+<br><tt>&nbsp; select count(x) into :mvar from test;</tt>
+<br><tt>&nbsp; %put mvar=&amp;mvar;</tt>
+<br><tt>quit;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>Now you might think the processing time would be similar but slightly
+longer for "count(x)" because "count(*)" is counting the rows and "count(x)"
+is counting the non-missing values of "x" which will take a bit more checking.
+In fact, the "count(*)" runs in no time at all and "count(x)" takes significant
+time. This is because SAS is using a short-cut. It knows how many observations
+are in the dataset (table) "test" so it just has to pull out that value
+and present it. It will not count up all the rows again. But with "count(x)"
+it has to go through the process of counting them all.
+<p>But then you might think that as long as you stick to using "count(*)"
+then your code will run fast. Maybe something like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data test;&nbsp;</tt>
+<br><tt>&nbsp; do i=1 to 10000000;&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; x=i;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if mod(x,100)=0 then x=.;&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; output;&nbsp;</tt>
+<br><tt>&nbsp; end;&nbsp;</tt>
+<br><tt>&nbsp; drop i;</tt>
+<br><tt>run;</tt>
+<p><tt>proc sql noprint;</tt>
+<br><tt>&nbsp; create table missx as select * from test where x is missing;</tt>
+<br><tt>&nbsp; select count(*) into :misscnt from missx;</tt>
+<br><tt>&nbsp; %put misscnt=&amp;misscnt;</tt>
+<br><tt>quit;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>The select statement using "count(*)" will indeed run very quickly -
+the trouble is you had to read through the full "test" table to create
+the "missx" table and then when you asked for the value SAS accessed the
+row count internally and presented it. But you had to read through the
+whole "test" table and this was inefficient.
+<p>The above SQL code is very wasteful because we created a table we are
+probably not going to use. The following form of SQL is better:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data test;&nbsp;</tt>
+<br><tt>&nbsp; do i=1 to 10000000;&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; x=i;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if mod(x,100)=0 then x=.;&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; output;&nbsp;</tt>
+<br><tt>&nbsp; end;&nbsp;</tt>
+<br><tt>&nbsp; drop i;</tt>
+<br><tt>run;</tt>
+<p><tt>proc sql noprint;</tt>
+<br><tt>&nbsp; select count(*) into :misscnt from test where x is missing;</tt>
+<br><tt>&nbsp; %put misscnt=&amp;misscnt;</tt>
+<br><tt>quit;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>The above form will be slightly faster than the code before but now
+"count(x)" has a where clause involved and SAS will actually have to count
+the rows. It has no internal value it can use.
+<h2>
+Detecting one missing value</h2>
+This is the efficient way to detect if here are any missing values at all
+in the table "test":
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data test;&nbsp;</tt>
+<br><tt>&nbsp; do i=1 to 10000000;&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; x=i;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if mod(x,100)=0 then x=.;&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; output;&nbsp;</tt>
+<br><tt>&nbsp; end;&nbsp;</tt>
+<br><tt>&nbsp; drop i;</tt>
+<br><tt>run;</tt>
+<p><tt>proc sql noprint;</tt>
+<br><tt>&nbsp; select "Has missing value(s)" into :msg from test where
+x is missing;</tt>
+<br><tt>&nbsp; %put msg=&amp;msg;</tt>
+<br><tt>quit;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>The above SQL will stop after it finds the first missing value which
+will be at row 100. Then it will stop. You wanted to know if there were
+"any" missing values so it found one and then stopped. This is efficient.
+<h2>
+Detecting empty/non-empty tables</h2>
+Suppose you need to produce a report where missing values are detected.
+You would need to create a table to do this otherwise you would have nothing
+to print later in your code. But suppose you also need to set a message
+somewhere if there were any rows with missing values or not. This is shown
+in the following code and note that I am going to initialize the macro
+variable before the select statement:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>proc sql noprint;</tt>
+<br><tt>&nbsp; create table missx as select distinct vara, varb, varc from
+test where x is missing;</tt>
+<br><tt>&nbsp; %let msg=;</tt>
+<br><tt>&nbsp; select "Has missing value(s)" into :msg from missx;</tt>
+<br><tt>&nbsp; %if not %length(&amp;msg) %then %let msg=No missing values
+found;</tt>
+<br><tt>quit;</tt></td>
+</tr>
+</table>
+
+<p>If the table "missx" has any rows in it (in other words missing values
+for "x" were detected) then the select statement puts the text into the
+macro variable "msg" and then stops. If there were no missing values then
+"missx" has zero rows in it and the select statement will do nothing because
+nothing was selected. And so "msg" will contain nothing. In fact it won't
+even be initialized which was why I had to initialize it before the select
+statement to make sure I did not get a syntax error when I tested its length.
+<h2>
+Using "exists"</h2>
+Here is a typical test you might do. Assuming you need to keep the "dups"
+dataset to report it then the following is not inefficient since SAS holds
+the value of "count(*)" internally so "select count(*) from dups" processes
+instantaneously as there is no "where" processing associated with it.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>update summary</tt>
+<br><tt>&nbsp; set Finding="Duplicate records found",</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Impact=3</tt>
+<br><tt>&nbsp; where (criteria="DUP") and (0&lt;select count(*) from dups);</tt></td>
+</tr>
+</table>
+
+<p>But to get into a better SQL coding habit then instead of the above
+you could use "<b>exists</b>" like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>update summary</tt>
+<br><tt>&nbsp; set Finding="Duplicate records found",</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Impact=3</tt>
+<br><tt>&nbsp; where (criteria="DUP") and exists (select 1 from dups);</tt></td>
+</tr>
+</table>
+
+<h2>
+count(*) is not all bad</h2>
+I do not want to give the impression that you should avoid all use of "count(*)".
+Sometimes it is needed, especially where you have "group by" variables.
+Suppose you needed to report of missing values but <b>only if there were
+more than one row in a group</b>. They you would need to count the rows
+by group and test for missing values of the rows per group were greater
+than one. You would do it like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>select "x is missing where there is more than one row in a vara-varb
+group" into :macvar from</tt>
+<br><tt>(select 1 from dset</tt>
+<br><tt>&nbsp;group by vara, varb</tt>
+<br><tt>&nbsp;having count(*)>1 and x is missing);</tt></td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+You have seen how by using "count" you may be processing a whole table
+when you do not need to and it is therefore less efficient than other methods
+you can use. You have been shown how to avoid using "count(*)" but also
+an example of its legitimate use.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<br>&nbsp;
+<br>&nbsp;
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/select_count.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+</html>

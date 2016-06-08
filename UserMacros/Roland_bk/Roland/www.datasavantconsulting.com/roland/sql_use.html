@@ -1,0 +1,241 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/sql_use.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <title>SQL for Treatment-Emergent Adverse Events</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+SQL for Treatment Emergent Adverse Events</h1></center>
+<b>Author: Roland Rashleigh-Berry</b>
+<br><b>Updated: 20 Mar 2012</b>
+<h2>
+Introduction</h2>
+I find myself using SQL more often these days because it can keep the code
+shorter and with it being less fragmented it makes my code easier to read
+and understand. But sometimes the SQL syntax is not obvious and if you
+can't work it out then you can end up with the SQL in fragments and so
+any advantage is lost.
+<p>I read somewhere that if you write SQL using SAS then it all gets turned
+into data steps internally that you can not see. I don't know if this is
+true but I can believe it when you consider the subject of this document
+of how to derive the set of treatment emergent AEs. You will find the data
+step/procedure approach is not so very different from what SQL is doing.
+<h2>
+Treatment Emergent Adverse Events defined</h2>
+The rules for what constitutes "treatment emergent" vary from company to
+company and can vary from study to study within a company but it usually
+refers to AEs that happened on treatment but did not happen at baseline
+<b>or</b> AEs that existed at baseline but occur again with a higher severity
+on treatment. This is the definition that will be used for the purposes
+of this document (although it should not be regarded as a recommendation)
+to show how, using SQL, records can be excluded from one table based on
+the contents of another table.
+<h2>
+Some Dummy AE data</h2>
+First let us create some very simple dummy AE data. On-treatment will be
+visit=2 or later. Pre-treatment (baseline) will be visit=1. The severity
+is the number assigned to the variable SEV. The higher the number, the
+more severe it is.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data ae;</tt>
+<br><tt>&nbsp; pt=1;visit=1;ae="cold";sev=1;output;</tt>
+<br><tt>&nbsp; pt=1;visit=1;ae="cold";sev=1;output;</tt>
+<br><tt>&nbsp; pt=1;visit=1;ae="flu ";sev=1;output;</tt>
+<br><tt>&nbsp; pt=1;visit=1;ae="flu ";sev=2;output;</tt>
+<br><tt>&nbsp; pt=1;visit=1;ae="gout";sev=1;output;</tt><tt></tt>
+<p><tt>&nbsp; pt=1;visit=2;ae="acne";sev=1;output;</tt>
+<br><tt>&nbsp; pt=1;visit=2;ae="cold";sev=3;output;</tt>
+<br><tt>&nbsp; pt=1;visit=2;ae="flu ";sev=3;output;</tt>
+<br><tt>&nbsp; pt=1;visit=2;ae="flu ";sev=1;output;</tt><tt></tt>
+<p><tt>&nbsp; pt=1;visit=3;ae="cold";sev=2;output;</tt><tt></tt>
+<p><tt>&nbsp; pt=2;visit=1;ae="cold";sev=2;output;</tt>
+<br><tt>&nbsp; pt=2;visit=1;ae="cold";sev=1;output;</tt>
+<br><tt>&nbsp; pt=2;visit=1;ae="flu ";sev=1;output;</tt>
+<br><tt>&nbsp; pt=2;visit=1;ae="flu ";sev=2;output;</tt>
+<br><tt>&nbsp; pt=2;visit=1;ae="acne";sev=1;output;</tt><tt></tt>
+<p><tt>&nbsp; pt=2;visit=2;ae="ache";sev=1;output;</tt>
+<br><tt>&nbsp; pt=2;visit=2;ae="cold";sev=2;output;</tt>
+<br><tt>&nbsp; pt=2;visit=2;ae="flu ";sev=3;output;</tt><tt></tt>
+<p><tt>&nbsp; pt=3;visit=2;ae="flu ";sev=1;output;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<h2>
+What we expect in the Treatment Emergent Set</h2>
+Looking at pt=1 then they have "acne", "cold" and "flu" on treatment. "Acne"
+is definitely treatment emergent as it did not occur at baseline. As for
+"cold" and "flu" then "cold", sev=3 is emergent and so is sev=2 because
+the "cold" severity at baseline was sev=1. As for "flu" then sev=3 is emergent
+but not the sev=2 as the maximum severity at baseline was sev=2.
+<p>Looking at pt=2 then "ache" is obviously emergent but not "cold" at
+sev=2 because that was the maximum value at baseline and of the two "flu"
+events then the one with sev=3 is emergent but not the one with sev=2.
+<p>For pt=3 then they have no events at baseline so "flu" sev=1 is emergent.
+<p>Summarizing for the three patients then this is what we expect to see
+(order not important) in the treatment emergent set.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt></tt>
+<br><tt>Obs&nbsp;&nbsp;&nbsp; PT&nbsp;&nbsp;&nbsp;&nbsp; AE&nbsp;&nbsp;&nbsp;&nbsp;
+VISIT&nbsp;&nbsp;&nbsp; SEV</tt><tt></tt>
+<p><tt>&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp; acne&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1</tt>
+<br><tt>&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp; cold&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3</tt>
+<br><tt>&nbsp;3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp; flu&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3</tt>
+<br><tt>&nbsp;4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp; cold&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2</tt>
+<br><tt>&nbsp;5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp; ache&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1</tt>
+<br><tt>&nbsp;6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp; flu&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3</tt>
+<br><tt>&nbsp;7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp; flu&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<h2>
+The NON SQL way of doing things</h2>
+For the baseline AEs we are only interested in the one with maximum severity
+where there are two or more of the same type so we can use "proc summary"
+to group the AEs by "pt ae" and take the maximum severity using the max()
+function.
+<p>For on-treatment AEs then we select for visit>1, sorting in the same
+order we used for grouping in the proc summary step.
+<p>For the last step we only want the on-treatment AEs so we use "if _b;"
+in the code. Then we check to see if we got a match with the baseline AEs
+and if so then we only select those with a severity greater than PRESEV.
+<p>We can see the code below. It is simple code but for such a simple thing
+it would be better to see it all done in one step.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>proc summary nway missing data=ae(where=(visit=1));</tt>
+<br><tt>&nbsp; class pt ae;</tt>
+<br><tt>&nbsp; var sev;</tt>
+<br><tt>&nbsp; output out=pre(drop=_type_ _freq_)</tt>
+<br><tt>&nbsp; max(sev)=PRESEV;</tt>
+<br><tt>run;</tt><tt></tt>
+<p><tt>proc sort data=ae(where=(visit>1)) out=ont;</tt>
+<br><tt>&nbsp; by pt ae;</tt>
+<br><tt>run;</tt><tt></tt>
+<p><tt>data ont2;</tt>
+<br><tt>&nbsp; merge pre(in=_a) ont(in=_b);</tt>
+<br><tt>&nbsp; by pt ae;</tt>
+<br><tt>&nbsp; if _b;</tt>
+<br><tt>&nbsp; if _a then if sev>PRESEV;</tt>
+<br><tt>&nbsp; drop presev;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<h2>
+The SQL way of doing things</h2>
+Using SQL we will do it all in one step and I want you to see that we are
+doing it in exactly the same way, although you might not be familiar with
+the syntax. Here is the SQL that does it. It will be explained piece by
+piece:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>proc sql noprint;</tt>
+<br><tt>&nbsp; create table emerg_sql as (</tt>
+<br><tt>&nbsp; select pt, ae, visit, sev from ae as ont&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; where visit>1 and not exists</tt>
+<br><tt>&nbsp;&nbsp; (select pt, ae, max(sev) as PRESEV from ae as pre</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; where visit=1</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; group by pt, ae</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; having pre.pt=ont.pt</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; and pre.ae=ont.ae</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; and PRESEV GE ont.sev )</tt>
+<br><tt>&nbsp; );</tt>
+<br><tt>quit;</tt></td>
+</tr>
+</table>
+
+<h2>
+Detailed comparison of the SQL to the data steps and procedures</h2>
+Look for the "proc summary" step inside the SQL. Of course we are not calling
+"proc summary" but instead asking SQL to group our baseline data and pick
+the highest severity. The part doing that follows. Instead of "class tp
+ae;" we see "group by pt, ae". Instead of "max(sev)=PRESEV;" we see "max(sev)
+as PRESEV".
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp;&nbsp; (select pt, ae, max(sev) as PRESEV from ae as pre</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; where visit=1</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; group by pt, ae</tt></td>
+</tr>
+</table>
+
+<p>Next you might look for the part where we sort the on-treatment data
+but we have no need to sort using SQL as it will do the work of matching
+up values for us. But at least we would expect to see the on-treatment
+data selected. The part doing this is this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp; select pt, ae, visit, sev from ae as ont&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; where visit>1&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>Now we need to look for the part that drops the on-treatment data if
+it exists at baseline and the severity is not greater than it was at baseline.
+The part that does this is below. Note that because we are grouping the
+data then instead of using a "where" conditional we use "having" instead.
+We don't merge "by pt ae;" but match directly using "pre.pt=ont.pt and
+pre.ae=ont.ae" and in the same statement we compare the severity using
+"and PRESEV GE ont.sev".
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+and not exists</tt>
+<br><tt>&nbsp;&nbsp; (select pt, ae, max(sev) as PRESEV from ae as pre</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; where visit=1</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; group by pt, ae</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; having pre.pt=ont.pt</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; and pre.ae=ont.ae</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; and PRESEV GE ont.sev )</tt></td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+You have seen the SQL way of deriving treatment emergent AEs compared with
+using data steps and procedures and have seen how the same logic and processes
+are present in both methods.
+<br>&nbsp;
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<br>&nbsp;
+<br>&nbsp;
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/sql_use.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+</html>

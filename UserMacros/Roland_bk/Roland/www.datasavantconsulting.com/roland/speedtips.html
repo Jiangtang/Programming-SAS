@@ -1,0 +1,838 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+  
+<!-- Mirrored from www.datasavantconsulting.com/roland/speedtips.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+<head>
+    <meta http-equiv="Content-Type" content="text/html;
+      charset=windows-1252">
+    <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U)
+      [Netscape]">
+    <meta name="Author" content="Roland Rashleigh-Berry">
+    <meta name="Description" content="SAS speed tips">
+    <meta name="KeyWords" content="ad hoc Spectre PDF">
+    <title>SAS speed tips</title>
+  </head>
+  <body alink="#FF0080" bgcolor="#C0C0FF" link="#0000FF" text="#000000"
+    vlink="#800080">
+    <center>
+      <h1>
+        SAS Speed Tips</h1>
+    </center>
+    <b><font face="Arial,Helvetica">Last Updated: 22 Feb 2016</font></b>
+    <h2>
+      Introduction</h2>
+    This page is about how to get the <b>maximum speed</b> out of SAS
+    where
+    you are analysing <b><font size="+1">huge</font></b> amounts of
+    data (tens
+    of millions of observations taking up tens of gigabytes such as for
+    pooled
+    clinical trials analysis).
+    <h2>
+      <font color="#990000">SAS vs. other languages - my message to
+        programmers
+        from a different programming background</font></h2>
+    <font color="#990000">The SAS language was built for speed. It was
+      expected
+      that anybody who used the language would use it to process
+      millions of
+      records. The first thing you learned, when becoming a SAS
+      programmer (not
+      through instruction but rather through experience) was how to
+      write code
+      that could efficiently handle millions of records. You either
+      gained this
+      skill or you failed as a SAS programmer because if your code was
+      inefficient
+      for handling large volumes of data then your program would not be
+      able
+      to complete in the time window allowed for it (usually an
+      overnight time
+      slot done after system backups). If you transitioned over from
+      another
+      efficient batch language such as COBOL then seeking data handling
+      efficiency
+      for SAS would be natural and the first thing you would apply
+      yourself to,
+      because you came from a background with similar constraints. <b>But</b>,
+      if your programming background was with computer languages that
+      normally
+      did not handle large volumes of data then <b>making this
+        transition over
+        to a programming language created to handle large volumes of
+        data and using
+        that language correctly does not come naturally</b>.</font>
+    <p><font color="#990000">If you program in SAS and your background
+        is in
+        computer languages that traditionally do not handle millions of
+        records
+        then <b>you have some relearning to do</b>, otherwise the code
+        you write
+        in SAS will be useless in terms of handling large volumes of
+        data and will
+        likely be a liability to your company or your client. You have
+        to <b>learn</b>
+        this new approach from scratch and work on it until you have
+        learned the
+        techniques required for handling large volumes of data and are
+        able to
+        apply them from second nature. And this efficient technique has
+        to overrule
+        whatever you have learned from working on other languages that
+        help you
+        with program development and maintenance.
+        <b>Speed of data handling is
+          your rule</b>. SAS language programs usually reach a stage in
+        them where
+        the data is summarized to a limited number of categories, such
+        as a few
+        hundred categories or less. It is only after you have handled
+        data efficiently
+        and summarized it that your old programming skills to do with
+        program development
+        and maintenance apply and you have something of value to offer.</font>
+    </p>
+    <p><font color="#990000">Assuming your SAS program has a pre and
+        post summarization
+        phase then <b>pre summarization</b>, your code is all to do
+        with efficient
+        handling of data and minimalistic processing/reshaping of data
+        and <b>post
+          summarization</b>, the shift is away from efficiency and more
+        towards functionality
+        and shaping data. <b>Don't do anything to the data, pre
+          summarization,
+          that with a bit of ingenuity, you could do post summarization</b>.
+        If you
+        are designing utility macros then decide whether they apply pre
+        summarization
+        or post summarization. Post summarization allows you to take a
+        few liberties
+        with efficiency to get the functionality you desire. Pre
+        summarization,
+        then maybe you should not be using that macro at all but if you
+        are, put
+        the work in to make sure it is very efficient.</font><font
+        color="#990000"></font>
+    </p>
+    <p><font color="#990000">For this category of experienced
+        programmers from
+        other languages, it is possible to be one of the best
+        programmers in the
+        world at the same time as being one of the worst SAS programmers
+        in the
+        world if this "dual approach" is not recognized and worked on.</font>
+    </p>
+    <p><font color="#990000">This concludes my short-cut advice to
+        already
+        experienced programmers given tasks to do involving the SAS
+        language.</font>
+    </p>
+    <h2>
+      Is it worth the effort?</h2>
+    Modern computer performance is optimized to handle repeat requests
+    for
+    small amounts of often requested data, so when it comes to irregular
+    requests
+    for <b>huge</b> volumes of data, the optimization of modern
+    computers offers
+    no advantage. In these circumstances, the performance advantage of "<b>doing
+it
+      right</b>" over "<b>doing it wrong</b>" can be a huge factor -
+    like
+    a factor of
+    <b>100x - </b>sometimes more. So if you are handling <b>huge</b>
+    volumes of data then the speed tips on this page are well worth
+    considering.
+    <p>When it comes to <b>tens of millions </b>of observations then
+      software
+      design problems that cause <b>one million</b> observations to be
+      handled
+      slowly increase in an <b>exponential fashion</b>. But if your
+      handling
+      of the data is optimal then increases of volume result in more
+      proportionate
+      time increases such that handling ten times the amount of data
+      will take
+      ten times longer, rather than one hundred or a thousand times
+      longer.
+    </p>
+    <h2>
+      What is "normal", "fast" and "very fast" for large amounts of
+      data?</h2>
+    Assuming you are dealing with millions or tens of millions of
+    observations
+    then a processing rate of 5,000 obs per second would be "normal", <b>10,000
+obs
+      per second would be fast.</b> To get beyond this rate you need a
+    combination
+    of good hardware and excellent software design. 15,000 obs per
+    second is
+    very fast. To get to 30,000 obs per second (extremely fast) then you
+    need
+    not only excellent hardware and software design but you would be
+    multiprocessing
+    effectively as well. Rates far in excess of 30,000 obs per second
+    are being
+    achieved using expensive specialized hardware, but such hardware is
+    beyond
+    the justification of most organizations.
+    <p>If you have reasonably good hardware and can not multiprocess
+      then if
+      your software design is good then you should still be processing
+      at the
+      rate of <b>10,000 obs per second</b>. If you are not achieving
+      this throughput
+      rate, despite good software design, then most likely there is
+      something
+      wrong with your input data structure - such as too many fields
+      kept or
+      important information "buried" in the data, forcing the program to
+      make
+      multiple passes of the data to extract this important information.
+    </p>
+    <p>If you follow all the tips on this page and your computer
+      configuration
+      is good and your input data structure good then you should be able
+      to consistently
+      achieve "fast" speed and achieve more proportional elapsed times
+      for larger
+      volumes of data.
+    </p>
+    <h2>
+      Can I speed up my existing code?</h2>
+    You might have existing code or macros that you want to be able to
+    speed
+    up so that it can handle large volumes of data better. But whether
+    you
+    can do that, and whether it is worth trying, depends on the code
+    design.
+    If it is designed wrongly to deal with large volumes of data then it
+    is
+    unlikely that the code can be improved as it stands to make it
+    significantly
+    more efficient. A redesign will be required so that efficient
+    handling
+    of large volumes of data dictates the design principles used in the
+    code.
+    <br>
+    &nbsp;
+    <h2>
+      <font size="+3">So where do we begin ........ ?</font></h2>
+    &nbsp;
+    <h2>
+      Minimize the volume of data for analysis</h2>
+    The <b>first and most important speed tip</b> for SAS when you are
+    analysing
+    <b>huge</b>
+    amounts of data is to <b>keep the volume of input data as small as
+      possible</b>.
+    This is because data takes time to read and write so if you can
+    minimize
+    this it will run faster. SAS does a lot of its work using computer
+    memory
+    if it can, because this is faster - but there is a limited amount of
+    memory
+    for this. The smaller you can make your data - the better. Keep only
+    the
+    variables you need. Use a "where" clause if this will help. If you
+    have
+    a time, a date and a datetime variable for the same timepoint then
+    consider
+    just keeping the datetime value since you can derive both date and
+    time
+    from this. Think of every way you can to minimize the data you send
+    in
+    for analysis. Cut it back to the bare minimum.
+    <p>And here your input data structure plays a major role. Your input
+      data
+      needs to be as compact as possible but not held as compressed
+      datasets.
+      <b>Never
+        use compressed datasets</b> as any part of the process, not as
+      source data
+      and not as final output data, if speed is important. The SAS
+      overhead for
+      handling compressed data is very large and will increase elapsed
+      times.
+      <br>
+      &nbsp;
+    </p>
+    <h2>
+      Add identifying information as late as you can</h2>
+    Keep the minimum amount of identifying information to do your
+    analysis.
+    Identifying information can usually be added at a later stage.
+    Suppose
+    you have a parameter such as LABPARM="ALKP" - for analysis purposes
+    you
+    do not care what "ALKP" means so long as you get the number out. You
+    can
+    always add the parameter label <b>after</b> you have done the
+    analysis
+    and it is better done that way to keep the volume of data as small
+    as possible
+    that you are passing through for analysis. Just before you report
+    the data
+    you can merge or join the identifying information back in because at
+    this
+    late stage, the number of observations you have are small and so the
+    merge
+    that adds identifying information will be faster. Hopefully you can
+    use
+    an existing format to give you this identifying information based on
+    your
+    coded value.
+    <h2>
+      Avoid Numeric Flag Variables</h2>
+    A lot of people use numeric flag variables such as indicators for
+    baseline
+    values. This should be avoided since numeric variables are eight
+    bytes
+    long and take up more space than you need. Actually, you can define
+    numeric
+    variables to be only three bytes long but even this is too much
+    where a
+    character text variable only one byte long could act as a flag, such
+    as
+    BLFL="Y".
+    <h2>
+      Never use a "Data Build" Step</h2>
+    It is common practice in some companies to write macros that do a "<b>data
+      build</b>" step followed by a "reporting" step that can create one
+    or more
+    reports. The "data build" step creates a dataset with all
+    information in
+    it combined and then the report step can create one or even several
+    reports
+    from it. Although this is very logical it is only a good technique
+    if the
+    number of observations is small such as 3000 or less. It is <b>the
+      worst
+      technique possible where huge volumes of data are involved</b>
+    because
+    the volume of data is already a big problem and making this data
+    bigger
+    by adding more information to each observation makes it a <b>much
+      bigger
+      problem</b>. If you have macros that do that then you should not
+    use them
+    to analyse large amounts of data. You should also think about
+    redesigning
+    them. Where huge amounts of data are involved then multiple
+    standalone
+    reporting macros that use the techniques already described in the
+    above
+    sections will be
+    <b>much faster</b> in their total elapsed time than using
+    a "data build" step and running multiple reports on the combined
+    data.
+    <p>Using a "data build" step and putting <b>all</b> your
+      information in
+      the <b>one</b> dataset is another practice which will exacerbate
+      your performance
+      problems. Suppose you have used an algorithm when you built the
+      data such
+      as using the "first" or "last" observation where there are repeat
+      measures
+      for a day and you need to report which algorithm was applied (if
+      any) in
+      the output report. You don't want to be making a pass of the data
+      to find
+      out what algorithm was used. This needs to be stored in a helper
+      dataset
+      for quick access and not buried in the input data. Preferably you
+      should
+      only make a single pass through the data.
+    </p>
+    <h2>
+      Do most of your data joining "work" in WORK</h2>
+    The WORK library in SAS has much faster read and write access than
+    using
+    disk access. The WORK library partly maps to computer memory where
+    access
+    is faster. The WORK library <b>might also reside on a memory card</b>
+    which
+    is faster than disk. This memory card will plug into a special high
+    speed
+    "bus" on the server motherboard, called a PCI-E bus, and so all the
+    I/O
+    will happen in the motherboard and not be transmitted down the data
+    channels.
+    It makes sense therefore to do <b>major</b> data joining and
+    merging in
+    the WORK library. It is better to copy the minimum volume data you
+    need
+    into the WORK library first and then do all the merges and joins
+    there.
+    This will typically be <b>4-6x faster</b> than if you did joining
+    and merging
+    outside the WORK library.
+    <p>Note that you can do <b>minor</b> SQL data joining as you are
+      reading
+      the data and placing the output in the WORK library. What I mean
+      by "minor"
+      joining is where some of the datasets (tables) you are reading are
+      very
+      small compared to the major dataset you are joining on. In this
+      case the
+      small datasets (tables) will be held in memory by SAS and the join
+      will
+      execute fast. If in doubt you have the option of running <b>benchmarks</b>
+      on high volume data to see which method runs the fastest.
+    </p>
+    <h2>
+      Benchmark It !!!</h2>
+    Sometimes it will not be clear what is the best method to use for
+    maximum
+    speed. In these cases use benchmarking on <b>high volumes</b> (30K
+    observations)
+    of test data (perhaps even real data) to find out which technique
+    works
+    the fastest. You will need to do this several times and average the
+    elapsed
+    time for each method.
+    <p>Even where you are programming in an efficient way then often you
+      will
+      have different options open to you. To give an example - which is
+      faster,
+      using PROC SQL or a data step? If you are extracting baseline
+      information
+      and last-value-on-treatment information then is it quicker to use
+      two SQL
+      passes or two data step passes or one pass of SQL or a single data
+      step
+      to extract both types and then split the data into two, which will
+      be easier
+      with a data step, or just use the data as it stands and set a flag
+      to distinguish
+      the two types for analysis? Benchmark it to find out!
+    </p>
+    <p>When you are developing code then include code to put time
+      markers in
+      the log saying at what point you are in the program and what you
+      are about
+      to do. Write ending time markers to the log when you are doing
+      something
+      that takes a significant amount of time. <b>When you are speeding
+        up your
+        code then concentrate on those things that take the most time.</b>
+      It is
+      no good spending an hour trying to shave a tenth of a second off
+      an elapsed
+      time when you could spend that same time saving hundreds of
+      seconds of
+      the elapsed time by optimizing the way you read the input data. A
+      suitable
+      form of writing timepoints to the log is shown below.
+    </p>
+    <p>%PUT &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Starting to read input data
+      at %sysfunc(datetime(),datetime21.2);
+      <br>
+      .... read the input data .....
+      <br>
+      %PUT &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Ended reading input data at
+      %sysfunc(datetime(),datetime21.2);
+    </p>
+    <p>Keep in mind that complex SQL joins might not scale up in the way
+      you
+      expect for larger volumes of data. SQL might appear faster than
+      data steps
+      for modest amounts of data yet be slower for larger amounts of
+      data. You
+      might have to benchmark using higher volumes of input test data.
+      You should
+      design your code based on the highest amount of data it might have
+      to read
+      in and not for an average amount of data.
+    </p>
+    <p>Especially, put these "%PUT" markers around your read of the
+      input data
+      so it is clear what is the beginning and end of the data access.
+      Suppose
+      you are developing your code on 10K observations and the code
+      might sometimes
+      run against 10M observations then any saving you can make
+      accessing your
+      data while you are testing might be magnified <b>1000x</b> for
+      large amounts
+      of data. Also, look for other places where you are accessing the
+      input
+      data in your code and think whether this could be removed and run
+      at an
+      earlier stage so more than one of your reporting macros could
+      benefit from
+      it without rerunning this code. Most of your benchmarking efforts
+      should
+      be concentrated on minimizing access times of your input data.
+    </p>
+    <h2>
+      Avoid Sorting Large Datasets</h2>
+    If you are doing sorting and merging or using SQL "order by" at the
+    end
+    then avoid this for large datasets if you can. It is better to
+    reorder
+    the small dataset if you can achieve the same goal. Maybe you can
+    change
+    the order of the "CLASS" variables to give you an analysis dataset
+    in a
+    better order for merging with other data. Sorting large datasets
+    take up
+    a lot of resources and will slow your work down.
+    <p>If you must do a sort then it is OK if the data is already nearly
+      in
+      the order you need. The sort software will detect this and use an
+      efficient
+      algorithm.
+    </p>
+    <h2>
+      Keep the WORK library tidy</h2>
+    Delete datasets from the WORK library on a regular basis in your
+    code when
+    they are no longer needed. The WORK library has very fast read and
+    write
+    access if it can use computer memory so the less space you use for
+    the
+    WORK library then the greater the chances it can make use of
+    computer memory
+    to make your code run faster.
+    <h2>
+      Do not "compress" WORK datasets</h2>
+    If you follow the above tips then your WORK dataset sizes will be
+    optimum
+    and as such there is a disadvantage to "compressing" WORK datasets.
+    It
+    should never be a default option. This is because the CPU overhead
+    in compressing
+    and decompressing datasets will slow down your work In fact, <b>never
+      compress
+      datasets</b> in any library if speed of execution is important
+    because
+    it is almost certain to increase elapsed times. You should only
+    compress
+    datasets that are stored on disk if disk space it at a premium or
+    there
+    are major concerns about the saturation of the data channels.
+    Compressed
+    datasets take up about one third the room as uncompressed ones so
+    you save
+    a lot of disk space and save a lot of channel traffic so in that
+    sense
+    compressing datasets is good. But the reduction in performance is
+    huge
+    and outweighs any saving in disk space or channel utilization.
+    Besides,
+    these days, disk space is cheap and channels tend to be 10 or 20
+    Gigabits
+    per second Ethernet so as long as all the activity on the WORK
+    library
+    is happening in a memory card then you should have plenty of
+    capacity down
+    the channel for reading and writing uncompressed datasets.
+    <h2>
+      Beware of Complex SQL Joins</h2>
+    Be aware that if you are doing complex SQL joins then what works on
+    moderate
+    amounts of data in a reasonable elapsed time might struggle with
+    large
+    volumes of data. The elapsed times might increase exponentially. You
+    might
+    have to use sorts and merges instead. This is something else you
+    might
+    need to benchmark.
+    <h2>
+      Consider using Views</h2>
+    I have to admit that I do not use SAS "views" much. These can be
+    data views
+    or SQL views. The reason I do not use views much is that they do not
+    save
+    any CPU time. But there is a special situation when I would consider
+    using
+    them and that is to avoid an intermediate dataset being created and
+    then
+    fed into a SAS procedure such as a "proc summary" or a "proc
+    report". If
+    you had to merge data before feeding it into a sas procedure, and
+    that
+    data was only for the purpose of feeding into that procedure and
+    would
+    not be used for anything else, then you can use a view and feed that
+    view
+    into the procedure directly such that you did not create an
+    intermediate
+    dataset in your WORK library. This would save on I/O and keep your
+    WORK
+    library free of clutter which would hopefully improve performance.
+    <p>If you want to read up on views then there is a good paper you
+      can link
+      to below:
+    </p>
+    <p><a href="http://www2.sas.com/proceedings/sugi27/p019-27.pdf"
+        target="_blank">http://www2.sas.com/proceedings/sugi27/p019-27.pdf</a>
+    </p>
+    <h2>
+      Consider building an Index</h2>
+    You may or may not gain benefits from the building and use of an
+    index
+    or indices for datasets but you should be aware that it might be
+    appropriate
+    to do so in some circumstances. This is explained well in the
+    following
+    paper:
+    <p><a href="http://www2.sas.com/proceedings/sugi29/123-29.pdf"
+        target="_blank">http://www2.sas.com/proceedings/sugi29/123-29.pdf</a>
+    </p>
+    <h2>
+      Hash Joins and Hash Objects</h2>
+    When you do a PROC SQL <b>INNER</b> join between a <b>small table</b>
+    and
+    a large table, PROC SQL will see if it can use a "<b>hash join</b>",
+    as
+    this type of join is very fast. What it does is to load the small
+    table
+    into memory and "hash" on the keys where it can locate the row to be
+    joined
+    very quickly. But this will only work if the small table can fit
+    into memory.
+    Specifically, it checks to see if 1% of the rows can fit into a
+    single
+    SQL buffer which is 64K by default. If you have a lot of virtual
+    memory
+    on your computer then you might want to increase the buffer size
+    using
+    the <b>BUFFERSIZE=</b> option for the PROC SQL statement. For
+    example,
+    BUFFERSIZE=256K will increase buffer size to 4 times the default and
+    BUFFERSIZE=1M
+    will increase the buffer size to one megabyte. Another thing you can
+    do
+    it to influence the SQL optimizer to use a hash join using the PROC
+    SQL
+    statement option <b>MAGIC=103</b> . If you want to know what
+    algorithms
+    the SQL optimizer is choosing then you can write this to the log
+    using
+    the <b>_METHOD </b>option on the PROC SQL statement. This is
+    something
+    you can benchmark to see what gives you the best results.
+    <p>And now I mention the <b>big problem</b> with "hash joins" using
+      PROC
+      SQL. That is that a "hash join" is only used for <b>INNER</b>
+      joins. It
+      is not used for <b>OUTER</b> joins. If you are handling data then
+      most
+      of your joins will be <b>LEFT</b> joins with the large table
+      being the
+      "left" table and you want to keep every row in that table whether
+      it matches
+      with the small table you are trying to join with or not (otherwise
+      you
+      would be losing data, which is not allowed). And LEFT joins as
+      well as
+      RIGHT joins are <b>OUTER</b> joins. When you specify a LEFT or a
+      RIGHT
+      join it is shorthand for <b>LEFT OUTER</b> and <b>RIGHT OUTER </b>so
+      the
+      fast and desirable "hash join" will not be used. So if you want to
+      do a
+      LEFT join to keep all your data and you need the speed of the
+      "hash join"
+      then you have to <b>use a data step</b> to do your join and use a
+      "<b>hash
+        object</b>". You can easily do the data step equivalent of a
+      LEFT JOIN
+      that way. Again, this is only good if the smaller dataset can fit
+      into
+      memory. You will find a page on this web site to tell you <a
+        href="hashobj.html" target="_blank">how
+        to use hash objects</a>. The syntax is hard to remember so there
+      is a utility
+      macro on this web site (that calls other utility macros) to make
+      this easier
+      for you.
+    </p>
+    <p>Again, <b>benchmark</b> it. See what works the fastest. If all
+      you are
+      doing is an INNER join then try influencing PROC SQL with the
+      options to
+      encourage it to use a hash join where you think that will help. If
+      you
+      don't want to use PROC SQL for whatever reason (most likely
+      because you
+      need to do a LEFT join) then try using a data step <b>hash object</b>.
+      Run on a realistically sized sample of data to see if it will save
+      you
+      time or not and if so, how much time it can save you.
+    </p>
+    <h2>
+      Multiprocessing using MP Connect</h2>
+    I saved this topic until last because hopefully with your
+    programming issues
+    solved and your hardware hopefully improved then you are looking to
+    increase
+    speed even further. Perhaps you can!. If you have SAS/CONNECT
+    licensed
+    (you can find out by doing a <b>proc setinit;run;</b>) then you
+    have the
+    option of doing multiprocessing so you can kick off tasks that run
+    in separate
+    sessions which your local session is working on something else. You
+    can
+    then wait to the other tasks to end and merge the results in with
+    your
+    local session. Suppose you had a main macros that called reporting
+    sub-macros
+    then it might be possible to arrange the work so that you could call
+    tasks
+    to perform the reporting sub macros that are running in parallel. If
+    you
+    have enough processors available for use then you could double the
+    speed
+    of your work or even higher. I have a page on this <a
+      href="MPConnect.html" target="_blank">here</a>.
+    <h2>
+      A Practical Multiprocessing Example</h2>
+    You would be a very lazy programmer if you tried to use
+    multiprocessing
+    to help cover up inefficient programming, which is why I have
+    introduced
+    multiprocessing as the last topic on this page. So assuming you have
+    perfected
+    your code and tried to influence the computer hardware for the
+    advantage
+    of speed then I thought I would give you a practical example of how
+    you
+    can use multiprocessing to speed up your sas jobs. In this example
+    (which
+    is also on the page you can link to above) we have set up a WORK
+    dataset
+    named CLASS plus a format named $MISS in WORK.FORMATS and I pass
+    this on
+    to two processes that will run in parallel. No matter the order in
+    which
+    the processes finish I want to collect the output in strict
+    "process1,
+    process2" order. You can see how easy it is to do this from the
+    following
+    example. Try it yourself if you have SAS/CONNECT licensed.
+    <br>
+    &nbsp;
+    <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+      <tbody>
+        <tr>
+          <td><tt>options autosignon=yes;</tt>
+            <p><tt>proc format;</tt>
+              <br>
+              <tt>value $miss ' '='Missing';</tt>
+              <br>
+              <tt>run;</tt>
+            </p>
+            <p><tt>data class;</tt>
+              <br>
+              <tt>&nbsp; retain Miss ' ';</tt>
+              <br>
+              <tt>&nbsp; set sashelp.class;</tt>
+              <br>
+              <tt>&nbsp; format _character_ $miss.;</tt>
+              <br>
+              <tt>run;</tt>
+            </p>
+            <p><tt>rsubmit process2 wait=no
+                inheritlib=(work=lwork)&nbsp;</tt>
+              <br>
+              <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sascmd="!sascmd
+                -sasuser work -noautoexec";&nbsp;</tt>
+              <br>
+              <tt>&nbsp; options nodate nonumber
+                fmtsearch=(lwork.formats);</tt>
+              <br>
+              <tt>&nbsp; title1 "Process 2 Print";</tt>
+              <br>
+              <tt>&nbsp; proc print data=lwork.class;</tt>
+              <br>
+              <tt>&nbsp; run;</tt>
+              <br>
+              <tt>endrsubmit;</tt>
+            </p>
+            <p><tt>rsubmit process1 wait=no
+                inheritlib=(work=lwork)&nbsp;</tt>
+              <br>
+              <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sascmd="!sascmd
+                -sasuser work -noautoexec";&nbsp;</tt>
+              <br>
+              <tt>&nbsp; options nodate nonumber
+                fmtsearch=(lwork.formats);</tt>
+              <br>
+              <tt>&nbsp; title1 "Process 1 Print";</tt>
+              <br>
+              <tt>&nbsp; proc print data=lwork.class;</tt>
+              <br>
+              <tt>&nbsp; run;</tt>
+              <br>
+              <tt>endrsubmit;</tt>
+            </p>
+            <p><tt>waitfor _all_ process1 process2;</tt>
+            </p>
+            <p><tt>signoff process1;</tt>
+              <br>
+              <tt>signoff process2;</tt></p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>
+    </h2>
+    <h2>"Cross environment data access will be used"<br>
+    </h2>
+    <p>If you see the title of this section in your SAS log then you
+      have got problems. What it is telling you is that you are crossing
+      computer environments in some way and may even be using a
+      different server to access your data. This will slow down
+      execution times and lot and typically limit you to below 10k obs
+      per second and give you performance problems. Here you need to ask
+      an expert who understands the computing environment of the
+      computer you are using to recommend the best approach for
+      accessing your data efficiently.<br>
+    </p>
+    <h2>Conclusion</h2>
+    On this page you will have read about many issues that can help you
+    to
+    increase the speed of your SAS programs. For very large datasets
+    (one million
+    obs or more) we should all be getting speeds of processing that are
+    <b>10,000
+      obs per second</b> or higher. There is no excuse for lower speeds.
+    To give
+    you an idea of what is possible, then the fastest time I have heard
+    of
+    for processing real stored data is a processing rate of 5 million
+    obs per
+    second. 10,000 obs per second does not seem such a lofty goal in
+    comparison.
+    <br>
+    &nbsp;
+    <br>
+    &nbsp;
+    <br>
+    <br>
+    <br>
+    <center>
+      <p>Go back to the home <a href="index-2.html">page</a>.
+      </p>
+      <p>E-mail the macro and web site <a
+          href="mailto:rolandberry@hotmail.com">author</a>.</p>
+    </center>
+    <p><!-- Start of StatCounter Code -->
+      <script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+      <script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js">
+</script><noscript><a href="http://www.statcounter.com/" target="_blank"><img src="counter.html" alt="counter hit make" border="0"></a></noscript><!-- End of StatCounter Code -->
+    </p>
+  </body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/speedtips.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+</html>

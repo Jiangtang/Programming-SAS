@@ -1,0 +1,280 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/datanull.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:06 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="SAS tips and techniques data _null_">
+   <meta name="KeyWords" content="data _null_ report titles #byvar #byval">
+   <title>Data _null_ unleashed</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+data _null_ unleashed</h1></center>
+<b>[This site is not connected with the SAS Institute]</b>
+<p><b>[last updated - 08 September 2007]</b>
+<h2>
+Introduction</h2>
+My prediction for 2003 was that "data _null_" would come into its own in
+the field of clinical reporting. <b>I was proved wrong.</b> The reason
+I thought so at the time was because at the time the FDA were insisting
+that tables had to use a 12 point font. The information that used to fit
+across the page using a 10 point font or smaller now has to be crammed
+in somehow. This led to some fields being "stacked" one under the other
+in columns. Proc report will happily "flow" columns for you if you specify
+the "flow" option and you can control the flow with split characters. However,
+following lines in proc report are placed after where the previous line
+has flowed to. "Flow"ing effectively makes a line "fatter". The flowing
+won't fill up space that following lines don't need. So suppose your "order"
+variable contains age, race, sex and weight separated by a split character
+then this will flow most nicely. But the second data line for that group
+will be printed on the line below weight. So that leaves a gap of three
+lines. Now this would hardly be an issue if there were 60 lines on a page.
+But using a 12 point font limits a page to about 43 lines, even when the
+spacing between lines is being compressed. Now you maybe have five title
+lines and five footnotes. You have a gap before you start the columns and
+because you are stacking values like age, race, sex, weight your columns
+are going to be 4 deep. And underneath that you have a header line. And
+because the data lines will leave a gap before the first footnote then
+you are reduced to only 26 lines of data. And if you have a "flow" gap
+of 3 lines out of 26 then the report starts to look absurd. The 3 line
+gap is now a yawning chasm. The table looks incorrect and unacceptable.
+And there is worse to come. Your age/race/sex/weight column has more chance
+of starting near the bottom of the page and so getting separated. If you
+have less than 4 lines left on the page then you shouldn't start it. How
+is proc report going to handle that?
+<p>It is possible to still use proc report and get round this "flow" problem
+by manipulation of the dataset going into it. You then use proc report
+to display your data rather than using it naturally. But the code can become
+very complex You will need to know how many lines will fit on a page because
+you will have to artificially put out a new age/race/sex/weight on a following
+page if the previous group has data lines that flow onto a following page.
+The code can end up being more complex than if you use "data _null_". But
+there is a niggling problem with "data _null_" reports. Thankfully they
+can automatically give us titles and footnotes using the options "titles
+footnotes" on the file statement but there is one thing it will not be
+able to use that other procedures can. And that is make substitutions for
+<b>#byvar</b>
+and <b>#byval</b> entries. If a data _null_ report could interface with
+the titles fully, as does the other reporting procedures, then I think
+data _null_ would be unleashed. For some of the 12 point font tables, programmers
+could use data _null_ instead of doing massive manipulation of datasets
+so that proc report can display it properly. The more manipulation you
+do, the less you can trust the final result. I would say that if your code
+becomes so complex that a good programmer could not follow it then it could
+never be considered to be "validated". Sure, it might work properly on
+the example datasets you put through it. You may not have had any problems
+reported. But what about the next time? Do you know that the routine is
+correct or are you trusting to luck? I would say that if you were trusting
+to luck then the routine is unacceptable. Using data _null_, the logic
+would be easier in some cases, so as long as you did not have a problem
+with the #byval and #byvar in titles then in certain circumstances it could
+and should be used in preference to proc report.
+<h2>
+%bytitle - a first attempt</h2>
+In almost all cases, the line that contains #byval and #byvar entries is
+the last title line. We could check the contents of the last title line
+by looking in the sashelp.vtitle view and if we found it contained "#byvar"
+or "#byval' then we could write the information out to a global macro variable
+and then nullify that title line. We could then test for whether the global
+macro variable had a value in it and "put" the title out at the start of
+the header routine, making substitutions. But in making substitutions we
+have to know the case used for #byval and #byvar. Proc report and other
+reporting procedures are oblivious to the case used for #byvar and #byval.
+It could be #ByVaR and #byVAL for all they care. It will still be handled
+the same. So if we do detect any forms of these strings in the titles and
+extract it to a global macro variable we need to be sure we have spotted
+it. And it is wise to convert it into a standard form like uppercase, leaving
+all other characters with unchanged case. This converting of a mixed case
+string to a specific form required me to write a macro called <a href="casestrvar.sas">%casestrvar</a>.
+So to extract the last title and write it to a global macro variable if
+it is a "by" title, I came up with this macro <a href="bytitle.sas">%bytitle</a>.
+<p>I'll follow this with a piece of code you can run, but I want you to
+understand that this method has limitations. These #byvar's and #byval's
+could be in any title line - not just the last title line. Also we have
+limited knowledge about the titles. We can find out what they are in sashelp.vtitle
+but we do not know if there were any trailing spaces defined to them. It
+could be that that last title line was followed by 50 spaces or more to
+align the title to the left. So to do a proper job we would need to attempt
+substitutions in all the title lines and somehow recover the original length
+of the titles, adjust for the substitution and then "put" it at the correct
+column. I'll be showing you how to do that in the next section, but for
+now, take a look at the code required to get data _null_ to use #byval
+and #byvar in this very simple case. I'll be using some of the logic in
+the next section in any case so it would be useful to study the code. You
+might like to copy the following code and run it.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>title1 'First title';</tt>
+<br><tt>title3 'Third title';</tt>
+<br><tt>title5 'For #byvar1 = #byval1';</tt>
+<br><tt>footnote1 'First footnote';</tt>
+<br><tt>footnote3 'Third footnote';</tt>
+<p><tt>%bytitle</tt>
+<p><tt>data test;</tt>
+<br><tt>&nbsp; do year=2000 to 2003;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; do month=1 to 12;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>label year='What a Year !!';</tt>
+<br><tt>run;</tt>
+<p><tt>data _null_;</tt>
+<br><tt>&nbsp; length newtitle $ 200;</tt>
+<br><tt>&nbsp; retain bytitle "&amp;_bytitle_" ls 0;</tt>
+<br><tt>&nbsp; file print titles footnotes header=header;</tt>
+<br><tt>&nbsp; set test;</tt>
+<br><tt>&nbsp; by year;</tt>
+<br><tt>&nbsp; if _n_=1 then do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; ls=getoption('ls');</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>&nbsp; if first.year and not (_n_=1) then put _page_;</tt>
+<br><tt>&nbsp; put @49 month 2.;</tt>
+<br><tt>return;</tt>
+<br><tt>header:</tt>
+<br><tt>&nbsp; if bytitle ne ' ' then do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if vlabel(year) ne ' ' then newtitle=tranwrd(bytitle,'#BYVAR1',trim(vlabel(year)));</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; else newtitle=tranwrd(bytitle,'#BYVAR1','year');</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; newtitle=tranwrd(newtitle,'#BYVAL1',left(year));</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; put @ (floor((ls-length(newtitle))/2)+length(newtitle)-length(left(newtitle))+1)
+newtitle;</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>&nbsp; put;</tt>
+<br><tt>&nbsp; put @48 'month';</tt>
+<br><tt>&nbsp; put @48 '-----';</tt>
+<br><tt>return;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<h2>
+The final solution</h2>
+In order to make our system for handling titles reliable we should assume
+it is possible for #byvar and #byval to appear in any title line and process
+accordingly. We can let footnotes come out using "footnotes" on the file
+statement but we will have to set "notitles" and do the titles manually.
+In the previous section I mentioned the problem with not knowing the title
+lengths. We have the text in sashelp.vtitle but we do not know if any trailing
+spaces were defined to assist alignment. We need to get this somehow. I
+do not know where SAS actually stores their real titles nor how to get
+at them. The only way I could think of to get this information was to create
+a dummy report, read the titles (and footnotes) back in again, compare
+with what is in sashelp.vtitle and try to work out the original lengths
+from the alignment in the report. To do this I wrote a macro called <a href="titlelen.sas">%titlelen</a>.
+This adds a length variable as best it can. It also turns mixed-case #byval
+and #byvar into uppercase form so that it is easier to make substitutions.
+Note that this macro contained a Windows-type DOS system command to delete
+the temporary print file it creates. You will need to amend this line if
+you are running on a different platform.
+<p>I was going to implement this solution as a macro but I changed my mind.
+I think it is better if you are fully in control of the code you have running
+in a data _null_. If you could follow the code in the previous section
+then you will have no problems understanding the following code. Try copying
+it and running it. Experiment using trailing blanks on the title lines.
+Although this solution to getting data _null_ to talk to #byvar and #byval
+is hardly elegant, it does at least work. And, for me, it unleashes data
+_null_ reports and will allow data _null_ to cope with some of the complex
+reporting issues that the FDA 12 point font guideline will cause. In the
+following code example you will see much better control of the report position
+and an option to add a "byline" as per proc report or proc print.
+<p>Please not that I am not entirely happy with the solution myself. I
+expected to set the "notitles" option in the "file" statement and have
+it all working fine. But for some reason, it throws extra pages if I do
+this. So I have had to nullify the titles and keep the "titles" option
+in my "file" statement. After hours trying to resolve this problem I find
+it is a known bug in SAS, with the identifier <a href="http://www.sas.com/service/techsup/unotes/SN/003/003818.html">SN-003818</a>.
+The titles can be recreated after the data _null_ has finished by feeding
+the "titles" dataset into the <a href="titlegen.sas">%titlegen</a> macro,
+so having to nullify the titles to get the page throws right isn't a big
+problem.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>options ls=80 ps=28 nobyline;</tt>
+<br><tt>title1 'First title';</tt>
+<br><tt>title3 'Third title';</tt>
+<br><tt>title5 'For #byvar1 = #byval1';</tt>
+<br><tt>footnote1 'First footnote';</tt>
+<br><tt>footnote3 'Third footnote';</tt>
+<p><tt>%titlelen(dsout=titles(where=(type='T')));</tt>
+<br>&nbsp;
+<p><tt>data test;</tt>
+<br><tt>&nbsp; do year=2000 to 2003;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; do month=1 to 12;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>&nbsp; label year='What a Year !!';</tt>
+<br><tt>run;</tt>
+<p><tt>title1;</tt>
+<p><tt>data _null_;</tt>
+<br><tt>&nbsp; length newtitle $ 200;</tt>
+<br><tt>&nbsp; retain ls 0 startcol 0 byline 0 repwidth 5;</tt>
+<br><tt>&nbsp; file print titles footnotes header=header;</tt>
+<br><tt>&nbsp; set test;</tt>
+<br><tt>&nbsp; by year;</tt>
+<br><tt>&nbsp; if _n_=1 then do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; ls=getoption('ls');</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; startcol=floor((ls-repwidth)/2)+1;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if getoption('byline')='BYLINE' then byline=1;</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>&nbsp; if first.year and not (_n_=1) then put _page_;</tt>
+<br><tt>&nbsp; put @startcol month 4.;</tt>
+<br><tt>return;</tt>
+<p><tt>header:</tt>
+<br><tt>&nbsp; do tptr=1 to tnobs;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; set titles point=tptr nobs=tnobs;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if text EQ ' ' then put;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; else do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; oldlen=length(text);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if vlabel(year) ne ' ' then newtitle=tranwrd(text,'#BYVAR1',trim(vlabel(year)));</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else newtitle=tranwrd(text,'#BYVAR1','year');</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; newtitle=tranwrd(newtitle,'#BYVAL1',left(year));</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; newlen=length(newtitle);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; length=length+newlen-oldlen;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if length>ls then length=ls;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put @ (floor((ls-length)/2)+length(newtitle)-length(left(newtitle))+1)
+newtitle;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>&nbsp; if byline then do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; put;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; _file_=repeat('-',ls-1);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if vlabel(year) ne ' ' then newtitle=trim(vlabel(year))||'='||left(year);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; else newtitle='year='||left(year);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; substr(_file_,floor((ls-length(newtitle)+2)/2)+1,length(newtitle)+2)='
+'||trim(newtitle)||' ';</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; put;</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>&nbsp; put;</tt>
+<br><tt>&nbsp; put @startcol 'month';</tt>
+<br><tt>&nbsp; put @startcol '-----';</tt>
+<br><tt>return;</tt>
+<p><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>There is a link to the output file <a href="datanull1.txt">here</a>.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<center>
+<p>Go back to the home <a href="index-2.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/datanull.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:07 GMT -->
+</html>

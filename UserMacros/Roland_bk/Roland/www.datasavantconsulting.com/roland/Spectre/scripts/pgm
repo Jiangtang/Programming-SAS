@@ -1,0 +1,49 @@
+#!/bin/bash
+#<pre><b>
+# Script     : pgm
+# Version    : 1.1
+# Author     : Roland Rashleigh-Berry
+# Date       : 11-Mar-2007
+# Purpose    : To edit the program defined to the exported variable "prog".
+# SubScripts : none
+# Notes      : You must have set up the system environment variable "prog"
+#              to your sas program name (no extension) and have exported it
+#              like this:
+#              $ prog=progname  # no extension
+#              $ export prog
+# Usage      : pgm 
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not supply any parameters
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  11Mar07         Whatever defined to EDITOR used as editor else do nothing
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# No parameters allowed
+if [ $# -gt 0 ] ; then
+  echo "Error: (pgm) Do not supply any parameters" 1>&2
+  exit 2
+fi
+
+
+if [ -z $prog ] ; then
+  echo "You have to set \"prog\" equal to your sas program name and export it" 1>&2
+  exit 1
+fi
+
+
+if [ -n "$EDITOR" ] ; then
+  if [ "$EDITOR" == "vi" ] ; then
+    # done in current terminal window for "vi"
+    $EDITOR ${prog%.*}.sas
+  else
+    # done as a background task
+    $EDITOR ${prog%.*}.sas &
+  fi
+fi

@@ -1,0 +1,220 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/natjoin.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="NATURAL joins and their uses">
+   <title>NATURAL Joins and their Uses</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+NATURAL Joins and their Uses</h1></center>
+<b><font face="Arial,Helvetica">Last Updated: 03 May 2014</font></b>
+<h2>
+Introduction</h2>
+If you use SQL then you are probably aware of the types of JOIN called
+INNER, LEFT &lt;OUTER>, RIGHT &lt;OUTER> and FULL &lt;OUTER> (what you
+see inside the &lt;> is an optional word, in this case "OUTER"). Maybe
+you have used a UNION join and a cross join (same as cartesian join with
+the join syntax simply being a comma between the table names). But you
+have maybe never used or even heard of a NATURAL join. These NATURAL joins
+are INNER joins except that there is no ON condition where you say what
+the relationship is for some variable in one table to the other (often
+an equality). This is because for a NATURAL join it joins on variables
+of the same name in each table having the same value. If you often merge
+in the same column names between tables then using a NATURAL join can save
+you a lot of coding.
+<h2>
+A Simple NATURAL Join</h2>
+Firstly you will see a very simple example of a NATURAL join so you can
+understand what it does.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data test1;</tt>
+<br><tt>x=1;b=2;c=6;output;</tt>
+<br><tt>x=2;b=3;c=7;output;</tt>
+<br><tt>x=3;b=4;c=8;output;</tt>
+<br><tt>x=4;b=5;c=9;output;</tt>
+<br><tt>run;</tt>
+<br>&nbsp;
+<p><tt>data test2;</tt>
+<br><tt>x=2;b=3;output;</tt>
+<br><tt>x=4;b=5;output;</tt>
+<br><tt>run;</tt>
+<br>&nbsp;
+<p><tt>data test3;</tt>
+<br><tt>length ctext $ 16;</tt>
+<br><tt>c=1;ctext="one";output;</tt>
+<br><tt>c=2;ctext="two";output;</tt>
+<br><tt>c=3;ctext="three";output;</tt>
+<br><tt>c=4;ctext="four";output;</tt>
+<br><tt>c=5;ctext="five";output;</tt>
+<br><tt>c=6;ctext="six";output;</tt>
+<br><tt>c=7;ctext="seven";output;</tt>
+<br><tt>run;</tt>
+<br>&nbsp;
+<p><tt>proc sql _method;</tt>
+<br><tt>select * from test1 NATURAL JOIN test2;</tt>
+<br><tt>select * from test1 NATURAL JOIN test2 NATURAL JOIN test3;</tt>
+<br><tt>quit;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>For the first join, since the NATURAL join is a type of INNER join then
+we would epxpect to see row common to each in the output. These will be
+for x=2, b=3 and x=4, b=5 and indeed this is what we see:
+<br>&nbsp;
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; X&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; C</tt>
+<br><tt>--------------------------------------</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9</tt></td>
+</tr>
+</table>
+
+<p>For the second join, we would expect to see the results of the first
+join shown above to be joined with "test3" using the "c" variable but since
+there is no c=9 in "test3" then we only get the row for where c=7 as shown:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+X&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; B&nbsp; CTEXT</tt>
+<br><tt>-------------------------------------------------------------</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3&nbsp; seven</tt></td>
+</tr>
+</table>
+
+<p>I hope you can see that it is doing an INNER join but working out for
+itself what columns to join on because it is looking for matching column
+names.
+<p>Before we leave this section then perhaps you noticed I used the "_method"
+option on the "PROC SQL" statement. If you use this option it will write
+to the log the internal method it will use to do the joins. In the case
+of the two joins above we see this in the log:
+<br>&nbsp;
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>19509&nbsp; proc sql _method;</tt>
+<br><tt>19510&nbsp; select * from test1 NATURAL JOIN test2;</tt>
+<p><tt>NOTE: SQL execution methods chosen are:</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sqxslct</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sqxjhsh</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+sqxsrc( WORK.TEST1 )</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+sqxsrc( WORK.TEST2 )</tt>
+<br><tt>19511&nbsp; select * from test1 NATURAL JOIN test2 NATURAL JOIN
+test3;</tt>
+<p><tt>NOTE: SQL execution methods chosen are:</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sqxslct</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sqxjhsh</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+sqxsrc( WORK.TEST3 )</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+sqxjhsh</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+sqxsrc( WORK.TEST1 )</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+sqxsrc( WORK.TEST2 )</tt>
+<br><tt>19512&nbsp; quit;</tt></td>
+</tr>
+</table>
+
+<p>The significant thing is that it is using the method "<b>syxjhsh</b>"
+to join the tables. This is the "<b>hash</b>" method and is <b>very efficient</b>
+so you should not worry about a NATURAL join being an uncommon join that
+might not be handled in the most efficient way, It <b>is</b> handled in
+the <b>most efficient way</b> using a hash join.
+<h2>
+A Practical NATURAL Join Example</h2>
+The following is a very useful example of using NATURAL joins. Suppose
+we have two libraries containing clinical trial data and we are only interested
+in datasets that are "patient" datasets. We know that "patient" datasets
+will have both a STUDY variable and a PATIENT variable. So to identify
+these "patient" datasets we need to know what datasets in what libraries
+have both a STUDY variable and a PATIENT variable. If we know that these
+two variables are called STUDYID and USUBJID then we can do it by <b>counting</b>
+the rows like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt></tt>
+<br><tt>create table _patdsets as</tt>
+<br><tt>&nbsp; select libname, memname</tt>
+<br><tt>&nbsp; from dictionary.columns</tt>
+<br><tt>&nbsp; where libname in ("SOURCE_D", "OCVIEW")</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; and upcase(name) in ("USUBJID", "STUDYID")</tt>
+<br><tt>&nbsp; group by libname, memname</tt>
+<br><tt>&nbsp; having count(*)>1</tt>
+<br><tt>;</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p>And now suppose we are looking for variables of a specific name but
+we are only interested if these variables exist in "patient" datasets then
+we can use the very simple "<b>NATURAL JOIN _patdsets</b>" to achieve it
+like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt></tt>
+<br><tt>create table visitnum_pats as</tt>
+<br><tt>select * from</tt>
+<br><tt>(select libname, memname</tt>
+<br><tt>from dictionary.columns</tt>
+<br><tt>where libname in ("SOURCE_D", "OCVIEW")</tt>
+<br><tt>and name="VISITNUM")</tt>
+<br><tt>NATURAL JOIN _patdsets;</tt>
+<br><tt>;</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+You have been introduced to the SQL NATURAL join and you have seen how
+it works, know that it works efficiently and have seen a real-life example
+of using it to identify and limit processing to "patient" datasets.
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<center>
+<p>Go back to the home <a href="index-2.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/natjoin.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+</html>

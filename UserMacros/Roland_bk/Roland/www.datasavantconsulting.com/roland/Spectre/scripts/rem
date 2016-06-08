@@ -1,0 +1,33 @@
+#!/bin/bash
+#<pre><b>
+# Script     : rem
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 17-Jun-2004
+# Purpose    : Production script to delete files but only if they have group
+#              write permission.
+# SubScripts : none
+# Notes      : No message will be issued for non-existent files.
+# Usage      : rem *.sas7bdat
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   file name(s) or file pattern(s) or a combination
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+for file in "$@"
+do
+gperm=$(ls -l "$file" 2>/dev/null | cut -c6)
+if [ "$gperm" == "w" ] ; then
+  rm -f  "$file"
+elif [ "$gperm" == "-" ] ; then
+  echo "(rem) Did not delete \"$file\" as group write permission not set" 1>&2
+fi
+done

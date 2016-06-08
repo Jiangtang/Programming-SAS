@@ -1,0 +1,164 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/leftalign.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:08 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Generator" content="Microsoft Word 97">
+   <meta name="keywords" content="sas tips techniques">
+   <meta name="Description" content="left-aligning footnotes in sas">
+   <meta name="Template" content="C:\PROGRAM FILES\MSOFFICE\OFFICE\html.dot">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="left-align footnotes sas">
+   <title>Left-aligning footnotes</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Left-aligning footnotes</h1></center>
+
+<h2>
+Introduction</h2>
+If you work in the field of clinical reporting, as I do, then for nearly
+every output you program, the titles are supposed to be centred and the
+footnotes left-aligned but there is no system option to give you this combination.
+If you specify "nocenter" then both titles and footnotes will be left-aligned
+and if you specify "center" then both titles and footnotes will be centered.
+Perhaps, in the future, SAS will change this but until then we will have
+to program around it by left-aligning the footnotes.
+<h2>
+Adding spaces to footnotes</h2>
+The way most programmers left-align footnotes, where they have to code
+this themselves, is to add spaces to the right of the footnote to make
+the footnote at least the linesize width, but they still have to be careful
+that they don't break the 262 character limit imposed by SAS. I will show
+you an example with a short footnote not causing a problem followed by
+a longer footnote that breaks the 262 character limit.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>1&nbsp;&nbsp;&nbsp; options center;</tt>
+<br><tt>2&nbsp;&nbsp;&nbsp; footnote1 "this is a short footnote %sysfunc(repeat(%str(
+),230))";</tt><tt></tt>
+<p><tt>3&nbsp;&nbsp;&nbsp; options center;</tt>
+<br><tt>4&nbsp;&nbsp;&nbsp; footnote1 "this is a short footnote %sysfunc(repeat(%str(
+),230))";</tt>
+<br><tt>5&nbsp;&nbsp;&nbsp; footnote2 "this is a longer footnote that will
+give a problem %sysfunc(repeat(%str( ),230))";</tt>
+<br><tt>WARNING: The quoted string currently being processed has become
+more than 262 characters long.</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; You may have unbalanced
+quotation marks.</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p>Another method programmers use to left-align footnotes is to follow
+the footnote with a separate string of spaces in quotes on a following
+line such as shown below. However, it is important to make sure the spacing
+string is long enough to give alignment. So long as neither part of the
+footnote is greater than 262 characters then SAS will not complain. Here
+is the code.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data dummy;</tt>
+<br><tt>dummy="dummy";</tt>
+<br><tt>run;</tt>
+<br><tt>options center linesize=145;</tt>
+<br><tt>footnote1 "short footnote not long enough to left-align"</tt>
+<br><tt>"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+";</tt>
+<br><tt>footnote2 "this is a longer footnote that will be correctly left-aligned
+due to its length"</tt>
+<br><tt>"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+";</tt>
+<br><tt>proc print;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>Here are the footnotes at the bottom of the output. You will see the
+the first footnote is not left-aligned as the sum of its length and the
+length of the spacing string did not sum up to the linesize which is set
+at 145.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; short footnote not long enough to left-align</tt>
+<br><tt>this is a longer footnote that will be correctly left-aligned due
+to its length</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<h2>
+%lafootnote</h2>
+The way to avoid the misalignment problem shown above and to keep within
+the 262 character limit is to pad out the footnote with a number of characters
+that will be greater than any linesize you will use and keep it less than
+262 characters. 200 is a good number. This is where a macro comes in handy
+to do the work for you. I have such a macro called <a href="lafootnote.sas">%lafootnote</a>
+to do this which you can see at work below.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data dummy;</tt>
+<br><tt>dummy="dummy";</tt>
+<br><tt>run;</tt>
+<br><tt>options center linesize=145;</tt>
+<br><tt>%lafootnote(1,"short footnote");</tt>
+<br><tt>%lafootnote(2,"this is a longer footnote that will be correctly
+left-aligned due to its length");</tt>
+<br><tt>proc print;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>You will see below that both footnotes were left-aligned correctly.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt></tt>
+<br><tt>short footnote</tt>
+<br><tt>this is a longer footnote that will be correctly left-aligned due
+to its length</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p>Take a look at the code that does this work inside the macro <a href="lafootnote.sas">%lafootnote</a>.
+<h2>
+Other alignment macros</h2>
+I have a number of macros to do alignment for me. Some work on titles,
+some on footnotes. You can link to these below.
+<br><a href="latitle.sas">%latitle</a>
+<br><a href="lcralign.sas">%lcralign</a>
+<br><a href="lrafootnote.sas">%lrafootnote</a>
+<br><a href="lratitle.sas">%lratitle</a>
+<br><a href="rafootnote.sas">%rafootnote</a>
+<br><a href="ratitle.sas">%ratitle</a>
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<center>
+<p>Go back to the home <a href="index-2.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/leftalign.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:09 GMT -->
+</html>

@@ -1,0 +1,187 @@
+#!/bin/bash
+#<pre><b>
+# Script     : biglis
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 13-Jan-2005
+# Purpose    : To produce a collection of all the .lis files in donelist.txt in
+#              sorted order, optionally with a table of contents at the start.
+# SubScripts : pages, toclis (if option -t set) getlayout (if option -o set)
+# Notes      : You can optionally produce a table of contents. Use the -n option
+#              for donelist section files. These are assumed to be named
+#              donesect[0-9].txt . You can specify an end page using the -e
+#              option as well as a begin page using the -b option. Use the -o
+#              option to add the page layout to the start of a page where this
+#              layout has changed.
+# Usage      : biglis > big.lis
+#              biglis -t > tocbig.lis
+#              biglis -t1 > tocbig.lis
+#              biglis -s > big.lis
+#              biglis -o > bigforword.lis
+#              biglis -n 2 > big2.lis
+#              biglis -e 3 > big3pages.lis
+#===============================================================================
+# OPTIONS:
+#-opt- -------------------------------description-------------------------------
+#  t   (switch) table of contents
+#  s   (switch) select on file pattern
+#  1   (switch) extract 1 title only for table of contents
+#  o   (switch) add page orientation information
+#  n   (value)  biglis section number
+#  b   (value)  begin page                                        
+#  e   (value)  end page  
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not supply any parameters
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Define give-usage-message-then-exit function
+usage () {
+  echo "Usage: biglis -t -s -1 -n <biglis section number>" 1>&2
+  echo "              -b <begin page> -e <end page>" 1>&2
+  exit  
+}
+
+
+# Defaults
+switcht=0                      # Default switch=off for table of contents
+switchs=0                      # Default switch=off for select on file pattern
+switch1=0                      # Default switch=off for extracting one title only
+switcho=0                      # Default switch=off for page orientation information
+valuen=                        # Default value for biglis section number
+valueb=1                       # Default value for begin page                                        
+valuee=9999999                 # Default value for end page 
+
+
+# "case" statement for action to take on selected options
+while getopts "ts1on:b:e:" param ; do
+  case $param in
+   "?") # bad option supplied
+        usage
+        ;;
+   "t") # (switch) table of contents
+        switcht=1
+        ;;
+   "s") # (switch) select on file pattern
+        switchs=1
+        ;;
+   "1") # (switch) select on file pattern
+        switch1=1
+        ;;
+   "o") # (switch) page orientation information
+        switcho=1
+        ;;
+   "n") # (value) biglis section number
+        valuen=$OPTARG
+        ;;
+   "b") # (value) begin page
+        valueb=$OPTARG
+        ;;
+   "e") # (value) end page
+        valuee=$OPTARG
+        ;;
+  esac
+done
+
+
+# shift to bring first parameter to position 1
+shift $(($OPTIND - 1))
+
+
+# No parameters allowed
+if [ $# -gt 0 ] ; then
+  echo "Error: (biglis) Do not supply any parameters" 1>&2
+  usage
+fi
+
+
+# one title only in table of contents
+onet=
+if [ $switch1 -eq 1 ] ; then
+  onet=-1
+fi
+
+
+# set the donefile to use
+if [ ! -z "$valuen" ] ; then
+  donefile=donesect${valuen}.txt
+else
+  donefile=donelist.txt
+fi
+
+
+# select only those entries that are .lis* files and sort in order
+grep '^...-...-...-...-...-... ' $donefile | grep '.*\.lis.*$' | sort > ~/biglis_$$.tmp
+
+
+#################### SWITCH OFF SHELL GLOBBING #######################
+set -f
+
+
+# if option set then prompt for file pattern else default to *
+patt=*
+if [ "$switchs" == "1" ] ; then
+  if [ -z $valuen ] ; then
+    echo -n "Enter your file pattern: " 1>&2
+    read patt
+  else
+    echo "You requested a file pattern but this is not for biglis section files" 1>&2
+  fi
+fi
+
+
+# file count to determine if a form feed needs writing
+count=0
+
+
+# display table of contents if switch is set
+if [ $switcht -ne 0 ] ; then
+  if [ ! -z $valuen ] ; then
+    toclis $onet -n $valuen
+  else
+    toclis $onet -s "$patt"
+  fi
+  count=1
+fi
+
+
+# for layout control set up a dummy last layout
+lastlayout=ZZZ
+
+
+# Now cat each file to standard output with a page throw at the start
+# if it is not the first file.
+for filename in $(cat ~/biglis_$$.tmp | gawk '{print $2}') ; do
+  case "$filename" in
+   $patt)
+    if [ -s "$filename" ] ; then
+      if [ $count -gt 0 ] ; then
+        echo -n $'\f'
+      fi
+      if [ $switcho -ne 0 ] ; then
+        layout=$(getlayout "$filename" | gawk -F' ' '{print $6}')
+        if [ "$layout" != "$lastlayout" ] ; then
+          echo -n "‹‹${layout}/"
+          lastlayout=$layout
+        fi
+        pages -b $valueb -e $valuee "$filename"
+      else
+        pages -b $valueb -e $valuee "$filename"
+      fi
+      let count=count+1
+    fi
+    ;;
+  esac
+done
+
+
+# tidy up
+rm -f ~/biglis_$$.tmp

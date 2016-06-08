@@ -1,0 +1,97 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/intext.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:38 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="In-text Tables using SAS">
+   <meta name="KeyWords" content="In-text tables SAS">
+   <title>In-text Tables using SAS</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+In-text Tables using SAS</h1></center>
+
+<h2>
+Introduction</h2>
+First I need to explain what I mean by an "in-text table". This is a sort
+of clinical term. It means a table in the body of a descriptive document
+and because of this it needs to fit in with the style of the document in
+that descriptive part. Plain text SAS tables are not pretty enough to go
+in that section but you can use ODS to make tables look prettier, so long
+as the output was produced using a sas procedure such as "proc report"
+or "proc tabulate". I wrote a page on this <a href="odstab.html">here</a>.
+However, for me, SAS never makes it pretty enough and I think it is better
+to give full control to a word processor by supplying it with a table in
+the form that it can convert itself. If you use data _null_ reporting,
+then the method described below is probably your best option for producing
+in-text tables.
+<h2>
+Why you should be able to generate in-text tables</h2>
+You should aim at being able to generate in-text tables using your standard
+reporting software. I will explain why. In a medical document that contains
+in-text tables, then if your software is not capable of producing these
+tables then the "clinical writer" will often create their own tables in
+the word processor's own format and fill in the rows and columns with values
+they have copied from your plain-text tables. This is prone to transcription
+error. Also, by combining values from tables in this way, things such as
+combined counts and the resulting percentages can give a biased appearance
+about the drug you are trying to get to market. But if your reporting software
+<b><i>can</i></b>
+produce these in-text tables in a direct or a more direct manner then this
+problem can be avoided. The in-text table could then be a pre-defined table
+whose design is agreed upon such that any possible bias can be avoided
+and you can write the code to produce this table. Done in this way then
+the clinical writer no longer "thinks up" tables to put in the descriptive
+part of a document but rather has a table produced for them that was agreed
+upon in advance.
+<h2>
+Converting cells to tables</h2>
+If you include text in a Word document where you have values separated
+by a delimiter such as a semi-colon, then converting this text into a table
+is easy. You just highlight it and ask the document to convert it to a
+table. This is the method I prefer over using ODS as it gives more control
+to the document. Once it has been converted to a table, then changing the
+style and font type and size is easy.
+<h2>
+An example</h2>
+I have a reporting macro called %unistats that can produce cells with values
+that are suitable to be copied into MS Word documents and converted to
+a Word table. You can see how I have done this by linking to the Word document
+below. Note the cell values on one of the pages. I then copy and paste
+these into the word processor and convert it to an "in-text" table using
+the pull-down menu. I had to add the top header line in the final in-text
+table you can see at the end..
+<br><a href="intext_table_demo.doc">intext_table_demo.doc</a>
+<p>Here is the same Word-style table on its own with an extra p-values
+column plus a title and footnotes. I think you'll agree it looks good and
+tables such as these look much better in the "in-text" part of a document.
+<br><a href="intext_pvalues.doc">intext_pvalues.doc</a>
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/intext.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:38 GMT -->
+</html>

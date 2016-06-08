@@ -1,0 +1,89 @@
+#!/bin/bash
+#<pre><b>
+# Script     : multilinks
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 18-Jan-2005
+# Purpose    : To create individual links to members of a directory
+# SubScripts : none
+# Notes      : Must be called in the directory you wish to create the links in
+# Usage      : multilinks /xxx/dir
+#              multilinks -s '*.sas' /xxx/dir  # file pattern MUST BE QUOTED
+#===============================================================================
+# OPTIONS:
+#-opt- -------------------------------description-------------------------------
+#  s   (value)  select on file pattern   (MUST be in quotes)                  
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   directory to link to
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Define give-usage-message-then-exit function
+usage () {
+  echo "Usage: multilinks -s <file pattern IN QUOTES> /dir/to/link/to" 1>&2
+  exit 1
+}
+
+
+# Defaults
+values=                             # Default file pattern                            
+
+
+# "case" statement for action to take on selected options
+while getopts "s:" param ; do
+  case $param in
+   "?") # bad option supplied
+        usage
+        ;;
+   "s") # (value) select on file pattern
+        values=$OPTARG
+        ;;
+  esac
+done
+
+
+# shift to bring first parameter to position 1
+shift $(($OPTIND - 1))
+
+
+# One directory path must be supplied
+if [ $# -ne 1 ] ; then
+  echo "Error: no directory path supplied" 1>&2
+  usage
+fi
+
+
+# get a list of the directory members
+ls -1 "$1" > $HOME/multilinks.tmp
+
+
+################ SWITCH OFF SHELL GLOBBING ##################
+set -f
+
+
+# set up the pattern for the case statement
+patt=*
+if [ ! -z "$values" ] ; then
+  patt=$values
+fi
+
+# loop through for each file and if matches pattern then set up symbolic link
+for filename in $(cat $HOME/multilinks.tmp) ; do
+  case "$filename" in
+    $patt)
+      if [ -f "$filename" ] ; then
+        echo "link to $filename not created as this file already exists" 1>&2
+      else
+        ln -s $1/"$filename" "$filename"
+      fi
+    ;;
+  esac
+done

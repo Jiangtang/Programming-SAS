@@ -1,0 +1,38 @@
+#!/bin/bash
+#<pre><b>
+# Script     : catp
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 10-Sep-2004
+# Purpose    : To "cat" files and add page throws to the start of all but the
+#              first file.
+# SubScripts : none
+# Notes      : none
+# Usage      : catp *.lst > all.lis
+#               
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   files to "cat"
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# must have at least one file defined
+if [ $# -lt 1 ] ; then
+  echo "Usage: catp *.lst > all.lis" 1>&2
+  exit 1
+fi
+
+cat $1
+shift
+
+for file in "$@" ; do
+  echo -n $'\f'
+  cat "$file"
+done

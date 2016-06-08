@@ -1,0 +1,239 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/globvars.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:05 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Generator" content="Microsoft Word 97">
+   <meta name="keywords" content="sas tips techniques">
+   <meta name="Description" content="Testing for the existence of a global macro variable">
+   <meta name="Template" content="C:\PROGRAM FILES\MSOFFICE\OFFICE\html.dot">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="Testing existence global macro variable">
+   <title>Testing for the existence of a global macro variable</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Testing for the existence of a global macro variable</h1></center>
+<b>[last updated - 03 Sep 2008]</b>
+<h2>
+Introduction</h2>
+In complex sas programs you maybe want to set up and use a macro variable
+but you want to be sure it is not already being used as you don't want
+to change its contents if that is the case. Note that you will not have
+a problem if you are working inside a macro that you wrote and you have
+declared your macro variable to be local. Instead, this applies to open
+code where a macro variable declaration will be treated as global or where
+a macro variable has been declared to be global using the %global statement
+within an existing macro.
+<h2>
+%symexist</h2>
+If you are using sas version 9 or later then you can test whether a global
+macro variable exists using the <b>%symexist() </b>macro function. It the
+macro variable exists then the value of "1" ("True") is returned and if
+not "0" ("False") is returned. Note that <b>%symexist works for local macro
+variables as well</b>.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>1&nbsp;&nbsp;&nbsp; %let r=rrrrr;
+<br>2&nbsp;&nbsp;&nbsp; %put >> %symexist(r) >>>>;
+<br>>> 1 >>>>
+<br>3&nbsp;&nbsp;&nbsp; %put >> %symexist(rnot) >>>>;
+<br>>> 0 >>>></td>
+</tr>
+</table>
+
+<h2>
+The "declaring it %global" trick</h2>
+This is not a recommended solution but you might want to use it if you
+are using versions earlier than version 9 sas. I mention this on my <a href="macrotips.html">macro
+tips</a> page but I thought I would expand on it here. Let us say you want
+to do a bit of processing but it will be different if a global macro variable
+has been set. So you want to check on whether it exists or not. If you
+try to resolve its value and it has not been set up then you will get an
+error message and you want to avoid that. There is a quick and dirty way
+to do this and I will tell you about it before going on to more complex
+methods. That is - declare the macro variable as global like this - <b>%global
+globvar;</b> . Nearly every SAS programmer I know of makes the mistake
+in thinking that if you declare a macro variable as global then you will
+destroy the contents of that variable. This is not the case. Declaring
+a macro variable as global can be done multiple times without any warning
+or error message being issued. The contents of that variable are not affected.
+So all you have to do is to declare it global and test its contents. If
+it has a value then it must have been set up somewhere and so it must exist.
+If it has not been set up then it is set up now and its contents will be
+null. I used this technique a lot for version 8 sas. It is quick and dirty
+but it does the job. But maybe you need a better solution.
+<h2>
+The %globexist macro</h2>
+Using %globexist is another solution and is the one I use. It is a macro
+I wrote. Information about what macro variables have been set up can be
+found in the <b>sashelp.vmacro</b> view and the <b>dictionary.macros</b>
+SQL view so you can use these views to find out if the global macro variable
+already exists. There is a <b>"scope"</b> variable which will be set to
+<b>"GLOBAL"</b>
+for global macro variables (also macro variables set at a high level are
+regarded as global) and the name of the variable will be in uppercase and
+in the <b>"name"</b> field. Because getting to this information may not
+be convenient I wrote a function-style macro to return a list of global
+macro variables called
+<a href="globlist.sas">globlist</a> and one to check
+for the existence of all of one or more global macro variable called <a href="globexist.sas">globexist</a>.
+These macros do not contain any procedural or data step boundaries so they
+can be used in macro code in the form:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%if %globexist(globvar) %then .....</tt></td>
+</tr>
+</table>
+
+<p>...and I assume the above is the most convenient form for finding out
+whether a global macro variable exists. No quick and dirty trick as in
+the previous section is used. The macro effectively reads the sashelp.vmacro
+view using SCL code called from a macro. Although it is opening, reading
+and then closing a SAS view, it is not using a data step to do this nor
+a procedural step so it can be used as a function-style macro.
+<p>Note the difference between<b> %globexist</b> and <b>%symexist</b>.
+%globexist only returns 1 for global macro variables whereas %symexist
+does so for local macro variables as well. The difference is illustrated
+below.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>224&nbsp; %let mvar1=xxxxxx;</tt>
+<br><tt>225</tt>
+<br><tt>226&nbsp; %put >>>> outside macro then symexist for mvar1 = %symexist(mvar1)
+>>>>>> ;</tt>
+<br><tt>>>>> outside macro then symexist for mvar1 = 1 >>>>>></tt>
+<br><tt>227&nbsp; %put >>>> outside macro then symexist for mvar2 = %symexist(mvar2)
+>>>>>> ;</tt>
+<br><tt>>>>> outside macro then symexist for mvar2 = 0 >>>>>></tt>
+<br><tt>228&nbsp; %put >>>> outside macro then globexist for mvar1 = %globexist(mvar1)
+>>>>> ;</tt>
+<br><tt>>>>> outside macro then globexist for mvar1 = 1 >>>>></tt>
+<br><tt>229&nbsp; %put >>>> outside macro then globexist for mvar2 = %globexist(mvar2)
+>>>>> ;</tt>
+<br><tt>>>>> outside macro then globexist for mvar2 = 0 >>>>></tt>
+<br><tt>230</tt>
+<br><tt>231&nbsp; %macro test;</tt>
+<br><tt>232&nbsp;&nbsp;&nbsp; %let mvar2=yyyyyy;</tt>
+<br><tt>233&nbsp;&nbsp;&nbsp; %put >>>> inside macro then symexist for
+mvar1 = %symexist(mvar1) >>>>>> ;</tt>
+<br><tt>234&nbsp;&nbsp;&nbsp; %put >>>> inside macro then symexist for
+mvar2 = %symexist(mvar2) >>>>>> ;</tt>
+<br><tt>235&nbsp;&nbsp;&nbsp; %put _user_;</tt>
+<br><tt>236&nbsp;&nbsp;&nbsp; %put >>>> inside macro then globexist for
+mvar1 = %globexist(mvar1) >>>>> ;</tt>
+<br><tt>237&nbsp;&nbsp;&nbsp; %put >>>> inside macro then globexist for
+mvar2 = %globexist(mvar2) >>>>> ;</tt>
+<br><tt>238&nbsp;&nbsp;&nbsp; %symdel mvar2;</tt>
+<br><tt>239&nbsp;&nbsp;&nbsp; %put _user_;</tt>
+<br><tt>240&nbsp; %mend;</tt>
+<br><tt>241</tt>
+<br><tt>242&nbsp; %test;</tt>
+<br><tt>>>>> inside macro then symexist for mvar1 = 1 >>>>>></tt>
+<br><tt>>>>> inside macro then symexist for mvar2 = 1 >>>>>></tt>
+<br><tt>TEST MVAR2 yyyyyy</tt>
+<br><tt>GLOBAL _NOMATCH_ MVAR2</tt>
+<br><tt>GLOBAL MVAR1 xxxxxx</tt>
+<br><tt>>>>> inside macro then globexist for mvar1 = 1 >>>>></tt>
+<br><tt>>>>> inside macro then globexist for mvar2 = 0 >>>>></tt>
+<br><tt>WARNING: Attempt to delete macro variable MVAR2 failed. Variable
+not found.</tt>
+<br><tt>TEST MVAR2 yyyyyy</tt>
+<br><tt>GLOBAL _NOMATCH_ MVAR2</tt>
+<br><tt>GLOBAL MVAR1 xxxxxx</tt>
+<br><tt>243</tt>
+<br><tt>244&nbsp; %put >>>> outside macro then symexist for mvar1 = %symexist(mvar1)
+>>>>>> ;</tt>
+<br><tt>>>>> outside macro then symexist for mvar1 = 1 >>>>>></tt>
+<br><tt>245&nbsp; %put >>>> outside macro then symexist for mvar2 = %symexist(mvar2)
+>>>>>> ;</tt>
+<br><tt>>>>> outside macro then symexist for mvar2 = 0 >>>>>></tt>
+<br><tt>246&nbsp; %put >>>> outside macro then globexist for mvar1 = %globexist(mvar1)
+>>>>> ;</tt>
+<br><tt>>>>> outside macro then globexist for mvar1 = 1 >>>>></tt>
+<br><tt>247&nbsp; %put >>>> outside macro then globexist for mvar2 = %globexist(mvar2)
+>>>>> ;</tt>
+<br><tt>>>>> outside macro then globexist for mvar2 = 0 >>>>></tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p>Note that in the above log output then "GLOBAL _NOMATCH_ MVAR2" does
+not mean that MVAR2 is a global macro variable. It means that _NOMATCH_
+is a global macro variable and has been assigned the value "MVAR2".
+<h2>
+%symdel</h2>
+At some stage you might want to delete all your global macro variables.
+You can do this with the %symdel macro command and if you combine it with
+the %globlist macro then it becomes a very simple matter. Look at the log
+below.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>1 %let test1=1;</tt>
+<br><tt>2 %let test2=2;</tt>
+<br><tt>3 %put _global_;</tt>
+<br><tt>GLOBAL TEST1 1</tt>
+<br><tt>GLOBAL TEST2 2</tt>
+<br><tt>4 %symdel %globlist;</tt>
+<br><tt>5 %let test3=3;</tt>
+<br><tt>6 %put _global_;</tt>
+<br><tt>GLOBAL TEST3 3</tt></td>
+</tr>
+</table>
+
+<p>You will see in the log that I set up two (effectively) global macro
+variables <b>test1</b> and <b>test2</b> and then displayed them using the
+<b>%put
+_global_</b> command. (Note that if these macro variables exist in open
+code then they are treated like global macro variables and recognized by
+SAS macro code as such. There is no need to declare them as global). I
+then use <b>%symdel %globlist</b> to delete these global macro variables.
+Then I create a third global macro variable called <b>test3</b>. So when
+I display these global macro variables using the <b>%put _global_</b> statement
+you will see that only <b>test3</b> is left.
+<p>Note that <b>%symdel</b> only acts on <b>global macro variables</b>
+and not local macro variables. You will see a warning in the log in the
+previous section where an attempt to use it to delete MVAR2 failed. This
+is a bit strange since %symexist also acts on local macro variables and
+you might think that %symdel had the same scope as %symexist -- but it
+has not. Also you should note that (for some strange reason) if you use
+%symdel in the form:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%symdel &amp;var;</tt></td>
+</tr>
+</table>
+
+<p>...inside a macro then you might get a syntax error, but it will work
+outside a macro in that form without a problem. This is a known bug and
+there is a fix for it which you can read about <a href="http://support.sas.com/techsup/unotes/SN/005/005975.html">here</a>.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<center>
+<p>Go back to the home <a href="index-2.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/globvars.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:05 GMT -->
+</html>

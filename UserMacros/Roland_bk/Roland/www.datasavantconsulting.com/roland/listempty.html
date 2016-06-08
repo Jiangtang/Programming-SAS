@@ -1,0 +1,123 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/listempty.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="listempty">
+   <meta name="KeyWords" content="listempty">
+   <title>listempty</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+listempty</h1></center>
+<b>[last updated - 27 July 2003]</b>
+<p>This is a QC'ing tool. You go to the output directory with your tables
+or listings in it and type in something like <b><tt>"listempty *.lst"</tt></b>
+and it will show you a list of all the files that fit this bill that are
+empty. I'll go straight into the code of this utility and then explain
+any features you might not have seen before. Copy and paste the code into
+a member called "listempty" in your shell script library.
+<pre><b>#!/bin/sh
+# Script&nbsp;&nbsp;&nbsp;&nbsp; : listempty
+# Version&nbsp;&nbsp;&nbsp; : 1.0
+# Author&nbsp;&nbsp;&nbsp;&nbsp; : Roland Rashleigh-Berry
+# Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 27 July 2003
+# Contact&nbsp;&nbsp;&nbsp; : rolandberry@hotmail.com
+# Purpose&nbsp;&nbsp;&nbsp; : To list "empty" files&nbsp;
+# SubScripts : none
+# Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : You can use this to check that all your output listings contain
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; something.
+# Usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : listempty *.lst
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+#&nbsp; 1&nbsp;&nbsp; File or list of files to check that they contain something
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+#&nbsp;
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+if [ $# -lt 1 ] ; then
+&nbsp; echo "Usage: listempty *.lst" 1>&amp;2
+&nbsp; exit 1
+fi
+
+while [ $# -gt 0 ]
+do
+&nbsp; if [ ! -s $1 ]
+&nbsp; then
+&nbsp;&nbsp;&nbsp; echo $1
+&nbsp; fi
+&nbsp; shift
+done</b>
+
+</pre>
+The header and check for number of parameters and writing a usage message
+to standard error I assume you are familiar with. If not then please refer
+to the previous examples as I will only explain what follows it. The rest
+of the code might be a puzzle, though. See the <b>"shift"</b> command in
+the <b>"do...done"</b> loop? This is another way of performing a loop.
+I'll explain...
+<p>I'm going to explain about <b>shift</b>. When you type in a command
+like <b><tt>"listempty *.lst"</tt></b> then the script does not see the
+parameter as you typed it. Instead of the <b><tt>*.lst</tt></b> you typed
+in it sees what the command interpreter gives it. This scans your command
+line before anything else is allowed to see it. The command interpreter
+sees <b><tt>*.lst</tt></b> and matches every file it can to it and turns
+it into a list. So instead of <b><tt>*.lst</tt></b> the command interpreter
+might translate it into something like <b><tt>aa.lst bb.lst cc.lst dd.lst</tt></b>
+etc., depending on what files in that directory match the pattern you specified,
+and this is what your shell script receives. Now think of the command you
+type in as parameter <b>0</b> and that you can refer to its name as <b>$0</b>.
+The first of the file names will be parameter <b>1</b> and you refer to
+its contents as <b>$1</b>. The next parameter is <b>2</b> and you refer
+to it as <b>$2</b>. And so on up to parameter <b>9</b> where the rest of
+the parameters are all lumped together. Now what you can do is <b>shift</b>
+the parameters along. When you <b>shift</b> parameters then <b>$1</b> gets
+lost and <b>$2</b> becomes <b>$1</b>. You can keep doing this until none
+are left. Have a look at the above code again. You see my test <b><tt>while
+[ $# -gt 0 ]</tt></b>?. This is testing if the number of parameters left
+are still greater than zero. In other words whether I have one or more
+parameter values left to work on. This will be a file name. So then I test
+whether the file contains something using <b><tt>if [ ! -s $1 ]</tt></b>
+which you can think of as <b>"if not something in file named to parameter
+1"</b> and if this condition is met it echoes the filename to standard
+output. Then it has done its work for that file so it makes the next filename
+available in position one by <b>shift</b>ing everything along one. And
+it keeps doing this until nothing is left.
+<p>I've used shift in this script but you would more often see it used
+in a script where your first one or two parameters were not file names
+but your third parameter was. You'd then assign the parameter values that
+are not file names to variables and then shift until the first file name
+was at position 1. You would then use the loop like the above that shifts
+one along each time you are finished with a file until you were done with
+all of them.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/listempty.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+</html>

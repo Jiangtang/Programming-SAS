@@ -1,0 +1,124 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/hdr.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="SAS tips and techniques by Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="sas tips techniques">
+   <title>whosgot</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+hdr</h1></center>
+<b>[last updated - 29 July 2003]</b>
+<p>This is where you use your script skills and especially those you learned
+in this <a href="sed%26awk.html">tutorial</a> to amend this script to give
+you a standard SAS program header with all the details filled in where
+possible. As always, I introduce new things in each script. In it you will
+see what is called a "here document". You use cat to write lines out to
+a file and you tell it the terminating characters to expect at the end.
+If you look at the code below you will see this.
+<p>Don't expect this to work. You are going to have to get this to work
+yourself. I don't know what your standard header is supposed to look like
+and I don't know where to find your protocol and study information if you
+need to include that in your standard SAS program header. The rest is up
+to you. You are a shell script programmer now.
+<pre><b>#!/bin/sh
+# Script&nbsp;&nbsp;&nbsp;&nbsp; : hdr
+# Version&nbsp;&nbsp;&nbsp; : 1.0
+# Author&nbsp;&nbsp;&nbsp;&nbsp; : Roland Rashleigh-Berry
+# Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 29 July 2003
+# Contact&nbsp;&nbsp;&nbsp; : rolandberry@hotmail.com
+# Purpose&nbsp;&nbsp;&nbsp; : To create a standard SAS program header
+# SubScripts : getname
+# Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : This shell script generates a SAS program header but this script
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; will need extensive amendments to make it generate the correct
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; standard header for your site and will also need extensive
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; amendments to pick up the correct protocol and study from your
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; directory path or wherever it is supposed to come from.
+# Usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : hdr
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; hdr progname
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+#&nbsp; 1&nbsp;&nbsp; program name (optional)
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+#&nbsp;
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+if [ $# -lt 1 ]
+then
+&nbsp; echo -n "Enter program name: "
+&nbsp; read progname
+else
+&nbsp; progname=$1
+fi
+
+progname=`echo $progname | awk -F. '{print $1 ".sas"}'`
+
+echo -n "Enter program purpose: "
+read purpose
+
+author=`getname`
+
+date=`date '+%d-%b-%Y'`
+
+prot=`pwd | sed "s%^$RD%%" | awk -F/ '{print $1}'`
+study=`pwd | sed "s%^$RD%%" | awk -F/ '{print $2}'`
+
+
+cat > $HOME/sashdr.tmp &lt;&lt; FINISH
+/*
+/ Program&nbsp;&nbsp; : $progname
+/ Version&nbsp;&nbsp; : 1.0
+/ Author&nbsp;&nbsp;&nbsp; : $author
+/ Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : $date
+/ prot/study: $prot / $study
+/ Purpose&nbsp;&nbsp; : $purpose
+/ Notes&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;
+/ Usage&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;
+/&nbsp;
+/================================================================================
+/ AMENDMENT HISTORY:
+/ init --date-- mod-id ----------------------description-------------------------
+/&nbsp;
+/===============================================================================*/
+
+FINISH
+
+if [ -f $progname ]
+then
+&nbsp; cat $HOME/sashdr.tmp $progname > $HOME/sashdr2.tmp
+&nbsp; rm -f $progname
+&nbsp; cat $HOME/sashdr2.tmp > $progname
+&nbsp; rm -f $HOME/sashdr2.tmp
+else
+&nbsp; cat $HOME/sashdr.tmp > $progname
+&nbsp; echo "created $progname"
+fi
+
+rm -f $HOME/sashdr.tmp</b>
+
+</pre>
+
+<center>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/hdr.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+</html>

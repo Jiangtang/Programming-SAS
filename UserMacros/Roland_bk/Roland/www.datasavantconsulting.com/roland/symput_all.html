@@ -1,0 +1,538 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/symput_all.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:06 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="Call symput all variables">
+   <meta name="KeyWords" content="Call symput all variables">
+   <meta name="robots" content="noindex,nofollow">
+   <title>Call symput absolutely everything</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+"Call symput" absolutely everything</h1></center>
+<b>[Last updated: 27 Aug 2008]</b>
+<h2>
+Introduction</h2>
+I write a lot of macros, as you will realize from spending some time on
+this web site. All the macros you can find on this web site accept values
+through parameter settings. Some of my macros have many, many parameters
+but in practice, only a few of these parameters get used. Suppose you had
+a macro with a lot of parameters and <b>all</b> of them had to be set for
+a person to be able to use it, then things get messy. I have two macros
+with more than 90 parameters. Imagine having to call a macro and specify
+all 90 plus parameters with their values!
+<p>Using parameters is not the only way to pass values to a macro. You
+can pass them using a sas dataset if you have designed you macro to accept
+them. You can make it work such that the variable names are the parameter
+names and the values in the variables are the parameter values. Then, in
+your macro, you use it just like you had parameters with parameter values.
+It makes sense to do it this way when you have a <b>lot</b> of parameters
+that have to be set. You can have a standard "set" of settings in a dataset
+that can be distributed. You can specify your "changing" settings at the
+top of your code, in a data step, where it is easy to notice, rather than
+specify them at the end of your code where you call a macro after preparing
+your input data. Note that because it is easy to misspell variable names,
+get their type wrong (char or num) and control the quoting for character
+values then <b>macro parameter datasets should be regarded as an advanced
+use of sas macros</b> that should only be used if the situation demands
+it.
+<h2>
+An example of a macro parameter dataset</h2>
+I had been working on a macro and at some point it became clear that it
+would be better to supply the <b>macro parameters</b> and their values
+in the form of a <b>single observation dataset</b>. The macro could then
+use the dataset to "symput" out the variable values using the variable
+name to name the macro variable inside the macro. If "symput"ing inside
+a macro then these macro variables should be local to that macro just like
+they were macro parameters (how to ensure the "call symput"s create <b><i>local
+</i></b>rather
+than <b><i>global </i></b>macro variables will be explained later).
+<p>I like to give real-life examples so here is the parameter dataset I
+set up. Actually, there is not just <b>one</b> parameter dataset -- there
+are<b> TWO !!</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data rgpp_style;</tt>
+<br><tt>&nbsp; *- do not change any of these variable names or their characteristics
+-;</tt>
+<br><tt>&nbsp; length cback cstripe cscale $ 8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fitemtext fitemdesc
+fblockdesc fpatient $ 32</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; citemdesc citemdesctrunc
+cblockdesc cpatient citemtext cfigure $ 8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cblockbox $ 8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cblockdescbg cpatientbg
+$ 8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; hitemdesc hblockdesc
+hpatient hitemtext hfigure hscaletext 8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; drawblockbox uniformscale
+usearrows 8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ypixels xpixels
+vpos hpos 8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; hposdmin hposdmax
+hposdmean hposminfigwidth hposmingap 8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; maxucletters maxmcletters
+8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+<p><tt>&nbsp; *- Size of html output with number of rows and columns. -;</tt>
+<br><tt>&nbsp; *- You need a knowledge of sas graphics to set these.&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; ypixels=2000;</tt>
+<br><tt>&nbsp; vpos=150;&nbsp; /* number of rows */</tt>
+<br><tt>&nbsp; xpixels=1000;</tt>
+<br><tt>&nbsp; hpos=50;&nbsp;&nbsp; /* number of columns */</tt>
+<p><tt>&nbsp; *- Start and end hpos positions for date area. The maximum
+-;</tt>
+<br><tt>&nbsp; *- value must not exceed what was specifed in hpos= above.
+-;</tt>
+<br><tt>&nbsp; hposdmin=20;</tt>
+<br><tt>&nbsp; hposdmax=50;</tt>
+<br><tt>&nbsp; *- mean position calculated automatically -;</tt>
+<br><tt>&nbsp; hposdmean=(hposdmin+hposdmax)/2;</tt>
+<p><tt>&nbsp; *- Colors of the background and stripes across the date area
+-;</tt>
+<br><tt>&nbsp; cback="white";</tt>
+<br><tt>&nbsp; cstripe="beige";</tt>
+<p><tt>&nbsp; *- Font, color and height of text displayed on the left of
+the date area&nbsp; -;</tt>
+<br><tt>&nbsp; *- (note that non-sas fonts need to be enclosed in an extra
+set of single quotes) -;</tt>
+<br><tt>&nbsp; *- Note that hitemdesc must not be given a value greater
+than 1.0 -;</tt>
+<br><tt>&nbsp; fitemdesc="'Arial'";</tt>
+<br><tt>&nbsp; citemdesc="maroon";</tt>
+<br><tt>&nbsp; hitemdesc=0.8;</tt>
+<p><tt>&nbsp; *- Height, font and default color of the text to use when
+text values -;</tt>
+<br><tt>&nbsp; *- are displayed in the date area such as vital signs values.&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- (note that non-sas fonts need to be enclosed in an extra
+set of single quotes) -;</tt>
+<br><tt>&nbsp; *- Note that hitemtext must not be given a value greater
+than 1.0 -;</tt>
+<br><tt>&nbsp; fitemtext="'Arial'";</tt>
+<br><tt>&nbsp; hitemtext=0.7;</tt>
+<br><tt>&nbsp; citemtext="maroon";</tt>
+<p><tt>&nbsp; *- Maximum upper case and mixed case letters that you know
+will&nbsp; -;</tt>
+<br><tt>&nbsp; *- fit on the left of the date area. You will have to do
+a trial -;</tt>
+<br><tt>&nbsp; *- run, inspect the outputs and adjust these values. -;</tt>
+<br><tt>&nbsp; *- upper case -;</tt>
+<br><tt>&nbsp; maxucletters=23;</tt>
+<br><tt>&nbsp; *- mixed case -;</tt>
+<br><tt>&nbsp; maxmcletters=29;</tt>
+<br><tt>&nbsp; *- Color to show this text when it gets truncated. You will
+be&nbsp; -;</tt>
+<br><tt>&nbsp; *- able to mouse over this truncated text to see the full
+text. -;</tt>
+<br><tt>&nbsp; citemdesctrunc="blue";</tt>
+<p><tt>&nbsp; *- Font, color, height and background color of Patient top-of-page
+title -;</tt>
+<br><tt>&nbsp; *- (note that non-sas fonts need to be enclosed in an extra
+set of single quotes) -;</tt>
+<br><tt>&nbsp; fpatient="'Arial / Bold'";</tt>
+<br><tt>&nbsp; cpatient="black";</tt>
+<br><tt>&nbsp; cpatientbg="CXE0E0E0";</tt>
+<br><tt>&nbsp; hpatient=2;</tt>
+<p><tt>&nbsp; *- Font, color, height and background color of block titles
+-;</tt>
+<br><tt>&nbsp; *- (note that non-sas fonts need to be enclosed in an extra
+set of single quotes) -;</tt>
+<br><tt>&nbsp; fblockdesc="'Arial / Bold'";</tt>
+<br><tt>&nbsp; cblockdesc="black";</tt>
+<br><tt>&nbsp; cblockdescbg="CXE0E0E0";</tt>
+<br><tt>&nbsp; hblockdesc=1;</tt>
+<p><tt>&nbsp; *- Whether or not to draw a box around each block of information
+displayed -;</tt>
+<br><tt>&nbsp; *- and what color if so. Set to 0 or 1&nbsp; 0=no 1=yes
+-;</tt>
+<br><tt>&nbsp; drawblockbox=1;</tt>
+<br><tt>&nbsp; cblockbox="maroon";</tt>
+<p><tt>&nbsp; *- Height and color of the time scale to draw.&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- Note that block box color (cblockbox) overrides -;</tt>
+<br><tt>&nbsp; *- the scale color if drawblockbox=1&nbsp; -;</tt>
+<br><tt>&nbsp; hscaletext=0.8;</tt>
+<br><tt>&nbsp; cscale="maroon";</tt>
+<p><tt>&nbsp; *- Whether the time ticks on the scale should be uniformly
+spaced. -;</tt>
+<br><tt>&nbsp; *- 0=no, 1=yes -;</tt>
+<br><tt>&nbsp; uniformscale=1;</tt>
+<p><tt>&nbsp; *- Whether to use arrow heads to point to start or end day
+values -;</tt>
+<br><tt>&nbsp; *- that have been imputed where their exact value is unknown.&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- This also applies to start or end values that fall off
+the&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- day scale at either end. 0=no, 1=yes.&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; usearrows=1;</tt>
+<p><tt>&nbsp; *- Height and color of the figures. Height is effectively
+the&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- thickness of the arrow or rod shafts used for showing
+period -;</tt>
+<br><tt>&nbsp; *- information such as the duration of an adverse event.
+Note&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- that if arrows are used then the value for hfigure must
+not&nbsp; -;</tt>
+<br><tt>&nbsp; *- be greater than 0.5&nbsp; -;</tt>
+<br><tt>&nbsp; hfigure=0.4;</tt>
+<br><tt>&nbsp; cfigure="BIYG";</tt>
+<p><tt>&nbsp; *- This is the minimum width in hpos values that you want
+for -;</tt>
+<br><tt>&nbsp; *- period data. Some adverse events might only last a day
+and -;</tt>
+<br><tt>&nbsp; *- so a rod or an arrow used to represent it might be too&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- short to see. This setting will ensure that these short&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- periods are visible. The position on the day scale will
+be -;</tt>
+<br><tt>&nbsp; *- the mid position of the start and end day. This will
+be a&nbsp; -;</tt>
+<br><tt>&nbsp; *- box shape that will override an arrow shape. Set it to
+a&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- value that is slightly less than the hfigure value.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; hposminfigwidth=0.3;</tt>
+<p><tt>&nbsp; *- hposmingap is a control used when you are displaying text&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- values. If two text values are very close to each other
+due -;</tt>
+<br><tt>&nbsp; *- to the dates being close then the two sets of text will&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- overlap and become unreadable. What the patient profiler&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- will do is to display a box for the second set of text&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- instead of the text if the values are too close. It is
+up&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- to you to decide how close you want to get before it
+makes&nbsp; -;</tt>
+<br><tt>&nbsp; *- this substitution. This is given in hpos positions. Look
+at -;</tt>
+<br><tt>&nbsp; *- the range of hpos values you used for the scale (hposdmin&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- and hposdmax) and decide what value, based on this, you&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- require to ensure displayed text values stay separate.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; hposmingap=1.3;</tt>
+<p><tt>run;</tt>
+<br>&nbsp;
+<p><tt>data rgpp_global;</tt>
+<br><tt>&nbsp; *- do not change any of these variable names or their characteristics
+-;</tt>
+<br><tt>&nbsp; length patvar $ 32&nbsp; webout scale $ 200;</tt>
+<p><tt>&nbsp; *- Name of the unique patient identifier variable present
+-;</tt>
+<br><tt>&nbsp; *- in the rgpp_patients and rgpp_data datasets. -;</tt>
+<br><tt>&nbsp; patvar="subjid";</tt>
+<p><tt>&nbsp; *- Destination folder for the html files and gif files -;</tt>
+<br><tt>&nbsp; *- created during a run of the patient profiler. Note&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- this destination folder must actually exist. For a&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- complete run of new reports you should ensure that&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- the destination folder is empty before you do the&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- full run.&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; webout="C:\webtemp";</tt>
+<p><tt>&nbsp; *- Set this to your scale you want to show on the time axis.
+They should be pairs -;</tt>
+<br><tt>&nbsp; *- of study day numbers (first day of study being Day 0)
+and labels separated&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- with a #. Pairs of study days and labels should be separated
+from others like&nbsp; -;</tt>
+<br><tt>&nbsp; *- themselves with a single upright line that sas normally
+uses (in pairs) for&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- concatenantion.&nbsp; An example is given below.&nbsp;
+-;</tt>
+<br><tt>&nbsp; scale="-14#Screen | 0#Baseline | 7#WK1 | 14#WK2 | 28#WK4
+| 56#WK8 | 112#WK16";</tt>
+<p><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>Running the above code just creates a dataset. It does not create any
+macro variables. I ran that code and afterwards checked for what global
+macro variables were there and this is what I got. I got <b>no</b> global
+macro variables.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>624&nbsp; %put _global_;</tt></td>
+</tr>
+</table>
+
+<p>I know that my parameter dataset contains both numeric variables and
+character variables. I also know it does not contain variables with the
+unlikely names of "__i",&nbsp; "__y", "_num" or "_char". So here is my
+code for "symput"ing out all the variables and their values. Note that
+I have to use a <b>merge statement</b>, without any "by" variables, as
+I have two datasets but want only one collective observation.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data _null_;</tt>
+<br><tt>&nbsp; merge rgpp_style rgpp_global;</tt>
+<br><tt>&nbsp; array _num {*} _numeric_;</tt>
+<br><tt>&nbsp; array _char {*} _character_;</tt>
+<br><tt>&nbsp; length __y $ 32;</tt>
+<br><tt>&nbsp; do __i=1 to dim(_char);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; __y=vname(_char(__i));</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; call symput(__y,trim(left(_char(__i))));</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>&nbsp; do __i=1 to dim(_num);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; __y=vname(_num(__i));</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; call symput(__y,trim(left(_num(__i))));</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>run;</tt>
+<p><tt>%put _global_;</tt></td>
+</tr>
+</table>
+
+<p>....and here is what I got in the log.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>688&nbsp; data _null_;</tt>
+<br><tt>689&nbsp;&nbsp;&nbsp; merge rgpp_style rgpp_global;</tt>
+<br><tt>690&nbsp;&nbsp;&nbsp; array _num {*} _numeric_;</tt>
+<br><tt>691&nbsp;&nbsp;&nbsp; array _char {*} _character_;</tt>
+<br><tt>692&nbsp;&nbsp;&nbsp; length __y $ 32;</tt>
+<br><tt>693&nbsp;&nbsp;&nbsp; do __i=1 to dim(_char);</tt>
+<br><tt>694&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; __y=vname(_char(__i));</tt>
+<br><tt>695&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; call symput(__y,trim(left(_char(__i))));</tt>
+<br><tt>696&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>697&nbsp;&nbsp;&nbsp; do __i=1 to dim(_num);</tt>
+<br><tt>698&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; __y=vname(_num(__i));</tt>
+<br><tt>699&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; call symput(__y,trim(left(_num(__i))));</tt>
+<br><tt>700&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>701&nbsp; run;</tt>
+<p><tt>NOTE: Numeric values have been converted to character values at
+the places given by:</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (Line):(Column).</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 699:31</tt>
+<br><tt>NOTE: There were 1 observations read from the data set WORK.RGPP_STYLE.</tt>
+<br><tt>NOTE: There were 1 observations read from the data set WORK.RGPP_GLOBAL.</tt>
+<br><tt>NOTE: DATA statement used (Total process time):</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.01 seconds</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.01 seconds</tt>
+<br>&nbsp;
+<p><tt>702</tt>
+<br><tt>703&nbsp; %put _global_;</tt>
+<br><tt>GLOBAL FPATIENT 'Arial / Bold'</tt>
+<br><tt>GLOBAL HPOS 50</tt>
+<br><tt>GLOBAL HPOSMINGAP 1.3</tt>
+<br><tt>GLOBAL FITEMTEXT 'Arial'</tt>
+<br><tt>GLOBAL HPOSDMEAN 35</tt>
+<br><tt>GLOBAL HPOSMINFIGWIDTH 0.3</tt>
+<br><tt>GLOBAL HSCALETEXT 0.8</tt>
+<br><tt>GLOBAL DRAWBLOCKBOX 1</tt>
+<br><tt>GLOBAL SCALE -14#Screen | 0#Baseline | 7#WK1 | 14#WK2 | 28#WK4
+| 56#WK8 | 112#WK16</tt>
+<br><tt>GLOBAL HPATIENT 2</tt>
+<br><tt>GLOBAL CITEMTEXT maroon</tt>
+<br><tt>GLOBAL CFIGURE BIYG</tt>
+<br><tt>GLOBAL HBLOCKDESC 1</tt>
+<br><tt>GLOBAL CBLOCKBOX maroon</tt>
+<br><tt>GLOBAL HITEMDESC 0.8</tt>
+<br><tt>GLOBAL USEARROWS 1</tt>
+<br><tt>GLOBAL MAXUCLETTERS 23</tt>
+<br><tt>GLOBAL WEBOUT C:\webtemp</tt>
+<br><tt>GLOBAL CSTRIPE beige</tt>
+<br><tt>GLOBAL HPOSDMIN 20</tt>
+<br><tt>GLOBAL CBLOCKDESC black</tt>
+<br><tt>GLOBAL CBLOCKDESCBG CXE0E0E0</tt>
+<br><tt>GLOBAL HFIGURE 0.4</tt>
+<br><tt>GLOBAL UNIFORMSCALE 1</tt>
+<br><tt>GLOBAL CSCALE maroon</tt>
+<br><tt>GLOBAL FITEMDESC 'Arial'</tt>
+<br><tt>GLOBAL CPATIENT black</tt>
+<br><tt>GLOBAL CPATIENTBG CXE0E0E0</tt>
+<br><tt>GLOBAL HITEMTEXT 0.7</tt>
+<br><tt>GLOBAL CBACK white</tt>
+<br><tt>GLOBAL MAXMCLETTERS 29</tt>
+<br><tt>GLOBAL VPOS 150</tt>
+<br><tt>GLOBAL FBLOCKDESC 'Arial / Bold'</tt>
+<br><tt>GLOBAL CITEMDESC maroon</tt>
+<br><tt>GLOBAL CITEMDESCTRUNC blue</tt>
+<br><tt>GLOBAL PATVAR subjid</tt>
+<br><tt>GLOBAL YPIXELS 2000</tt>
+<br><tt>GLOBAL HPOSDMAX 50</tt>
+<br><tt>GLOBAL XPIXELS 1000</tt></td>
+</tr>
+</table>
+
+<p>You can see that all the dataset variables have been turned into global
+macro variables and their values are now the global macro values.
+<p>What I am going to do next is to show you how you can have a macro access
+these two parameter datasets using the code above and you will see that
+these macro variables are <b>local</b> to the macro. This is the ideal
+situation because it means these parameter datasets <b><i>really are </i></b>acting
+like parameters and their settings and their values will not affect anything
+outside the calling macro. Firstly, there is something I have to warn you
+about. <b>The macro variables will only be local to the macro if the macro
+has at least ONE parameter</b>. That's the way "call symput" works. You
+don't have to use this parameter - you just have to declare it. I know
+that what we are trying to do is to pass <b>all</b> parameters and their
+values in datasets, and not call the macro with any parameter settings,
+but you need one parameter declared with the macro (at least) for the scope
+of "call symput" to be local. I will be using a positional parameter named
+"<b>dummy</b>" for that that I won't refer to in my code. You need to remember
+that rule if you are doing&nbsp; serious macro programming using parameter
+datasets. The way it is explained in the sas documentation is "SYMPUT puts
+the macro variable in the most local nonempty symbol table". So in our
+macro we need to make sure it has something in its "symbol table" so that
+the "call symput"s will scope the macro variables in the macro. There is
+more in the sas documentation on this. Also read up on "<b>call symputx</b>"
+when you have time.
+<p>One more time - note that I used a <b>dummy parameter</b> in the macro
+definition. I did this to keep the <b>"call symput"s local</b>. Without
+the dummy parameter, they would be <b>global</b>.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>152&nbsp; %macro mymacro(dummy);</tt>
+<br><tt>153&nbsp;&nbsp;&nbsp; data _null_;</tt>
+<br><tt>154&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; merge rgpp_style rgpp_global;</tt>
+<br><tt>155&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; array _num {*} _numeric_;</tt>
+<br><tt>156&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; array _char {*} _character_;</tt>
+<br><tt>157&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; length __y $ 32;</tt>
+<br><tt>158&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; do __i=1 to dim(_char);</tt>
+<br><tt>159&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; __y=vname(_char(__i));</tt>
+<br><tt>160&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; call symput(__y,trim(left(_char(__i))));</tt>
+<br><tt>161&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>162&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; do __i=1 to dim(_num);</tt>
+<br><tt>163&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; __y=vname(_num(__i));</tt>
+<br><tt>164&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; call symput(__y,trim(left(_num(__i))));</tt>
+<br><tt>165&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>166&nbsp;&nbsp;&nbsp; run;</tt>
+<br><tt>167&nbsp;&nbsp;&nbsp; %put >>>>>> inside "mymacro" these are the
+user macro variables >>>>>;</tt>
+<br><tt>168&nbsp;&nbsp;&nbsp; %put _user_;</tt>
+<br><tt>169&nbsp; %mend mymacro;</tt>
+<br><tt>170&nbsp; %mymacro</tt>
+<br><tt>171</tt>
+<br><tt>172&nbsp; %put >>>>>>> ouside "mymacro" these are the global macro
+variables >>>>>;</tt>
+<p><tt>NOTE: Numeric values have been converted to character values at
+the places given by:</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (Line):(Column).</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2:82</tt>
+<br><tt>NOTE: There were 1 observations read from the data set WORK.RGPP_STYLE.</tt>
+<br><tt>NOTE: There were 1 observations read from the data set WORK.RGPP_GLOBAL.</tt>
+<br><tt>NOTE: DATA statement used (Total process time):</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.07 seconds</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.01 seconds</tt>
+<br>&nbsp;
+<p><tt>>>>>>> inside "mymacro" these are the user macro variables >>>>></tt>
+<br><tt>MYMACRO FPATIENT 'Arial / Bold'</tt>
+<br><tt>MYMACRO HPOS 50</tt>
+<br><tt>MYMACRO HPOSMINGAP 1.3</tt>
+<br><tt>MYMACRO FITEMTEXT 'Arial'</tt>
+<br><tt>MYMACRO HPOSDMEAN 35</tt>
+<br><tt>MYMACRO HPOSMINFIGWIDTH 0.3</tt>
+<br><tt>MYMACRO HSCALETEXT 0.8</tt>
+<br><tt>MYMACRO DRAWBLOCKBOX 1</tt>
+<br><tt>MYMACRO SCALE -14#Screen | 0#Baseline | 7#WK1 | 14#WK2 | 28#WK4
+| 56#WK8 | 112#WK16</tt>
+<br><tt>MYMACRO HPATIENT 2</tt>
+<br><tt>MYMACRO CITEMTEXT maroon</tt>
+<br><tt>MYMACRO CFIGURE BIYG</tt>
+<br><tt>MYMACRO HBLOCKDESC 1</tt>
+<br><tt>MYMACRO CBLOCKBOX maroon</tt>
+<br><tt>MYMACRO HITEMDESC 0.8</tt>
+<br><tt>MYMACRO USEARROWS 1</tt>
+<br><tt>MYMACRO MAXUCLETTERS 23</tt>
+<br><tt>MYMACRO DUMMY</tt>
+<br><tt>MYMACRO WEBOUT C:\webtemp</tt>
+<br><tt>MYMACRO CSTRIPE beige</tt>
+<br><tt>MYMACRO HPOSDMIN 20</tt>
+<br><tt>MYMACRO CBLOCKDESC black</tt>
+<br><tt>MYMACRO CBLOCKDESCBG CXE0E0E0</tt>
+<br><tt>MYMACRO HFIGURE 0.4</tt>
+<br><tt>MYMACRO UNIFORMSCALE 1</tt>
+<br><tt>MYMACRO CSCALE maroon</tt>
+<br><tt>MYMACRO FITEMDESC 'Arial'</tt>
+<br><tt>MYMACRO CPATIENT black</tt>
+<br><tt>MYMACRO CPATIENTBG CXE0E0E0</tt>
+<br><tt>MYMACRO HITEMTEXT 0.7</tt>
+<br><tt>MYMACRO CBACK white</tt>
+<br><tt>MYMACRO MAXMCLETTERS 29</tt>
+<br><tt>MYMACRO VPOS 150</tt>
+<br><tt>MYMACRO FBLOCKDESC 'Arial / Bold'</tt>
+<br><tt>MYMACRO CITEMDESC maroon</tt>
+<br><tt>MYMACRO CITEMDESCTRUNC blue</tt>
+<br><tt>MYMACRO PATVAR subjid</tt>
+<br><tt>MYMACRO YPIXELS 2000</tt>
+<br><tt>MYMACRO HPOSDMAX 50</tt>
+<br><tt>MYMACRO XPIXELS 1000</tt>
+<br><tt>>>>>>>> ouside "mymacro" these are the global macro variables >>>>></tt>
+<br><tt>173&nbsp; %put _global_;</tt>
+<p>&nbsp;</td>
+</tr>
+</table>
+
+<h2>
+A Warning</h2>
+I want you to realise that using a macro parameter dataset (or datasets)
+is for <b>advanced use only</b>. This is because it is very easy to misspell
+a variable name and also very easy to use the correct variable name but
+use the wrong type of variable (character instead of numeric or vice versa).
+Also, for character variables, you have to think what values should be
+quoted or not in your macro. This can make things a little complicated
+as you will have to put checking inside your macro to correct character
+value quoting after the "call symput" is done. On top of this, you will
+find it difficult to debug macros where the user has used a macro parameter
+dataset as you will have to carefully check the variable names and types.
+The more variables there are -- the more work this will be. My advice,
+for users using macro parameter datasets, is that if they encounter erross
+then to call the macro, if they can, using only the macro parameters and
+see if that clears the problem.
+<h2>
+Conclusion</h2>
+You have been introduced to the concept of a <b>macro parameter dataset</b>
+and how the variables and its values in this single observation dataset
+can easily be converted into macro variables local to the macro that are
+essentially the same as macro parameters and their values. Using the technique
+described on this page, you can design macros that accept parameter datasets,
+when the need arises, rather than rely on macro parameters being set.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="http://www.datasavantconsulting.com/roland/counter.php" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/symput_all.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:06 GMT -->
+</html>

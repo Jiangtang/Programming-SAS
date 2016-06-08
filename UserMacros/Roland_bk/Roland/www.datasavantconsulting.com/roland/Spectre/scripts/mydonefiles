@@ -1,0 +1,42 @@
+#!/bin/bash
+#<pre><b>
+# Script     : mydonefiles
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 26-Aug-2005
+# Purpose    : To list out the files in the donelist belonging to a person
+# SubScripts : none
+# Notes      : Ownership is determined from the ownership of the matching 
+#              .titles file. This utility runs slowly.
+# Usage      : mydonefiles 
+#              cp $(mydonefiles) /xxx/yyy
+#              lis2ps -e 4 -p john $(mydonefiles)
+#              mydonefiles rrash
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   (optional) userid of somebody other than the invoker
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+if [ $# -lt 1 ]
+then
+  userid=$USER
+else
+  userid=$1
+fi
+
+
+for file in $(donefiles) ; do
+  tfile=${file//.*/.titles}
+  owner=$(ls -ld "$tfile" | gawk '{print $3}')
+  if [ $owner == $userid ] ; then
+    echo $file
+  fi
+done

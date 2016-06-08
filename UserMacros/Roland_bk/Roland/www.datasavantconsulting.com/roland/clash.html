@@ -1,0 +1,135 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/clash.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:11 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Generator" content="Microsoft Word 97">
+   <meta name="keywords" content="sas tips techniques">
+   <meta name="Description" content="SAS tips and techniques by Roland Rashleigh-Berry">
+   <meta name="Template" content="C:\PROGRAM FILES\MSOFFICE\OFFICE\html.dot">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   <title>whosgot</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+clash</h1></center>
+<b>[last updated - 31 July 2003]</b>
+<p>After you have built your library of data sets it might be useful to
+compare identically-named variables to see if there are any differences
+in variable length, format, labels etc. This is what this utility does.
+You make the data directory the current directory and type in clash in
+the terminal window. As always, output goes to the terminal window by default
+and it is up to you to redirect it if required.
+<pre><b>#!/bin/sh
+# Script&nbsp;&nbsp;&nbsp;&nbsp; : clash
+# Version&nbsp;&nbsp;&nbsp; : 1.0
+# Author&nbsp;&nbsp;&nbsp;&nbsp; : Roland Rashleigh-Berry
+# Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 31 July 2003
+# Contact&nbsp;&nbsp;&nbsp; : rolandberry@hotmail.com
+# Purpose&nbsp;&nbsp;&nbsp; : To identify mismatches in variables between datasets&nbsp;
+# SubScripts : none
+# Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Make the data directory the current directory
+# Usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : clash
+#&nbsp;
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+# N/A&nbsp; (none)
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+#&nbsp;
+#================================================================================
+
+
+# check on the existence of a sas program in the home directory
+if [ -f $HOME/clash.sas ] ; then
+&nbsp; echo "SAS program clash already exists in your home directory. You need to check" 1&amp;2
+&nbsp; echo "if you need it and delete it if not. This utility will not overwrite it and" 1&amp;2
+&nbsp; echo "will now exit." 1&amp;2
+&nbsp; exit 1
+fi
+
+# Write SAS code out to a temporary file
+cat&nbsp; $HOME/clash.sas &lt;<END
+options validvarname=any nofmterr;
+
+libname here './' access=readonly;
+
+filename _outfile "$HOME/clash.tmp";
+
+proc format;
+  value type 1='N' 2='C';
+run;
+
+proc contents noprint data=here.html out=contents;
+run;
+
+data contents;
+  length newfmt $ 15;
+  set contents; 
+  newfmt=format;
+  if formatl>0 then do;
+&nbsp;&nbsp;&nbsp; newfmt=trim(newfmt)||compress(put(formatl,3.))||'.';
+&nbsp;&nbsp;&nbsp; if formatd0 then newfmt=trim(newfmt)||compress(put(formatd,3.));
+&nbsp; end;
+&nbsp; else if newfmt ne ' ' then newfmt=trim(newfmt)||'.';
+run;
+
+proc sort data=contents;
+&nbsp; by name;
+run;
+
+proc sort nodupkey data=contents(keep=name length type newfmt label)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; out=clash;
+&nbsp; by name length type newfmt label;
+run;
+
+data clash(keep=name);
+&nbsp; set clash;
+&nbsp; by name;
+&nbsp; if first.name and not last.name then output;
+run;
+
+data clash;
+&nbsp; merge clash(in=_clash) contents;
+&nbsp; by name;
+&nbsp; if _clash;
+run;
+
+data _null_;
+&nbsp; file _outfile;
+&nbsp; set clash;
+&nbsp; put @1 memname @10 name @22 length @26 type type. @28 newfmt @41 label;
+run;
+END
+
+
+# Run the SAS code
+sas -log "$HOME" -sysin "$HOME/clash.sas"
+
+
+# Delete the temporary SAS code and optionally the log
+rm -f $HOME/clash.sas # $HOME/clash.log&nbsp;
+
+
+# If output file exists then cat it and delete it
+if [ -f $HOME/clash.tmp ]
+then
+&nbsp; cat $HOME/clash.tmp
+&nbsp; rm -f $HOME/clash.tmp
+fi</b></pre>
+
+<center>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<br>&nbsp;
+<br>&nbsp;
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/clash.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:11 GMT -->
+</html>

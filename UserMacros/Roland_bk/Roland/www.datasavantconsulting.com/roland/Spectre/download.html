@@ -1,0 +1,192 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/Spectre/download.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:01:40 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="Spectre download">
+   <meta name="Description" content="Spectre download">
+   <title>Spectre download</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Spectre (Clinical) Download</h1></center>
+
+<p><br><b><font face="Arial,Helvetica">Last updated: 17 Jun 2015</font></b>
+<p><font color="#000099"><b>Note:</b> If you arrived at this page directly
+using a search engine such as Google then this may not be the <b>"Spectre</b>"
+you are looking for. There are a few software packages called <b>"Spectre"</b>.
+The "Spectre" you can download below is to do with <b>clinical trials reporting</b>.</font>
+<br>&nbsp;
+<h2>
+All the macros are free to use</h2>
+As of 07 May 2015 then the clinical macros have been donated to the public
+domain and are free to use, making <b>all</b> the macros on this web site
+free to use. However, <b>none of them are supported</b> unless covered
+by a support contract. Without a support contract then no bugs will be
+fixed. Reporting of bugs, at present, is pointless as they cannot be acted
+upon (because I do not have a personal copy of SAS software to reproduce
+these bugs). Any bug reports I receive without a support contract will
+be kept but not acted upon or acknowledged. I have limited time to answer
+any questions about how to set up and use the macros, though I am happy
+to do so if asked. It gives me a chance to improve the documentation, which
+always has room for improvement. To commit significant time to supporting
+these macros would require a support contract.
+<h2>
+Why you might want a support contract for the clinical reporting macros</h2>
+The clinical reporting macros were designed on the assumption that they
+would be used to analyse <b>millions or even<i> hundreds </i>of millions</b>
+of observations - so the macros are very quick and efficient and are ideal
+for analysing pooled clinical trials. They are possibly as much as 100x
+faster at analysing data for pooled studies than your own in-house macros
+due to their special design to cope with huge volumes of data. Also, they
+have a lot of statistical functionality built into them and they are very
+flexible in the way you can display these statistics. This collection of
+macros is probably the best candidate for a "standard" clinical reporting
+system since they can report both on small scale and very large scale volumes
+of data. I am not aware of a more efficient set of macros for analysis
+on huge volumes of data. Plus these macros have more statistical functionality
+than any other set of macros that I am aware of.
+<h2>
+How much does a support contract cost?</h2>
+I am happy to support these macros for a price that is based on the
+<b>individual
+SAS renewal licence</b> for a country but I will only support the original
+macros as supplied from this web site. I do not do "custom" changes to
+the macros for individual clients, as to keep track of individual versions
+would be impossible for me due to the complexity of the macros. All the
+macros have to remain the same for all users and all those macros will
+be webbed here. There are no "different versions" of these macros, although
+some new versions might remain experimental for a time. If a client requires
+changes or enhancements made to the macros then these changes must be of
+such a nature that they can be usefully rolled out to the whole user community.
+<p>What follows is the cost for support of the macros (excluding the RGPP
+macro) that are based on the individual SAS renewal licence for a country.
+It depends on the number of people programming with the macros and in what
+country these programmers are operating,. As a guide, the annual renewal
+fee for an individual SAS licence in &euro;2000 in Europe and &euro;1100
+in China: 50 programmers=3.75 renewals, 100 programmers=5 renewals, 125
+programmers=6.25 renewals, 150 programmers=7.5 renewals, 175 programmers=8.75
+renewals etc. (applicable sales tax to be added). You may have less than
+50 programmers, but for me, supporting any lesser number is the same amount
+of work as supporting 50 programmers and so the support contract is the
+same. Having said that - you are not obliged to enter a support contract
+with me personally. You can do so with anybody offering support for these
+macros - but I am not responsible for any negative consequences if you
+do and you will get no help from me if this goes wrong.
+<h2>
+Download</h2>
+The <b>clinical reporting system</b> named Spectre can be downloaded as
+four zip files. If you are creating an e-book on your PC or laptop then
+create a directory "<b>spectre</b>" under your <b>C:</b> drive and create
+directories <b>"clinmacros", "utilmacros", "sysmacros"</b> and "<b>scripts</b>"
+<b><i>under
+</i></b>the
+"<b>spectre</b>" directory (you probably don't need the "sysmacros" or
+"scripts"). Unzip the files in the relevant directory after you have downloaded
+them. Please note that most of the html pages have web counter code embedded
+in the html (even if you do not see a counter on the page) and when viewed
+on your PC or laptop as an e-book, these pages will attempt to connect
+to the Internet. Normally your computer will block this.
+<p>Some of the utility macros call macros in the SAS Institute supplied
+autocall macros so these must be available on the SASAUTOS path. Put these
+SI-supplied macros last on the path (they can be referred to using the
+libraef SASAUTOS) with the clinical macros first on the path with the utility
+macros following them something like this:
+<p><b><tt>options sasautos=("C:\Spectre\clinmacros", "C:\Spectre\utilmacros",
+SASAUTOS);</tt></b>
+<br>&nbsp;
+<p><b>Click on the ".zip" links to download:</b>
+<p><b>html documentation</b> for Spectre (usually out of date).
+<p><a href="spectre.zip">spectre.zip</a>
+<br>&nbsp;
+<p><font size=+1><b>Clinical sas macros</b>. </font>Note that all the utility
+macros contain the following disclaimer at the end of the header. Only
+download these macros and use them if you accept this disclaimer.
+<p>These macros are free as unsupported macros.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>/===============================================================================</tt>
+<br><tt>/ This is <b>public domain software</b>. No guarantee as to suitability
+or accuracy is</tt>
+<br><tt>/ given or implied. User uses this code entirely at their own risk.</tt>
+<br><tt>/=============================================================================*/</tt></td>
+</tr>
+</table>
+
+<p><a href="clinmacros.zip">clinmacros.zip</a>
+<br>&nbsp;
+<p><font size=+1><b>Utility sas macros</b>.</font> Note that all the utility
+macros contain the following disclaimer at the end of the header. Only
+download these macros and use them if you accept this disclaimer.
+<p>These macros are free as unsupported macros.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>/===============================================================================</tt>
+<br><tt>/ This is <b>public domain software</b>. No guarantee as to suitability
+or accuracy is</tt>
+<br><tt>/ given or implied. User uses this code entirely at their own risk.</tt>
+<br><tt>/=============================================================================*/</tt></td>
+</tr>
+</table>
+
+<p><a href="utilmacros.zip">utilmacros.zip</a>
+<br>&nbsp;
+<p><b><font size=+1>Spectre system macros</font></b>. Note that all the
+macros contain the following disclaimer at the end of the header. Only
+download these macros and use them if you accept this disclaimer.
+<p>These macros are free as unsupported macros.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>/===============================================================================</tt>
+<br><tt>/ This is <b>public domain software</b>. No guarantee as to suitability
+or accuracy is</tt>
+<br><tt>/ given or implied. User uses this code entirely at their own risk.</tt>
+<br><tt>/=============================================================================*/</tt></td>
+</tr>
+</table>
+
+<p><a href="sysmacros.zip">sysmacros.zip</a>
+<br>&nbsp;
+<p><font size=+1><b>Spectre scripts</b> </font>+ some documentation of
+these. All the scripts are <b>bash</b> shell scripts. Note that all the
+scripts contain the following disclaimer at the end of the header. Only
+download these scripts and use them if you accept this disclaimer.
+<p>These scripts are free and unsupported.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#===============================================================================</tt>
+<br><tt># This is <b>public domain software</b>. No guarantee as to suitability
+or accuracy is</tt>
+<br><tt># given or implied. User uses this code entirely at their own risk.</tt>
+<br><tt>#===============================================================================</tt></td>
+</tr>
+</table>
+
+<p><a href="scripts.zip">scripts.zip</a>
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p>For instructions on how to install Spectre (Clinical), refer to the
+relevant section on the main page.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/Spectre/download.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:02:02 GMT -->
+</html>

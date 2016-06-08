@@ -1,0 +1,1475 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/RGPP/rgpp.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:02:52 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="Roland's Graphical Patient Profiler">
+   <meta name="KeyWords" content="patient profiles">
+   <meta name="robots" content="noindex,nofollow">
+   <meta name="author" content="Roland Rashleigh-Berry">
+   <meta name="description" content="Roland's Graphical Patient Profiler">
+   <title>Roland's Graphical Patient Profiler</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Roland's Graphical Patient Profiler (v4.0)</h1></center>
+<b>[last updated: 15 May 2011]</b>
+<h2>
+Introduction</h2>
+The title of this page is "<b>Roland's Graphical Patient Profiler</b>".
+I'll explain what this means. To put it into context, it is to do with
+<b>patients
+and their progress on a clinical trial</b>. Taking the first word "Roland"
+-- that's the guy who wrote this thing called a "graphical patient profiler".
+<b>It's
+me!</b> So that's the first word cleared up. And as for the rest of it,
+the "graphical" part means "pretty pictures", if you like, so combined
+with what's left, "patient profiler", it means <b>something I wrote</b>
+so that you can see <b>pretty pictures</b> of <b>what is happening to a
+patient during the progress of a clinical trial.</b>
+<p><a href="http://www.datasavantconsulting.com/roland/RGPP/P01-701-1015.html" target="_blank">example rgpp output</a>
+<p>The full explanation about the patient profiler will be given on seven
+pages starting with this one, and they should be read in the order given.
+The following page can be linked to at the bottom of the previous page.
+The first page (this one) will explain what RGPP is and you will be able
+to download it and play with it. The second page will tell you how to improve
+layout of demography ites. The third page will show you how to transform
+your data into a format that the patient profiler can use. The fourth page
+will give a practical demonstration of transforming CDISC data into the
+RGPP format (which created the example you can link to above). The fifth
+page will explain how you can enhance your output to include graphical
+legends in pop-up widows so that where you have color-coded certain things,
+the explanation of the colors can be made to appear. The sixth page will
+explain how I expect you to set up your html for viewing the patient profiler
+output. The seventh page will set out my vision for RGPP. You can link
+to these other pages below, but I must stress that it is <b>important that
+you have read and understood the previous pages</b>.
+<p><a href="http://www.datasavantconsulting.com/roland/RGPP/rgpp_demog.html">A better display of Demography details</a>
+<br><a href="http://www.datasavantconsulting.com/roland/RGPP/rgpp_trans.html">Transforming your data for RGPP</a>
+<br><a href="http://www.datasavantconsulting.com/roland/RGPP/rgpp_cdisc.html">Transforming CDISC data for RGPP</a>
+<br><a href="http://www.datasavantconsulting.com/roland/RGPP/rgpp_legends.html">Creating graphical legends for RGPP</a>
+<br><a href="http://www.datasavantconsulting.com/roland/RGPP/rgpp_html.html">Html for viewing RGPP</a>
+<br><a href="http://www.datasavantconsulting.com/roland/RGPP/rgpp_vision.html">My Vision for RGPP</a>
+<p><a href="http://www.datasavantconsulting.com/roland/RGPP/rgpp_terms.html">Terms for RGPP Licencing and Support</a>
+<h2>
+"html" pages</h2>
+This page you are looking at now is an "html" page. The page above you
+linked to was also an html page. "Html" stands for "hyper-text markup language"
+but you don't have to worry about what that means. All you need to know
+is that it is a common format for use over the Internet or <i>Intranet
+</i>(for
+where a company has their own collection of web sites that they don't want
+outsiders to see). The dummy patient profile page you linked to above was
+an "html" page that referred to a "gif" file. A "gif" file is a type of
+image file. You have probably heard of "jpegs" - that's what your digital
+camera creates. "Gifs" are image files that are commonly used for graphical
+diagrams and this is applicable to patient profiles. "Html" pages and "gif"
+images are very easy to distribute or allow access to. Clinicians following
+the progress of a clinical trial will be able to log onto their local Intranet
+and it is easily possible for patient profile graphics to be made available
+to them. If need be, an "html" page with its associated "gif" file could
+be emailed to anybody who needed it. In short - it is very easy to distribute
+or make available graphical html files. Giving access to or sending graphical
+patient profiles to clinicians will be simplicity itself if this format
+is used. It is this style of output that will be created using my Patient
+Profiler.
+<p>Another thing about html pages is that you can hide messages behind
+shapes, text and pictures. If you move your cursor (mouse pointer) over
+a shape, text or pictures then you can see this text behind it, if there
+is any put there. Again, my patient profiler is aimed to fully exploit
+that ability. People using it will be strongly encouraged to put full detail
+in text form behind every object shown. So a bar that shows the period
+an AE lasts will give extra details about the AE such as its system organ
+class, its severity, whether it is considered serious or not plus any other
+information a clinician needs to see, providing that data is recorded.
+The same for Vital Signs or Lab values, even if these are shown as numeric
+values on the chart. The same for drug dosing. So lurking behind every
+representation of data, either in text or shape form, it is intended to
+put fuller details so that a clinician just has to "mouse over" it to get
+more details.
+<p>Now before we leave this section I would ask you to click on the dummy
+patient profile above and mouse over the shapes and values displayed. Apart
+from the demography details, all the other text values shown in the timescale
+region and the shapes have more text behind it. Mouse over each one and
+you will see.
+<p>The graphical patient profiler is aimed for <b>viewing</b> and not for
+<b>printing</b>.
+If it is printed out then not only will it be less clear but the information
+hiding behind the values will be lost. So this is not something to be printed
+and faxed to somebody. Instead, you can email the html page and its related
+gif to people who need to see it. They will then have the full "picture"
+and be able to see the text behind the values as well. Remember that html
+format is easy to distribute. People don't have to be logged onto a server
+to see it because you can email it to them. But, of course, you should
+treat this sort of information as confidential and be careful who you send
+it to.
+<h2>
+What data does it work on?</h2>
+You might be wondering what sort of data the patient profiler needs to
+work on. The answer is <b>any sort of data</b> but there is a proviso that
+will be explained. It can be <b>raw data</b> that is not clean. In can
+be <b>derived data</b> that has been cleaned. It does not matter. But whatever
+data you have, <b>has to be transformed</b> into data the patient profiler
+can understand. This can be a lot of work but oncen done then the code
+can hopefully be reused on other studies. Transforming the data is a lot
+of bother but it is unavoidable. Putting displays of extra data behind
+the values and shapes takes a lot of preparation and can't be done automatically.
+You may choose to display values using different colors and this will not
+be something that is in your original data. You may choose to display values
+using a mixture of different letter heights. Again, this is not something
+to be found in study data. So you have some transforming of data to do
+to get the patient profiler to work and when you do this the first time
+it will take a lot of coding effort.
+<h2>
+The four patient profiler datasets</h2>
+For the patient profiler to work, it requires four datasets that must be
+named exactly as stated below. Their structure will be explained shortly
+but first I will list them and say what they do.
+<p>There will be a dataset with only <b>one observation</b> in it that
+contains the style settings for the patient profiler that controls the
+general layout and colors and the default scale spacing to use. This dataset
+is named <b>rgpp_style</b>. This dataset has many variables and takes a
+while to set up but once set, can be used without change on all clinical
+trials. It holds the unchanging values that dictate the patient profiler
+layout style that is intended for use throughout an organisation without
+alteration. If you are used to using sas macros then you should think of
+this dataset as a "macro parameter dataset". In fact, the contents of this
+dataset will be converted to effective macro parameters by the patient
+profiler.
+<p>There will be a dataset with only <b>one observation</b> in it that
+contains the global values for a run of the graphical patient profiler.
+You would put the name of the patient variable in this, the folder destination
+for the html pages and gif files produced and the scale you want to display.
+This dataset is named <b>rgpp_global</b>. If you are used to using sas
+macros then you should think of this dataset as a "macro parameter dataset".
+In fact, the contents of this dataset will be converted to effective macro
+parameters by the patient profiler.
+<p>There will be a dataset with <b>one observation per patient</b> (subject).
+This will contain the subject identity, the html file name, the gif image
+name and the start and end days for the data you want selected for a patient
+and the start and end days to show on the scale. This dataset is named
+<b>rgpp_patients</b>.
+<p>Lastly, there is the data you want to display. There will be <b>multiple
+observations per patient</b>. This dataset should be is named <b>rgpp_data</b>.
+<p>In the following sections, the structure of each of these datasets will
+be explained.
+<h2>
+rgpp_style</h2>
+This is the dataset that controls the general layout for the patient profiler
+display. This dataset has a lot of variables that control the layout style.
+You are expected to use one layout style only throughout an organisation.
+Once the layout has been decided upon, this dataset is intended for use
+throughout an organisation with <b>no changes</b> being made to it so that
+the style of the reports is uniform throughout the organisation. The sas
+programmer who sets this up is expected to know something of sas graphics,
+especially in regard to choosing the values of <b>ypixels</b>, <b>xpixels</b>,
+<b>vpos</b>
+and <b>hpos</b>.
+<p>You can tailor the display of the patient profiler to get it to look
+how you want. You can choose colors and fonts. You can choose the size
+of the html page. You can choose how much of it you want to use for the
+time display area and how much to leave for text on the left. What I will
+say at this point is that you are required to choose some colors and because
+of the way sas works, your <b>color names</b> must not be more than <b>eight
+characters</b> long. This does not mean you are limited to colors with
+names that are eight characters long or less. Any and every color in existence
+can be referred to as an eight character name once you know how. So if
+you wanted to use <b>AntiqueWhite</b> as a background then you can use
+it. If you wanted to use <b>DarkSlateBlue</b> as the default text color
+then you can use that as well. You just have to find out how to refer to
+these colors by an eight character code and use that instead. This involves
+a bit of study so I have written a page on this that explains it all very
+clearly that you can link to below. It will open in a new window. Keep
+referring to that page to become expert on choosing colors for your sas
+html displays.
+<p><a href="http://www.datasavantconsulting.com/roland/sas_colors.html" target="_blank">sas_colors</a>
+<p>Assuming you can choose whatever color you like and refer to it by an
+eight character name (or less) I will continue with the description of
+the rgpp_settings dataset. What you will see below is an example of it
+with settings filled in. Note that this is sas code you can use. You can
+changes the settings but you must not change the length of the variables
+or change their type. The variable declarations must not be changed. Just
+their values. And you must make sure that numeric variables and given numeric
+values and character variable are given character values that do not exceed
+the allowed length.
+<p>Note that some of the numeric variables used are of the True/False type
+and should only be given the numeric value "0" or "1". 0=False, 1=True.
+<p>Note that fonts declared below that are non-sas internal fonts must
+be specified inside single quotes that in turn are contained in double
+quotes. You are not seeing double!
+<p>All heights are in "cells", if you know "goptions" and annotate datasets.
+The patient profiler uses the cell reference system, rather than percentages.
+This is the sas default. Using cells is much better for "long" pages such
+patient profile html pages.
+<p>This first dataset, with only <b>one observation</b>, has a lot of variables.
+It dictates the style you want for the patient profiler output. Once this
+dataset is created correctly it is intended to be used without change for
+the forseeable future. You can always store this dataset somewhere, call
+it with a "set" statement and override individual values in your code if
+you need to. (you can run this code)
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>data sasuser.rgpp_style;</tt>
+<br><tt>&nbsp; *- This is the version 4.0 template for the RGPP style dataset.
+-;</tt>
+<br><tt>&nbsp; *- The version of this dataset should match the version
+of RGPP -;</tt>
+<br><tt>&nbsp; *- you are using which will be displayed in the log if you
+call -;</tt>
+<br><tt>&nbsp; *- the macro with a positional parameter value set like
+this:&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- %rgpp(xxx)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- Note that the above call only gives you information about&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- the macro and does not do any processing of data. Do
+not use -;</tt>
+<br><tt>&nbsp; *- the word "check" (unquoted) for this call as this is
+for&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- checking input datasets in addition to providing information
+-;</tt>
+<br><tt>&nbsp; *- about the macro.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<p><tt>&nbsp; *- Whether you want a border drawn around your output. The
+only -;</tt>
+<br><tt>&nbsp; *- permitted values are "noborder" and "border".&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<p><tt>&nbsp; RETAIN border "noborder";&nbsp; /* new in version 2.0 */</tt>
+<p><tt>&nbsp; *- Whether you want the html output to be transparent to
+the&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- browser window. The only permitted values are "transparency"
+-;</tt>
+<br><tt>&nbsp; *- and "notransparency".&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<p><tt>&nbsp; RETAIN transparency "notransparency";&nbsp; /* new in version
+2.0 */</tt>
+<br>&nbsp;
+<p><tt>&nbsp; *- Note that ALL COLORS ARE LIMITED TO 8 CHARACTERS except
+for cback. -;</tt>
+<br><tt>&nbsp; *- Refer to the web site sas tips for how to specify any
+sas color in -;</tt>
+<br><tt>&nbsp; *- short form.&nbsp; -;</tt>
+<p><tt>&nbsp; *- Do not change any of these variable names or their characteristics
+-;</tt>
+<br><tt>&nbsp; *- or RGPP will fail due to errors.&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; length cstripe cscale $ 8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fitemtext fitemdesc
+fblockdesc fpatient cback $ 32</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fscaletext $ 32&nbsp;&nbsp;
+/* new in version 3.0 */</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; citemdesc citemdesctrunc
+cblockdesc cpatient citemtext cfigure $ 8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; citemline $ 8&nbsp;&nbsp;&nbsp;&nbsp;
+/* new in version 3.1 */</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cblockbox $ 8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cblockdescbg cpatientbg
+$ 8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; hblockdescbg wblockdescbg
+hpatientbg wpatientbg 8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; hitemdesc hblockdesc
+hpatient hitemtext hfigure hscaletext 8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; drawblockbox uniformscale
+usearrows stripeonfirst 8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ypixels xpixels
+vpos hpos 8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; hposdmin hposdmax
+hposdmean hposminfigwidth hposmingap 8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; maxucletters maxmcletters
+8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+<p><tt>&nbsp; *- Note that ALL VARIABLES MUST BE SET to mon-missing values.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- You are not allowed to default any values or omit any
+variables. -;</tt>
+<br><tt>&nbsp; *- If any value is missing then RGPP will fail due to errors.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<p><tt>&nbsp; *- Size of html output with number of rows and columns. -;</tt>
+<br><tt>&nbsp; *- You need a knowledge of sas graphics to set these.&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; ypixels=2400;</tt>
+<br><tt>&nbsp; vpos=120;&nbsp; /* number of rows */</tt>
+<br><tt>&nbsp; xpixels=1100;</tt>
+<br><tt>&nbsp; hpos=55;&nbsp;&nbsp; /* number of columns */</tt>
+<p><tt>&nbsp; *- Start and end hpos positions for date area. The maximum
+-;</tt>
+<br><tt>&nbsp; *- value must not exceed what was specifed in hpos= above.
+-;</tt>
+<br><tt>&nbsp; hposdmin=10;</tt>
+<br><tt>&nbsp; hposdmax=55;</tt>
+<br><tt>&nbsp; *- mean position calculated automatically -;</tt>
+<br><tt>&nbsp; hposdmean=(hposdmin+hposdmax)/2;</tt>
+<p><tt>&nbsp; *- Colors of the stripes across the date area -;</tt>
+<br><tt>&nbsp; cstripe="beige";</tt>
+<br><tt>&nbsp; *- Alternate lines within a block will be striped so that
+it is -;</tt>
+<br><tt>&nbsp; *- easy for the eye to scan across without going up or down
+a&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- line. You specify here whether you want the lines striped&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- starting from the first line or not. If not then striping
+is -;</tt>
+<br><tt>&nbsp; *- done on the second line. Your choice will depend on the&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- color of the block description background color because
+it&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- might be better to have the first line as a background
+color -;</tt>
+<br><tt>&nbsp; *- to contrast with the block description background.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- 0=no, 1=yes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; stripeonfirst=1;</tt>
+<p><tt>&nbsp; *- Backgound color. This can be up to 32 characters long.
+-;</tt>
+<br><tt>&nbsp; *- All other colors are limited to 8 characters due to&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- annotate dataset restrictions.&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; cback="FloralWhite";</tt>
+<p><tt>&nbsp; *- Font, color and height of text displayed on the left of
+the date area&nbsp; -;</tt>
+<br><tt>&nbsp; *- (note that non-sas fonts need to be enclosed in an extra
+set of single quotes) -;</tt>
+<br><tt>&nbsp; *- Note that hitemdesc must not be given a value greater
+than 1.0 -;</tt>
+<br><tt>&nbsp; fitemdesc="'Arial'";</tt>
+<br><tt>&nbsp; citemdesc="maroon";</tt>
+<br><tt>&nbsp; hitemdesc=0.8;</tt>
+<p><tt>&nbsp; *- Height, font and default color of the text to use when
+text values -;</tt>
+<br><tt>&nbsp; *- are displayed in the date area such as vital signs values.&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- (note that non-sas fonts need to be enclosed in an extra
+set of single quotes) -;</tt>
+<br><tt>&nbsp; *- Note that hitemtext must not be given a value greater
+than 1.0 -;</tt>
+<br><tt>&nbsp; fitemtext="'Arial'";</tt>
+<br><tt>&nbsp; hitemtext=0.7;</tt>
+<br><tt>&nbsp; citemtext="maroon";</tt>
+<p><tt>&nbsp; *- Maximum upper case and mixed case letters that you know
+will&nbsp; -;</tt>
+<br><tt>&nbsp; *- fit on the left of the date area. You will have to do
+a trial -;</tt>
+<br><tt>&nbsp; *- run, inspect the outputs and adjust these values. -;</tt>
+<br><tt>&nbsp; *- (for pure upper case) -;</tt>
+<br><tt>&nbsp; maxucletters=23;</tt>
+<br><tt>&nbsp; *- (for mixed case) -;</tt>
+<br><tt>&nbsp; maxmcletters=30;</tt>
+<br><tt>&nbsp; *- Color to show this text when it gets truncated. You will
+be&nbsp; -;</tt>
+<br><tt>&nbsp; *- able to mouse over this truncated text to see the full
+text. -;</tt>
+<br><tt>&nbsp; citemdesctrunc="blue";</tt>
+<p><tt>&nbsp; *- Font, color, height and background color of Patient top-of-page
+title -;</tt>
+<br><tt>&nbsp; *- (note that non-sas fonts need to be enclosed in an extra
+set of single quotes) -;</tt>
+<br><tt>&nbsp; fpatient="'Arial / Bold'";</tt>
+<br><tt>&nbsp; cpatient="black";</tt>
+<br><tt>&nbsp; hpatient=2.2;</tt>
+<br><tt>&nbsp; *- color, height and width of patient background -;</tt>
+<br><tt>&nbsp; cpatientbg="CXE0E0E0";</tt>
+<br><tt>&nbsp; hpatientbg=2.4;</tt>
+<br><tt>&nbsp; wpatientbg=20;</tt>
+<p><tt>&nbsp; *- Font, color, height and background color of block titles
+-;</tt>
+<br><tt>&nbsp; *- (note that non-sas fonts need to be enclosed in an extra
+set of single quotes) -;</tt>
+<br><tt>&nbsp; fblockdesc="'Arial / Bold'";</tt>
+<br><tt>&nbsp; cblockdesc="black";</tt>
+<br><tt>&nbsp; hblockdesc=1.05;</tt>
+<p><tt>&nbsp; *- color, height and width of block description background
+-;</tt>
+<br><tt>&nbsp; cblockdescbg="CXE0E0E0";</tt>
+<br><tt>&nbsp; hblockdescbg=1.5;</tt>
+<br><tt>&nbsp; wblockdescbg=43;</tt>
+<p><tt>&nbsp; *- Whether to draw a box around each block of information
+displayed -;</tt>
+<br><tt>&nbsp; *- and the color if so. 0=no 1=yes&nbsp; -;</tt>
+<br><tt>&nbsp; drawblockbox=1;</tt>
+<br><tt>&nbsp; cblockbox="maroon";</tt>
+<p><tt>&nbsp; *- Height, color and font of the time scale to draw if this
+is requested. -;</tt>
+<br><tt>&nbsp; *- Note that block box color (cblockbox) overrides the scale
+color&nbsp; -;</tt>
+<br><tt>&nbsp; *- if drawblockbox=1.&nbsp; -;</tt>
+<br><tt>&nbsp; hscaletext=0.8;</tt>
+<br><tt>&nbsp; cscale="maroon";</tt>
+<br><tt>&nbsp; fscaletext="'Arial'";</tt>
+<p><tt>&nbsp; *- Whether the time ticks on the scale should be uniformly
+spaced. -;</tt>
+<br><tt>&nbsp; *- 0=no, 1=yes -;</tt>
+<br><tt>&nbsp; uniformscale=1;</tt>
+<p><tt>&nbsp; *- Whether to use arrow heads to point to start or end day
+values -;</tt>
+<br><tt>&nbsp; *- that have been imputed where their exact value is unknown.&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- This also applies to start or end values that fall off
+the&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- day scale at either end. 0=no, 1=yes.&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; usearrows=1;</tt>
+<p><tt>&nbsp; *- Height and color of the figures. Height is effectively
+the&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- thickness of the arrow or rod shafts used for showing
+period -;</tt>
+<br><tt>&nbsp; *- information such as the duration of an adverse event.
+Note&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- that if arrows are used then the value for hfigure must
+not&nbsp; -;</tt>
+<br><tt>&nbsp; *- be greater than 0.5 . "citemline" is the color of the
+line&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- drawn around the figure which if changed from black could
+be -;</tt>
+<br><tt>&nbsp; *- used to indicate an alternative relationship to that
+shown&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- by the figure color, such as using "red" to indicate
+a&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- possible relationship of an AE to the study drug. The
+line&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- width is determined by "witemline". Allowed values are
+1, 2&nbsp; -;</tt>
+<br><tt>&nbsp; *- and 3. 1=normal, 2=thick, 3=very thick. Fractional values&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- are not effective.&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; hfigure=0.4;</tt>
+<br><tt>&nbsp; cfigure="BIYG";</tt>
+<br><tt>&nbsp; citemline='black';</tt>
+<br><tt>&nbsp; witemline=1;</tt>
+<p><tt>&nbsp; *- This is the minimum width in hpos values that you want
+for -;</tt>
+<br><tt>&nbsp; *- period data. Some adverse events might only last a day
+and -;</tt>
+<br><tt>&nbsp; *- so a rod or an arrow used to represent it might be too&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- short to see. This setting will ensure that these short&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- periods are visible. The position on the day scale will
+be -;</tt>
+<br><tt>&nbsp; *- the mid position of the start and end day. This will
+be a&nbsp; -;</tt>
+<br><tt>&nbsp; *- box shape that will override an arrow shape. Set it to
+a&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- value that is slightly less than the hfigure value.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; hposminfigwidth=0.3;</tt>
+<p><tt>&nbsp; *- hposmingap is a control used when you are displaying text&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- values. If two text values are very close to each other
+due -;</tt>
+<br><tt>&nbsp; *- to the dates being close then the two sets of text will&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- overlap and become unreadable. What the patient profiler&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- will do is to display a box for the second set of text&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- instead of the text if the values are too close. It is
+up&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- to you to decide how close you want to get before it
+makes&nbsp; -;</tt>
+<br><tt>&nbsp; *- this substitution. This is given in hpos positions. Look
+at -;</tt>
+<br><tt>&nbsp; *- the range of hpos values you used for the scale (hposdmin&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- and hposdmax) and decide what value, based on this, you&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- require to ensure displayed text values stay separate.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; hposmingap=1.3;</tt>
+<p><tt>run;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<h2>
+rgpp_global</h2>
+This dataset has very few variables and only <b>one observation</b>. It
+states what the patient variable name is, the destination folder for the
+html pages and gif files that gets created and the scale to use. Note that
+a macro variable "patvar" is created that contains the same contents as
+the sas variable of the same name. You can run this code.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>data rgpp_global;</tt>
+<br><tt>&nbsp; *- This is the version 4.0 template for the RGPP global
+dataset.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- Do not change any of these variable names or their characteristics.
+-;</tt>
+<br><tt>&nbsp; length patvar $ 32&nbsp; webout scale $ 200;</tt>
+<p><tt>&nbsp; *- Name of the unique patient identifier variable present
+-;</tt>
+<br><tt>&nbsp; *- in the rgpp_patients and rgpp_data datasets. -;</tt>
+<br><tt>&nbsp; patvar="subjid";</tt>
+<p><tt>&nbsp; *- Destination folder for the html files and gif files -;</tt>
+<br><tt>&nbsp; *- created during a run of the patient profiler. Note&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- this destination folder must actually exist. For a&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- complete run of new reports you should ensure that 
+-;</tt>
+<br><tt>&nbsp; *- the destination folder is empty before you do the&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- full run.&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; webout="C:\webtemp";</tt>
+<p><tt>&nbsp; *- Set this to your scale you want to show on the time axis.
+They should be pairs -;</tt>
+<br><tt>&nbsp; *- of study day numbers (first day of study being Day 0)
+and labels separated&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- with a #. Pairs of study days and labels should be separated
+from others like&nbsp; -;</tt>
+<br><tt>&nbsp; *- themselves with a single upright line that sas normally
+uses (in pairs) for&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- concatenantion.&nbsp; An example is given below.&nbsp;
+-;</tt>
+<br><tt>&nbsp; scale="-14#Screen | 0#Baseline | 7#WK1 | 14#WK2 | 28#WK4
+| 56#WK8 | 112#WK16";</tt>
+<p><tt>&nbsp; *- write out the contents of "patvar" to a macro variable
+of the same name -;</tt>
+<br><tt>&nbsp; call symput('patvar',trim(patvar));</tt>
+<br><tt>run;</tt>
+<p>&nbsp;</td>
+</tr>
+</table>
+
+<h2>
+rgpp_patients</h2>
+This dataset has very few variables. <b>One observation is required for
+each patient</b> you want to create a patient profile for. If a patient
+is not listed in this dataset then no profile will be shown. Also, you
+should ensure that data exists in the rgpp_data dataset for all the patients
+you have listed in rgpp_patients. Note that you must give valid values
+to these variables. Missing values are not allowed and will result in errors.
+<p>The code you see below is there to help you. It <b>lists the variables
+the patient profiler needs</b> and describes them. You need your subject
+variable as well, as described in the code. It is not the complete code.
+You will need a "set" statement for whatever dataset of patients you have
+got and you will maybe merge with a dataset (or two) of day values you
+need. How you do this is entirely up to you. The important thing is that
+the patient profiler gets the variables it needs with specific names and
+characteristics. (do not run this code)
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data rgpp_patients;</tt>
+<br><tt>&nbsp; *- This is the version 4.0 template for the RGPP patients
+dataset.&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- Do not change any of these variable names or their characteristics.
+-;</tt>
+<br><tt>&nbsp; *- This list of variables does not include the subject variable&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- defined in rgpp_global and you should ensure that this
+subject&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- variable is also present on this dataset and added to
+the "keep"&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- list you will find below.&nbsp; -;</tt>
+<br><tt>&nbsp; length htmlfile $ 64&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gifname $ 8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; minscaleday mindataday
+maxdataday maxscaleday 8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+<p><tt>&nbsp; *- Note that "&amp;patvar" will be assigned when rgpp_global
+is created -;</tt>
+<br><tt>&nbsp; KEEP &amp;patvar htmlfile gifname minscaleday mindataday</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; maxscaleday maxdataday ;</tt>
+<p><tt>&nbsp; *- "htmlfile" will be the name of the html file created.
+Do not put -;</tt>
+<br><tt>&nbsp; *- the suffix ".html" at the end as the software does that
+for you. -;</tt>
+<br><tt>&nbsp; *- You must ensure that this name is unique for each patient.
+Its&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- name should allow you to easily match a patient id to
+the html&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- filename.&nbsp;&nbsp; -;</tt>
+<p><tt>&nbsp; *- "gifname" can only be eight characters long. You must
+ensure that -;</tt>
+<br><tt>&nbsp; *- this name is unique for a patient. It must start with
+a letter&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- and not a number. It's&nbsp; name should allow you to
+easily match a&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- patient id to the gif name.&nbsp;&nbsp; -;</tt>
+<p><tt>&nbsp; *- "minscaleday" is the lowest day to show on the scale for
+this patient -;</tt>
+<p><tt>&nbsp; *- "mindataday" is the lowest day for accepting data for
+this patient. -;</tt>
+<br><tt>&nbsp; *- It must not be less than the minscaleday value. You would
+normally&nbsp; -;</tt>
+<br><tt>&nbsp; *- set this slightly higher than the minscaleday value to
+ensure that&nbsp; -;</tt>
+<br><tt>&nbsp; *- information you are displaying as text values does not
+get written&nbsp; -;</tt>
+<br><tt>&nbsp; *- over the end of the scale.&nbsp;</tt>
+<p><tt>&nbsp; *- "maxscaleday" is the highest day to show on the scale
+for this patient -;</tt>
+<p><tt>&nbsp; *- "maxdataday" is the highest day for accepting data for
+this patient. -;</tt>
+<br><tt>&nbsp; *- It must not be more than the maxscaleday value. You would
+normally&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- set this slightly lower than the maxscaleday value to
+ensure that&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- information you are displaying as text values does not
+get written&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- over the end of the scale.</tt>
+<br>&nbsp;
+<p><tt>&nbsp; /***************</tt>
+<br><tt>&nbsp; your set statement or merge statement go here plus whatever</tt>
+<br><tt>&nbsp; manipulations are required to populate the output variables
+the&nbsp;</tt>
+<br><tt>&nbsp; patient profiler needs which are your subject variable you
+defined&nbsp;</tt>
+<br><tt>&nbsp; to rgpp_global plus the variables in the keep list below.
+All these</tt>
+<br><tt>&nbsp; variables must contain valid values. None of them should
+contain&nbsp;</tt>
+<br><tt>&nbsp; missing values.&nbsp;</tt>
+<br><tt>&nbsp; ****************/</tt>
+<p><tt>run;</tt></td>
+</tr>
+</table>
+
+<h2>
+rgpp_data</h2>
+This dataset has many variables and <b>multiple observations per patient</b>.
+There is the subject variable plus a set of "block" variables and a set
+of "item" variables. There are two "day" variables as well - "day1" and
+"day2". A "block" is a group of items you want to display together as a
+block. An "item" is the thing you want to display within that block and
+will have characteristics like a height, a color, its day1 values (and
+a day2 value for period data). Day values are calculated as days from first
+dose. You might display the value as text or it might be a box or, for
+period data, it will be a rod or an arrow. Creating this dataset is quite
+a lot of work but once you have done it for one study then you should be
+able to adapt it for other studies. Typically, you would create separate
+datasets for each block of information. Your datasets might be called something
+like demog, dosing, vitals, labs, aes, conmeds and then right at the end
+you bring all these datasets together and give the collection of this data
+the name rgpp_data.
+<p>Once you get used to it, coding this dataset will become easy. The real
+hard work will be in setting up the variable <b>itemhtml</b>. Each and
+every item you display on the time scale (not "demog" type of data which
+does not have a day associated with it) should have a text box that appears
+when you mouse over it that states what the value is, what the parameter
+or type of measure is, the units, the days since first dose and maybe many
+other things. It is important to repeat whatever information is implicit
+for its position on the day scale. Even if you were displaying the value
+"98.4&deg;F" as text then you would still need to have this value in your
+box that appears when you mouse over it.
+<p>To help you code this dataset faster, you are allowed to have missing
+values for things like "citemtext" and "hitemtext". In this case, the patient
+profiler will use the defaults defined in the rgpp_style dataset. (do not
+run this code as there is no data)
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>%macro dclvars;</tt>
+<br><tt>&nbsp; *- This is the version 4.0 template for the RGPP data dataset.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- Do not change any of these variable names or their characteristics.
+-;</tt>
+<br><tt>&nbsp; *- This list of variables does not include the subject variable&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- defined in rgpp_global and you should ensure that this
+subject&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- variable is also present on this dataset and added to
+the "keep"&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- list you will find below.&nbsp; -;</tt>
+<p><tt>&nbsp; LENGTH blockisdemog blockismsg blockscale 8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blockhtml itemhtml
+$ 1024</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blockseq itemseq
+8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blockdesc itemdesc
+$ 200</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; itemtext $ 40&nbsp;
+/* you can choose a length up to 200 characters */</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fitemdesc fitemtext
+$ 32&nbsp; /* new in version 3.0 */</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; citemdesc citemtext
+$ 8&nbsp;&nbsp; /* new in version 3.0 */</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; citemline $ 8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* new in version 3.1 */</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mitemfill $ 8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* new in version 4.0 */</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; witemline 8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* new in version 3.2 */</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; hitemdesc hitemtext
+8&nbsp;&nbsp;&nbsp;&nbsp; /* new in version 3.0 */</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; day1 day2 8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pctdata1 pctdata2
+8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* new in version 2.0 */</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; day1_imp day2_imp
+8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+<p><tt>&nbsp; *- Note that "&amp;patvar" will be assigned when rgpp_global
+is created -;</tt>
+<br><tt>&nbsp; KEEP&nbsp;&nbsp; &amp;patvar</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blockisdemog blockismsg
+blockscale</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blockhtml itemhtml</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blockseq itemseq</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blockdesc itemdesc</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; itemtext</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fitemdesc fitemtext</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; citemdesc citemtext
+citemline mitemfill</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; hitemdesc hitemtext
+witemline</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; day1 day2</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pctdata1 pctdata2</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; day1_imp day2_imp</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+<br><tt>%mend dclvars;</tt>
+<br>&nbsp;
+<p><tt>data rgpp_data;</tt>
+<p><tt>&nbsp; %dclvars</tt>
+<p><tt>&nbsp; *- Below is a "retain list" to help you. You will declare
+all the&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- variables you need in the above length statement. If
+you do not&nbsp; -;</tt>
+<br><tt>&nbsp; *- refer to these variables in your code then you will get
+an&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- "uninitialized" note in the log so IF YOU ARE NOT CHANGING
+these -;</tt>
+<br><tt>&nbsp; *- variables in your block of code then you should have
+these&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- delared in a "retain list" to make sure they get referred
+to.&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- But IF YOU ARE SETTING these variables in your code then
+they&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- SHOULD NOT also be in the "retain list". Some of these
+variables -;</tt>
+<br><tt>&nbsp; *- can be set in the retain list and left. For example,
+blockscale&nbsp; -;</tt>
+<br><tt>&nbsp; *- is for saying whether you want the day scale drawn for
+a block.&nbsp; -;</tt>
+<br><tt>&nbsp; *- You can either leave it set to 1 (Yes) or 0 (no) and
+not bother&nbsp; -;</tt>
+<br><tt>&nbsp; *- setting it in your code. Some of the variables declared
+in the&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- "length" statement are not included in the retain list
+below&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- because you will always be setting them in your code.&nbsp;&nbsp;
+-;</tt>
+<p><tt>&nbsp; RETAIN blockisdemog 0 blockismsg 0 blockscale 1</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blockhtml " "&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; itemtext " "</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fitemdesc fitemtext
+" "</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; citemdesc citemtext
+citemline mitemfill " "</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; hitemdesc hitemtext
+witemline .</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; day2 .</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; day1_imp 0 day2_imp
+0</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+<p><tt>&nbsp; *- "blockisdemog" is set to 1 if what is contained within
+the block is -;</tt>
+<br><tt>&nbsp; *- demography-type information (like the text values of
+age, sex, race -;</tt>
+<br><tt>&nbsp; *- and any other textual information such as end-of-study
+status).&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- This will alert the patient profiler that your text items
+should be -;</tt>
+<br><tt>&nbsp; *- displayed at the start of the date area and that the
+day1 value,&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- even if non-missing, should be ignored. 0=no, 1=yes&nbsp;&nbsp;&nbsp;
+-;</tt>
+<p><tt>&nbsp; *- "blockismsg" is set to 1 if what is contained within the
+block&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- description is a message you want the patient profiler
+to display&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- where the block description would be placed. You would
+typically&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- use this to put out a message such as "No Adverse Events
+were&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- recorded for this Subject".&nbsp; 0=no, 1=yes&nbsp; -;</tt>
+<p><tt>&nbsp; *- "blockscale" is set to 1 if you want to display the day
+scale -;</tt>
+<br><tt>&nbsp; *- underneath the block.&nbsp; 0=no, 1=yes&nbsp;&nbsp; -;</tt>
+<p><tt>&nbsp; *- For "blockhtml" refer to "itemhtml" for how to construct
+this.&nbsp; -;</tt>
+<br><tt>&nbsp; *- if you set up blockhtml then it allows you to have a
+pop-up box -;</tt>
+<br><tt>&nbsp; *- behind the text of the block description shown in the
+middle of -;</tt>
+<br><tt>&nbsp; *- the data area. For SAS versions 8.2 and 9.1.3 there is
+an&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- alignment problem with the pop-up text as it will only
+appear&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- if you mouse over left of centre of the text. This bug
+is&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- supposed to be fixed in sas 9.2&nbsp;&nbsp; -;</tt>
+<p><tt>&nbsp; *- "itemhtml" should be set for each and every item you want
+to&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- show in the date area. If you are displaying text then
+this&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- same text should be in your pop-up box along with other
+useful&nbsp; -;</tt>
+<br><tt>&nbsp; *- information. It is easy to make a coding mistake with
+this&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- variable. There is an example below that will help you
+to code&nbsp; -;</tt>
+<br><tt>&nbsp; *- it. Be especially careful with the double and single
+quotes.&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- The "0D"x are new-line characters and they are Zero D
+and not&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- Oh D. Note that all your text and numeric values at the
+end of&nbsp; -;</tt>
+<br><tt>&nbsp; *- each line should be kept short by using trim(left( ))
+and each&nbsp; -;</tt>
+<br><tt>&nbsp; *- line, except the last one, should end with a pair of
+"||" for&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- concatenation to the following line.&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<p><tt>/********</tt>
+<br><tt>itemhtml='ALT="Parameter: '||trim(itemdesc)||</tt>
+<br><tt>"0D"x||'Value: '||trim(itemtext)||</tt>
+<br><tt>"0D"x||'Visit: '||trim(left(put(visitcd,visit.)))||</tt>
+<br><tt>"0D"x||'Days after first dose: '||trim(left(put(day1,6.)))||</tt>
+<br><tt>"0D"x||'Date imputed (Y/N)?: '||put(day1_imp,ny.)||</tt>
+<br><tt>'"';</tt>
+<br><tt>********/</tt>
+<p><tt>&nbsp; *- "blockseq" is the block sequence number used for sorting
+the -;</tt>
+<br><tt>&nbsp; *- order of the blocks and displaying them in that order.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<p><tt>&nbsp; *- "itemseq" is the item sequence number used for sorting
+the&nbsp; -;</tt>
+<br><tt>&nbsp; *- order of the items within the block and displaying them
+in&nbsp; -;</tt>
+<br><tt>&nbsp; *- that order. You can have more than one observation within
+a -;</tt>
+<br><tt>&nbsp; *- block with the same "itemseq" value, in which case it
+will&nbsp; -;</tt>
+<br><tt>&nbsp; *- put all the items on the same line. You have to be careful&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- to set this value correctly if you are doing this.&nbsp;
+-;</tt>
+<p><tt>&nbsp; *- "blockdesc" is the block description that will get displayed
+-;</tt>
+<br><tt>&nbsp; *- above the block in the middle of the date area.&nbsp;
+-;</tt>
+<p><tt>&nbsp; *- "itemdesc" is the item description that will get displayed
+-;</tt>
+<br><tt>&nbsp; *- to the left of the date area.&nbsp;&nbsp;&nbsp; -;</tt>
+<p><tt>&nbsp; *- "citemdesc", if blank, will default to the color defined
+in -;</tt>
+<br><tt>&nbsp; *- the rgpp_style dataset.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<p><tt>&nbsp; *- "hitemdesc", if missing, will default to the height defined
+-;</tt>
+<br><tt>&nbsp; *- in the rgpp_style dataset.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<p><tt>&nbsp; *- "fitemdesc", if left missing, will default to the font&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- defined in the rgpp_style dataset.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<p><tt>&nbsp; *- "itemtext" is the text, such as the value of a vital signs&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- measure, that you want to display as text in the date
+area. -;</tt>
+<br><tt>&nbsp; *- you should only do this for timepoint data and not period&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- data (i.e. it has a day1 value but a missing day2 value).&nbsp;&nbsp;
+-;</tt>
+<p><tt>&nbsp; *- "citemtext", if blank, will default to the color defined
+in -;</tt>
+<br><tt>&nbsp; *- the rgpp_style dataset. You can set this to indicate
+the&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- severity or intensity of something and it applies to
+shapes -;</tt>
+<br><tt>&nbsp; *- drawn as well as text displayed. With all colors, you
+are&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- limited to eight characters for the color name. Read
+my web -;</tt>
+<br><tt>&nbsp; *- page on sas colors if you need to know more about what&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- colors you can use and how you can refer to any and all&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- colors by an eight letter name or less.&nbsp;&nbsp; -;</tt>
+<p><tt>&nbsp; *- "citemline", if blank, will default to the color defined
+in -;</tt>
+<br><tt>&nbsp; *- the rgpp_style dataset which wil most likely be "black".&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- This is the color of the line drawn around figures. You
+can -;</tt>
+<br><tt>&nbsp; *- set this to indicate the existence of an extra relationship
+-;</tt>
+<br><tt>&nbsp; *- from that shown by the item color "citemtext". For example,
+-;</tt>
+<br><tt>&nbsp; *- you could set it to "red" for an AE to indicate a possible&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- relationship to study drug whereas the figure color purely&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- indicates the severity of the AE.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<p><tt>&nbsp; *- "witemline", if missing, will default to the width defined&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- in the rgpp_style dataset which will most likely be 1.
+This -;</tt>
+<br><tt>&nbsp; *- determines the thickness of the line drawn around figures.&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- Use 1 for a normal line, 2 for a thicker line and 3 for
+a&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- very thick line.&nbsp; -;</tt>
+<p><tt>&nbsp; *- "mitemfill" is the "map" pattern to fill the drawn shapes&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- with and this defaults to "mempty" (i.e. no pattern).
+See&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- the SAS documentation for what map patterns are possible&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- and how to specify them. The recommended map pattern
+is&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- "m5x135". Note that for the box shape then the pattern
+you&nbsp; -;</tt>
+<br><tt>&nbsp; *- are using will be difficult to identify, due to the small&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- size, so you should take care using this facility to
+ensure -;</tt>
+<br><tt>&nbsp; *- nothing important is flagged by a pattern but missed.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<p><tt>&nbsp; *- "hitemtext", if left missing, will default to the height&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- defined in the rgpp_style dataset. You would typically
+use&nbsp; -;</tt>
+<br><tt>&nbsp; *- this to make the display of "itemtext" smaller such as
+when -;</tt>
+<br><tt>&nbsp; *- you were displaying wide text for lab values such as&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- "NEGATIVE" instead of narrow lab measures such as "12.4".&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- This height value applies to text only, not shapes drawn.&nbsp;&nbsp;
+-;</tt>
+<p><tt>&nbsp; *- "fitemtext", if left missing, will default to the font&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- defined in the rgpp_style dataset.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<p><tt>&nbsp; *- "day1" is start day of event calculated as days since
+first -;</tt>
+<br><tt>&nbsp; *- dose of study drug. Do not adjust this, as is customary
+in&nbsp; -;</tt>
+<br><tt>&nbsp; *- the industry, by adding "1" to its value. It should be&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- strictly the event date minus date of first dose. If
+event&nbsp; -;</tt>
+<br><tt>&nbsp; *- date is first dose date then day1=0. It is not day1=1.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<p><tt>&nbsp; *- "day2" is end day of event calculated as days since first&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- dose of study drug. Do not adjust this, as is customary
+in&nbsp; -;</tt>
+<br><tt>&nbsp; *- the industry, by adding "1" to its value. It should be&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- strictly the event date minus date of first dose. For
+non-&nbsp; -;</tt>
+<br><tt>&nbsp; *- period data, such as lab value and vital signs, then
+day2&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- should be set to missing.&nbsp;&nbsp; -;</tt>
+<p><tt>&nbsp; *- "pctdata1" acts like "day1" except it places your item
+in a -;</tt>
+<br><tt>&nbsp; *- position that is the percentage of the data area, ignoring&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- the date scaling. It overrides the day1 value. Using
+it&nbsp;&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- allows full control for positioning things like variable&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- labels and their values across the page in case you want
+a&nbsp; -;</tt>
+<br><tt>&nbsp; *- space-saving display of demography data. -;</tt>
+<p><tt>&nbsp; *- "pctdata2" is the "day2" equivalent of "pctdata1" and&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- although it is provided, you will probably never need
+to&nbsp;&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- use it. -;</tt>
+<p><tt>&nbsp; *- "day1_imp" is the flag that tells the patient profiler
+if&nbsp; -;</tt>
+<br><tt>&nbsp; *- you imputed the value for day1. You would set this if
+you&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- were not sure of the date because it was a partial date,&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- for example. For period data it will use an arrow head
+to&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- point backwards to this start day. This action can be&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- overriden in the rgpp_style dataset.&nbsp; 0=no, 1=yes&nbsp;
+-;</tt>
+<p><tt>&nbsp; *- "day2_imp" is the flag that tells the patient profiler
+if&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- you imputed the value for day2. You would set this if
+you&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- were not sure of the date because it was a partial date,&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- for example. For period data it will use an arrow head
+to&nbsp;&nbsp; -;</tt>
+<br><tt>&nbsp; *- point forwards to this end day. This action can be&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>&nbsp; *- overriden in the rgpp_style dataset.&nbsp; 0=no, 1=yes&nbsp;&nbsp;
+-;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<h2>
+Running the Patient Profiler</h2>
+Remember that the patient profiler is expecting to find 4 datasets and
+they must be named as described. You have to prepare these datasets carefully.
+The patient profiler macro is named <b>%rgpp</b> but you should note that
+it relies on the utility macros and especially the <b>%rannomac</b> macro
+must must be explicitly called before you can use %rgpp.
+<p>When you are ready to run, you have to make sure the 4 datasets are
+present and correct and that the output folder (that you defined in rgpp_global)
+actually exists and is ready to receive the created html and gif files
+and they you run the <b>%rgpp</b> macro like in the following very simplified
+case. (do not run this code as it is just template code)
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data rgpp_style;</tt>
+<br><tt>&nbsp; set sasuser.rgpp_style;</tt>
+<br><tt>run;</tt>
+<p><tt>data rgpp_global;</tt>
+<br><tt>&nbsp; all your lines of sas code;</tt>
+<br><tt>run;</tt>
+<p><tt>data rgpp_patients;</tt>
+<br><tt>&nbsp; all your lines of sas code;</tt>
+<br><tt>run;</tt>
+<p><tt>data rgpp_data;</tt>
+<br><tt>&nbsp; all your lines of sas code;</tt>
+<br><tt>run;</tt>
+<p><tt>%rgpp</tt>
+<p><tt>libname _mstore clear;&nbsp;</tt></td>
+</tr>
+</table>
+
+<h2>
+Downloading RGPP</h2>
+RGPP is what I will be calling it from now on as the name is shorter. It
+is a macro in the "<b>clinmacros</b>" zip file.
+<p><a href="http://www.datasavantconsulting.com/roland/Spectre/download.html">download</a>
+<p>You can view the source code <a href="http://www.datasavantconsulting.com/roland/Spectre/clinmacros/rgpp.sas" target="_blank">here</a>.
+<h2>
+Playing with RGPP</h2>
+On another page, I will give details on how to transform your clinical
+data into a format that RGPP will accept. I will show you how to deal with
+both horizontal and vertical data and set up the<b> itemhtml </b>entries
+for these. That's a bit complicated. Before you do that you are encouraged
+to play around the RGPP using the code below. It assumes you have set up
+the stored macro catalog. It also assumes you have run the code that produced
+<b>rgpp_style</b>
+and written it to your sasuser library. It can be fun to play around with
+RGPP and you will learn a lot about it that way (you can run this code).
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>*- Run the code on the web site to create rgpp_style in your sasuser
+library -;</tt>
+<br><tt>*- and then when you need it just copy it like in the code below.
+-;</tt>
+<br><tt>data rgpp_style;</tt>
+<br><tt>&nbsp; set sasuser.rgpp_style;</tt>
+<br><tt>run;</tt>
+<p><tt>data rgpp_global;</tt>
+<br><tt>&nbsp; *- do not change any of these variable names or their characteristics
+-;&nbsp;</tt>
+<br><tt>&nbsp; *- Webout should be a real location as the html and gif
+files will be -;</tt>
+<br><tt>&nbsp; *- written to there. -;</tt>
+<br><tt>&nbsp; length patvar $ 32&nbsp; webout scale $ 200;&nbsp;</tt>
+<br><tt>&nbsp; patvar="subjectid";</tt>
+<br><tt>&nbsp; scale="-14#Screen | 0#Baseline | 7#WK1 | 14#WK2 | 28#WK4
+| 56#WK8 | 112#WK16";&nbsp;</tt>
+<br><tt>&nbsp; webout="C:\webtemp";</tt>
+<br><tt>&nbsp; call symput('patvar',trim(patvar));</tt>
+<br><tt>run;</tt>
+<p><tt>*- Note that "&amp;patvar" will be assigned when rgpp_global is
+created -;</tt>
+<br><tt>data rgpp_patients;</tt>
+<br><tt>&nbsp; &amp;patvar="1234-001-0001";</tt>
+<br><tt>&nbsp; htmlfile="P1234-001-0001";</tt>
+<br><tt>&nbsp; gifname="G0010001";</tt>
+<br><tt>&nbsp; minscaleday=-20;</tt>
+<br><tt>&nbsp; mindataday=-15;</tt>
+<br><tt>&nbsp; maxdataday=115;</tt>
+<br><tt>&nbsp; maxscaleday=120;</tt>
+<br><tt>run;</tt>
+<p><tt>data rgpp_data;</tt>
+<br><tt>&nbsp; LENGTH blockisdemog blockismsg blockscale 8&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blockhtml itemhtml
+$ 1024&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blockseq itemseq
+8&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blockdesc itemdesc
+$ 200&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; itemtext $ 40</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fitemdesc fitemtext
+$ 32</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; citemdesc citemtext
+citemline mitemfill $ 8&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; hitemdesc hitemtext
+witemline 8&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; day1 day2 8&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pctdata1 pctdata2
+8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; day1_imp day2_imp
+8&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;&nbsp;</tt>
+<p><tt>&nbsp; *-&nbsp;&nbsp;&nbsp;&nbsp; Note that "&amp;patvar" will be
+assigned when rgpp_global is created -;</tt>
+<br><tt>&nbsp; KEEP&nbsp;&nbsp; &amp;patvar</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blockisdemog blockismsg
+blockscale&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blockhtml itemhtml&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blockseq itemseq&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blockdesc itemdesc&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; itemtext&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fitemdesc fitemtext&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; citemdesc citemtext
+citemline mitemfill</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; hitemdesc hitemtext
+witemline</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; day1 day2&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pctdata1 pctdata2</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; day1_imp day2_imp&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;&nbsp;</tt>
+<p><tt>&nbsp; RETAIN blockisdemog 0 blockscale 0 &amp;patvar "1234-001-0001"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blockhtml " "
+itemhtml " " blockismsg 0 itemseq 0</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; itemtext " "</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fitemdesc fitemtxt
+" "&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; citemdesc citemtxt
+citemline mitemfill " "&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; hitemdesc hitemtext
+witemline .&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; day2 pctdata1
+pctdata2 .&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; day1_imp 0 day2_imp
+0&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;&nbsp;</tt>
+<p><tt>&nbsp; blockseq=1;</tt>
+<br><tt>&nbsp; blockismsg=0;</tt>
+<br><tt>&nbsp; blockisdemog=1;</tt>
+<br><tt>&nbsp; blockdesc="Demography and Outcome";</tt>
+<br><tt>&nbsp; hitemtext=0.8;</tt>
+<br><tt>&nbsp; itemseq=1;</tt>
+<br><tt>&nbsp; itemdesc="Sex";</tt>
+<br><tt>&nbsp; itemtext="Female";</tt>
+<br><tt>&nbsp; output;</tt>
+<p><tt>&nbsp; itemseq=2;</tt>
+<br><tt>&nbsp; itemdesc="Age";</tt>
+<br><tt>&nbsp; itemtext="30";</tt>
+<br><tt>&nbsp; output;</tt>
+<p><tt>&nbsp; itemseq=3;</tt>
+<br><tt>&nbsp; itemdesc="Status";</tt>
+<br><tt>&nbsp; itemtext="Withdrew due to lack of efficacy";</tt>
+<br><tt>&nbsp; output;</tt>
+<br>&nbsp;
+<p><tt>&nbsp; blockseq=2;</tt>
+<br><tt>&nbsp; blockismsg=0;</tt>
+<br><tt>&nbsp; blockisdemog=0;</tt>
+<br><tt>&nbsp; blockscale=1;</tt>
+<br><tt>&nbsp; blockdesc="Vital Signs";</tt>
+<br><tt>&nbsp; itemseq=1;</tt>
+<br><tt>&nbsp; itemdesc="Weight (kg)";</tt>
+<br><tt>&nbsp; day1=0;</tt>
+<br><tt>&nbsp; itemtext="76";</tt>
+<br><tt>&nbsp; output;</tt>
+<p><tt>&nbsp; day1=7;</tt>
+<br><tt>&nbsp; itemtext="76";</tt>
+<br><tt>&nbsp; output;</tt>
+<p><tt>&nbsp; day1=14;</tt>
+<br><tt>&nbsp; itemtext="75";</tt>
+<br><tt>&nbsp; output;</tt>
+<p><tt>&nbsp; day1=30;</tt>
+<br><tt>&nbsp; itemtext="73";</tt>
+<br><tt>&nbsp; output;</tt>
+<p><tt>&nbsp; day1=54;</tt>
+<br><tt>&nbsp; itemtext="76";</tt>
+<br><tt>&nbsp; output;</tt>
+<br>&nbsp;
+<p><tt>&nbsp; blockseq=3;</tt>
+<br><tt>&nbsp; blockismsg=1;</tt>
+<br><tt>&nbsp; blockisdemog=0;</tt>
+<p><tt>&nbsp; itemseq=1;</tt>
+<br><tt>&nbsp; day1=.;</tt>
+<br><tt>&nbsp; blockdesc="No Concomitant Medications recorded for this
+Subject";</tt>
+<br><tt>&nbsp; itemdesc=" ";</tt>
+<br><tt>&nbsp; output;</tt>
+<br>&nbsp;
+<p><tt>&nbsp; blockseq=4;</tt>
+<br><tt>&nbsp; blockismsg=0;</tt>
+<br><tt>&nbsp; blockisdemog=0;</tt>
+<br><tt>&nbsp; blockscale=1;</tt>
+<br><tt>&nbsp; blockdesc="Adverse Events";</tt>
+<p><tt>&nbsp; itemseq=1;</tt>
+<br><tt>&nbsp; itemdesc="runny nose";</tt>
+<br><tt>&nbsp; itemtext=" ";</tt>
+<br><tt>&nbsp; day1=7;</tt>
+<br><tt>&nbsp; day2=8;</tt>
+<br><tt>&nbsp; citemtext=" ";</tt>
+<br><tt>&nbsp; output;</tt>
+<p><tt>&nbsp; itemseq=2;</tt>
+<br><tt>&nbsp; itemdesc="fracture of right hip";</tt>
+<br><tt>&nbsp; citemtext="red";</tt>
+<br><tt>&nbsp; day1=40;</tt>
+<br><tt>&nbsp; day2=200;</tt>
+<br><tt>&nbsp; output;</tt>
+<p><tt>&nbsp; itemseq=3;</tt>
+<br><tt>&nbsp; itemdesc="influenza";</tt>
+<br><tt>&nbsp; day1=50;</tt>
+<br><tt>&nbsp; day2=65;</tt>
+<br><tt>&nbsp; citemtext=" ";</tt>
+<br><tt>&nbsp; output;</tt>
+<p><tt>run;</tt>
+<p><tt>%rgpp;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>You can see the output <a href="http://www.datasavantconsulting.com/roland/RGPP/P1234-001-0001.html" target="_blank">here</a>
+<h2>
+Extending RGPP</h2>
+I have a small confession to make. That is, RGPP isn't <b><i>really </i></b>a
+graphical patient profiler. I know I called it that - it is just easier
+to think of it in that way if you encounter it for the first time. RGPP
+is really a <b>graphics rendering macro</b> that I designed especially
+for handling the normal requirements of patient profiles. In the four datasets
+it requires, what you are basically doing in those datasets is<b><i> telling
+it what to draw.</i></b> It doesn't<b><i> know </i></b>it is patient data
+you are giving it. It could be <b>any</b> data you wish so long as what
+RGPP can draw suits your needs. A tailor-made graphical patient profiler
+will almost certainly put demography information just under the main header.
+All the <b>real</b> ones I have seen do that. Mine <b><i>does not.</i></b>
+The reason it does not is because I have kept it flexible so it can be
+used for <b>other</b> purposes and is <b><i>not just limited to showing
+patient data - one patient per page.</i></b> Once you break that mould
+then an obvious and immediate extension to the idea of a patient profiler
+is to have it <b><i>report on a study </i></b>such that the <b>study</b>
+is the main title and the<b><i> </i>blocks are patients<i>.</i></b> For
+example, the clinician might be interested in all the AEs of patients who
+have had at least one serious adverse event. It is an easy matter to display
+that on one page. I will give you some dummy code to do this so you can
+see what the output looks like.
+<p><b>Please take time to play with RGPP.</b> The more you play with it,
+the more you will understand the way it works and the more uses you will
+find for it. Remember my quote, "<b>RGPP is really a graphics rendering
+macro</b>". After you have run the following code for yourself, I hope
+you will be closer to realizing that. Two patient's AE data will be displayed
+on the same page when you run the code below. I have been lazy and made
+the patients AEs the same, but you can see what I mean, I hope! (you can
+run this code)
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp;*- Run the code on the web site to create rgpp_style in your
+sasuser library -;</tt>
+<br><tt>&nbsp;*- and then when you need it just copy it like in the code
+below. -;</tt>
+<br><tt>&nbsp;data rgpp_style;</tt>
+<br><tt>&nbsp;&nbsp; set sasuser.rgpp_style;</tt>
+<br><tt>&nbsp;run;</tt>
+<p><tt>&nbsp;data rgpp_global;</tt>
+<br><tt>&nbsp;&nbsp; *- do not change any of these variable names or their
+characteristics -;&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; *- Webout should be a real location as the html and
+gif files will be -;</tt>
+<br><tt>&nbsp;&nbsp; *- written to there. -;</tt>
+<br><tt>&nbsp;&nbsp; length patvar $ 32&nbsp; webout scale $ 200;&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; patvar="studyid";</tt>
+<br><tt>&nbsp;&nbsp; scale="-14#Screen | 0#Baseline | 7#WK1 | 14#WK2 |
+28#WK4 | 56#WK8 | 112#WK16";&nbsp;</tt>
+<br><tt>&nbsp;&nbsp; webout="C:\webtemp";</tt>
+<br><tt>&nbsp;&nbsp; call symput('patvar',trim(patvar));</tt>
+<br><tt>&nbsp;run;</tt>
+<p><tt>*- Note that "&amp;patvar" will be assigned when rgpp_global is
+created -;</tt>
+<br><tt>&nbsp;data rgpp_patients;</tt>
+<br><tt>&nbsp;&nbsp; &amp;patvar="Study 1234";</tt>
+<br><tt>&nbsp;&nbsp; htmlfile="sae1234";</tt>
+<br><tt>&nbsp;&nbsp; gifname="G1234SAE";</tt>
+<br><tt>&nbsp;&nbsp; minscaleday=-20;</tt>
+<br><tt>&nbsp;&nbsp; mindataday=-15;</tt>
+<br><tt>&nbsp;&nbsp; maxdataday=115;</tt>
+<br><tt>&nbsp;&nbsp; maxscaleday=120;</tt>
+<br><tt>&nbsp;run;</tt>
+<p><tt>&nbsp;data rgpp_data;</tt>
+<br><tt>&nbsp;&nbsp; LENGTH blockisdemog blockismsg blockscale 8&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blockhtml
+itemhtml $ 1024&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blockseq
+itemseq 8&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blockdesc
+itemdesc $ 200&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; itemtext
+$ 32&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fitemdesc
+fitemtext $ 32</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; citemdesc
+citemtext citemline mitemfill $ 8&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; hitemdesc
+hitemtext witemline 8&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; day1 day2
+8&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pctdata1
+pctdata2 8</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; day1_imp
+day2_imp 8&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;&nbsp;</tt>
+<p><tt>&nbsp;&nbsp; *-&nbsp;&nbsp;&nbsp;&nbsp; Note that "&amp;patvar"
+will be assigned when rgpp_global is created -;</tt>
+<br><tt>&nbsp;&nbsp; KEEP&nbsp;&nbsp; &amp;patvar</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blockisdemog
+blockismsg blockscale&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blockhtml
+itemhtml&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blockseq
+itemseq&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blockdesc
+itemdesc&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; itemtext&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fitemdesc
+fitemtext&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; citemdesc
+citemtext citemline mitemfill</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; hitemdesc
+hitemtext witemline</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; day1 day2&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pctdata1
+pctdata2&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; day1_imp
+day2_imp&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;&nbsp;</tt>
+<p><tt>&nbsp;&nbsp; RETAIN blockisdemog 0 blockismsg 0 blockscale 0 studyid
+"Study 1234"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blockhtml
+" " itemhtml " " itemseq 0</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; itemtext
+" "</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fitemdesc
+fitemtext " "&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; citemdesc
+citemtext citemline mitemfill " "&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; hitemdesc
+hitemtext witemline .&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pctdata1
+pctdata2 .</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; day1_imp
+0 day2_imp 0&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;&nbsp;</tt>
+<p><tt>&nbsp;&nbsp; blockseq=1;</tt>
+<br><tt>&nbsp;&nbsp; blockismsg=1;</tt>
+<br><tt>&nbsp;&nbsp; blockisdemog=0;</tt>
+<br><tt>&nbsp;&nbsp; blockscale=0;</tt>
+<br><tt>&nbsp;&nbsp; blockdesc="All Adverse Events for Subjects experiencing
+at least one Serious Adverse Event";</tt>
+<br><tt>&nbsp;&nbsp; output;</tt>
+<p><tt>&nbsp;&nbsp; blockseq=2;</tt>
+<br><tt>&nbsp;&nbsp; blockismsg=0;</tt>
+<br><tt>&nbsp;&nbsp; blockisdemog=0;</tt>
+<br><tt>&nbsp;&nbsp; blockscale=1;</tt>
+<br><tt>&nbsp;&nbsp; blockdesc="Subject 001-0001";</tt>
+<br><tt>&nbsp;&nbsp; itemseq=1;</tt>
+<br><tt>&nbsp;&nbsp; itemdesc="runny nose";</tt>
+<br><tt>&nbsp;&nbsp; itemtext=" ";</tt>
+<br><tt>&nbsp;&nbsp; day1=7;</tt>
+<br><tt>&nbsp;&nbsp; day2=8;</tt>
+<br><tt>&nbsp;&nbsp; citemtext=" ";</tt>
+<br><tt>&nbsp;&nbsp; output;</tt>
+<br><tt>&nbsp;&nbsp; itemseq=2;</tt>
+<br><tt>&nbsp;&nbsp; itemdesc="fracture of right hip";</tt>
+<br><tt>&nbsp;&nbsp; citemtext="red";</tt>
+<br><tt>&nbsp;&nbsp; day1=40;</tt>
+<br><tt>&nbsp;&nbsp; day2=200;</tt>
+<br><tt>&nbsp;&nbsp; output;</tt>
+<br><tt>&nbsp;&nbsp; itemseq=3;</tt>
+<br><tt>&nbsp;&nbsp; itemdesc="influenza";</tt>
+<br><tt>&nbsp;&nbsp; day1=50;</tt>
+<br><tt>&nbsp;&nbsp; day2=65;</tt>
+<br><tt>&nbsp;&nbsp; citemtext=" ";</tt>
+<br><tt>&nbsp;&nbsp; output;</tt>
+<p><tt>&nbsp;&nbsp; blockseq=3;</tt>
+<br><tt>&nbsp;&nbsp; blockismsg=0;</tt>
+<br><tt>&nbsp;&nbsp; blockisdemog=0;</tt>
+<br><tt>&nbsp;&nbsp; blockscale=1;</tt>
+<br><tt>&nbsp;&nbsp; blockdesc="Subject 002-0002";</tt>
+<br><tt>&nbsp;&nbsp; itemseq=1;</tt>
+<br><tt>&nbsp;&nbsp; itemdesc="runny nose";</tt>
+<br><tt>&nbsp;&nbsp; itemtext=" ";</tt>
+<br><tt>&nbsp;&nbsp; day1=7;</tt>
+<br><tt>&nbsp;&nbsp; day2=8;</tt>
+<br><tt>&nbsp;&nbsp; citemtextr=" ";</tt>
+<br><tt>&nbsp;&nbsp; output;</tt>
+<br><tt>&nbsp;&nbsp; itemseq=2;</tt>
+<br><tt>&nbsp;&nbsp; itemdesc="fracture of right hip";</tt>
+<br><tt>&nbsp;&nbsp; citemtext="red";</tt>
+<br><tt>&nbsp;&nbsp; day1=40;</tt>
+<br><tt>&nbsp;&nbsp; day2=200;</tt>
+<br><tt>&nbsp;&nbsp; output;</tt>
+<br><tt>&nbsp;&nbsp; itemseq=3;</tt>
+<br><tt>&nbsp;&nbsp; itemdesc="influenza";</tt>
+<br><tt>&nbsp;&nbsp; day1=50;</tt>
+<br><tt>&nbsp;&nbsp; day2=65;</tt>
+<br><tt>&nbsp;&nbsp; citemtext=" ";</tt>
+<br><tt>&nbsp;&nbsp; output;</tt>
+<p><tt>&nbsp;run;</tt>
+<p><tt>&nbsp;%rgpp;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>If you can't run the code you can link to the output it created <a href="http://www.datasavantconsulting.com/roland/RGPP/sae1234.html" target="_blank">here</a>.
+<h2>
+A better display of Demography details</h2>
+You can have more control as to the layout of demography details and this
+is explained on the page below.
+<p><a href="http://www.datasavantconsulting.com/roland/RGPP/rgpp_demog.html">A better display of Demography details</a>
+<br>&nbsp;
+<h2>
+Conclusion</h2>
+You have been introduced to <b>Roland's Graphical Patient Profiler</b>
+and have learnt that it is really a <b>graphics rendering macro</b> especially
+designed to handle patient profiler work. Its four driver datasets have
+been explained and the need to transform your data for RGPP has been explained.
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/roland/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+
+<!-- Start of StatCounter Code for Default Guide -->
+<script type="text/javascript">
+var sc_project=7744290; 
+var sc_invisible=1; 
+var sc_security="64c8a9f9"; 
+</script>
+<script type="text/javascript"
+src="http://www.statcounter.com/counter/counter.js"></script>
+<noscript><div class="statcounter"><a title="counter on
+tumblr" href="http://statcounter.com/tumblr/"
+target="_blank"><img class="statcounter"
+src="http://c.statcounter.com/7744290/0/64c8a9f9/1/"
+alt="counter on tumblr"></a></div></noscript>
+<!-- End of StatCounter Code for Default Guide -->
+
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/RGPP/rgpp.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:02:52 GMT -->
+</html>

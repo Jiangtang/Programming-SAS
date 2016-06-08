@@ -1,0 +1,32 @@
+#!/bin/bash
+#<pre><b>
+# Script     : myps
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 08-Jan-2004
+# Purpose    : List all processes for the invoking user or another user
+# SubScripts : none
+# Notes      : Defaults to the invoking user
+# Usage      : myps 
+#              myps otheruser
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   (optional) userid of somebody other than the invoker
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+if [ $# -lt 1 ]
+then
+  userid=$USER
+else
+  userid=$1
+fi
+
+ps -fu $userid

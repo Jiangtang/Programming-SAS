@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xs:schema targetNamespace="http://www.cdisc.org/ns/sdtm/v3.1.1" 
+           xmlns="http://www.w3.org/2001/XMLSchema" 
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+
+           xmlns:xlink="http://www.w3.org/1999/xlink" 
+           xmlns:odm="http://www.cdisc.org/ns/odm/v1.3" 
+           xmlns:crt="http://www.cdisc.org/ns/crt/v3.1.1" 
+           xmlns:sdtm="http://www.cdisc.org/ns/sdtm/v3.1.1" 
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+
+    <xs:import namespace="http://www.w3.org/1999/xlink"     schemaLocation="Foundation/xlink.xsd"/>
+    <xs:import namespace="http://www.cdisc.org/ns/odm/v1.3" schemaLocation="Foundation/ODM1-3-0.xsd"/>
+
+    
+  <!--  
+        +===========================================================================+
+        | ODM (v1.3.0)                                                              |
+        | DomainData definition                                                     |
+        | StudyData definition                                                      |
+        | Subject definition                                                        |
+        | TrialDesign definition                                                    |
+        +===========================================================================+
+    -->
+        <xs:simpleType name="DomainClass">
+          <xs:restriction   base="xs:string">
+            <xs:enumeration value="Special"/>
+            <xs:enumeration value="Interventions"/>
+            <xs:enumeration value="Events"/>
+            <xs:enumeration value="Findings"/>
+            <xs:enumeration value="TrialDesign"/>
+            <xs:enumeration value="SuppQual"/>
+            <xs:enumeration value="RelRec"/>
+            <!-- xs:maxLength   value="13"/ -->
+          </xs:restriction>
+        </xs:simpleType>
+
+    
+        <xs:attribute      name="CustomDomain" type="odm:YesOrNo" default="No"/>
+
+        <xs:attributeGroup name="DomainDataAttributeDefinition">
+            <xs:attribute  name="ItemGroupOID" type="odm:oid" use="required"/>
+        </xs:attributeGroup>           
+
+        <xs:attributeGroup name="StudyDataAttributeDefinition">
+            <xs:attribute  name="StudyID" type="odm:string" use="required"/>
+        </xs:attributeGroup>           
+
+        <xs:attributeGroup name="SubjectAttributeDefinition">
+            <xs:attribute  name="Identifier" type="odm:string" use="required"/>
+            <xs:attribute  name="Sequence" type="odm:integer"/>
+        </xs:attributeGroup>           
+
+        <xs:attributeGroup name="TrialDesignAttributeDefinition">
+            <xs:attribute  name="Identifier" type="odm:string" use="required"/>
+            <xs:attribute  name="Qualifier" type="odm:string"/>
+        </xs:attributeGroup>           
+
+    
+        <xs:attribute      name="StudyIdentifierOID"       type="odm:oid"/>
+        <xs:attribute      name="SubjectIdentifierOID"     type="odm:oid"/>
+        <xs:attribute      name="SubjectQualifierOID"      type="odm:oid"/>
+        <xs:attribute      name="TrialDesignIdentifierOID" type="odm:oid"/>
+        <xs:attribute      name="TrialDesignQualifierOID"  type="odm:oid"/>
+
+    
+   <!--  
+        +===========================================================================+
+        | ODM (v1.3.0)                                                              |
+        | DomainData definition                                                     |
+        +===========================================================================+
+    -->
+        <xs:complexType name="SDTMcomplexTypeDefinition-DomainData">
+          <xs:sequence>
+            <xs:element      ref="sdtm:StudyData"                  minOccurs="1" maxOccurs="unbounded"/>
+          </xs:sequence>
+          <xs:attributeGroup ref="sdtm:DomainDataAttributeDefinition"/>
+        </xs:complexType>
+        
+        <xs:complexType name="SDTMcomplexTypeDefinition-StudyData">
+          <xs:choice>                                       
+             <xs:element   ref="sdtm:Subject"                      minOccurs="1" maxOccurs="unbounded"/>
+             <xs:element   ref="sdtm:TrialDesign"                  minOccurs="1" maxOccurs="unbounded"/>
+          </xs:choice>
+          <xs:attributeGroup ref="sdtm:StudyDataAttributeDefinition"/>
+        </xs:complexType>
+        
+        <xs:complexType name="SDTMcomplexTypeDefinition-Subject">
+          <xs:sequence>
+            <xs:choice>
+               <xs:group     ref="odm:ItemDataGroup"     minOccurs="0" maxOccurs="unbounded"/>
+               <xs:group     ref="odm:ItemDataStarGroup" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:choice>               
+          </xs:sequence>
+          <xs:attributeGroup ref="sdtm:SubjectAttributeDefinition"/>
+        </xs:complexType>
+        
+        <xs:complexType name="SDTMcomplexTypeDefinition-TrialDesign">
+          <xs:sequence>
+            <xs:choice>
+               <xs:group     ref="odm:ItemDataGroup"     minOccurs="0" maxOccurs="unbounded"/>
+               <xs:group     ref="odm:ItemDataStarGroup" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:choice>               
+          </xs:sequence>
+          <xs:attributeGroup ref="sdtm:TrialDesignAttributeDefinition"/>
+        </xs:complexType>
+
+  <!--  
+        +===========================================================================+
+        | ODM (v1.3.0)                                                              |
+        | DomainData definition                                                     |
+        +===========================================================================+
+    -->
+
+        <xs:element name="DomainData"            type="sdtm:SDTMcomplexTypeDefinition-DomainData"/>
+        <xs:element name="StudyData"             type="sdtm:SDTMcomplexTypeDefinition-StudyData"/>
+        <xs:element name="Subject"               type="sdtm:SDTMcomplexTypeDefinition-Subject"/>
+        <xs:element name="TrialDesign"           type="sdtm:SDTMcomplexTypeDefinition-TrialDesign"/>
+
+
+</xs:schema>

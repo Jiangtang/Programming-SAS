@@ -1,0 +1,239 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/stacking.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:07 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="SAS tips and techniques by data _null_ stacked columns">
+   <meta name="KeyWords" content="data _null_ report stacking">
+   <title>Stacked column reports using data _null_</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+"stacked" column reports using data _null_</h1></center>
+<b>[This site is not connected with the SAS Institute]</b>
+<p><b>[last updated - 08 September 2007]</b>
+<h2>
+Introduction</h2>
+In late 2002 I shifted my focus away from "proc report" back to "data _null_"
+reporting in preparation for something that eventually didn't happen. The
+reason at the time was that the FDA were insisting that text tables had
+to use a 12 point font. Now they say that a 10 point font is OK for tables,
+which makes life easier. With a 12 point font I was seeing shell tables
+that typically stack age/race/sex/weight underneath each other. If you
+do that with "proc report", and there is more than one data line per subject,
+then the second data line will follow in the line after the line age/race/sex/weight
+has flowed down to. This leaves a gap of three lines (with this example)
+between the first and second data line for a subject. This gap looks bad
+on a report but the shell tables did not have a gap between the data lines
+and so it could not be coded with "proc report" in any normal way. But
+everything is possible with "data _null_" so I worked on how best to overcome
+this limitation in "proc rep&uuml;ort". What you are seeing on this page
+is a reslt of the work I put into getting round this layout problem. It
+is mainly historical now.
+<h2>
+What "proc report" won't do for you</h2>
+You could define every field in proc report as "display", then so long
+as you had arranged your input dataset to give you what you want then it
+would display it for you. But if you expect proc report to do what it normally
+does but slightly differently, then you are going to be disappointed. You
+might want proc report to flow a string of values into a column for you.
+That's no problem. You set the option to "flow" in your column definition,
+you define the split character as one of the procedure options and you
+have these split characters in all the right places in your input field.
+Proc report will flow it for you. But when it flows a column it makes the
+whole row "fatter". It will not flow into space that other data lines don't
+use. So the following data line will occur <b><i>after</i></b> where the
+column has flowed to. If you are flowing four items like age/race/sex/weight
+then that will leave a gap of three lines before the next data item is
+displayed. It's no good hoping you can set some option so that it will
+intelligently use space and avoid leaving gaps. It won't. It never will.
+And because you have a four-high stacked identity variable then proc report
+wouldn't start that on the last line on a page, would it? That would look
+stupid after all. Would it do such a thing? Yes, it will. Proc report cares
+nothing about the problems the FDA have visited upon you. It will just
+carry on working in the same old way. So if you want your reports to look
+"just so" you have a choice between doing massive manipulation of your
+dataset going into proc report and just using proc report as a proc print
+to display the values - or - you go back to using data _null_ reports.
+And what might have taken you five minutes to do on a wide page with proc
+report now takes you maybe five hours to code. Maybe much, much longer
+because your data _null_ reporting skills have gone rusty. And there are
+a lot of young programmers in the industry. Maybe you have never produced
+a data _null_ report in your life.
+<h2>
+The worst reporting scenario</h2>
+I am going to show you how to code a data _null_ report covering the worst
+scenario I can think of. It will have age/race/sex/weight stacked in a
+single column. And since this is an identifying "order" variable then the
+whole column will have to be repeated on each new page. And if we are near
+the foot of the page then it would be silly to start the group so it will
+be put on the following page instead. And on the right of age/race/sex/weight
+we will have a long parameter description grouping one of more values.
+And this long parameter will sometimes not fit into the column and so it
+will have to be "flowed" manually into the line below it. It will be the
+worst reporting scenario you are ever likely to be faced with. But seeing
+the code and having it as reference should allow you to tackle any report
+of any degree of complexity in the future. What I won't cover in this section
+is how you get data _null_ reports to interface with #byval and #byvar
+entries in the title lines. I have already written this up fully on this
+<a href="datanull.html">page</a>.
+I want to keep the code free of that so you have more chance of following
+it. But if you have never come across a data _null_ report then maybe that
+page could act as a gentle introduction to the subject.
+<h2>
+The code</h2>
+This is my latest attempt at the code to do a stacked-column report. Horrible,
+isn't it?
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>options ls=90 ps=40;</tt>
+<br><tt>title1 'First title';</tt>
+<br><tt>title3 'Third title';</tt>
+<br><tt>title5 'Fifth title';</tt>
+<br><tt>footnote1 'First footnote';</tt>
+<br><tt>footnote3 'Third footnote';</tt>
+<br>&nbsp;
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /*--------------------------------------------------*</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Generate the dummy data</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *--------------------------------------------------*/</tt>
+<p><tt>data test;</tt>
+<br><tt>&nbsp; length sex $ 6 param $ 80 race $ 10;</tt>
+<br><tt>&nbsp; subj=1001;invid=10001;age=21;race='Asian';sex='Male';weight=60;</tt>
+<br><tt>&nbsp; param='AA This is a very long parameter and you will have
+to flow it';</tt>
+<br><tt>&nbsp; value=11;output;</tt>
+<br><tt>&nbsp; param='BB This is a short parameter';</tt>
+<br><tt>&nbsp; value=21;output;</tt>
+<br><tt>&nbsp; value=22;output;</tt>
+<br><tt>&nbsp; param='CC This is a very long parameter and you will have
+to flow it';</tt>
+<br><tt>&nbsp; do value=30 to 38;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; output;</tt>
+<br><tt>&nbsp; end;</tt>
+<p><tt>&nbsp; subj=2001;invid=20001;age=32;race='White';sex='Female';weight=55;</tt>
+<br><tt>&nbsp; param='AA This is a very long parameter and you will have
+to flow it';</tt>
+<br><tt>&nbsp; value=51;output;</tt>
+<br><tt>&nbsp; param='BB This is a short parameter';</tt>
+<br><tt>&nbsp; value=61;output;</tt>
+<br><tt>&nbsp; value=62;output;</tt>
+<br><tt>&nbsp; param='CC This is a very long parameter and you will have
+to flow it';</tt>
+<br><tt>&nbsp; do value=70 to 78;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; output;</tt>
+<br><tt>&nbsp; end;</tt>
+<p><tt>&nbsp; subj=3001;invid=30001;age=42;race='Black';sex='Female';weight=65;</tt>
+<br><tt>&nbsp; param='AA This is a very long parameter and you will have
+to flow it';</tt>
+<br><tt>&nbsp; value=51;output;</tt>
+<br><tt>&nbsp; param='BB This is a short parameter';</tt>
+<br><tt>&nbsp; value=61;output;</tt>
+<br><tt>run;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /*--------------------------------------------------*</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Produce the report</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *--------------------------------------------------*/</tt>
+<p><tt>data _null_;</tt>
+<br><tt>&nbsp; length tempstr $ 200;</tt>
+<br><tt>&nbsp; retain ls 0 startcol 0 repwidth 60 count 0;</tt>
+<br><tt>&nbsp; file print titles footnotes header=header linesleft=ll;</tt>
+<br><tt>&nbsp; set test end=last;</tt>
+<br><tt>&nbsp; by subj param;</tt>
+<br><tt>&nbsp; if _n_=1 then do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; ls=getoption('ls');</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; startcol=floor((ls-repwidth)/2)+1;</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>&nbsp; if ll&lt;2 then put _page_;</tt>
+<br><tt>&nbsp; if first.subj then do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; count=0;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if ll&lt;5 then put _page_;</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>&nbsp; count=count+1;</tt>
+<br><tt>&nbsp; %splitvar(param,38,split='*');</tt>
+<br><tt>&nbsp; link flow;</tt>
+<br><tt>&nbsp; if first.param or count=1 then do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; tempstr=scan(param,1,'*');</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; put @startcol+18 tempstr @startcol+57 value
+4.;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; i=2;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; do while(scan(param,i,'*') NE ' ');</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; count=count+1;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; link flow;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tempstr=scan(param,i,'*');</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put @startcol+18 tempstr;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; i=i+1;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>&nbsp; else put @startcol+57 value 4.;</tt>
+<br><tt>&nbsp; if last.param then do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; count=count+1;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; link flow;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if not last or count&lt;5 then put;</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>&nbsp; if last.subj then link lastsubj;</tt>
+<br><tt>return;</tt>
+<p><tt>header:</tt>
+<br><tt>&nbsp; put;</tt>
+<br><tt>&nbsp; put @startcol '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+age/';</tt>
+<br><tt>&nbsp; put @startcol '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+race/';</tt>
+<br><tt>&nbsp; put @startcol 'subject/&nbsp;&nbsp; sex/';</tt>
+<br><tt>&nbsp; put @startcol 'invid.&nbsp;&nbsp; weight&nbsp;&nbsp; Lab
+parameter&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+value';</tt>
+<br><tt>&nbsp; put @startcol '--------------------------------------------------------------';</tt>
+<br><tt>&nbsp; if _n_ ne 1 then count=0;</tt>
+<br><tt>return;</tt>
+<p><tt>flow:</tt>
+<br><tt>&nbsp; if count=1 then put @startcol subj 6. '/' @startcol+8 age
+2. ' yrs/' @;</tt>
+<br><tt>&nbsp; else if count=2 then put @startcol invid 6. @startcol+8
+race $char6. +(-1) '/' @;</tt>
+<br><tt>&nbsp; else if count=3 then put @startcol+8 sex $char6.&nbsp; '/'
+@;</tt>
+<br><tt>&nbsp; else if count=4 then put @startcol+8 weight 3. ' kg' @;</tt>
+<br><tt>return;</tt>
+<p><tt>lastsubj:</tt>
+<br><tt>&nbsp; if count&lt;4 then do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; do count=(count+1) to 4;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; link flow;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if not last then put;</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>return;</tt>
+<p><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>There is a link to the output file <a href="datanull2.txt">here</a>.
+<p>If you have looked at the above code and it all makes sense, then maybe
+you are ready to look at the code with full titles handling added. To do
+this click <a href="fullmonty.sas">here</a>.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><br>
+<center>
+<p>Go back to the home <a href="index-2.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/stacking.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:08 GMT -->
+</html>

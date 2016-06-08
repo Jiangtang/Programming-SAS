@@ -1,0 +1,155 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/Spectre/nutshell.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:07 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="Spectre in a Nutshell">
+   <meta name="KeyWords" content="Spectre nutshell clinical reporting system">
+   <title>Spectre in a Nutshell</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Spectre in a Nutshell</h1></center>
+
+<center><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Date: 24 Aug 2015)</b></center>
+
+<h2>
+Introduction</h2>
+This is a brief summary of the <b>Spectre clinical trials reporting system</b>.
+All its components as well as its extensive documentation can be downloaded
+from the main web site whose URL is below. You should refer to that web
+site to gain a fuller understanding of the system.
+<p><a href="index.html">http://www.datasavantconsulting.com/roland/Spectre/</a>
+<p>Spectre has been made available to the public for educational purposes.
+The reporting system is in everyday use by a pharmaceutical company. Although
+it is in use, you should not assume that the system has been validated
+for this purpose. If you use this system for clinical reporting purposes,
+rather than just educational purposes, then you must comply with industry
+regulations and your own Standard Operating Procedures for QC purposes.
+<h2>
+Reporting "Engine"</h2>
+Some programmers make the mistake of thinking about Spectre as a reporting
+system. But I never wrote it intending it to be a reporting system. It
+is a <b>reporting engine</b>. It is there to make simple the usual tasks
+of calculating counts and percentages and calculating descriptive statistics.
+Plus it has some basic calculations of p-values as an option. It creates
+output datasets of this in the format you want (either transposed or not
+transposed). You are supposed to report these datasets directly using the
+Spectre macros or indirectly using your own "proc report" code or further
+process the output dataset such as adding your own p-values in as observations
+or new columns.
+<p>Above all, it was designed for speed. <b>High speed</b>. Designed to
+cut through huge volumes of data in <b>seconds</b> rather than minutes.
+Its job is to take in data and use CPU cycles to produce these datasets
+at the maximum possible speed, rather like an automobile engine is designed
+to take in gas and air and produce a rotary motion at high efficiency.
+And just as this automobile engine can be fitted to multiple types of automobile
+or even put to purposes other than to power an automobile, the Spectre
+macros similarly don't have to be used in a particular way. So there is
+nothing to "understand" about them and no philosophy about them that you
+have to tune into to use them correctly. You use them as you see fit to
+use them.
+<p>My aim in creating them with the high speed they work at was to create
+a "push-button reporting system". I achieved that in about 2005 and reported
+two clinical trials using that system, basically using a spreadsheet. Something
+that in 2015, people are still striving for ten years after I achieved
+it. I hope you will also reach that goal and if you are striving to reach
+that goal then maybe I would be interested to help you. But if you want
+to use these macros as part of a complex system or complex way of working
+then go ahead and do it, but I would not want to become involved in those
+efforts.
+<h2>
+Features</h2>
+
+<ul>
+<li>
+Creates scripts to run dataset build and report production programs in
+the correct order automatically</li>
+
+<li>
+All runs are done in batch mode and output is pure text output (or PostScript
+for figures)</li>
+
+<li>
+Runs every SAS program independently to avoid one program affecting another</li>
+
+<li>
+Has a system for handling titles and footnotes such that these can be kept
+separate from reporting code modules</li>
+
+<li>
+The titles and footnotes system has the potential to call reporting macros</li>
+
+<li>
+Creates a log of every run with both start and stop times and the user
+who launched the run</li>
+
+<li>
+Creates a log of all outputs produced</li>
+
+<li>
+Contains two powerful tools for creating safety tables which require minimal
+parameters set</li>
+
+<li>
+Output can be produced in more than one client style</li>
+
+<li>
+Page labels of the general form "Page x of Y" are automatically added</li>
+
+<li>
+Individual page margins can be specified for a study</li>
+
+<li>
+Font size can be specified and the resulting line size and page size automatically
+calculated</li>
+
+<li>
+Extensive support is provided for producing bookmarked PDFs from the output
+(Unix/Linux platforms only)</li>
+
+<li>
+Contains a large number of shell scripts that help add power to the Unix
+environment</li>
+
+<li>
+Contains a collection of SAS macros that can be used to simplify writing
+reporting modules</li>
+
+<li>
+Has its own set of Unix learning materials to bring programmers up to speed
+with the Unix environment</li>
+</ul>
+
+<h2>
+Study Reporting</h2>
+The study reporting process flow is summarized on the page whose URL is
+below. Reading it will give you an idea of what it is like to use Spectre
+for study reporting.
+<p><a href="procflow.html" target="_blank">http://www.datasavantconsulting.com/roland/Spectre/procflow.html</a>
+<h2>
+Support</h2>
+The terms and conditions can be found on the download page.
+<h2>
+Conclusion</h2>
+This concludes a brief summary of the Spectre clinical trials reporting
+system. For more details, refer to the main web site.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../../www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/Spectre/nutshell.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:07 GMT -->
+</html>

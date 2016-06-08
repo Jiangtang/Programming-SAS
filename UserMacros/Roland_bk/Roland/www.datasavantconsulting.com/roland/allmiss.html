@@ -1,0 +1,186 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/allmiss.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:11 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Generator" content="Microsoft Word 97">
+   <meta name="keywords" content="sas tips techniques">
+   <meta name="Description" content="SAS tips and techniques by Roland Rashleigh-Berry">
+   <meta name="Template" content="C:\PROGRAM FILES\MSOFFICE\OFFICE\html.dot">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   <title>whosgot</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+allmiss</h1></center>
+<b>[last updated - 31 July 2003]</b>
+<p>Displays a list of all-missing variables. You can specify a single dataset,
+multiple datasets or leave it blank and it will run on the whole library.
+This is a very useful QC tool as all-missing variables should be rare.
+Note that the SAS code within it requires some of the sasautos extensions
+macros on this web site.
+<pre><b>#!/bin/sh
+# Script&nbsp;&nbsp;&nbsp;&nbsp; : allmiss
+# Version&nbsp;&nbsp;&nbsp; : 1.0
+# Author&nbsp;&nbsp;&nbsp;&nbsp; : Roland Rashleigh-Berry
+# Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 31 July 2003
+# Contact&nbsp;&nbsp;&nbsp; : rolandberry@hotmail.com
+# Purpose&nbsp;&nbsp;&nbsp; : List all-missing variables&nbsp;
+# SubScripts : none
+# Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Uses the sasautos extensions macros. You need to make sure these
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; are available on the sasautos path.
+# Usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : allmiss&nbsp; ds1 ds2
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; allmiss
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+#&nbsp; 1&nbsp;&nbsp; (optional) dataset or list of datasets to check for all-missing variables.
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Defaults to the whole library.
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+#&nbsp;
+#================================================================================
+
+
+# check on the existence of a sas program in the home directory
+if [ -f $HOME/allmiss.sas ] ; then
+&nbsp; echo "SAS program allmiss already exists in your home directory. You need to check" 1&amp;2
+&nbsp; echo "if you need it and delete it if not. This utility will not overwrite it and" 1&amp;2
+&nbsp; echo "will now exit." 1&amp;2
+&nbsp; exit 1
+fi
+
+&nbsp;
+if [ $# -eq 0 ] ; then
+
+############ no parameters specified so do for whole library ############
+
+# Write SAS code out to a temporary file
+cat&nbsp; $HOME/allmiss.sas &lt;&lt; END
+options validvarname=any nofmterr;
+libname here './' access=readonly;
+filename _outfile "$HOME/allmiss.tmp";
+
+%dslist(here)
+
+%macro doit;
+&nbsp; %do i=1 %to %words(&amp;_dslist_);
+&nbsp;&nbsp;&nbsp; %let memname=%scan(&amp;_dslist_,&amp;i,%str( ));
+&nbsp;&nbsp;&nbsp; %missvars(here.&amp;memname)
+&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; %if %length(&amp;_miss_) %then %do;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; data miss;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; length memname $ 8 varname $ 20;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; retain memname "&amp;memname";
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %do j=1 %to %words(&amp;_miss_);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; varname="%scan(&amp;_miss_,&amp;j,%str( ))";
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %end;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; run;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; proc append base=base data=miss;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; run;
+&nbsp;&nbsp;&nbsp; %end;
+&nbsp; %end;
+
+&nbsp; data _null_;
+&nbsp;&nbsp;&nbsp; file _outfile notitle noprint;
+&nbsp;&nbsp;&nbsp; set base;
+&nbsp;&nbsp;&nbsp; put @1 memname @10 varname;
+&nbsp; run;
+%mend doit;
+
+%doit
+END
+
+
+# Run the SAS code
+sas -log "$HOME" -sysin "$HOME/allmiss.sas"
+
+
+# Delete the temporary SAS code and optionally the log
+rm -f $HOME/allmiss.sas # $HOME/allmiss.log&nbsp;
+
+
+# If output file exists then cat it and delete it
+if [ -f $HOME/allmiss.tmp ]
+then
+&nbsp; cat $HOME/allmiss.tmp
+&nbsp; rm -f $HOME/allmiss.tmp
+fi
+
+
+else
+
+
+for dataset in "$@" ; do
+
+########## do for individual specified datasets ##########
+
+# Write SAS code out to a temporary file
+cat > $HOME/allmiss.sas &lt;&lt; END
+options validvarname=any nofmterr;
+libname here './' access=readonly;
+filename _outfile "$HOME/allmiss.tmp";
+
+%macro doit;
+&nbsp; %missvars(here.$dataset)
+&nbsp;&nbsp;
+&nbsp; %if %length(&amp;_miss_) %then %do;
+&nbsp;&nbsp;&nbsp; data miss;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; length memname $ 8 varname $ 20;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; retain memname "&amp;memname";
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %do j=1 %to %words(&amp;_miss_);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; varname="%scan(&amp;_miss_,&amp;j,%str( ))";
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %end;
+&nbsp;&nbsp;&nbsp; run;
+&nbsp; %end;
+%mend doit;
+
+%doit
+
+data _null_;
+&nbsp; file _outfile notitle noprint;
+&nbsp; set miss;
+&nbsp; put @1 "%upcase($dataset)" @10 varname;
+run;
+
+END
+
+# Run the SAS code
+sas -log "$HOME" -sysin "$HOME/allmiss.sas"
+
+
+# Delete the temporary SAS code and optionally the log
+rm -f $HOME/allmiss.sas # $HOME/allmiss.log&nbsp;
+
+
+# If output file exists then cat it and delete it
+if [ -f $HOME/allmiss.tmp ]
+then
+&nbsp; cat $HOME/allmiss.tmp
+&nbsp; rm -f $HOME/allmiss.tmp
+fi&nbsp;
+
+
+done
+
+fi</b>
+
+</pre>
+
+<center>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<br>&nbsp;
+<br>&nbsp;
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/allmiss.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:11 GMT -->
+</html>

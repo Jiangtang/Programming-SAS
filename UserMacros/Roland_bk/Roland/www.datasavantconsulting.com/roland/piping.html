@@ -1,0 +1,267 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/piping.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Generator" content="Microsoft Word 97">
+   <meta name="keywords" content="sas tips techniques">
+   <meta name="Description" content="Piping and redirection">
+   <meta name="Template" content="C:\PROGRAM FILES\MSOFFICE\OFFICE\html.dot">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="piping and redirection">
+   <title>Piping and redirection</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+"Piping" and "Redirection"</h1></center>
+<b>[last updated - 22 August 2003]</b>
+<h2>
+Introduction</h2>
+This sounds like it is going to be a boring topic and you might be right.
+However, it is a very important topic. You'll never be any good with Unix
+if you don't know it. But I am going to use practical exercises in it that
+will not only teach you about it but will give you useful experience and
+knowledge about the way Unix works. You need to have access to Unix while
+you read this so you can do the many exercises here. So wait until you
+are logged onto Unix then go to your home directory using either of these
+commands:
+<p><b><tt>cd ~</tt></b>
+<br>or
+<br><b><tt>cd $HOME</tt></b>
+<br>or
+<br><b><tt>cd</tt></b>
+<p>Now type in the command:
+<p><b><tt>pwd</tt></b>
+<p>...and you will see your home directory location displayed.
+<p>We are going to create a file in your home area called "hw" so make
+sure it doesn't exist. Check on this by typing either of these two commands:
+<p><b><tt>cat hw</tt></b>
+<br>or
+<br><b><tt>ls hw</tt></b>
+<p>You should get a message something like "No such file or directory".
+<h2>
+">" and ">>" redirection</h2>
+Type in this command:
+<p><b><tt>echo "Hello world"</tt></b>
+<p>You see the message echoed to the screen. The terminal window is by
+default the place where utilities write their output. The terminal is known
+as "standard output". That is also where error messages are written by
+default - to the terminal, that is, except in this case it is known as
+"standard error". All Unix utilities write to the terminal as default.
+This is the way they are supposed to work. Even if a utility produced thousands
+of lines of information then it will still write it to the terminal. It
+is <b>UP TO YOU</b> to <b>redirect</b> it elsewhere if you choose. Now
+this may not make sense to you at this stage. You maybe think "if it produces
+a lot of information then it would be better if it were written to a file
+by default". You couldn't be blamed for thinking that. But the power of
+Unix comes from utilities being able to "talk" to each other. In order
+to talk to each other, the next utility down the line needs to know where
+the "talk" is coming from. For this reason, utilities write their information
+to the same place (standard output) whether that information be short or
+long, so that other utilities will know where to find it.
+<p>Time for a practical exercise on redirection. We are going to use the
+">" redirect symbol. Type in this command:
+<p><b><tt>echo "Hello world" > hw</tt></b>
+<p>The message is not displayed in the terminal window this time. It has
+been <b>redirected</b> to the file hw. To see what is in this file type
+in the command:
+<p><b><tt>cat hw</tt></b>
+<p>..and you will see it was put in that file. You <b>redirected</b> standard
+output to the file hw.
+<p>Call up the command you used to redirect the message "Hello world" by
+pressing the "up-arrow" key, if that works or otherwise, and change the
+command slightly to using a double redirect sign like this and enter that
+command:
+<p><b><tt>echo "Hello world" >> hw</tt></b>
+<p>Now type in the command again:
+<p><b><tt>cat hw</tt></b>
+<p>You will see that two lines are displayed. The ">>" appends to whatever
+is already there. ">" overwrites it.
+<h2>
+Redirecting "standard error" (2>)</h2>
+We are not done with redirection yet. In the previous section I mentioned
+"standard error" in addition to "standard output". "Standard error" is
+where error information gets written. By default it goes to the terminal.
+But sometimes you will want to redirect it. We will have a go at doing
+this. I assume you have no file in your home directory named xx so type
+in this command:
+<p><b><tt>ls xx</tt></b>
+<p>You get a message saying that the file or directory does not exist.
+But this is an <b>error</b> message. It is not normal output from this
+utility. First try this to redirect the error message:
+<p><b><tt>ls xx > msg</tt></b>
+<p>You still see the error message. See if anything was written to the
+file msg by typing in the command:
+<p><b><tt>cat msg</tt></b>
+<p>Nothing there. Now try this. This time you see no error message on the
+terminal:
+<p><b><tt>ls xx 2> msg</tt></b>
+<p>followed by:
+<p><b><tt>cat msg</tt></b>
+<p>..and you will see that standard error was <b>redirected</b> to the
+file "msg". You need to use "2>" to redirect standard error. You use ">"
+for standard output.
+<p>Sometimes you don't care about error messages for particaular actions.
+Suppose you had written a script to create a set of reports. You would
+maybe have a delete command to delete all the reports before you created
+the new ones. They either might be there or they might not. If you tried
+to delete them and they weren't there then you would get an error message.
+You don't care about this error message and you don't want anybody to see
+it. You can redirect this error message to the <b>Unix dustbin</b> like
+this:
+<p><b><tt>ls xx 2> /dev/null</tt></b>
+<p>By doing this, error messages are redirected to <b><tt>/dev/null</tt></b>
+to make them vanish.
+<h2>
+"Piping" (|)</h2>
+The real power of Unix comes from the ability of utilities being able to
+"talk" to each other. And by that I mean the output of one utility can
+be passed on to another utility. This is not the same as redirection. It
+is called "piping" instead. Unix utilities talk to each other by "piping"
+output to the next utility. Instead of using ">" for this, "|" is used
+to pipe from one utility to another. The symbol even looks like a pipe.
+Unix utilities sometimes give you more information that you want to see.
+Suppose you were interested on what processes you were running on Unix.
+Let's have a look. Type in this command:
+<p><b><tt>ps -efl</tt></b>
+<p>A lot of information is displayed. But you only want to know about your
+process. Your userid will be on some of those lines and you only want to
+see those. So you can pipe it to the <b>grep</b> utility like this:
+<p><b><tt>ps -efl | grep userid</tt></b>
+<p>..and you will see only those lines with your userid in them. You lose
+the top line, of course. If you wanted to see that then you could use <b>egrep</b>
+(extended grep) instead of grep like this:
+<p><b><tt>ps -efl | egrep 'PID|userid'</tt></b>
+<p>...but please note that the pipe symbol used in quotes means "or". It
+does not act as a pipe in this case. "|" only acts as a pipe when it is
+used between utility calls.
+<h2>
+Redirecting standard input (&lt;)</h2>
+This topic can be a little bit confusing but you need to be aware of it.
+"Standard input" is the keyboard. Utilities will expect to pick up information
+you type in on the keyboard unless you redirect it. You can redirect it
+by piping it into that utility from another utility. You can also redirect
+it by changing standard input to a file instead. But where it gets confusing
+is that many utilities accept an input file as a parameter so you do not
+have to use the "&lt;" symbol to redirect standard input. In other words,
+it picks up the file name (or multiple file names) as a parameter and proceeds
+to treat it like it was standard input. Not all do, however, and we will
+deal with a case that does not.
+<p>A utility will expect standard input to be like you typing in lines
+at your keyboard and pressing ENTER. The "&lt;" tells it to pick up these
+lines from a file instead. The only way to understand this is to actaully
+do
+it. Please type in the command:
+<p><b><tt>cat</tt></b>
+<p>When you do that you do not get an error message and you get no command
+prompt either. It is waiting for you to type in something. So type in some
+characters and press ENTER. You see these characters echoed at the terminal.
+Try this for a few lines. When you are bored with it use <b>Cntl-d</b>
+to end it. This is the way utilities are supposed to work. They pick up
+their information from standard input which is the keyboard. Now, assuming
+you have at least one line of "Hello world" in your <b>hw</b> file then
+type in this:
+<p><b><tt>cat &lt; hw</tt></b>
+<p>You see the contents of the file echoed to the terminal. Now, the confusing
+thing is, that if you type in
+<p><b><tt>cat hw</tt></b>
+<p>...you see exactly the same. In the first case you have redirected standard
+input so it comes from a file. In the second case you have supplied a parameter
+value to <b>cat</b> and it has used that as standard input. The two are
+not the same, even though they have given the same result. A few utilities
+will not accept a filename as a parameter and will expect you to use the
+"&lt;" notation for redirecting standard input. A notable example is the
+"tr" (translate) utility. Assuming your <b>hw</b> file contain a line or
+two saying "Hello world" then try this command:
+<p><b><tt>cat hw | tr l x</tt></b>
+<p>You will see that the "l"s have been changed to "x"s. You have piped
+into the tr utility and so it has recognised that as standard input and
+it works OK. Try this as well:
+<p><b><tt>tr l x &lt; hw</tt></b>
+<p>You get the same as before. Instead of reading in text you type at the
+keyboard it picks it up from the file hw. But then try this:
+<p><b><tt>tr l x hw</tt></b>
+<p>When you do that it will come up with an error message something like
+"too many parameters". So <b>cat</b> will happily accept a filename as
+a parameter but <b>tr</b> will not. So it is the "&lt;" that redirects
+standard input. Most utilities accept filenames as parameters and treats
+them as standard input but in that case you are not actually redirecting
+standard input.
+<h2>
+Writing to standard error (1>&amp;2)</h2>
+You've read the section on "redirecting standard error" but this is different.
+You need to know how to write a message to standard error. Writing to standard
+output, you already know.
+<p><b><tt>echo "Hello world"</tt></b>
+<p>...will write your message to standard output. Here you will learn how
+to write to standard error. First I will tell you why you need to learn
+this. The reason is that very shortly you will be writing your own utilities
+that are conbinations of other Unix utilities. Now suppose your utility
+was supposed to return a list of programs. You don't know what the user
+is going to do with this list of programs. They might want to feed it into
+yet another utility like people do all the time on Unix. Now suppose they
+did not type in the right number of parameters for your utility. You want
+to put out a message to that effect. But if you were to write that message
+to standard output then it might be fed into the next utility down the
+line and the next utility will think your warning message was a program
+name since that is what your utility is supposed to generate a list of.
+There is no way it can tell the difference. So instead of writing a warnng
+message to standard output, you need to write it to standard error instead.
+To write to standard error you have to redirect standard output to standard
+error. You do this using "1>&amp;2" like this:
+<p><b><tt>echo "Wrong number of parameters" 1>&amp;2</tt></b>
+<p>If you enter the above command then the message will be written to standard
+error. You still see the message echoed to the terminal window, though,
+since that is where standard error is written by default. So type in this
+command to redirect standard error to a file. Don't get the last two entries
+the other way round:
+<p><b><tt>echo "Wrong number of parameters" 2>msg 1>&amp;2</tt></b>
+<p>This time it is not echoed at the terminal and is written to the file
+msg instead. To see this message enter the command:
+<p><b><tt>cat msg</tt></b>
+<p>To sum up this section, usage, error and warning messages should be
+written to standard error and not to standard output. Standard output should
+be reserved for what the utility is supposed to create if it is working
+normally.
+<h2>
+The difference between "piping" and "redirection"</h2>
+I think it is fairly common for fledgling script writers to use piping
+when they meant to use redirection and the other way round. So a simple
+method of remembering the difference can save a bit of frustration. If
+you remember that "piping" is for sending a stream of data from one utility
+to another and "redirection" as being concerned with reading from and writing
+to files then you will find it easy to remember.
+<h2>
+Conclusion</h2>
+You have seen and practised redirecting "standard output" to a file using
+">" and also appending to a file using ">>". You have seen that "standard
+error" can be similarly redirected. As for routing output to another utility,
+then you have learned that this is done by "piping" it to utlities using
+the "|" symbol. You have also learned that "standard input" can be redirected
+so that input comes from the lines of a file, rather than the keyboard,
+and that many utilities will accept standard input as a parameter but some
+(like tr) will not. Lastly, you learnt that messages put out by utilities
+should be written to standard error and not standard output and you learnt
+how to do this.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/piping.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+</html>

@@ -1,0 +1,88 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/killjobs.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="Unix kill -9 script">
+   <meta name="KeyWords" content="unix kill -9 script">
+   <title>killjobs</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+killjobs</h1></center>
+<b>[last updated - 21 November 2006]</b>
+<p>This utility tells the user what processes they are running and asks
+them if they want to <b>kill</b> them with the <b>-9</b> option. The only
+thing new to you here should be the <b>ps -fu</b> call. I am running Cygwin
+on my PC so I don't know if the field positions are the same. It is up
+to you to make corrections to this utility if you need to. The PID (process
+id) should be offered to the user for killing. You are easily at the stage
+where you can make amendments to this script yourself, if you have carefully
+gone through all the preceding Unix tips and done all the exercises.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>#!/bin/bash</tt>
+<br><tt># Script&nbsp;&nbsp;&nbsp;&nbsp; : killjobs</tt>
+<br><tt># Version&nbsp;&nbsp;&nbsp; : 2.0</tt>
+<br><tt># Author&nbsp;&nbsp;&nbsp;&nbsp; : Roland Rashleigh-Berry</tt>
+<br><tt># Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 21-Nov-2006</tt>
+<br><tt># Contact&nbsp;&nbsp;&nbsp; : rolandberry@hotmail.com</tt>
+<br><tt># Purpose&nbsp;&nbsp;&nbsp; : To selectively kill -9 Unix processes
+owned by the user</tt>
+<br><tt># SubScripts : none</tt>
+<br><tt># Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : This script issues kill
+-9 commands. It would be better if you</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+tried kills without the -9 option before resorting to this. You</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+can list your processes by using the command:</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ps -fu $USER</tt>
+<br><tt>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+...and issue kills without the -9 options as you like.</tt>
+<br><tt># Usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : killjobs</tt>
+<br><tt>#&nbsp;</tt>
+<br><tt>#===============================================================================</tt>
+<br><tt># PARAMETERS:</tt>
+<br><tt>#-pos- -------------------------------description-------------------------------</tt>
+<br><tt># N/A&nbsp; (none)&nbsp;</tt>
+<br><tt>#===============================================================================</tt>
+<br><tt># AMENDMENT HISTORY:</tt>
+<br><tt># init --date-- mod-id ----------------------description------------------------</tt>
+<br><tt>#&nbsp;</tt>
+<br><tt>#===============================================================================</tt>
+<br><tt># This is public domain software. No guarantee as to suitability
+or accuracy is</tt>
+<br><tt># given or implied. User uses this code entirely at their own risk.</tt>
+<br><tt>#===============================================================================</tt>
+<p><tt>ps -fu "$USER" > ~/ps.tmp</tt>
+<p><tt>cat ~/ps.tmp</tt>
+<p><tt>echo</tt>
+<br><tt>for pid in $(awk '{if (NR>1) {print $2}}' ~/ps.tmp) ; do</tt>
+<br><tt>&nbsp; echo -n "Do you want to kill -9 process $pid (y/n)? "</tt>
+<br><tt>&nbsp; read resp</tt>
+<br><tt>&nbsp; if [ "$resp" = "y" ] ; then</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; kill -9 $pid</tt>
+<br><tt>&nbsp; fi</tt>
+<br><tt>done</tt>
+<p><tt>rm -f ~/ps.tmp</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<center>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/killjobs.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+</html>

@@ -1,0 +1,96 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/dosemerge.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:37 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="merging with dose">
+   <meta name="Description" content="How to merge with a dose">
+   <title>Merging with a dose</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Merging with a dose</h1></center>
+
+<p><br>Sometimes you need to merge in dose data with adverse events so
+you know what dose a subject was on when they had the adverse event. This
+dose data may have gaps with no dose and maybe overlaps for the stop date
+and the following start date. How you handle overlaps may vary from compound
+to compound. I wrote a macro for this because merrging on date ranges requires
+a knowledge of SQL that not all programmers have. You can view the macro
+below.
+<br><a href="dosemerge.sas" target="_blank">dosemerge</a>
+<p>Do not use this macro blindly. You need to be aware that I am using
+rules in the macro to handle overlaps that may not be correct for the drug
+you are working on.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data dose;</tt>
+<br><tt>&nbsp; subj=1;sdate='01jan2002'd;edate='05jan2002'd;dose=4;output;</tt>
+<br><tt>&nbsp; subj=1;sdate='07jan2002'd;edate='14jan2002'd;dose=6;output;</tt>
+<br><tt>&nbsp; subj=1;sdate='14jan2002'd;edate='21jan2002'd;dose=0;output;</tt>
+<br><tt>&nbsp; subj=2;sdate='14jan2002'd;edate='21jan2002'd;dose=5;output;</tt>
+<br><tt>&nbsp; format sdate edate date9.;</tt>
+<br><tt>run;</tt>
+<p><tt>data ae;</tt>
+<br><tt>&nbsp; subj=1;onset='14jan2002'd;output;</tt>
+<br><tt>&nbsp; subj=2;onset='20jan2002'd;output;</tt>
+<br><tt>&nbsp; format onset date9.;</tt>
+<br><tt>run;</tt>
+<p><tt>%dosemerge(dsin=ae,dsout=ae2,subject=subj,date=onset,</tt>
+<br><tt>dsdose=dose,dosestart=sdate,dosestop=edate,doselevel=dose,</tt>
+<br><tt>fixoverlaps=yes);</tt>
+<p><tt>data _null_;</tt>
+<br><tt>&nbsp; set ae2;</tt>
+<br><tt>&nbsp; put (_all_) (=);</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>Some of the log output is shown below. Note that because of the way
+the macro handles overlaps by reducing the stop date of the previous dose,
+then subj=1 is assigned a zero dose for 14JAN2002.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>18</tt>
+<br><tt>19&nbsp;&nbsp;&nbsp; data _null_;</tt>
+<br><tt>20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set ae2;</tt>
+<br><tt>21&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put (_all_) (=);</tt>
+<br><tt>22&nbsp;&nbsp;&nbsp; run;</tt>
+<p><tt>subj=1 onset=14JAN2002 dose=0</tt>
+<br><tt>subj=2 onset=20JAN2002 dose=5</tt>
+<br><tt>NOTE: There were 2 observations read from the data set WORK.AE2.</tt>
+<br><tt>NOTE: DATA statement used:</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.00 seconds</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.00 seconds</tt></td>
+</tr>
+</table>
+
+<br><a href="contact.html" target="_blank"></a>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><br>
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/dosemerge.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:37 GMT -->
+</html>

@@ -1,0 +1,112 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/odsnull.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:42 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="ODS and the end of data _null_ reporting">
+   <meta name="KeyWords" content="ODS end of data _null_ reporting">
+   <title>ODS and the end of data _null_ reporting</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+ODS and the end of data _null_ reporting</h1></center>
+
+<h2>
+Introduction</h2>
+If you have read my tips you will see there is a lot on data _null_ reporting.
+It still remains on this web site but I regard it as historical now. I
+developed the pages due to the insistence, at the time, of the FDA to have
+12 point font tables. This was causing new "table shells" to be designed
+around the time that "proc report" would not be able to easily cope with
+- what I called "stacked" reports, so I thought there would be a swing
+back to data _null_ reporting. It never happened, however, as the FDA relaxed
+their rules on the font point size for tables, though they still expect
+in-text tables ("in-text" tables are tables in the main text body of the
+report mixed in with the text) to have a 12 point font but I would have
+to check on the latest guidelines.
+<h2>
+Patient Profile reporting</h2>
+Patient profile reports can be of a very complex structure involving data
+from multiple datasets sometimes displayed side by side. Long lines might
+flow for the patient in some places and this needs to be allowed for in
+the report. I have written such reports and it is perhaps the most challenging
+and time-consuming reporting task I have ever done. It is here that data
+_null_ reporting comes into its own and is why I keep the data _null_ tips
+pages on this web site. The tips are valuable for these sorts of reports
+and the good techniques to do this come from experience. To work them out
+from first principles would be difficult and prone to dead ends. So data
+_null_ reporting still has a role in clinical reporting in the form of
+patient profiles but for other sorts of programming, such as. tables and
+listings, I feel data _null_ no longer has a role and should be dropped
+in favour of "proc report" reporting. This is due to the emergence of ODS,
+which can greatly improve the look of tables, that is much easier to apply
+to output from procedures, such as "proc report", than it is to apply to
+data _null_ reports. And I would add that there appears to be a move away
+from text-only patient profiles, the only reason I think data _null_ reports
+still have a role, towards <b>graphical patient profiles</b> which are
+more intuitive in showing relationship between drug and adverse events
+and are, in any case, much easier to produce (see this <a href="RGPP/rgpp.html" target="_blank">page</a>).
+<h2>
+ODS and proc report</h2>
+I feel that plain text reports should no longer be considered as the fixed
+standard for clinical reporting. For me, it is a style that belonged to
+the last century. It should be an option, but not the rule. ODS support
+was introduced into version 7 of SAS software in 1999. It has continued
+to improve since then and with the release of version 9.1.3 in 2005 and
+its improved support for ODS I feel it is the time for change. There are
+still minor problems with it, such as pagination, but I expect these problems
+to be solved soon. In 2007, I was of the opinion that data _null_ reporting
+had largely been dropped by the clinical reporting functions, but I find
+more and more that this is not the case. I feel it should be an option
+to have tabular output in a more attractive form so that it is suitable
+for use as "in-text tables", and by that I mean tables that can be included
+in the text part of documents and fit the style for that document in the
+sense of looking like natural word-processor tables. So not only do I feel
+that data _null_ reporting no longer has a place but that any standard
+reporting software that works with "proc report" at the core should have
+pass-through facilities for ODS statements to take effect at the "proc
+report" stage so that more attractive reports can be produced by the standard
+reporting software. This is easy to do and there is another tips page on
+the web site that shows you how to do this.
+<h2>
+%unistats and %npcttab</h2>
+If you think that moving away from data _null_ reporting would be a time-consuming
+and costly affair then there is no need to worry. I have two macros on
+this web site that can handle most of the safety reporting done within
+the pharmaceutical industry. The two macros are very flexible and have
+ODS support built into them. The usage of them is explained in detail on
+the Spectre (Clinical) e-book that you can download from this web site.
+The download page can be linked to at the bottom of the main page. If you
+want to see the code of these two macros then link to their names as follows:
+<a href="Spectre/clinmacros/unistats.sas" target="_blank">%unistats</a>
+and <a href="Spectre/clinmacros/npcttab.sas" target="_blank">%npcttab</a>.
+<br>&nbsp;
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/odsnull.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:42 GMT -->
+</html>

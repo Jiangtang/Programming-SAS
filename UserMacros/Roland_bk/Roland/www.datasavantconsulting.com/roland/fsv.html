@@ -1,0 +1,84 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/fsv.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="fsview a sas dataset">
+   <meta name="KeyWords" content="fsview sas dataset">
+   <title>fsview a sas dataset</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+fsview a SAS dataset</h1></center>
+<b>[last updated - 04 August 2003]</b>
+<p>If you are lucky with your Unix environment then SAS datasets appear
+as icons on your screen and if you double click on one of the icons then
+<b>fsview</b>
+gets launched so you can browse the SAS dataset. If you are
+<b><i>not</i></b>
+lucky then you do not have this facility. But it is easy to create a script
+to do this. Copy and paste the following into your script library and give
+it the name <b>fsv</b>.
+<br><b>#!/bin/sh</b>
+<br><b># Script&nbsp;&nbsp;&nbsp;&nbsp; : fsv</b>
+<br><b># Version&nbsp;&nbsp;&nbsp; : 1.0</b>
+<br><b># Author&nbsp;&nbsp;&nbsp;&nbsp; : Roland Rashleigh-Berry</b>
+<br><b># Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 04 Aug 2003</b>
+<br><b># Contact&nbsp;&nbsp;&nbsp; : rolandberry@hotmail.com</b>
+<br><b># Purpose&nbsp;&nbsp;&nbsp; : To launch fsview to browse a SAS dataset</b>
+<br><b># SubScripts : none</b>
+<br><b># Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Make the data directory
+the current directory. When fsview is</b>
+<br><b>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+invoked it will go into command line mode and will attempt to</b>
+<br><b>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+make "subject" the id variable. Change this to match your site</b>
+<br><b>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+standard. Task is run in background so you can open multiple SAS</b>
+<br><b>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+datasets by relaunching the command.</b>
+<br><b># Usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : fsv demog</b>
+<br><b>#</b>
+<br><b>#================================================================================</b>
+<br><b># PARAMETERS:</b>
+<br><b>#-pos- -------------------------------description--------------------------------</b>
+<br><b>#&nbsp; 1&nbsp;&nbsp; Name of SAS dataset</b>
+<br><b>#================================================================================</b>
+<br><b># AMENDMENT HISTORY:</b>
+<br><b># init --date-- mod-id ----------------------description-------------------------</b>
+<br><b>#</b>
+<br><b>#================================================================================</b>
+<br><b># This is public domain software. No guarantee as to suitability
+or accuracy is</b>
+<br><b># given or implied. User uses this code entirely at their own risk.</b>
+<br><b>#================================================================================</b>
+<p><b>if [ $# -lt 1 ] ; then</b>
+<br><b>&nbsp; echo "Usage: fsv SAS-dataset" 1>&amp;2</b>
+<br><b>&nbsp; exit 1</b>
+<br><b>fi</b>
+<p><b>sas -noautoexec -sasuser work -nofmterr \</b>
+<br><b>-initstmt "libname here './'" \</b>
+<br><b>-initcmd "fsview here.$1;command;show id subject" &amp;</b>
+<br>&nbsp;
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/fsv.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+</html>

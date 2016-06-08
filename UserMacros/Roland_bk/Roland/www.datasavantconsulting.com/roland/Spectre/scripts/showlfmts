@@ -1,0 +1,54 @@
+#!/bin/sh
+#<pre><b>
+# Script     : showlfmts
+# Version    : 2.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 11-Feb-2007
+# Purpose    : To display a list of formats stored in the current directory
+#              in a catalog named FORMATS (uses SAS).
+# SubScripts : showlfmts_win
+# Notes      : It will assume that the catalog containing the local formats will
+#              be named "formats.sas7bcat"
+# Usage      : showlfmts
+#
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not supply any parameters
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  24Nov05         -stdio used for sas invocation
+# rrb  11Feb07         Call showlfmts_win for Windows configurations
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# if a Windows config then call showlfmts_win and exit on return
+if [ -n "$CYGWIN" ] ; then
+  showlfmts_win
+  exit $?
+fi
+
+# Feed SAS code into standard input
+sas -stdio -noautoexec -sasuser work 2>/dev/null << -----FINISH-----
+libname here '.' access=readonly;
+proc format lib=here cntlout=here(keep=fmtname type);
+run;
+data showlfmts;
+  length name $ 8;
+  set here;
+  if type in ('C','P','N');
+  if type='C' then name='$'||fmtname;
+  else name=fmtname;
+run;
+proc sort nodupkey data=showlfmts;
+  by name;
+run;
+data _null_;
+  file stdout;
+  set showlfmts;
+  put @1 name;
+run;
+-----FINISH-----

@@ -1,0 +1,153 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/supercharge.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:38 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Generator" content="Microsoft Word 97">
+   <meta name="keywords" content="sas tips techniques">
+   <meta name="Description" content="How to improve efficiency for clinical reporting">
+   <meta name="Template" content="C:\PROGRAM FILES\MSOFFICE\OFFICE\html.dot">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="improve efficiency clinical reporting">
+   <title>Supercharge your Clinical Reporting Function</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Supercharge your Clinical Reporting Function</h1></center>
+<b>[last updated - 01 Oct 2008]</b>
+<h2>
+Introduction</h2>
+One of my hobbies is f&icirc;nding ways to improve the efficiency of clinical
+reporting systems. This is a natural progression for when I once wrote
+a clinical reporting system I named "Spectre (Clinical)" that you can download
+from this web site (see main page). After I had written the system and
+it was in full use, then as a new system, the programmers working on it
+were able to produce 8 tables per day. This was high-pressure work. A more
+realistic total would have been 6 tables per day for all-year-round working
+so that is the figure I will use. I stress that <b>this total of 6 tables
+per day </b>was for a<b> new system</b>. Because the system was new then
+there were no code members lying around that we could copy and amend nor
+any macros to help us. There were no short-cuts we could use. We had to
+program from scratch. But in programming all tables from scratch we would
+find that some tables were similar to ones we had recently programmed and
+so long as we were aware of which program produced similar output then
+a copy of this program could form the basis of the new program. So, <b>does
+6 tables per day represent good efficiency or less than good efficiency?</b>
+Well, I have heard of clinical reporting systems that have cost a lot of
+money to design and write. In two cases I know that the productivity rate
+expected through use of the system was <b>3 tables per day</b>. So I have
+achieved double that efficiency at a fraction of the cost. So, <b>am I
+proud of my achievement of 6 tables per day?</b> I'll tell you that <b>I
+am not</b>. I was hoping for <b>10 tables per day</b>. It fell short of
+my hoped-for total and for a long time I tried to think of ways of improving
+my system to increase its efficiency. But now I have stopped trying. I
+have found a way to improve efficiency but it is not by changing my reporting
+system itself, which I now think might be optimal as it stands, but by
+optimising the reuse of code already written. In this way, I hope to push
+the limits of tables per programmer day way beyond the 10 tables target.
+<h2>
+Reuse of code</h2>
+Suppose you could very quickly know where a code member existed that could
+produce the same or nearly the same as the table you wanted to create,
+and that you knew that this was good code that had at least been peer reviewed
+if not validated. It would then make a lot of sense for you to copy this
+code member and make whatever amendments were required to make it suitable
+for the study you are currently working on. But there are two big "<b>if</b>"s
+in that. <b>IF</b> you know where to look for the code and <b>IF</b> you
+know it is good code. If these two big "<b>if</b>"s were fulfilled then
+you would be crazy to program from scratch unless it turned out that no
+such output had been produced before and therefore were no code members
+you could copy and amend.
+<p>Think about this: Suppose you were several years down the line and every
+table you were asked to produce had already been produced before, either
+identical or nearly the same, and you could copy and use that code member.
+Suppose all these code member were perfectly written according to programming
+standards in such a way that it was easy to amend these programs for the
+study you were now working on. How many tables per day do you think you
+could produce on that basis? I think you could see that in ideal circumstances
+this could be a high number. Supposing you don't want to get stressed then
+what is a reasonable steady rate of tables you could produce a day with
+such a system in place? Now I don't want to stress you by suggesting 20
+tables per day but I think you will agree that 10 tables per day would
+be reasonable for even a programmer with limited experience. Maybe a fast
+and expereinced programmer who knew the system well could achieve 20 tables
+per day. That would be double the target I had hoped for from my reporting
+system. But consider this: <b>It does not matter how bad the reporting
+system is</b>. With such a system of reusing code then so long as you were
+sure the code was good then if a poor clinical reporting system was in
+use then it would only slow you down to a small degree compared with a
+good reporting system. With a poor reporting system you would maybe need
+to amend the code in more places compared to if a good reporting system
+were being used. That might only take you a few minutes more even in the
+worst case. In most cases it would make no difference.
+<p><b>The key to improved efficiency in clinical reporting is the easy
+availability of good code to reuse.</b> The quality of the reporting system
+itself is only of secondary importance.
+<h2>
+A Template Library</h2>
+My solution to the two big "if"s I mentioned in the previous section is
+to <b>build and maintain a template library</b>. This library should contain
+output and code. The output would be a single page with the numeric digits
+turned into "x"s and with the study title maybe also obscured with "x"s
+so that it looked like a template (this could be done using the "digits2x"
+utility script that comes with Spectre). With it would go a code member.
+Not just a code member copied directly from another study but one that
+was carefully written and reviewed. It's header might have blanks for you
+to fill in study details. Its data selection criteria might be highlighted.
+I would suggest that "EDIT EDIT EDIT" be used in places in the code where
+the programmer is expected to have to make changes such that they can easily
+find these places using the search facility of the editor they are using.
+Suppose you had a demography table. If it were the first demography table
+to be put in the template library then the template could be called <b>demog001.tmp</b>
+and the code member to use could be called <b>demog001.sas</b> . This template
+library would be in a known location. When study outputs are specified
+then this template should be mentioned by name (excluding the ".tmp extension)
+so that the programmer could go directly to that code member, copy it and
+amend it. If an output were designed that was not included in the current
+template list then that output could be approved such that when the reporting
+process was completed then a new template for this output could be added
+to the library and a new code member prepared and added.
+<p>For CROs with multiple clients, it might be better for them to have
+a seperate template library for each client.
+<p>Note that if you had already reported an increment of a study using
+this method then for later increments it would likely make more sense to
+copy the existing programs you have for earlier increments into the new
+increment folder and amend the programs there. This is assuming you are
+providing the same set of reports or very nearly the same.
+<h2>
+Outsourcing clinical programming work</h2>
+It is worth pointing out at this stage that if you can get high productivity
+out of your current reporting environment by efficiently using a template
+library then the advantages to be gained by outsourcing clinical reporting
+work become less or even negative. It makes sense to aim for high efficiency
+and to retain this work in-house.
+<h2>
+Conclusion</h2>
+On this page I have suggested a way of improving the efficiency of clinical
+reporting using a template library to achieve a rate of higher than 10
+tables per programmer day.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<center>
+<p>Go back to the home <a href="index-2.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/supercharge.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:38 GMT -->
+</html>

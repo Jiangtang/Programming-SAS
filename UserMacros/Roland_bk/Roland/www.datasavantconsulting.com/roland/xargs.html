@@ -1,0 +1,47 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/xargs.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="SAS tips and techniques by Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="sas tips techniques">
+   <title>whosgot</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+xargs</h1></center>
+<b>[last updated - 05 August 2003]</b>
+<p>Sometimes you will want to do something once for each item in a list.
+I can't predict when the occassion will arise but I can tell you the tool
+to use to do this in a simple way. It is called <b>xargs</b>. Type in the
+following at the command prompt:
+<p><b><tt>echo aa bb cc dd</tt></b>
+<p>You see <b>aa bb cc dd</b> as you would expect. Now pipe it to awk and
+get awk to print what it sees like this:
+<p><b><tt>echo aa bb cc dd | awk '{print}'</tt></b>
+<p>You see <b>aa bb cc dd</b> again. But suppose you wanted to call awk
+once for each of aa bb cc dd? You can use xargs for this. Think of it as
+meaning "transfer arguments". You can tell xargs the number of arguments
+you want transferring. Try it with two like this:
+<p><b><tt>echo aa bb cc dd | xargs -n2 | awk '{print}'</tt></b>
+<p>and finally with one like this:
+<p><b><tt>echo aa bb cc dd | xargs -n1 | awk '{print}'</tt></b>
+<p>There is more to xargs than just this. At this stage you only need to
+be aware that it is there and a tool to possibly use in the future.
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/xargs.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+</html>

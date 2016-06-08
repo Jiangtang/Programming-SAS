@@ -1,0 +1,61 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/oraclesys.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <title>Connect to Oracle and read System Tables</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Connect to Oracle and read System Tables</h1></center>
+<b>Author: Roland Rashleigh-Berry</b>
+<br><b>Updated: 12 Mar 2013</b>
+<br>You will sometimes want to connect to Oracle and read the system tables
+such as the very useful table <b>DBA_SCHEDULER_JOB_RUN_DETAILS</b> which
+has details on scheduled job runs. You can do this using a very simple
+connection to Oracle like this. Add your own user, password and path. The
+"put" statement should be used as you see it as it tells you about the
+status of the sql connection:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>proc sql noprint;</tt>
+<br><tt>CONNECT to oracle</tt>
+<br><tt>(user='*******' password='******' path='****************');</tt>
+<br><tt>%put &amp;sqlxmsg;</tt>
+<br><tt>create table job_logs as SELECT *</tt>
+<br><tt>FROM connection to oracle</tt>
+<br><tt>(SELECT * from DBA_SCHEDULER_JOB_RUN_DETAILS) ;</tt>
+<br><tt>%put &amp;sqlxmsg;</tt>
+<br><tt>DISCONNECT from oracle;</tt>
+<br><tt>quit;</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<br>&nbsp;
+<br>&nbsp;
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/oraclesys.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+</html>

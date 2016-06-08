@@ -1,0 +1,218 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/free_lunch.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <title>The Free Lunch is Over: Pooled Clinical Trials Analysis</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+The Free Lunch is Over: Pooled Clinical Trials Analysis</h1></center>
+<b>Updated: 11 May 2014</b>
+<h2>
+Introduction</h2>
+When I say that "<b>The Free Lunch is Over</b>" I am referring to the <b>easy
+time you have had with computers getting more powerful up to the current
+date</b>. You buy a new computer and it is faster than your old one. You
+expect that. That is "progress" after all, and technical breakthroughs
+are being made all the time so that is why computers get faster and faster.
+<p>That will remain to be true for 99% of computer users for some time
+to come.
+<p>But not for you as part of the 1%.
+<p>If you are doing pooled analysis of clinical trials then as you exponentially
+increase the demands on your server or computer you will slowly and painfully
+become aware that your free lunches ceased in about the year 2006, save
+for one redeeming feature which will be introduced later. The present day
+computer with its typical configuration was not designed for your sort
+of analysis.
+<p>In this document I will explain the problems facing the ever-increasing
+push towards pooled clinical trial analysis and what you need to do to
+get the best from the hardware available to you.
+<h2>
+CPU Clock Speed Limit</h2>
+The CPU clock speed is stated in cycles per second (or Hertz ) and it is
+the speed at which you can switch the state of the transistors in the CPU
+chip. This hit a limit of about 3.0 GHz in 2006 and has only crept up to
+3.4 GHz in 2011. Higher clock speeds are just not possible using current
+technology. I have been trying to work out why and I read that transistor
+junctions are only three atoms thick and that is the smallest and fastest
+they can make them. It may be wrong but it sounds right but the practicality
+is that higher clock speeds are not possible. You may not be aware that
+such a limit has been reached but you have heard of "dual core processors"
+and "quad core processors" and you sort of know that the first means you
+have like two processors and for quad you have four and it sounds good
+but what you may not have realized is that to get more power out of CPU
+chips the manufacturers have gone down the path of having more than one
+processor on the chip so that they can work at the same time independently
+of each other. That is why my laptop starts up so quickly. It has a quad
+core so it is starting up four applications at the same time so it is roughly
+four times faster to start up Windows.
+<p>For 99% of users of computers then this works well for them because
+their jobs are running on multiples cores or processors and they do not
+need to be aware of it.
+<p>But not for you as part of the 1%.
+<p>With the demands of data pooling analysis you are running longer and
+longer jobs over the next few years and <b>you are assuming that processing
+power will keep up with your needs. It won't.</b> You will get more processors
+but not more power in single processors.
+<p>If you have a very long sas job to run then it can not make use of the
+other cores or processors unless you know about this and tell it to do
+so. You are probably unaware of this. You maybe know that using shell scripts
+you can run jobs in parallel but maybe you do not know how to write these
+scripts. For you you have a long job or a few long jobs that you want to
+run one after the other and want them to finish as soon as possible and
+you hope the computer is set up in the best way to do this. But you would
+be wrong! You need to deliberately make use of the other processors or
+cores on the PC or server. You have got to divide up your work so that
+you set off your biggest piece of work and then set off other pieces of
+work that add up to nearly the longest piece of work so that you have two,
+three or more collections of work adding up to your long job running at
+the same time. It is just like giving work to more than one programmer
+at the same time. You hope to get the code written quicker than giving
+all the work to just one programmer.
+<p>If you are using a server then it is likely you have SAS/CONNECT installed
+(use PROC SETINIT;RUN; to list the installed components) and then you can
+use "MP Connect" ("Multiprogramming Connect") to run more than one stream
+of work at one time. And the syntax is very simple.
+<p>So the <b>"free lunch" that is over in this case in that processor clock
+speeds have not increased much since 2006</b> but you have the choice of
+"eating two or more meals at the same time" so long as you aware that this
+facility is available. <b>You need to use multiprocessing where appropriate
+and you have to do this yourself</b>. SAS won't do it for you. You can
+read more about this below.
+<p><a href="MPConnect.html" target="_blank">Multiprocessing using MP Connect</a>
+<h2>
+Disk Media Transfer Rate</h2>
+Normal users of disk drives see read speeds of 200 MBps (200 megabytes
+per second). But when you read a huge dataset from disk then you see speeds
+of 25 MBps to 50 MBps with a typical average of 40 MBps. How come, you
+might wonder, does it take <b>5x as long</b> to access your data. This
+is a serious inconvenience. The answer is that the 200 MBps is the "burst"
+speed and is for the smallish files held in the disk cache. But your very
+large dataset can not reside in the cache so when you read it you have
+to read it off the disk magnetic media and this is old technology that
+is slow.
+<p>99% of users see a disk read speed of 200 MBps.
+<p>As part of the 1%, you see a disk read speed of 40 MBps.
+<p>Your datasets are going to get larger and larger as you go down the
+path of doing more pooled analysis and <b>you are assuming that disk speed
+rates are going to keep up with your demands over the next few years. It
+won't.</b> Your "free lunch" with disk speed is over. You will somehow
+have to make your data smaller or find a way of reading it faster.
+<p>You can make your data smaller by having "<b>compressed</b>" datasets.
+Unfortunately, the SAS language is very inefficient at handling compressed
+SAS datasets so you should <b>never use compressed datasets</b> if speed
+is important. It goes against what you would expect. Whatever you save
+on disk access times by using compression is unfortunately lost (and more
+so) by SAS inefficiency in handling compressed datasets.
+<p>Disks are slow. They have caching but not enough for multiple users
+doing pooling work. If you have the right equipment you can stage the data
+to a very large cache and if your data channels are 10 Gbps (10 gigabits
+per second = 1.25 gigabytes per second) or more recently 20 Gbps then things
+can run faster after that initial staging of the data to the cache. But
+IT departments tend not to be aware of the need for this so you get slow
+data channels such as 1.0 Gbps (= 125 MBps) and insufficient disk cache.
+Below describes equipment for increasing cache size using <b>Fusion-io
+accelerator cards </b>which contain a lot of Flash memory (like in your
+digital camera) and these cards will be mentioned again in the next section.
+<p><a href="http://www.fusionio.com/data-sheets/directcache/" target="_blank">Fusion-io
+directCache</a>
+<p><b>If you are planning to answer ad-hoc questions from regulatory authorities</b>
+to query your data pool then <b>you need a very large cache</b> like the
+above
+<b>plus a fast data channel speed</b> (10 Gbps or higher). The first
+read of the data will be slow as it has to fetch this off the disk magnetic
+media but then it will be in cache where it can be read quickly. Unlike
+your WORK library, this data is available to anyone with read access and
+they will all be able to read the data at high speed. You are then limited
+by the data channel speed. So if you are planning to do this sort of work
+then you need both fast channel speed and large amounts of disk cache (like
+320 GB). If you don't have both of these then your plans for an ad-hoc
+query system are not viable.
+<h2>
+IO-Accelerator Cards</h2>
+<b>You just got a "free lunch" </b>and you'll be getting more of these.
+You can thank computer gamers for that. There has been a very major change
+to the design of computer mother boards due to gamers making higher demands
+on graphics card performance. It has forced a change in the way computers
+talk to these graphics cards. The graphics cards are slotted into very
+high speed <a href="http://en.wikipedia.org/wiki/PCI_Express" target="_blank">PCIe</a>
+slot and these have a very fast data transfer rate - far higher than disks.
+But these slots can be used by other devices. <b>Fusion-io accelerators
+cards</b> can use these slots to provide you with a lot of very fast memory.
+The
+<b>SAS WORK library</b> can be configured to reside on the accelerator
+cards and then the speed of reading and writing is incredibly fast (approaching
+the speed of using SASFILE except that you can have very large files and
+write to them as well). It is so fast that you need to think about CPU
+processing time rather than I/O time so it is better to keep CPU time low
+by having all datasets in all libraries <b>uncompressed.</b>
+<p>These cards will become faster over the years and more manufacturers
+will make them. These cards speed up writes by writing to multiple location
+in memory at the same time. The concurrency can always be increased in
+the future if there is a need. The PCIe slots will continue to get faster
+and in any case they are expandable to give more speed using more read
+and write "lanes".
+<p><b>This "free lunch" is here to stay</b> and has changed the shape of
+computing for sas programmers running large jobs both as disk cache and
+improving WORK folder performance. This is the redeeming feature I mentioned
+in the introduction. You need to be aware of their possibilities and make
+full use of them.
+<p><a href="http://en.wikipedia.org/wiki/IO_Accelerator" target="_blank">IO
+Accelerator</a>
+<h2>
+Software Design Limitations</h2>
+Maybe you have standard macros for analysis and reporting. You are maybe
+assuming that if you have 10x the amount of data then the macros will take
+10x longer to run. Unfortunately, that does not logically follow. For 10x
+the amount of data the macro might take 100x longer to run. If your macro
+ran a bit slow on your single studies then expect a nasty surprise when
+you scale up to pooled studies. The macro could have design faults in it
+and was maybe not written with performance in mind. Macros need to be efficient
+for pooled studies otherwise you might get major performance problems.
+<p><b>The "free lunch" for poorly designed software is over</b> once you
+start working on pooled studies. You might be faced with a need to rewrite
+some or all of your production macros if they were not designed with good
+performance in mind. Not only do you have to check the software for correctness,
+you need to benchmark for performance as well. As a rough guide, for pooled
+studies, then for AE data or LAB data then if your dataset contains one
+million observations then to process it and summarize it should take less
+than ten minutes even in the most complex cases. With the hardware upgrades
+described above then it should take much less time.
+<p>Imagine yourself in the situation where you have implemented an ad-hoc
+enquiry system using the best hardware and it only took you sixty seconds
+to read in ten million observations. How long would you be happy to wait
+to get back the results from analysis? You might get impatient after waiting
+sixty minutes. If your analysis and reporting macros are not efficient
+then you might be waiting six hours or more. If you do not want to be in
+that situation then you will have to make sure that your software runs
+efficiently.
+<h2>
+Conclusion</h2>
+You have read how computers have reached a limit with some of the technology
+but new hardware in the form of "io accelerator cards" can help you so
+long as you can make use of them. A hardware recommendation with an explanation
+has been made for ad-hoc query systems.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<br>&nbsp;
+<br>&nbsp;
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/free_lunch.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+</html>

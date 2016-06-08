@@ -1,0 +1,77 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/complibs.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:06 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="%complibs -- comparing whole libraries">
+   <meta name="KeyWords" content="%complibs comparing whole libraries">
+   <meta name="robots" content="noindex,nofollow">
+   <meta name="author" content="Roland Rashleigh-Berry">
+   <title>%complibs -- comparing whole libraries</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+%complibs -- comparing whole libraries</h1></center>
+
+<h2>
+Introduction</h2>
+If you work in the field of clinical reporting then you sometimes have
+studies that run for many years. You then report them in "increments",
+maybe every two years. During the course of the trial then it is not possible
+to prevent old data being changed, but if it has been changed then it should
+be for a good reason. There could be many datasets to check for changes
+and each will have to be sorted in a different way before they can be compared
+using "proc compare". Fortunately, I have a macro called <a href="http://www.datasavantconsulting.com/roland/complibs.sas" target="_blank">%complibs</a>
+to do this work which can save you a lot of time.
+<h2>
+Using %complibs</h2>
+<b>%complibs</b> compares whole libraries for identically named datasets.
+You specify the sort variables that will be used sort into unique order.
+The macro calls the macro <a href="http://www.datasavantconsulting.com/roland/supasort.sas" target="_blank">%supasort</a>
+to sort these datasets by those variable <b>but only if they exist in the
+sas dataset</b>. This list of variables will include a unique patient identifier
+plus visit code plus any subparameters such as <b>labparm</b> and maybe
+a sequencing variable and date. The easiest way to get a list of these
+is to run the compare and where you see a lot of differences found in a
+dataset then chances are you need to add an extra variable to the sort
+list. You can look at the contents of the dataset and see which extra variable
+you need to sort uniquely. Here is an example call to %complibs where only
+the old data is compared (using the<b> listbase</b> option -- see documentation
+for "proc compare").
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>libname old "old-data-library-full-path-name" access=readonly;</tt>
+<p><tt>libname new "new-data-library-full-path-name" access=readonly;</tt>
+<p><tt>%complibs(old,new,options=listbase,</tt>
+<br><tt>sortvars=patid visitcd date seqn labid labparm protdevn);</tt></td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+This page describes how you can compare whole libraries to find out what
+data have changed.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="http://www.datasavantconsulting.com/roland/counter.php" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/roland/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/complibs.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:06 GMT -->
+</html>

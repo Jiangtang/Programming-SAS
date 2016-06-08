@@ -1,0 +1,116 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/whosgot.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="SAS tips and techniques by Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="sas tips techniques">
+   <title>whosgot</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+whosgot</h1></center>
+<b>[last updated - 27 July 2003]</b>
+<p>Who's got your SAS dataset? It'll be one of the QC'ers. You need to
+generate a fresh set of datasets but you can't because the programs fails
+and says that somebody else is holding a lock on one of your datasets.
+You've got to find out who they are and ask them to free up your dataset.
+I bet they're at lunch or in a meeting.
+<p>Assuming you work on a full-blown Unix platform then finding out who
+is holding a lock on a file you want to update is easy to do. There is
+a utility program called <b>fuser</b> in the<b> /usr/sbin/</b> directory
+you can use. The script to do this is very simple. It wil list out each
+file you want to check on and the userids of those holding locks. And if
+the identity of the person is not obvious from the userid then you can
+use the getname script on this web site to find out their names.
+<p>Here is the script code. Copy ans paste it into a member called whosgot
+in your shell script library. There are a few features of the script that
+you might not be aware of so it will be explained.
+<pre><b>#!/bin/sh
+# Script&nbsp;&nbsp;&nbsp;&nbsp; : whosgot
+# Version&nbsp;&nbsp;&nbsp; : 1.0
+# Author&nbsp;&nbsp;&nbsp;&nbsp; : Roland Rashleigh-Berry
+# Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 27 July 2003
+# Contact&nbsp;&nbsp;&nbsp; : rolandberry@hotmail.com
+# Purpose&nbsp;&nbsp;&nbsp; : To list users who have locks on files&nbsp;
+# SubScripts : none
+# Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : You can not pipe the output from this to other utilities. This&nbsp;
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; will show userids holding locks on files. You can then use the
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "getname" script to match user-ids to names of people.
+# Usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : whosgot demog.sas7bdat
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; whosgot *.sas*
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+#&nbsp; 1&nbsp;&nbsp; File or list of files to check for locks held
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+#&nbsp;
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+if [ $# -lt 1 ] ; then
+&nbsp; echo "Usage: whosgot *.sas*" 1>&amp;2
+&nbsp; exit 1
+fi
+
+for filename in "$@" ; do
+&nbsp; /usr/sbin/fuser -u $filename
+done
+
+echo "Use \"getname userid\" to identify the names of any listed userids holding locks"</b></pre>
+As I mentioned for the getname script, everything following a hash is a
+comment so you can see that all the header lines are comment lines. The
+first line is special because the !/bin/sh defines the location of the
+shell you want to use to interpret this script. Hopefully you knew that
+already. At the start of the code the number of supplied parameters is
+checked. If they are less than one then it implies the user needs help
+with this utility so a message is written out to standard error (using
+1>&amp;2 to redirect standard output to standard error) and the script
+exits with a return code of 1 to warn that something small went wrong.
+Next comes the "do loop". "Do" loops are very useful and they come in different
+forms. This is one of them. $@ is a list of all your input parameters.
+If you invoked the utility like this <b><tt>"whosgot *.sas*"</tt></b> then
+the script doesn't see <b><tt>"*.sas*"</tt></b> any more. You have something
+called a "command interpreter" that expands out <b><tt>*.sas*</tt></b>
+into all the file names in that directory that fit the bill. So what the
+script gets is this expanded-out list of files. So what the script sees
+might be <b><tt>"ae.sas7bdat demog.sas7bdat elig.sas7bdat"</tt></b> etc.
+The line that says <b><tt>'for filename in "$@"'</tt></b> is going to take
+each entry in the list in turn and assign it to the variable filename and
+will perform whatever code is defined between the "do" and "done" on it.
+So each filename will get <b>/usr/sbin/fuser</b> called to check for locks
+held.
+<p>The <b>/usr/sbin/fuser</b> utility is what I call a "badly behaved"
+utility. You can't pipe its contents out to other utilities otherwise I
+might have liked to only list the files with locks against them and only
+listed those with a person's full name next to them. But it didn't work
+because when I pipe the output the userids are no longer there. Maybe this
+will be fixed at a later date but for now it will have to stay as it is.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/whosgot.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+</html>

@@ -1,0 +1,37 @@
+#!/bin/bash
+#<pre><b>
+# Script     : owner
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 18-Jun-2004
+# Purpose    : To display the owner of a file followed by the file name
+# SubScripts : none
+# Notes      : You can pipe into it or use it with parameters. If you pipe into
+#              it then you must have only one file name per line. It will only
+#              work on the first item in the line but will print the original
+#              line after the owner.
+# Usage      : owner s*.sas
+#              derorder | owner 
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   file names(s) or file pattern(s) (or both)
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+
+if [ $# -gt 0 ] ; then
+  ls -ld -- "$@" | \
+  gawk '{offset=length($5)-7;if (offset<0) {offset=0};print $3,substr($0,offset+55)}'
+else
+  cat > ~/owner_$$.tmp
+  ls -l $(gawk -F" " '{print $1}' ~/owner_$$.tmp) | gawk -F' ' '{print $3}' > ~/owners_$$.tmp
+  paste ~/owners_$$.tmp ~/owner_$$.tmp 
+  rm -f ~/owners_$$.tmp ~/owner_$$.tmp 
+fi

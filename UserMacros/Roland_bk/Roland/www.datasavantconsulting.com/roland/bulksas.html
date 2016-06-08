@@ -1,0 +1,84 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/bulksas.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:06 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="Bulk runs of many SAS jobs under MS Windows">
+   <meta name="KeyWords" content="Bulk runs many SAS jobs MS Windows">
+   <title>Bulk runs of many SAS jobs under MS Windows</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Bulk runs of many SAS jobs under MS Windows</h1></center>
+
+<h2>
+Introduction</h2>
+This page is a suggestion on how to run many SAS jobs under MS Windows.
+<h2>
+The problem</h2>
+Suppose you have more than 150 sas jobs to run and you want to make sure
+they all run together with none missed out. Maybe you want to keep a log
+of this run with brief completion diagnostics taken from the sas logs.
+You maybe want to know when the run started and who started it and when
+it ended and you want to keep this information somewhere. Suppose there
+are about 250 outputs and you want to gather these together in the correct
+order of table and listing number. If you are finding this sort of thing
+very difficult or impossible to do under MS Windows then you are not alone.
+There is a good reason why MS Windows has poor utilities for doing such
+a thing. This is because MS Windows was designed for PCs or Personal Computers.
+In other words it was designed for <b>single users</b> doing <b>personal
+computing</b>. There is no reason to expect MS Windows to have utilities
+to help you organise the running of hundreds of programs. It wasn't designed
+to do this.
+<h2>
+The solution</h2>
+The solution to organising the running of hundreds of SAS programs is to
+use Unix, or at least an emulation of it. You don't have to give up using
+your MS Windows computer to do this or to give up using MS Windows. Unix
+(or Linux, which works in the same way) can be emulated on your MS Windows
+machine. MS Windows has the power to do all of these things built into
+it, but lacks the utilities to achieve it. But you can download and install
+a free Linux emulator that can do nearly everything Linux can do and this
+emulator calls MS Windows services to do it. The solution, then, it to
+download and install a good Linux emulator that works with MS Windows and
+for that I recommend <b>Cygwin</b>. I have that working on my PC. You need
+to know Unix commands, and you need to know how to write what are known
+as "shell scripts" and then organising the bulk running as SAS jobs becomes
+easy.
+<h2>
+Cygwin</h2>
+You can read about how to install Cygwin on your PC elsewhere on this web
+site. There are also instructions on this in the Spectre (Clinical) documentation.
+You can link to a Wikipedia article on Cygwin <a href="http://en.wikipedia.org/wiki/Cygwin" target="_blank">here</a>
+and the main Cygwin web site <a href="http://www.cygwin.com/" target="_blank">here</a>.
+There are articles on this web site and in the Spectre (Clinical) documentation
+to teach you Unix commands and how to write shell scripts. Once you have
+this software and the required knowledge then getting MS Windows to run
+hundreds of sas programs will no longer be a problem.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><br>
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/bulksas.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:06 GMT -->
+</html>

@@ -1,0 +1,78 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/deldsets.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:04 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Generator" content="Microsoft Word 97">
+   <meta name="keywords" content="sas tips techniques">
+   <meta name="Description" content="Deleting sas datasets more than a month old">
+   <meta name="Template" content="C:\PROGRAM FILES\MSOFFICE\OFFICE\html.dot">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="sas datasets delete month old">
+   <title>Deleting datasets more than a month old</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Deleting datasets more than a month old</h1></center>
+<b>[This site is not connected with the SAS Institute]</b>
+<p><b>[last updated - 11 September 2007]</b>
+<h2>
+CRDATE</h2>
+Because you do not see this field in your SAS datasets, SAS programmers
+tend to forget that it is available for them to use. CRDATE is a datetime
+stamp for when a dataset is created. There is another datetime stamp called
+MODATE for when the dataset was last modified. CRDATE is very useful when
+it comes to managing a library of datasets that get updated on a regular
+basis, such as once a week, where you have to roll off old data. You can
+obtain the value of this variable from the <b>sashelp.vtable</b> view or
+the <b>dictionary.tables</b> SQL view.
+<p>In the following code, datasets in a library called SASLIB will be identified
+if the creation date is more than 27 days older than the date of the SAS
+job and will be deleted.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%let lastmonth=;</tt>
+<p><tt>proc sql;</tt>
+<br><tt>&nbsp; select memname into :lastmonth separated by ' '</tt>
+<br><tt>&nbsp; from dictionary.tables</tt>
+<br><tt>&nbsp; where libname='SASLIB' and today()-datepart(crdate) > 27;</tt>
+<br><tt>quit;</tt>
+<br><tt>run;</tt>
+<p><tt>proc datasets nolist lib=SASLIB;</tt>
+<br><tt>&nbsp; delete &amp;lastmonth;</tt>
+<br><tt>run;</tt>
+<br><tt>quit;</tt></td>
+</tr>
+</table>
+
+<h2>
+CRDATE/CRDTE and MODATE/MODTE</h2>
+Just to confuse matters, SAS have got two forms of spelling for these two
+variables. If you use the <b>attrn</b> function to give you numeric information
+about a dataset then instead of MODATE you use MODTE and instead of CRDATE
+you use CRDTE. I have two macros for extracting this information using
+the attrn function called <a href="modte.sas">modte</a> and <a href="crdte.sas">crdte</a>.
+But you would probably be better off just extracting this information from
+<b>dictionary.tables</b>
+like I did in the code above.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/deldsets.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:04 GMT -->
+</html>

@@ -1,0 +1,130 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/delsome.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="SAS tips and techniques by Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="sas tips techniques">
+   <title>whosgot</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+delsome</h1></center>
+<b>[last updated - 28 July 2003]</b>
+<p>I'll be frank. This script, <b>delsome</b>, is for educational purposes.
+And the next script, <b>dirtidy</b>, is the same. You'll probably never
+use these two scripts but you need to know the techniques used in them
+if you are ever to become proficient at writing scripts. I'll set the scene
+for this script <b>delsome</b>. You are going to feed a list of files into
+this utility as standard input. Each file will be offered in turn to the
+user to give them the opportunity of deleting each file. But here is the
+thing you need to know about. Since you have piped a list of files into
+this utility then that is automatically assumed to be standard input. But
+then you have to display each file to the user and get their response for
+optionally deleting each file so standard input has to changed back to
+being the keyboard. So at some stage you have to redirect standard input
+as coming from the keyboard, even though the utility has to accept standard
+input as that being piped into it.
+<p>I am going to introduce a few techniques here that I have not been introduced
+before. And they are very importamt for you to learn if you are ever to
+become a script writer. So please bear with me and give this your full
+attention.
+<pre><b>#!/bin/sh
+# Script&nbsp;&nbsp;&nbsp;&nbsp; : delsome
+# Version&nbsp;&nbsp;&nbsp; : 1.0
+# Author&nbsp;&nbsp;&nbsp;&nbsp; : Roland Rashleigh-Berry
+# Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 28 July 2003
+# Contact&nbsp;&nbsp;&nbsp; : rolandberry@hotmail.com
+# Purpose&nbsp;&nbsp;&nbsp; : To optionally delete files offered to the user
+# SubScripts : none
+# Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : THIS UTILITY MUST BE PIPED INTO with a list of files to optionally
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; delete.
+# Usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : ls *.log | delsome
+#&nbsp;
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+# N/A&nbsp; none (must be piped into)
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+#&nbsp;
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+cat > $HOME/delsome.tmp
+
+#-- reset standard input to keyboard --
+exec &lt;&amp;1
+
+for file in `cat $HOME/delsome.tmp`
+do
+&nbsp; echo -n "Do you want to delete file $file (y/n)? "
+&nbsp; read resp
+&nbsp; if [ "$resp" = "y" ]
+&nbsp; then
+&nbsp;&nbsp;&nbsp; rm -f $file
+&nbsp; fi
+done
+
+rm -f $HOME/delsome.tmp</b>
+
+</pre>
+The first thing to note is that this script has no input parametsr. It
+has to be <b>PIPED</b> into. If you remember, the <b>tr</b> utility is
+like that. You either redirect into it or pipe into it. Now the trick with
+this utility is you have to accept piped input but then you have to prompt
+the user and ask them whether they want to delete each file in turn. So
+standard input has to come from the terminal. But since this utuility is
+piped into then it has to accept standard input from the pipe. So we have
+to tell it to change.
+<p>The first line of code directs the piped list of files into a temporary
+file in the user's home area. The next line of code resets standard input
+to be the keyboard. And now we see a new form of a do loop. You see the
+"do it now" quotes (the quote with the key at the top left of your keyboard)
+surrounding the "cat $HOME/delsome.tmp" statement. That will "do it now"
+and list out what is in the delsome.tmp file. And then each element in
+that list in turn gets assigned to the variable "file" and the user will
+be asked if they want to delete it. The <b>echo -n</b> has the effect of
+echoing to the terminal but not throwing a new line so you can type in
+the response at the end of the line. It reads the response (which must
+either be a "y" or "n") and if it is equal to a "y" (note that "=" is used
+here and not "-eq" since it is a string and not a number) then the file
+will be deleted using the <b>rm</b> command with the <b>-f </b>option (file).
+Right at the end, the temporary file gets deleted.
+<p>To recap, you have learned some important techniques here. You have
+seen information stored in a temporary file in the user's home area. You
+have seen standard input reset ready to pick up user response from the
+keyboard. You have seen a new form of "do" loop using a file and using
+"cat" in do-it-now quotes to list the elements and so deal with them one
+at a time. You have seen <b>echo -n</b> used to stay on one line. You have
+seen the response read in to the variable resp and then tested for equality
+using the "=" symbol for strings rather than the "-eq" operator for numbers.
+And you have seen <b>rm</b> used with the <b>-f</b> option so it deleted
+files only. And right at the end you see the tidying up process deleting
+the temporary file.
+<p>This is a short little script that isn't at all important, but you have
+learned a great deal.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/delsome.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+</html>

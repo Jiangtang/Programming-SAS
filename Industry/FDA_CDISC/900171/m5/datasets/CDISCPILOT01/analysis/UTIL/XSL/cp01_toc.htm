@@ -1,0 +1,106 @@
+﻿<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; char_set=utf-8">
+   <script language="vbs">
+
+
+      sub window_onload1
+
+
+         set xmlfile = createObject("Msxml2.DOMDocument")
+         set xslfile = createObject("Msxml2.FreeThreadedDOMDocument")
+         set xslt = createObject("Msxml2.XSLTemplate")
+
+         xmlfile.async=false
+         xmlfile.resolveExternals = false
+         xslfile.async = false
+
+         basefile = "../../" & mid(cookieValue("xmlfile="),instrrev(cookieValue("xmlfile="),"\")+1)
+
+         xmlfile.load basefile
+         xslfile.Load "cp01_tree.xsl"
+
+         If (xslfile.parseError.errorCode <> 0) Then
+            set myErr = xslfile.parseError
+            alert "You have error " & myErr.reason
+         Else
+            set xslt.stylesheet = xslfile
+            set xslProc = xslt.createProcessor()
+            xslProc.input = xmlfile
+            xslProc.Transform
+            tn = xslProc.output
+            parent.frames("toc").document.open
+            parent.frames("toc").document.write(tn)
+            parent.frames("toc").document.close
+         End If
+
+         set xmlfile = nothing
+         set xslfile = nothing
+         set xspProc = nothing
+         set xslt = nothing
+
+
+         set xmlfile2 = createObject("Msxml2.DOMDocument")
+         set xslfile2 = createObject("Msxml2.FreeThreadedDOMDocument")
+         set xslt2 = createObject("Msxml2.XSLTemplate")
+
+         xmlfile2.async=false
+         xmlfile2.resolveExternals = false
+         xslfile2.async = false
+
+         xmlfile2.load basefile
+
+         xslfile2.load "cp01_contents.xsl"
+
+
+         If (xslfile2.parseError.errorCode <> 0) Then
+            set myErr = xslfile2.parseError
+            alert "You have error " & myErr.reason
+         Else
+
+            set xslt2.stylesheet = xslfile2
+            set xslProc2 = xslt2.createProcessor()
+
+            xslProc2.input = xmlfile2
+
+            xslProc2.Transform
+            tn2 = xslProc2.output
+
+            parent.frames("contents").document.open
+            parent.frames("contents").document.write(tn2)
+            parent.frames("contents").document.close
+         End If
+
+         set xmlfile2 = nothing
+         set xslfile2 = nothing
+         set xspProc2 = nothing
+         set xslt2 = nothing
+
+      end sub
+
+   </script>
+
+   <script language="javascript">
+   <!--
+
+
+      function cookieValue(name)
+      {
+         var dc = document.cookie;
+         if (dc.length == 0) return;
+         var start = dc.indexOf(name);
+         if (start == -1) return;
+         var end = dc.indexOf(";", start+name.length);
+         if (end == -1) end = dc.length;
+         return dc.substring(start+name.length, end);
+      }
+    -->
+   </script>
+
+</head>
+
+<body onload="window_onload1()">
+
+</body>
+
+</html>

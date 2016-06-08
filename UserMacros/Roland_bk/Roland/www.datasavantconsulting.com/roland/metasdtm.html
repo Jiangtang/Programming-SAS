@@ -1,0 +1,969 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+  
+<!-- Mirrored from www.datasavantconsulting.com/roland/metasdtm.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+<head>
+    <meta http-equiv="Content-Type" content="text/html;
+      charset=windows-1252">
+    <meta name="keywords" content="Metadata-Driven SDTM Creation">
+    <meta name="Description" content="Metadata-Driven SDTM Creation">
+    <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U)
+      [Netscape]">
+    <meta name="Author" content="Roland Rashleigh-Berry">
+    <meta name="KeyWords" content="Metadata-Driven SDTM Creation">
+    <title>Metadata-Driven SDTM Creation</title>
+  </head>
+  <body alink="#FF0080" bgcolor="#C0C0FF" link="#0000FF" text="#000000"
+    vlink="#800080">
+    <center>
+      <h1> Metadata-Driven SDTM Creation</h1>
+    </center>
+    <b><font size="+1">Author: Roland Rashleigh-Berry</font></b> <br>
+    <b><font size="+1">Last Updated: 13 Feb 2016</font></b>
+    <h2> Introduction</h2>
+    Writing this, as of October 2015, the hopes of getting
+    SDTM-structured data directly from a Clinical Trial Database look
+    remote and belie the claims that it had already been achieved (or
+    was shortly to be achieved) in 2008. Seven years later, very little
+    progress in that direction has been made except that a few of the
+    collected fields have SDTM-compliant names (but maybe conflicting
+    attributes such as being numeric instead of character) and the data
+    collection modules might have names corresponding to SDTM domains.<br>
+    <br>
+    But, with the benefit of hindsight, then maybe this was to be
+    expected -- and having to make the final transformation over to the
+    SDTM structure can be seen as a good thing.&nbsp; It was always
+    going to be a difficult thing to build into a clinical trial
+    database -- and if a client changes their clinical trial database,
+    or uses more than one database system, then it becomes easier to
+    make this final transformation outside the database system. On top
+    of that, there might be a need to transform legacy data to SDTM
+    format so there might be a benefit in having the final
+    transformation to SDTM as a separate process which can be applied,
+    not only to fresh clinical trial data, but to data from old studies
+    as well.
+    <p>If the SDTM structure had been built into a clinical trial
+      database then it would be an automated system. The data would just
+      "come out" in SDTM format. But if this were run as a separate
+      process then how automated could it be? Most pharmaceutical
+      companies have assumed that such a process would be too complex to
+      automate and so they use SAS programming resources to do the
+      transformation based on template code -- sometimes using a hundred
+      different versions -- that they amend to fit their study. Some of
+      them have GUI systems that work on a point and click system to do
+      the mapping, and some of these have keystroke recording to record
+      the actions to ensure the "traceability" of the process. However,
+      Novartis, the largest pharmaceutical company in the world in terms
+      of sales, have had a fully automated system in place that does
+      this since about 2012. And Boehringer Ingelheim, nineteenth in
+      terms of sales, achieved this in 2015 for a limited pilot trial. </p>
+    <p>It turns out that the SAS programming required to automate this
+      task, such that it uses metadata to automatically convert the
+      sponsor data structure to SDTM format, is both elegant and
+      efficient if a few little-known SAS techniques are employed. It
+      would be an easy matter for all pharmaceutical companies to adopt
+      this approach and this would save them considerable programming
+      resources. And if such a system were validated, there would be
+      less need for QC work. The "real work" would be in getting the
+      metadata correct rather than getting the SAS program code correct.<br>
+    </p>
+    <p>What you will see on this page is a detailed description of the
+      little-known SAS techniques to accomplish this task and enough
+      code to help all pharmaceutical companies go down this path and
+      achieve metadata-driven SDTM creation if they so wish.<br>
+    </p>
+    <p>But would any pharmaceutical companies want to go down the path
+      of automated SDTM creation if they have a good system of using
+      template code or a point-and-click GUI system with keystroke
+      recording in place and fully working? Before mid 2015, then the
+      answer would be "no". But now there is something called a "<b>Legacy
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        Data Conversion Plan &amp; Report</b>" that is certain to become
+      the standard approach that all pharmaceutical companies will be
+      obliged to follow. Whatever systems they have in place will have
+      to follow what they have specified in that document and making the
+      upgrades to their systems to comply with this will maybe not be
+      easy. This changes the game plan and focus needs to be placed on
+      the contents of this "<b>Legacy Data Conversion Plan &amp; Report</b>".
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      If the contents of this "plan" can become the basis, or even the
+      driving force, for a legacy data conversion or a conversion of
+      fresh clinical data then so much the better when it comes to the
+      flow of processes and their traceability to achieve this data
+      conversion.<br>
+    </p>
+    <h2>Legacy Data Conversion Plan &amp; Report<br>
+    </h2>
+    A template document has been published entitled <a target="_blank"
+href="http://www.phusewiki.org/wiki/index.php?title=Legacy_Data_Conversion_Plan_%26_Report">Legacy
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      Data Conversion Plan &amp; Report</a> that gives direction as to
+    what such documentation might look like. A few lines down the page
+    gives you a link to the template document <a target="_blank"
+      href="http://www.phusewiki.org/wiki/images/4/4d/LDCP_Template.pdf">Legacy
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      Data Conversion Plan and Report</a>. On the last page of this
+    template we see the layout of the metadata that does the conversion
+    over to the DM domain. However, in reality, the data conversion to
+    SDTM is more complicated. <br>
+    <br>
+    What we see in that template document is going to have to be a lot
+    more complicated for real-world conversion of legacy data or fresh
+    clinical trial data over to SDTM. I envisage this conversion plan
+    being held in a multi-page spreadsheet and it will not only state
+    the plan of the conversion but will also act as the metadata to
+    perform the conversion. SAS would then read in the pages of the
+    spreadsheet and actually perform the conversion directly from its
+    contents. However, having a "Legacy Data Conversion Plan" is a good
+    approach and this can also be applied to fresh clinical trial data
+    that needs help in being transformed into the SDTM structure. This
+    page assumes that all the pharmaceutical companies will eventually
+    go down this path to transform their legacy data into the SDTM
+    format for the purposes of allowing researchers to analyse their old
+    data, as is being done for the "Anonymization" a.k.a.
+    "De-Identification" project that became active and working at the
+    beginning of 2015. <br>
+    <br>
+    As explained, any real-world conversion of legacy data would have to
+    be represented in a far more detailed way than the template document
+    shows for it to explain the processes that need to be performed.
+    This page will fully explore this topic and come up with a much
+    better representation of the "Legacy Data Conversion Plan" that can
+    be delivered to regulatory authorities as well as act as the
+    metadata to drive the conversion process. Not only for legacy data
+    but fresh clinical trial data as well. The first complication is
+    that in almost all cases, it will be necessary for this to be a two
+    phase conversion, as will be explained in the following section.
+    <h2>SDTM+ and SDTM</h2>
+    SDTM+, pronounced "SDTM plus", is an intermediate phase in the
+    transformation over to SDTM (which many people refer to as "pure
+    SDTM"). SDTM+ will contain sponsor variables that will have to be
+    dropped from pure SDTM or moved to the CO (Comments) domain or the
+    SUPPQUAL (Supplementary qualifiers) domain. In its SDTM+ form the
+    sponsor can see the data more clearly and have confidence of the
+    contents being correct. This will normally be kept for checking
+    purposes and a following transformation will run on this data to
+    move comment fields to the CO domain and supplementary qualifiers to
+    the SUPPQUAL domain. It is this final pure SDTM data that is the
+    source of data for the tabulation reports. Indeed, if it were not,
+    then the clinical reporting would not be CDISC compliant since SDTM
+    stands for Standard Data Tabulation Model and is the agreed source
+    of data for tabulations. When data is sent to regulatory
+    authorities, they will likely run their own tabulations on this
+    data. The sponsor will have been expected to have run their
+    tabulations on this data and not SDTM+ data. If the reviewer notices
+    any discrepancies between the values in the sponsor tabulation and
+    their own then the sponsor will have to explain why, purely based on
+    their derivations on the SDTM data. This is something that some
+    pharmaceutical companies do not recognize in that they have amended
+    legacy pre-CDISC code modules to run on SDTM data instead but they
+    might be building complex data structures behind the scenes and
+    reporting on this complex structure. This would make their reporting
+    module non-CDISC compliant as the whole point of the SDTM format is
+    to be the official source of data tabulations and all sponsors are
+    expected to use it and in a traceable way.
+    <p>So what you will see on this page is code for the two processes -
+      transformation to SDTM+ and then transformation from SDTM+ to
+      SDTM. These two processes are shown entirely separately as the
+      processes are very different.<br>
+    </p>
+    <p>When it comes to real-world data, we will find that SDTM+ and
+      SDTM domains might be composed of multiple "components" that have
+      to be transformed separately and then combined. This will be
+      explained in the next section.<br>
+    </p>
+    <h2> Domain components</h2>
+    The transformation to SDTM+ will assume the possibility of a single
+    domain being created from multiple components, rather than just
+    having multiple sources that can be SET'ed together or MERGE'd and
+    transformed as a whole into a single domain. Multiple components are
+    needed where the structure of one component is fundamentally
+    different to other components such that it needs its own set of
+    metadata to transform it into a form that can eventually be combined
+    with other components to form the final domain. And when components
+    come together, it is essential that they have identical data
+    structures. For this reason, each component needs to take its data
+    structure from a single source and not have them defined separately,
+    otherwise differences are likely to occur and the structure of the
+    final domain would be unpredictable when combined.
+    <p>Most domains will have a single component. A few will have
+      multiple components that are combined together. In both cases, a
+      sort will be done on the key variables and then the sequence
+      number will be assigned based on this order and changes to the
+      value of a sequence-id variable that is expected to be USUBJID.
+      Once a new value for the sequence-id variable is detected then the
+      sequence number count is reset to zero. This sequence number count
+      is very important since when non-SDTM values are moved to the CO
+      and SUPPQUAL domains then the record in which they are linked to
+      will be identified by the USUBJID value and this sequence number.
+      Without both these values, it would be impossible to link the
+      comments or supplementary values back to the original observation
+      that gave rise to them (the only exception to this is the DM
+      domain which has only one record per subject and so a sequence
+      number is not required). </p>
+    <h2> Some efficiency considerations</h2>
+    The pharmaceutical industry is, for sure, <b>Big Data</b>. There
+    can be more than a million observations in a clinical trial. For
+    pooled studies, there can be tens of millions of observations. It is
+    a pity that some software vendors do not recognize the "Big Data"
+    nature of the pharmaceutical industry and therefore offer products
+    that do not run efficiently on large volumes of data. High
+    efficiency is important, where Big Data is involved, and the
+    techniques you will see described on this page are designed with
+    high efficiency and Big Data in mind.<br>
+    <br>
+    Before we touch on efficiency issues, I want you to notice that
+    nowhere in my code am I doing any checking. I think it is a good
+    idea to have code that does checking, but I don't want to have it as
+    part of the main process flow of converting data. The reason for
+    this is that the FDA might ask for your code so they can get
+    clarification on some data conversion issues. Maybe what is in the
+    "Legacy Data Conversion Plan and Report" still leaves them with some
+    doubts. The system on this page <b>generates</b> SAS code on the
+    fly. So long as MPRINT is in effect then the SAS code will be echoed
+    to the SAS log as "MPRINT" lines (with all code indentation lost)
+    and for this to be understandable to an investigator after
+    extracting these lines from the log then the code needs to be kept
+    as simple as possible. And that is why there is no checking done in
+    the system described on this page. It is a good idea to do checking,
+    but not to have it as part of your final data conversion process for
+    reasons of the clarity of the code written to the log. I recommend
+    you do the same. Many programmers are tempted to make code "better"
+    by adding functionality and making it more complicated. I suggest
+    you keep it simple. There will be room for a lot of checking and
+    improvements but this should all be aimed at making the contents of
+    the "<b>Legacy Data Conversion Plan &amp; Report</b>" perfect. This
+    is your plan and the one you are going to give to the FDA. Its
+    contents should be perfect and the system should just run it.
+    <h2> WORK library efficiency</h2>
+    Using the SAS WORK library efficiently has increased in importance
+    since those designing the computing environment realized that SAS
+    jobs would run a lot faster if the WORK library were mapped to a
+    solid state drive connected directly to the server's PCI-E bus
+    instead of sending this data back and forth down the network to a
+    mass data storage unit. There is a huge increase in data
+    transmission speed if this is done. Programmers need to realize that
+    this change has happened and to do all their data manipulation tasks
+    in the WORK library, rather than perhaps use the output library, but
+    only use as much WORK space as they need and "give it back" by
+    deleting data no longer needed in the WORK library. I will describe
+    the process flow I have in mind for this and it will give you a
+    first look at the code for building SDTM+. I will use a naming
+    convention for datasets for illustration purposes only. What you
+    actually end up naming these datasets and the variables is up to
+    you, if and when you put your SDTM+ code together. I would be
+    expecting datasets such as <b>component_tables</b> that you see
+    mentioned below to be held in a separate library for metadata, but I
+    am making no recommendations. It might be held in a spreadsheet that
+    is read by SAS. Or SAS could read it from a spreadsheet and copy it
+    out to a metadata library. Whatever! For the purposes of the
+    pseudocode I will be writing, <b>component_tables</b> is the
+    component tables metadata, wherever it might be stored.<br>
+    <p>For my example, I am imagining I have a dataset named <b>component_tables</b>
+      with the variables MEMNAME and DOMAIN in it. I want to loop
+      through it and build the components for each DOMAIN and then when
+      finished, combine the components into the final domain and write
+      it out to the SDTM+ library and then delete the components and the
+      domain from the WORK library. I will assume that my SDTM+ library
+      has the libref SDTMPLUS. There are other variables in the <b>component_tables</b>
+      dataset including SOURCE_DATA in a form that the macro <a
+        target="_blank" href="Spectre/utilmacros/combine.sas"><b>%combine</b>
+      </a>can recognize and use and MEMLABEL for the component dataset
+      label (useful if the sponsor decides to keep the individual
+      components in the SDTM+ library for checking purposes). </p>
+    <p>I will assume that I have a dataset <b>domain_tables</b> with
+      columns named MEMNAME and MEMLABEL for the domain name and dataset
+      label (there will be other columns needed that will be explained
+      later).<br>
+    </p>
+    <p>I will also assume I have a dataset <b>domain_columns</b> with
+      the variable attributes in it as would be listed in
+      SASHELP.VCOLUMN with some additional columns in it including
+      SORTORD and SEQVAR for the sorting order and sequence reset
+      variable (normally USUBJID) in it. SORTORD is numeric and SEQVAR
+      is a one character character variable that is non-blank for the
+      sequencing variable. The sequencing variable needs to be one of
+      the sort keys - usually SORTORD=1 (there will be other extra
+      variables such as DROP_SDTM that indicate that the variable needs
+      to be dropped from the pure SDTM domain). There will be other
+      variables we need such as SDTM_Core as a text variable to contain
+      the words "required", "expected" and "permissible".<br>
+    </p>
+    <p>(Note that there is no <b>component_columns</b> dataset as the
+      component column information has to come from <b>domain_columns</b>
+      to ensure consistency).<br>
+    </p>
+    <p>For clarity, in the code below I will not bother showing the
+      "PROC SQL NOPRINT" and "QUIT" statements. It will be clear when I
+      am using SQL and when I am not. If you see me using some macros
+      that you do not recognize then these are macros that you can
+      download from this web site. </p>
+    <p>What is important here is that you understand the process and see
+      how I am clearing down the WORK library after each build of the
+      target domain. Some of the code is pseudo code that will be
+      expanded upon later. <br>
+      &nbsp;
+      <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+        <tbody>
+          <tr>
+            <td><tt>PROC SQL NOPRINT;<br>
+                <br>
+                %let domains=;</tt> <br>
+              <tt>select distinct domain into :domains separated by ' '
+                from component_tables;<br>
+                <br>
+                QUIT;<br>
+              </tt>
+              <p><tt>%macro buildplus;<br>
+                </tt></p>
+              <p><tt>&nbsp; %do d=1 %to %words(&amp;domains);</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; %let
+                  domain=%scan(&amp;domains,&amp;d,%str( ));</tt> </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; PROC SQL NOPRINT;</tt></p>
+              <p><tt>&nbsp;&nbsp;&nbsp; select memlabel into :dmnlabel
+                  separated by ' '</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; from domain_tables where
+                  memname="&amp;domain";</tt> </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; %let sortkeys=;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; select distinct sortord, name
+                  into :dummy separated by ' ', :sortkeys separated by '
+                  '</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; from domain_columns</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; where memname="&amp;domain" and
+                  sortord is not missing;</tt></p>
+              <p><tt><br>
+                  &nbsp;&nbsp;&nbsp; *-- Keep a list of variables from
+                  the domain for a final "keep" --;<br>
+                  &nbsp;&nbsp;&nbsp; *-- in case data plugging has added
+                  unwanted
+                  variables.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  --;<br>
+                  &nbsp;&nbsp;&nbsp; %let dmnvars=;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; select distinct name into
+                  :dmnvars separated by ' '</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; from domain_columns</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; where memname="&amp;domain";</tt>
+              </p>
+              <p><tt><br>
+                  &nbsp;&nbsp;&nbsp; %let seqvar=;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; select name into :seqvar
+                  separated by ' '</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; from domain_columns</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; where memname="&amp;domain" and
+                  seqvar is not missing;</tt> </p>
+              <p><tt><br>
+                  &nbsp;&nbsp;&nbsp; %let components=;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; select memname into :components
+                  separated by ' ' from component_tables</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; where domain="&amp;domain";</tt>
+              </p>
+              <p><tt><br>
+                  &nbsp;&nbsp;&nbsp; %do c=1 %to
+                  %words(&amp;components);</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let
+                  component=%scan(&amp;components,&amp;c,%str( ));</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *-- component
+                  dataset label --;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let complabel=;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; select memlabel into
+                  :complabel separated by ' ' from component_tables</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; where
+                  memname="&amp;component";</tt> </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *-- component source
+                  data --;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let compsource=;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; select source_data
+                  into :compsource separated by ' ' from
+                  component_tables</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; where
+                  memname="&amp;component";</tt> </p>
+              <pre><tt>&nbsp;&nbsp;&nbsp;   *-- read the source data and combine into the dataset _combine --;<br>      QUIT;</tt><tt><br>      %combine(%nrbquote(&amp;compsource));</tt><br>      PROC SQL NOPRINT;<br></pre>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Build &amp;component
+                  ................</tt> </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; %end;&nbsp; %*-- end of building components
+                  --;</tt> </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; QUIT;</tt></p><p><tt>
+                  &nbsp;&nbsp;&nbsp; %if %words(&amp;components) GT 1 %then %do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DATA &amp;domain;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SET &amp;components;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; run;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PROC SORT data=&amp;domain;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BY &amp;sortkeys;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; run;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; %end;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; %else %do;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PROC SORT data=&amp;component
+                  out=&amp;domain;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BY &amp;sortkeys;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; run;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; %end;</tt> </p>
+              <p><tt><br>
+                  &nbsp;&nbsp;&nbsp; DATA
+                  SDTMPLUS.&amp;domain(label="&amp;dmnlabel");</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; retain hold_seq 0;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SET
+                  &amp;domain(keep=&amp;dmnvars);</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; by &amp;sortkeys;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if first.&amp;seqvar then
+                  hold_SEQ=0;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; hold_seq=hold_seq+1;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp;domain.SEQ=hold_seq;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; domain="&amp;domain";</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; drop hold_seq;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; run;</tt> </p>
+              <p><tt><br>
+                  &nbsp;&nbsp;&nbsp; PROC DATASETS NOLIST;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DELETE &amp;domain
+                  &amp;components _combine;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; QUIT;</tt> </p>
+              <p><tt>%mend buildplus;<br></tt></p><p><tt>%buildplus;<br></tt></p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </p>
+    <h2> Using formats and informats for efficiency</h2>
+    Consider that your AE and LAB datasets might contain a million
+    observations or more. When building your SDTM+ domains it is very
+    likely that you will need to use the reference start date for each
+    subject to calculate the visit day. But if you MERGE or JOIN with
+    the demography data to add this variable then the performance will
+    be impacted and any extra variables added will need to be dropped
+    from the final dataset in any case. So consider creating formats and
+    informats from the demography dataset (which is very small) that map
+    the subject number to these important values and use these formats
+    and informats in your transformation process to avoid doing a JOIN
+    or MERGE.
+    <p>Once you have these formats and informats set up then you can
+      write your own small macros, that are effectively code
+      substitution macros, that reference these formats and informats
+      and can be used directly in SAS data step code. </p>
+    <p>If you build formats and informats based on data then you need to
+      take into account that there may be no data that meets your
+      criterion and yet you need to make sure there is at least one
+      observation present for the format or informat to be created. Here
+      is an example of a "missing" observation being created in building
+      an informat in case there are no observations that meet the
+      criteria. <br>
+      &nbsp;
+      <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+        <tbody>
+          <tr>
+            <td><tt>&nbsp; *-- make the visit day (with blank armcd)
+                informat --;</tt> <br>
+              <tt>&nbsp; data _visitdy;</tt> <br>
+              <tt>&nbsp;&nbsp;&nbsp; retain fmtname "visitdy" type "I";</tt>
+              <br>
+              <tt>&nbsp;&nbsp;&nbsp; if _n_=1 then do;</tt> <br>
+              <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; start=9999;</tt> <br>
+              <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+label='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';</tt>
+              <br>
+              <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output;</tt> <br>
+              <tt>&nbsp;&nbsp;&nbsp; end;</tt> <br>
+              <tt>&nbsp;&nbsp;&nbsp; %if
+                %sysfunc(exist(source.e_tv2))&nbsp;</tt> <br>
+              <tt>&nbsp;&nbsp;&nbsp; or
+                %sysfunc(exist(source.e_tv2,VIEW)) %then %do;</tt> <br>
+              <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set
+                source.e_tv2(keep=visitnum visitdy armcd</tt> <br>
+              <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                where=(missing(armcd)))</tt> <br>
+              <tt>&nbsp;&nbsp;&nbsp; %end;</tt> <br>
+              <tt>&nbsp;&nbsp;&nbsp; %else %do;</tt> <br>
+              <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set
+                source.e_tv(keep=visitnum visitdy armcd</tt> <br>
+              <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                where=(missing(armcd))</tt> <br>
+              <tt>&nbsp;&nbsp;&nbsp; %end;</tt> <br>
+              <tt>&nbsp;&nbsp;&nbsp; ;</tt> <br>
+              <tt>&nbsp;&nbsp;&nbsp; start=visitnum;</tt> <br>
+              <tt>&nbsp;&nbsp;&nbsp; label=strip(put(visitdy,best12.));</tt>
+              <br>
+              <tt>&nbsp;&nbsp;&nbsp; output;</tt> <br>
+              <tt>&nbsp; run;</tt> <br>
+              <tt>&nbsp; proc format cntlin=_visitdy;</tt> <br>
+              <tt>&nbsp; run;</tt></td>
+          </tr>
+        </tbody>
+      </table>
+    </p>
+    <h2> Using the %lstattrib macro for assigning variable attributes</h2>
+    You can download the <a target="_blank" href="Spectre/utilmacros/lstattrib.sas">%lstattrib</a> macro from
+    this web site that will greatly help you with setting up target
+    domain attributes. For each of the component domains you build you
+    will need to apply the attributes from the final target domain. The
+    macro can accept a dataset in the same form you get from
+    SASHELP.VCOLUMN or DICTIONARY.COLUMNS.
+    <p>There is another important consideration: you will be mapping
+      data from a source dataset to your domain component and in many
+      cases the input and output variables will have the same name but
+      their types ("char" or "num") might be different. This will cause
+      errors. To avoid such errors then you need to alter your component
+      variable names such as using "NEW_" as a prefix and keep only
+      these "NEW_" variables in the output dataset. Then, when you read
+      this data in at the next stage, you can rename all these variables
+      by dropping the "NEW_" prefix. You will see how to do this in some
+      code that follows.</p>
+    <p>The %lstattrib macro started out as a tool to detect the
+      structure of a dataset and echo to the SAS log the data step code
+      to create the same structure. This was for use in pooling study
+      data to ensure that data coming from different sources had an
+      identical structure. The macro ended up with much more
+      functionality. Instead of supplying a dataset name to it to copy
+      its structure, a dataset with a list of attributes as would be
+      obtained from SASHELP.VCOLUMN could be supplied instead to the
+      dsattr= parameter. Then functionality was added so that the
+      segments of the data step code that create the variables in the
+      correct order in the LENGTH statement and the initialisation of
+      the variables and the ATTRIB of the variables and the KEEP list
+      could be routed to separate temporary files so that they could be
+      %include'd in a data step. %lstattrib even has its own online user
+      manual which you can find <a target="_blank" href="lstattrib.html">here</a>.</p>
+    <p>What follows is an example of how the attributes of a data set
+      can be used and a prefix "NEW_" can be added to the variable names
+      to avoid the conflict where a source variable and target variable
+      have the same name but are of different types. The conflict is
+      removed by using this prefix of "NEW_" which is an easy matter to
+      drop the prefix using a RENAME statement. You will see the code in
+      the first box and what was written to the SAS log when the code
+      was run.</p>
+    <table border="1" cellpadding="2" cellspacing="2" width="100%">
+      <tbody>
+        <tr>
+          <td bgcolor="#ffffff" valign="top">
+            <pre><br>*-- get the variables attributes in the same style as dictionary.columns --;<br>%cont2dict(sashelp.snacks);<br><br>*-- Keep only the columns needed to define these variables --;<br>*-- in a data step and sort into variable number order.  --;<br>proc sort data=_cont2dict<br>(keep=varnum name type length format informat label);<br>  by varnum;<br>run;<br><br>*-- display the contents of the dataset --;<br>data _null_;<br>  set _cont2dict;<br>  put (_all_) (=);<br>run;<br><br>*-- list the attributes to the log but using NEW_ as a variable prefix --;<br>%lstattrib(dsattr=_cont2dict,namepref=NEW_);<br><br><br>*-- get ready to route the length, initialisation and attributes --;<br>*-- (plus keep list after the attributes) code segments to       --;<br>*-- temporary files for later inclusion in a data step.          --;<br>filename len  TEMP;<br>filename init TEMP;<br>filename attr TEMP;<br><br>*-- route the code segments to the temporary files --;<br>%lstattrib(dsattr=_cont2dict,namepref=NEW_,<br>dsset=,lenfile=len,initfile=init,attrfile=attr);<br><br>*-- use the code segments to create the dataset --;<br>data test;<br>%include len  / source;<br>%include init / source;<br>  OUTPUT;<br>%include attr / source;<br>run;<br><br>*-- free the temporary files --;<br>filename len  CLEAR;<br>filename init CLEAR;<br>filename attr CLEAR;<br><br>*-- Rename all the variables by dropping the first 4 characters --;<br>*-- of the variable name to get rid of the NEW_ prefix.         --;<br>data test2;<br>  set test(rename=(%editlist(%varlist(test),'&amp;item=%substr(&amp;item,5)')));<br>run;<br><br>*-- list the attributes to the log to show that the variables --;<br>*-- have lost the NEW_ prefix but otherwise have the same     --;<br>*-- order and attributes as they should have.                 --;<br>%lstattrib(test2);<br><br>*--------------------------------------------------------------;<br></pre></td></tr></tbody></table><p>&nbsp;
+      When the above code was run, this is what appeared in the SAS log:</p><table border="1" cellpadding="2" cellspacing="2" width="100%"><tbody><tr><td bgcolor="#ffffff" valign="top"><pre><br>339<br>340   *-- get the variables attributes in the same style as dictionary.columns --;<br>341   %cont2dict(sashelp.snacks);<br>342<br>343   *-- Keep only the columns needed to define these variables --;<br>344   *-- in a data step and sort into variable number order.  --;<br>345   proc sort data=_cont2dict<br>346   (keep=varnum name type length format informat label);<br>347     by varnum;<br>348   run;<br><br>NOTE: There were 6 observations read from the data set WORK._CONT2DICT.<br>NOTE: The data set WORK._CONT2DICT has 6 observations and 7 variables.<br>NOTE: PROCEDURE SORT used (Total process time):<br>      real time           0.00 seconds<br>      cpu time            0.00 seconds<br><br><br>349<br>350   *-- display the contents of the dataset --;<br>351   data _null_;<br>352     set _cont2dict;<br>353     put (_all_) (=);<br>354   run;<br><br>FORMAT=  INFORMAT=  TYPE=num NAME=QTYSOLD LENGTH=8 VARNUM=1 LABEL=Quantity sold<br>FORMAT=  INFORMAT=  TYPE=num NAME=PRICE LENGTH=8 VARNUM=2 LABEL=Retail price of product<br>FORMAT=  INFORMAT=  TYPE=num NAME=ADVERTISED LENGTH=8 VARNUM=3 LABEL=Advertised (1=yes)<br>FORMAT=  INFORMAT=  TYPE=num NAME=HOLIDAY LENGTH=8 VARNUM=4 LABEL=Holiday (1=yes)<br>FORMAT=DATE9. INFORMAT=  TYPE=num NAME=DATE LENGTH=8 VARNUM=5 LABEL=Date of sale<br>FORMAT=  INFORMAT=  TYPE=char NAME=PRODUCT LENGTH=40 VARNUM=6 LABEL=Product name<br>NOTE: There were 6 observations read from the data set WORK._CONT2DICT.<br>NOTE: DATA statement used (Total process time):<br>      real time           0.00 seconds<br>      cpu time            0.00 seconds<br><br><br>355<br>356   *-- list the attributes to the log but using NEW_ as a variable prefix --;<br>357   %lstattrib(dsattr=_cont2dict,namepref=NEW_);<br><br>******  Attributes obtained from _cont2dict  ******;<br>DATA xxxxxx;<br>  *- The order of the variables in the following LENGTH statement matches -;<br>  *- the variable order in the original dataset so do not change.         -;<br>  LENGTH NEW_QTYSOLD 8 NEW_PRICE 8 NEW_ADVERTISED 8 NEW_HOLIDAY 8 NEW_DATE 8<br>         NEW_PRODUCT $ 40<br>         ;<br><br>  *- The MERGE or SET statement for the input dataset(s) should go here. -;<br>  SET yyyyyy;<br><br>  *- Overwrite the following missing values with what you are populating the  -;<br>  *- variables with. You may have to change the order of the variables where  -;<br>  *- there are dependencies such that the source variable is populated first. -;<br>  *- If you follow this method then when you get notes in the log about       -;<br>  *- uninitialised variables you will know that you are trying to populate a  -;<br>  *- variable with another variable that does not exist. You also avoid the   -;<br>  *- problem of spelling a variable name incorrectly when you assign a value  -;<br>  *- to it which can easily happen if there are a large number of variables.  -;<br><br>  NEW_QTYSOLD    = .  ;<br>  NEW_PRICE      = .  ;<br>  NEW_ADVERTISED = .  ;<br>  NEW_HOLIDAY    = .  ;<br>  NEW_DATE       = .  ;<br>  NEW_PRODUCT    = ' ';<br><br>  *- Cancel existing formats and informats in the input dataset(s) -;<br>  FORMAT   _all_ ;<br>  INFORMAT _all_ ;<br><br>  *- Assign output variable attributes -;<br>  ATTRIB<br>    NEW_ADVERTISED               label="Advertised (1=yes)"<br>    NEW_DATE       format=DATE9. label="Date of sale"<br>    NEW_HOLIDAY                  label="Holiday (1=yes)"<br>    NEW_PRICE                    label="Retail price of product"<br>    NEW_PRODUCT                  label="Product name"<br>    NEW_QTYSOLD                  label="Quantity sold"<br>    ;<br><br>  *- KEEP statement for the variables listed above -;<br>  KEEP NEW_ADVERTISED NEW_DATE NEW_HOLIDAY NEW_PRICE NEW_PRODUCT NEW_QTYSOLD<br>       ;<br>RUN;<br><br>358<br>359<br>360   *-- get ready to route the length, initialisation and attributes --;<br>361   *-- (plus keep list after the attributes) code segments to       --;<br>362   *-- temporary files for later inclusion in a data step.          --;<br>363   filename len  TEMP;<br>364   filename init TEMP;<br>365   filename attr TEMP;<br>366<br>367   *-- route the code segments to the temporary files --;<br>368   %lstattrib(dsattr=_cont2dict,namepref=NEW_,<br>369   dsset=,lenfile=len,initfile=init,attrfile=attr);<br><br>370<br>371   *-- use the code segments to create the dataset --;<br>372   data test;<br>373   %include len  / source;<br>NOTE: %INCLUDE (level 1) file LEN is file E:\DATA\MedSas\SASWork\_TD21656_INHAS00917_\#LN00081.<br>374  +  LENGTH NEW_QTYSOLD 8 NEW_PRICE 8 NEW_ADVERTISED 8 NEW_HOLIDAY 8 NEW_DATE 8<br>375  +         NEW_PRODUCT $ 40<br>376  +         ;<br>377  +<br>NOTE: %INCLUDE (level 1) ending.<br>378   %include init / source;<br>NOTE: %INCLUDE (level 1) file INIT is file E:\DATA\MedSas\SASWork\_TD21656_INHAS00917_\#LN00082.<br>379  +  NEW_QTYSOLD    = .  ;<br>380  +  NEW_PRICE      = .  ;<br>381  +  NEW_ADVERTISED = .  ;<br>382  +  NEW_HOLIDAY    = .  ;<br>383  +  NEW_DATE       = .  ;<br>384  +  NEW_PRODUCT    = ' ';<br>385  +<br>NOTE: %INCLUDE (level 1) ending.<br>386     OUTPUT;<br>387   %include attr / source;<br>NOTE: %INCLUDE (level 1) file ATTR is file E:\DATA\MedSas\SASWork\_TD21656_INHAS00917_\#LN00083.<br>388  +  *- Cancel existing formats and informats in the input dataset(s) -;<br>389  +  FORMAT   _all_ ;<br>390  +  INFORMAT _all_ ;<br>391  +<br>392  +  *- Assign output variable attributes -;<br>393  +  ATTRIB<br>394  +    NEW_ADVERTISED               label="Advertised (1=yes)"<br>395  +    NEW_DATE       format=DATE9. label="Date of sale"<br>396  +    NEW_HOLIDAY                  label="Holiday (1=yes)"<br>397  +    NEW_PRICE                    label="Retail price of product"<br>398  +    NEW_PRODUCT                  label="Product name"<br>399  +    NEW_QTYSOLD                  label="Quantity sold"<br>400  +    ;<br>401  +<br>402  +  *- KEEP statement for the variables listed above -;<br>403  +  KEEP NEW_ADVERTISED NEW_DATE NEW_HOLIDAY NEW_PRICE NEW_PRODUCT NEW_QTYSOLD<br>404  +       ;<br>NOTE: %INCLUDE (level 1) ending.<br>405   run;<br><br>NOTE: The data set WORK.TEST has 1 observations and 6 variables.<br>NOTE: DATA statement used (Total process time):<br>      real time           0.00 seconds<br>      cpu time            0.00 seconds<br><br><br>406<br>407   *-- free the temporary files --;<br>408   filename len  CLEAR;<br>NOTE: Fileref LEN has been deassigned.<br>409   filename init CLEAR;<br>NOTE: Fileref INIT has been deassigned.<br>410   filename attr CLEAR;<br>NOTE: Fileref ATTR has been deassigned.<br>411<br>412   *-- Rename all the variables by dropping the first 4 characters --;<br>413   *-- of the variable name to get rid of the NEW_ prefix.         --;<br>414   data test2;<br>415     set test(rename=(%editlist(%varlist(test),'&amp;item=%substr(&amp;item,5)')));<br>416   run;<br><br>NOTE: There were 1 observations read from the data set WORK.TEST.<br>NOTE: The data set WORK.TEST2 has 1 observations and 6 variables.<br>NOTE: DATA statement used (Total process time):<br>      real time           0.00 seconds<br>      cpu time            0.00 seconds<br><br><br>417<br>418   *-- list the attributes to the log to show that the variables --;<br>419   *-- have lost the NEW_ prefix but otherwise have the same     --;<br>420   *-- order and attributes as they should have.                 --;<br>421   %lstattrib(test2);<br><br>******  Attributes obtained from test2  ******;<br>DATA xxxxxx;<br>  *- The order of the variables in the following LENGTH statement matches -;<br>  *- the variable order in the original dataset so do not change.         -;<br>  LENGTH QTYSOLD 8 PRICE 8 ADVERTISED 8 HOLIDAY 8 DATE 8 PRODUCT $ 40<br>         ;<br><br>  *- The MERGE or SET statement for the input dataset(s) should go here. -;<br>  SET yyyyyy;<br><br>  *- Overwrite the following missing values with what you are populating the  -;<br>  *- variables with. You may have to change the order of the variables where  -;<br>  *- there are dependencies such that the source variable is populated first. -;<br>  *- If you follow this method then when you get notes in the log about       -;<br>  *- uninitialised variables you will know that you are trying to populate a  -;<br>  *- variable with another variable that does not exist. You also avoid the   -;<br>  *- problem of spelling a variable name incorrectly when you assign a value  -;<br>  *- to it which can easily happen if there are a large number of variables.  -;<br><br>  QTYSOLD    = .  ;<br>  PRICE      = .  ;<br>  ADVERTISED = .  ;<br>  HOLIDAY    = .  ;<br>  DATE       = .  ;<br>  PRODUCT    = ' ';<br><br>  *- Cancel existing formats and informats in the input dataset(s) -;<br>  FORMAT   _all_ ;<br>  INFORMAT _all_ ;<br><br>  *- Assign output variable attributes -;<br>  ATTRIB<br>    ADVERTISED               label="Advertised (1=yes)"<br>    DATE       format=DATE9. label="Date of sale"<br>    HOLIDAY                  label="Holiday (1=yes)"<br>    PRICE                    label="Retail price of product"<br>    PRODUCT                  label="Product name"<br>    QTYSOLD                  label="Quantity sold"<br>    ;<br><br>  *- KEEP statement for the variables listed above -;<br>  KEEP ADVERTISED DATE HOLIDAY PRICE PRODUCT QTYSOLD<br>       ;<br>RUN;<br><br>422<br>423   *--------------------------------------------------------------;<br></pre></td></tr></tbody></table><p>You will see me use this technique in the code when the code gets "fleshed out". Here is a far more simple example. I am creating two variables with the prefix "new_" in a data step. I keep the two variables with the prefix "new_" but when I output the dataset I rename the variables so they do not have the "new_" prefix. I am using the macro <a target="_blank" href="Spectre/utilmacros/editlist.sas">%editlist</a> for that that you can download from this web site.<br></p><table border="1" cellpadding="2" cellspacing="2" width="100%"><tbody><tr><td bgcolor="#ffffff" valign="top"><pre>%let varlist=x y;</pre><pre>data test(rename=(%editlist(&amp;varlist,'new_&amp;item=&amp;item')));<br>  new_x=1;<br>  new_y=2;<br>  keep new_x new_y;<br>  label new_x="new x" new_y="new y";<br>run;</pre></td></tr></tbody></table><h2>Your Key to Success<br></h2><p>Before I go any further, I would like to ensure you that you have a "Key to Success" available to you. That is in thinking through (planning) what goes on in your computer. If you can think your intentions through and it seems possible then chances are that it <b>is</b> possible. You have to be able to imagine the data stored on your computer. Don't feel limited by what "packages" you are supposed to use because, for almost certain, they will act as obstructions to thwart your implementations. But imagine if you have SAS on your computer then you know about SAS datasets. You know that the SAS datasets can be linked using key variables and their values. "Think" using what you are most familiar with. If you need more expertise then hire that expertise to help you understand what the possibilities are for the data structure you are already familiar with and to help you think up a solution based on a better appreciation of those possibilities. The actual, final implementation might be very different but it can still mimic the "plan" you come up with. Once you have a working plan that will work on whatever database structure you are familiar with then don't let people knock you off your plan using the excuse that you must implement your plan using a different package and it is not possible using that package. In that case, it means that the package is inadequate. "<b>Go with what you Know</b>" is the advice I give. Ignore all packages that cannot give you what you want because without them, you will be better off. Use native file structures instead until somebody comes up with a better package. If you can think your requirements through using the native file structure of the computer language you are using (or could use on the computer you are working on) then you can implement that solution and that is senior to being told to use a package or database system on that computer that cannot achieve the same. Many of these packages and database systems designed for clinical reporting metadata are not fit for purpose and cannot match good use of native programming file structures. It is these packages that cause the problems the pharmaceutical companies are having at the moment. To give examples from my own experience and those of a colleague, there was a "hierarchical object-oriented" metadata database we were supposed to use that you could not run SQL on or any queries to see the data you had put in and that needed to be rebuilt for metadata structure changes which was very costly and slow. These factors combined made it unusable. And there was "key logging" software that tracked key strokes and wrote it to a log and this was supposed to be for "traceability" purposes demanded by the FDA. Except that this "traceability" was meant to be for visual use by the FDA data reviewers who could not be expected to scan logs, nor be interested in what was in them. One day, they might get it right. But we might have to wait a few years until that happens.<br></p><p>On leaving this section, I would like you to consider the scenario where you know you can implement a solution yourself but you very much doubt that it would be possible if you were forced to use bought-in package(s) to do this. It won't be your decision - it will be that of senior management after you have voiced your concerns that it might not be possible to deliver the goods using the bought-in package(s). Here, <b>BIG money</b> can be lost and with no working system at the end of the day. The record loss from a single pharmaceutical company I have heard about is $35m for a non-working system. That is an awful lot of money for Management to choose to lose if, without the package(s), it could all have been implemented for $3.5m or much less.<br></p><h2>The metadata structure needed for SDTM+ and SDTM creation<br></h2><p>After spending three years converting data from legacy structures into SDTM structure (via an SDTM+ stage) it has become clear to me that the metadata structure that was once assumed is no longer fit for purpose. So what you see here is a "back to basics" redesign with all the conventional thinking stripped back to what is actually needed for the metadata to achieve transformation over to SDTM. You might have noticed that I am using conventional naming standards for the tables I am defining such as using MEMNAME for the dataset/table name, NAME for the variable/column name etc.. This is a deliberate effort on my part to push back the metadata into being more "SAS-like". Conventional thinking was that variables in legacy data are moved across into SDTM on a one-to-one basis and so you see this represented as legacy data on the left of a spreadsheet crossing a boundary line and becoming SDTM data on the right of the boundary line. But in practice, it does not work that way. Sometimes, multiple SDTM variables rely on a single legacy data variables and these SDTM variables may store the value and different attributes on the legacy variable, and so you would get repeats of the legacy variable on the left. Sometimes an SDTM variable can be filled with a constant that you define (such as you adding a COMPONENT column to your SDTM+ domains so that you know what table rows came from what component domain - something I would recommend for SDTM+ review purposes). Sometimes that SDTM variable is filled using multiple variables, one of which might not be present in the input dataset such as when assigning visit day and using the reference start date that is in the legacy Demography dataset. All these things invalidate the metadata structure if the assumption is made that there is one-to-one mapping of legacy variables to SDTM variables and if it does not work that way then it is a bad idea to make it fit in with incorrect assumption as this would compromise the metadata structure and could lead to hierarchical absurdities that might be represented in the metadata database such as parent variables with their attributes having child variables of the same name relying on their parent for their characteristics. And once we have gone down this path then Vital Signs groups such as BMI, PULSE will be a parent with children for the different variables associated with these categories but their won't be a clear entity as the parent that will link the child variable back to what defines them like "BMI" and "PULSE". People have been trying to get these parent-child relationships right for years. But such a thing has no role to play in a "Legacy Data Conversion Plan and Report". It is best to abandon this structure and fill the target variables according to to a defined value which may or may not reference source variables. This is what the more commonly used template conversion code is doing for transforming legacy data to SDTM - there are no parent/child relationships in template conversion code. And where the assignment is one-to-one with a variable then if it is useful to show the type and length of the source variable and target variable then to do so in <b>comment fields</b>, clearly labelled as such, because that will make it clear that these comment fields will not play a part in the transformation process.<br></p><p>People are still trying to make this old problematic structure fit, it being human nature not to want to let go of something which has already involved a large amount of non-returnable investment "<a target="_blank" href="https://en.wikipedia.org/wiki/Sunk_costs">sunk costs</a>", but in so doing they are compromising their metadata structure and damaging their business interests.<b> Never compromise your metadata structure!</b> The moment you do that, you have lost your way and are heading towards a failure at some time in the future. It is better to throw away all your past work and to rewrite everything than to continue down a bad path, especially in the world of computing, where progress is made through major changes rather than through gradual evolution.<br></p><p>So where does that leave us with what is required for SDTM creation? We have the current structure of the legacy input datasets. An extract from DICTIONARY.TABLES and DICTIONARY.COLUMNS will give us that structure (or you can use my <a target="_blank" href="Spectre/utilmacros/cont2dict.sas">%cont2dict</a> macro, which simply runs a "proc contents" but changes the formats and informats to the style used by DICTIONARY.COLUMNS, to circumvent messages being written to the log when your libraries refer to some cross environment librefs) and this should be part of the legacy data conversion plan. I would name this as SOURCE_TABLES and SOURCE_COLUMNS and as part of SOURCE_TABLES I would add LIBNAME in case your source data is coming from more than one library. As for the output structure, then for any domain component, its variable attributes need to come from DOMAIN_COLUMNS so that if a domain is composed of more than one component then its structure is exactly the same. So that just leaves us with the list of variables in each components and the value assigned to it. I would name that table as COMPONENT_COLUMN_VALUES with the variables MEMNAME (for the name of the component table),&nbsp; NAME (for the variable name) and VALUE (for what gets assigned to the component variable). But we will need more for real-world legacy data conversion. We might require a CONDITION for whether we populate the variable or not. Plus there is another important consideration -- that is the transformation from a "flat" (or "horizontal") input data structure to a "long" (or "vertical") structure. If you think of your VS ("Vital Signs") data then you have groups of variables such as BMISTD, BMIU and perhaps other BMI variables that are all linked to BMI ("Body Mass Index"). Each group of variables exists in your source VS data in "flat" (or "horizontal") form with other groups of variables like PULSE and WEIGHT but each group needs to be written to your SDTM+ data in "long" (or "vertical") form. I use the term "flat" for this so what is needed is a "flat identifier" which I would give a column name FLID to. For the FLID value you would use the root of the variable names such that all BMI-related variables would have the same text "BMI" as the FLID, all PULSE variables would have the same text "PULSE" as the FLID etc.. Also, for some visits, maybe one or more groups of vital signs were not planned to be collected so they will all be missing. You would not want to write these missing values to SDTM in this case and so you will need a condition to output these values and I would call that FLID_OPCOND for the "flat to long output condition".<br></p><p>So to summarize, when it comes to the difficult topic of what needs to be in the metadata for assigning values to the component columns then since we have the input variable attributes defined in SOURCE_COLUMNS and the output variable attributed defined in DOMAIN_COLUMNS then all that is needed is MEMNAME, NAME, VALUE, CONDITION, FLID and FLID_OPCOND. This may not be pretty to look at and will lack context and explanation (but comment columns can be added as desired) but it is all that is required for assigning values to component variables and so that is what we need to use. <br></p><h2>Metadata derived from the overarching metadata database</h2><p>Our metadata must be correct and work well at a fundamental level so that it drives our data conversion process. It also needs to be humanly understandable to a reviewer to be acceptable within the "Legacy Data Conversion Plan and Report". But this metadata will be at a clinical trial level and needs to be derivable from an overarching metadata database that applies at the project level that will link to project-specific definitions. If you have the time to think about the simple structure set out on this page, you will see how it could be derived from such a global database. The transformation metadata could be derived from the subset of data collection modules used and the fields collected that apply at the trial level. This global database does not have to exist as a vendor product implementation. In fact, the vendor products that exist appear to be forcing a possibly unsuitable database architecture on the users and dictating the structure of the metadata it must contain and I do not see this leading to success for client-specific implementations, which might vary to some degree from client to client. Instead, it 
+could be locally implemented using SAS tables to allow the users to 
+experimentally implement the solutions that match their needs and to 
+refine their decisions and to phase in new or corrected structures at a pace that suits them. I see this as the only possible route to success.After this has been achieved, which could take a few years, then the metadata database could be moved off SAS and onto something more permanent for permissions and tracking purposes.<br></p><p>There is a lot of flexibility built into the system described on this page. Even if we are converting very old legacy data when, at the time, nobody had any concept of having an agreed-upon data-sharing format such as SDTM, the system on this page should still be able to create SDTM datasets out of it, especially through its use of "domain components", where needed, that get assembled into domains. In my past three years working on this problem, I have concluded that this feature is essential for some trial structures, therefore it makes sense to have this available for all trial data structures.<br></p><p>Slightly off topic but worth mentioning before closing this section is the work done up to date to align the data coming out of the clinical trials database partially towards the SDTM structure. <b>This is a complete waste of time</b>. If the transformation cannot be finished at the database level then it is not worth starting it there. It is far more efficient to keep the database structure as native as possible to the database, be that Medidata RAVE or what have you. This way its structure remains familiar to those experts that might be called in to work on the database. The SDTM structure need only start with the conversion of the data to the SDTM+ format. If this process is abandoned then it would free up the human resources to design and implement the overarching project-driven metadata database. There is a lot of work to be done on this and huge things that can be achieved. For example, the inheritance of the data collection modules and fields that are inherited at trial level could be the basis for the automatic generation of the eCRF. Also, with additional information, the data collection modules and their fields could become the basis for the time points of the efficacy calculations that would become part of the clinical trial report. There is a huge amount that can be achieved and a lot of human resources will be required for the initial design and set up and it would help if some of these human resources could be freed up in stripping the clinical trial database back to its basic structure and no longer trying to make it SDTM-like.<br></p><h2>Handling the metadata for SDTM creation<br></h2><p>So how do we turn the metadata needed for SDTM creation into code that we can use in a SAS program? Well, for a start, the variables in our domain components will be prefixed with "NEW_" but it should be no problem to add this prefix behind the scenes. Initialisation of all the variables will be done by the %lstattrib macro (as previously shown above) so there is not need to put in any special handling for initialising variables. If VALUE is blank then that observation could be ignored -- it could be that it was included for the sake of completeness. Certainly, the --SEQ variables should not be assigned a value as this will be done as part of the transformation process once the domain is assembled and sorted in the right order, so if we saw the --SEQ variable with nothing assigned to VALUE then there is nothing to worry about. As for the "flat to long" ("horizontal to vertical") transformation then we can sort into FLID order and then do an initialisation of all variables affected by FLID value changes for each non-blank FLID then do an "<b>OUTPUT</b>" at the end of each group (if it matches any FLID_OPCOND condition if specified).<br></p><p>A bit more information is needed before we look at this. We are going from an old data structure to a "NEW_" one. The "NEW_" variables might not be there yet. There is nothing in the metadata to tell you in what order these variables are populated with their content nor to inform you that they will start with the prefix "NEW_", which prefix will be dropped on the "rename" statement on the output dataset. Also, you do not know in which order the domain components are being built in. This means that when using "conditional" statements then you need to refer to the data in the input structure and not the output structure. Over the three years working on this legacy/clinical data to metadata-driven SDTM conversion I have seen many references to variables values in the output datasets with the problem that the output dataset might not be there and during building it, the output variable might not have been created at that point. So remember that any conditional statements must refer to the input data structure and not the output data structure.<br></p><p>Now back to the metadata for SDTM creation. It is going to have the variables MEMNAME (for the domain component name), NAME (for the component variable name), VALUE (for the value or expression assigned to it). CONDITION (for any condition based on the input data structure that has to be met when assigning a value to the variable) and FLID_OPCOND for whether to output the FLID group (again, based on the input data structure). In the case of a "flat-to-long" transformation then we need to populate the variables that are not subject to an FLID identifier and then for each FLID value, we need to initialise any variables that are connected to any FLID value, to populate those variables that apply, and then to output that observation for that FLID value.<br></p><p>It is important to find out if there are any FLID values that are non-missing and to know what variables are connected to these values. If this list is non-blank then it tells us we have a "flat-to-long" transformation on our hands. If the list of FLID variables is blank then it is a straight-forward one-to-one transformation. If the value for VALUE is missing then we ignore those cases for that domain component build since we will be handling the initialisation of variables using the %lstattrib macro and we will assume that those variables listed without a VALUE value are there for documentation or convenience, such as we would expect for the --SEQ variables which will be populated after the domain is concatenated (for multiple components) and sorted.<br></p><p>So what follows below is pseudocode to achieve this. Remember that I am assuming you know when I am running SQL or not. I don't have my own copy of SAS to test this with (since they got rid of the SAS Learning Edition). What I am going to do with the metadata for the population of the component variables is to generate SAS code to the temporary file CODEGEN so that it can be "%include"d into a SAS data step along with the temporary files generated by the %lstattrib macro for assigning variables length, initialising those variables, and then assigning the attributes with the "keep" list for those variables being created. It is all very neat and efficient as you will see.<br></p><table border="1" cellpadding="2" cellspacing="2" width="100%"><tbody><tr><td bgcolor="#ffffff" valign="top"><pre>create table _compvalues as<br>select * from component_column_values<br>where memname="&amp;component"<br>and value is not missing<br>order by FLID, FLid_OpCond DESC;<br><br><pre>%let FLvars=;<br>select distinct name into :FLvars separated by ' '<br>from _compvalues<br>where FLid is not missing;</pre></pre><pre><br>filename codegen TEMP;<br><br><br>data _null_;<br>  length str $ 200;<br>  file codegen;<br>  set _compvalues;<br>  %if %length(&amp;FLvars) %then %do;<br>    by FLid;<br>    if FIRST.FLid and FLid_OpCond ne " " then do;<br>      str="if "||trim(FLid_OpCond)||" then do;";<br>      put str;<br>    end;<br>    if FIRST.FLid and not missing(FLid) then do;<br>      str="call missing(%commas(%prefix(NEW_,&amp;FLvars)));";<br>      put str;<br>    end;<br>  %end;<br>  if condition NE " " then str="if "||trim(condition)||" then NEW_"||trim(name)||"="||trim(value)||";";<br>  else str="NEW_"||trim(name)||"="||trim(value)||";";<br>  put str;<br>  %if %length(&amp;FLvars) %then %do;<br>    if LAST.FLid and not missing(FLid) then do;<br>      put "OUTPUT;";<br>      if Flid_OpCond ne " " then put "end;";<br>    end;<br>  %end;<br>run;</pre></td></tr></tbody></table><h2>The updated pseudocode<br></h2><p>We have quite a lot of new programming detail to "flesh out" the previous pseudocode shown in a previous section. Here it comes. I hope you have time to read and understand it.<br></p><table border="1" cellpadding="2" cellspacing="2" width="100%"><tbody><tr><td bgcolor="#ffffff" valign="top"><tt>%let domains=;</tt> <br>
+              <tt>select distinct domain into :domains separated by ' '
+                from component_tables;</tt>
+              <p><tt>%do d=1 %to %words(&amp;domains);</tt> <br>
+                <tt>&nbsp; %let domain=%scan(&amp;domains,&amp;d,%str(
+                  ));</tt> </p>
+              <p><tt>&nbsp; select memlabel into :dmnlabel separated by
+                  ' '</tt> <br>
+                <tt>&nbsp; from domain_tables where
+                  memname="&amp;domain";</tt> </p>
+              <p><tt><br>
+                  &nbsp; %let sortkeys=;</tt> <br>
+                <tt>&nbsp; select distinct sortord, name into :dummy
+                  separated by ' ', :sortkeys separated by ' '</tt> <br>
+                <tt>&nbsp; from domain_columns</tt> <br>
+                <tt>&nbsp; where memname="&amp;domain" and sortord is
+                  not missing;</tt></p>
+              <p><tt><br>
+                  &nbsp; *-- Keep a list of variables from the domain
+                  for a final "keep" --;<br>
+                  &nbsp; *-- in case data plugging has added unwanted
+                  variables.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  --;<br>
+                  &nbsp; %let dmnvars=;</tt> <br>
+                <tt>&nbsp; select distinct name into :dmnvars separated
+                  by ' '</tt> <br>
+                <tt>&nbsp; from domain_columns</tt> <br>
+                <tt>&nbsp; where memname="&amp;domain";<br><br></tt></p><pre>  *-- get ready to route the length, initialisation and attributes --;<br>  *-- (plus keep list after the attributes) code segments to       --;<br>  *-- temporary files for later inclusion in a data step.          --;<br>  filename dmnlen  TEMP;<br>  filename dmninit TEMP;<br>  filename dmnattr TEMP;<br><br><br>  *-- route the code segments to the temporary files --;<br>  %lstattrib(dsattr=domain_columns(where=(memname="&amp;domain")),dsset=,<br>  namepref=NEW_,lenfile=dmnlen,initfile=dmninit,attrfile=dmnattr);</pre><p><tt><br>
+                  &nbsp; %let seqvar=;</tt> <br>
+                <tt>&nbsp; select name into :seqvar separated by ' '</tt>
+                <br>
+                <tt>&nbsp; from domain_columns</tt> <br>
+                <tt>&nbsp; where memname="&amp;domain" and seqvar is not
+                  missing;</tt> </p>
+              <p><tt><br>
+                  &nbsp; %let components=;</tt> <br>
+                <tt>&nbsp; select memname into :components separated by
+                  ' ' from component_tables</tt> <br>
+                <tt>&nbsp; where domain="&amp;domain";</tt> </p>
+              <p><tt><br>
+                  &nbsp; %do c=1 %to %words(&amp;components);</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; %let
+                  component=%scan(&amp;components,&amp;c,%str( ));</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; *-- component dataset label --;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %let complabel=;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; select memlabel into :complabel
+                  separated by ' ' from component_tables</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; where memname="&amp;component";</tt>
+              </p>
+              <p><tt><br>&nbsp;&nbsp;&nbsp; *-- component source data --;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %let compsource=;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; select source_data into
+                  :compsource separated by ' ' from component_tables</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; where memname="&amp;component";</tt>
+              </p>
+              <p><tt><br>&nbsp;&nbsp;&nbsp; *-- read the source data and
+                  combine into the dataset _combine --;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp;
+                  %combine(%nrbquote(&amp;compsource));</tt><br></p><pre><br>&nbsp;   *-- extract the non-missing component variable values --;<br>    create table _compvalues as<br>    select * from component_column_values<br>    where memname="&amp;component"<br>    and value is not missing<br>    order by FLID, FLid_OpCond DESC;<br><br><pre>    *-- get a list of any flat-to-long variables --;<br>   &nbsp;%let FLvars=;<br>    select distinct name into :FLvars separated by ' '<br>    from _compvalues<br>    where FLid is not missing;</pre></pre><pre><br>    *-- create a temporary file to hold the data transformation code --;<br>    filename codegen TEMP;<br><br><br>    *-- Generate the data transformation code --;<br>    data _null_;<br>      length str $ 200;<br>      file codegen;<br>      set _compvalues;<br>      %if %length(&amp;FLvars) %then %do;<br>        by FLid;<br>        if FIRST.FLid and FLid_OpCond ne " " then do;<br>          str="if "||trim(FLid_OpCond)||" then do;";<br>          put str;<br>        end;<br>        if FIRST.FLid and not missing(FLid) then do;<br>          str="call missing(%commas(%prefix(NEW_,&amp;FLvars)));";<br>          put str;<br>        end;<br>      %end;<br>      if condition NE " " then str="if "||trim(condition)||" then NEW_"||trim(name)||"="||trim(value)||";";<br>      else str="NEW_"||trim(name)||"="||trim(value)||";";<br>      put str;<br>      %if %length(&amp;FLvars) %then %do;<br>        if LAST.FLid and not missing(FLid) then do;<br>          put "OUTPUT;";<br>          if Flid_OpCond ne " " then put "end;";<br>        end;<br>      %end;<br>    run;</pre><p><tt><br>&nbsp;&nbsp;&nbsp; *-- Build the domain component --;<br>&nbsp;&nbsp;&nbsp; data &amp;component(rename=(%editlist(&amp;dmnvars,'NEW_&amp;item=&amp;item')),<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; label="&amp;complabel");<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %include dmnlen;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %include dmninit;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set _combine;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %include codegen;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %include dmnattr;<br>&nbsp;&nbsp;&nbsp; run;</tt><tt><br></tt></p><p><tt><br>&nbsp;&nbsp;&nbsp; *-- Clear the data transformation temporary file --;<br>
+&nbsp;&nbsp;&nbsp; filename codegen CLEAR;</tt></p><p><tt><br>&nbsp;&nbsp;&nbsp; *-- delete some temporary datasets --;<br>&nbsp;&nbsp;&nbsp; proc datasets nolist;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; delete _compvalues _combine;<br>&nbsp;&nbsp;&nbsp; quit;<br></tt></p><p><tt>&nbsp; %end;&nbsp; %*-- end of building components
+                  --;</tt> </p>
+              <pre><br>  *-- Clear the domain code segment files --;<br>  filename dmnlen  CLEAR;<br>  filename dmninit CLEAR;<br>  filename dmnattr CLEAR;</pre><p><tt>
+                  <br>&nbsp; *-- Combine the domain components and sort into required order --;<br>&nbsp; %if %words(&amp;components) GT 1 %then %do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; DATA &amp;domain;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SET &amp;components;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; run;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; PROC SORT data=&amp;domain;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BY &amp;sortkeys;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; run;</tt> <br>
+                <tt>&nbsp; %end;</tt> <br>
+                <tt>&nbsp; %else %do;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; PROC SORT data=&amp;component
+                  out=&amp;domain;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BY &amp;sortkeys;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; run;</tt> <br>
+                <tt>&nbsp; %end;</tt> </p>
+              <p><br></p><p><tt>&nbsp; *-- Do all your data plugging in this part of the code. --;<br>&nbsp; *-- For fresh clinical trial data you will need to flag --;<br>&nbsp; *-- the baseline values (or perhaps even create new&nbsp;&nbsp;&nbsp;&nbsp; --;<br>&nbsp; *-- baseline observations) and generate a worst-case&nbsp;&nbsp;&nbsp; --;<br>&nbsp; *-- EPOCH for events.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; --;<br></tt></p><p><tt><br></tt></p><p><tt>&nbsp; *-- Add the sequence number --;<br>&nbsp; DATA
+                  SDTMPLUS.&amp;domain(label="&amp;dmnlabel");</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; retain hold_seq 0;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; SET
+                  &amp;domain(keep=&amp;dmnvars);</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; by &amp;sortkeys;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; if first.&amp;seqvar then
+                  hold_SEQ=0;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; hold_seq=hold_seq+1;</tt><br><tt>&nbsp;&nbsp;&nbsp; </tt><tt>&amp;domain.SEQ=hold_seq;<br>&nbsp;&nbsp;&nbsp; </tt><tt>domain="&amp;domain";</tt><tt><br>&nbsp;&nbsp;&nbsp; drop hold_seq;<br>&nbsp; run;</tt> </p>
+              <p><tt><br>&nbsp; *-- delete the domain and its components from the WORK library --;<br>
+                  &nbsp; PROC DATASETS NOLIST;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; DELETE &amp;domain
+                  &amp;components;</tt> <br>
+                <tt>&nbsp; QUIT;</tt> </p>
+              <p><tt>%end;&nbsp; %*-- end of building domains --;<br><br></tt></p></td></tr></tbody></table><h2>Checking the "required" variables for missing values</h2>Once the SDTM+ domain is constructed in the WORK library and before it is written out to the SDTMPLUS library then you may want to check whether any of the "required" variables have a missing count greater than zero. This is not shown in the pseudocode above because whether you do this and how you intend to report "required" variables that have any missing values is up to you. The macro <a target="_blank" href="Spectre/utilmacros/misscnt.sas">%misscnt</a> can be very useful for this purpose. It lists variables with a positive missing count, showing the variable name and the missing count for that variable. It writes this as a list to a global macro variable. You also have the option of asking for the same information to be written to a dataset that will have the variables NAME and COUNT in it. Again, only variables with a positive missing count are displayed or written to an output dataset if requested. Here is a snippet of pseudocode that is using the %misscnt macro for this purpose:<br><br><table border="1" cellpadding="2" cellspacing="2" width="100%"><tbody><tr><td bgcolor="#ffffff" valign="top"><pre><br>%let reqvars=;<br>select distinct name into :reqvars separated by ' '<br>from domain_columns<br>where memname="&amp;domain" <br>and substr(upcase(left(SDTM_Core)),1,1) = "R";<br><br>options nomprint;<br>%misscnt(&amp;domain,keep=&amp;reqvars,dsout=_misscnt);<br>option mprint;<br></pre></td></tr></tbody></table><h2>The extra work of converting fresh clinical data</h2><p>If you are converting old study data then you normally have all the values you need. You will have baseline flags set or baseline values calculated. You will have a study period set somewhere. But for fresh clinical data then you have to do these things yourself. You might need to add the columns BASELINE_CALC and BASELINE_CALC_COMMENTS to DOMAIN_TABLES to indicate what method is being used to flag baseline values (or even create extra baseline observations) and what columns are used in identifying these baseline values, such as what parameters are used in addition to USUBJID. So if we have a baseline_calc content of:<br></p><p>MEAN / USUBJID LPARMCD LPOS<br></p><p>... then we might call a baseline macro such as this:<br></p><p>%blmean(USUBJID LPARMCD LPOS);<br></p><p>This would have to be explained somewhere in the Legacy Data Conversion Plan. <br></p><p>You will likely need to build <b>formats</b> and <b>informats</b> that map unique subject ids to important values such as reference start date. You will need to explain this in the conversion plan and show the code if need be. The source datasets and variables used to create these formats and informats might be study specific. Although they will have predictable variable names and dataset names after they have been converted over to the SDTM structure, they cannot be used as the source for building the formats we need to create the SDTM datasets. That is because they do not exist or might not exist at the time you need to build the formats and informats. This is one of the problems with the conversion process. That is why the code to build these formats and informats is sometimes needed in the plan. If there is a neat way of doing this in the metadata and I think of it or somebody tells me a good way to to this using metadata, I will update this page to show people how.<br></p><p>You will need <b>in-datastep macros</b> (note that there is no ending semicolon for these in-datastep macros) that you will using as part of the component values specification such as one for calculating visit day such as:<br></p><table border="1" cellpadding="2" cellspacing="2" width="100%"><tbody><tr><td bgcolor="#ffffff" valign="top"><pre><br>%macro visitday(datevar);<br>  &amp;datevar - input(subjid,rfstdtfmt.) + (&amp;datevar GE input(subjid,rfstdtfmt.))<br>%mend visitday;</pre></td></tr></tbody></table><p>All these will need to be listed in the plan.<br></p><p>You might want to use an output conditional for domains so you might need to have an OPCOND column in DOMAIN_TABLES so you can specify an output condition. Now you have seen the above pseudocode you will know where to add this and now how to populate macro variables and resolve them later in the code.<br></p><p>It is extra work but it needs to be specified somewhere where the reviewer can see it and understand it. It all needs to be in the plan and be simple to understand. You should not be using tricks in the code to create values in an invisible way. It all needs to be in the plan and the plan should be complete and easy to understand.</p><p><br></p><h2>So we got to SDTM+&nbsp; --&nbsp; how do we get to pure SDTM?<br></h2><p>So we got to the stage where we have built our SDTM+ domains. This list of domains was picked up from <b>component_tables</b>, not from <b>domain_tables</b>. <b>domain_tables</b> will have extra domains in it and the column attributes attributes will be in <b>domain_columns</b>. In these SDTM+ domains we will have variables that are not allowed in the pure SDTM structure. These extra variables are defined in <b>domain_columns</b> but with an identifier such that if DROP_SDTM is not a blank space then it should be dropped from pure SDTM. It is not just a dropping process, though. Most of these fields are "supplementary qualifiers" and if their contents are non-blank, they will be kept in a separate "supplementary qualifier" table with pointers back to the pure SDTM data records so that these qualifiers can be linked back and joined with the original records. The same goes for "comments" in the SDTM+ tables. These comments should not be thrown away if non-blank. They need to be written to a "comments" domain (called CO) and again have links back to the record so they can be joined with the correct record if need be. Finally, there will be variables that just get dropped as they were put there only for review purposes. Earlier, I suggested that you create a variable named COMPONENT to place the domain component name in so that for domains built from multiple components, you know which records belonged to which components. This will need a DROP_SDTM marker if you have done this, to make sure it is not in the pure SDTM structure. These values are not going to be moved anywhere. They were just useful for review purposes and can now be discarded. So the supplementary data we want to keep, and the supplementary data we do not want to keep will all be marked as DROP_SDTM and all will be dropped when we move data from our SDTMPLUS library to our pure SDTM library. So what we need is more metadata that tells us what to do with the data we want to keep. So for the data we want to keep, we copy it from the SDTMPLUS library and hold it in the SDTM library and then we copy the SDTMPLUS domains over to the SDTM library, dropping any variables marked as DROP_SDTM.<br></p><p>At this point I would like to warn you about some of the complications about moving the data we want to keep to some SDTM domains. Some of this data we want to keep will be numeric. Some of it will be character. In a data step or in PROC SQL, a variable will be character or numeric but cannot have the possibility of being either in the code. This would cause a syntax error. SAS is happy to convert character to numeric or numeric to character but will do so based on its own rules but this might not be sufficient for our purposes. To get around this problem then in some cases we need to know whether a variable is character or numeric in a macro statement and then tailor the SAS code being generated depending on whether a variable is character or numeric. This can make things complicated. This will be explained later.<br></p><p>In storing this extra data in the SDTM library, I have opted to use PROC SQL to "insert" into the table. There is no particular reason for this. I could also do it by creating datasets and "appending" it to the SDTM table being built. I might go down that path in the future. But for now, I will explain how I am setting up the empty tables with the correct structure with zero observations in them and how I insert into them.<br></p><p>You will be able to tune into this process after I have detailed the creation and updating of the CO ("Comments") domain.<br></p><h2>The CO domain</h2><p>The CO domain is the most interesting one to learn about when it comes to the transition of data from SDTM+ to SDTM. Once you know how to handle that, then the other domains are easy. What makes CO interesting is that it might already exist in the SDTMPLUS library (the same might be true for the FA domain so all the comments about the CO domain might apply to the FA domain as well). The CO domain might even have been built with multiple domain components. If it does, then instead of creating it as a zero observation table in SDTM and using PROC SQL to "insert" into it then we can instead make the process faster by just copying the CO dataset from SDTMPLUS to SDTM, dropping all the variables where DROP_SDTM is not missing. If it does not exist in SDTMPLUS then we can create it using the %lstattrib macro, using only those variables where DROP_SDTM is missing. Here is what the code could look like for that:<br></p><table border="1" cellpadding="2" cellspacing="2" width="100%"><tbody><tr><td bgcolor="#ffffff" valign="top"><pre>%let colabel=;<br>select memlabel into :colabel separated by ' '<br>from domain_tables<br>where memname="CO";<br><br><br>%if %sysfunc(exist(SDTMPLUS.CO)) OR %sysfunc(exist(SDTMPLUS.CO,VIEW)) %then %do;
+<br>  %let dropvars=;<br>  select distinct name into :dropvars separated by ' '<br>  from domain_columns<br>  where memname="CO" and drop_sdtm is not missing;<br><br>  data work.CO(label="&amp;colabel");<br>    set sdtmplus.co(drop=&amp;dropvars);<br>  run;<br><br>%end;<br>%else %do;<br><br>  filename len TEMP;<br>  filename init TEMP;<br>  filename attr TEMP;<br><br>  %lstattrib(dsattr=domain_columns(where=(memname="CO" and missing(drop_sdtm))),<br>  dsset=,initfile=init,lenfile=len,attrfile=attr);<br><br>  data work.CO(label="&amp;colabel");<br>    %include len;<br>    %include init;<br>    if 0=1 then OUTPUT;<br>    %include attr;<br>  run;<br><br>  filename len CLEAR;<br>  filename init CLEAR;<br>  filename attr CLEAR;<br><br>%end;<br></pre><br></td></tr></tbody></table><p>There is another interesting thing about the CO domain. That is that not only does it contain the column COVAL, a 200 character field, but it might contain COVAL1, COVAL2, COVAL3, COVAL4 as well, all 200 character fields, if they are needed, to accept comments that are longer than 200 characters. Only "enough" of these variables should be kept such that COVAL will always be there, COVAL plus COVAL1 if the longest comment field is not more that 400 characters etc.. This is an example of how important it is to get the metadata right. It will vary from clinical trial to clinical trial. The metadata that gives instructions to populate these continuation fields will need to have columns that correspond. There will be a few differences between clinical trials that the metadata must capture correctly. It is not a case of "one size fits all" for data conversion.The data conversion process is only as good as your metadata.<br></p><p>This leads us to the next topic, which is what the structure of the metadata needs to be like to create the CO domain. And the answer to that might surprise you. The best structure for it is the most intuitive structure. It will be an all-text table where the columns have the same name as the columns in the CO domain. The important difference is that the metadata tables will say where the data is that needs to go in the CO domain and the condition that might have to be met before a record is output to the CO domain and perhaps contain a "comment" column as well. The values in this table will look different to data you have seen in normal tables. A text string that is meant to be used as literal text will be visibly quoted. If the contents of a column is not quoted, such as a normal-looking variable name, will mean "use the value of that variable". To contrast, the USUBJID column in the CO domain will contain the values of unique subject ids. But in the table used to populate the CO domain, it too will have a column named USUBJID and in all rows, this will have the value "USUBJID" (but not quoted). In this case it means "use the value of the USUBJID variable in the domain you are extracting values from". An important difference.</p><p>We need a name for this table that contains the metadata that tells you where to look and what variables to use to populate the CO domain. I can't think of a good name so I will use <b>pop_co</b> as the table name. Each of these "pop_" tables is tailored to the domain it is populating (by having the same variable names but as text fields) so they will be separate for each domain being populated such as CO, FA and SUPPQUAL so that gives us <b>pop_co</b>, <b>pop_fa</b> and <b>pop_suppqual</b> so far.<br></p><p>Here is a reminder of the columns in the CO domain that we will be populating and that will be contrasted against the columns of the same name in the <b>pop_co</b> table that we will use to populate CO with:<br></p><p>CO domain variables:<br>&nbsp; create table CO<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (studyid&nbsp; char(9)&nbsp;&nbsp; format=$9.&nbsp;&nbsp; label="Study Identifier",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; domain&nbsp;&nbsp; char(8)&nbsp;&nbsp; format=$8.&nbsp;&nbsp; label="Domain Abbreviation",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rdomain&nbsp; char(12)&nbsp; format=$12.&nbsp; label="Related Domain Abbreviation",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; usubjid&nbsp; char(20)&nbsp; format=$20.&nbsp; label="Unique Subject Identifier",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; coseq&nbsp;&nbsp;&nbsp;&nbsp; num(8)&nbsp;&nbsp; format=8.&nbsp;&nbsp;&nbsp; label="Sequence Number",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; idvar&nbsp;&nbsp;&nbsp; char(8)&nbsp;&nbsp; format=$8.&nbsp;&nbsp; label="Identifying Variable",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; idvarval char(200) format=$200. label="Identifying Variable Value",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; coref&nbsp;&nbsp;&nbsp; char(100) format=$100. label="Comment Reference",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; coval&nbsp;&nbsp;&nbsp; char(200) format=$200. label="Comment",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; coeval&nbsp;&nbsp; char(40)&nbsp; format=$40.&nbsp; label="Evaluator",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; visit&nbsp;&nbsp;&nbsp; char(20)&nbsp; format=$20.&nbsp; label="Visit Name",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; visitnum&nbsp; num(8)&nbsp;&nbsp; format=8.2&nbsp;&nbsp; label="Visit Number",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; codtc&nbsp;&nbsp;&nbsp; char(20)&nbsp; format=$20.&nbsp; label="Date/Time of Comment",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cody&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; num(8)&nbsp;&nbsp; format=8.&nbsp;&nbsp;&nbsp; label="Study Day of Comment",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cotpt&nbsp;&nbsp;&nbsp; char(50)&nbsp; format=$50.&nbsp; label="Planned Time Point Name",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cotptnum&nbsp; num(8)&nbsp;&nbsp; format=8.&nbsp;&nbsp;&nbsp; label="Planned Time Point Number",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cotptref char(50)&nbsp; format=$50.&nbsp; label="Time Point Reference"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; );<br></p><p><b>pop_co</b> variables:<br>14&nbsp;&nbsp;&nbsp; CODTC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Char&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 22&nbsp;&nbsp;&nbsp; $22.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $22.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Date/Time of Comment<br>15&nbsp;&nbsp;&nbsp; CODY&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Char&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 17&nbsp;&nbsp;&nbsp; $17.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $17.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Study Day of Comment<br>11&nbsp;&nbsp;&nbsp; COEVAL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Char&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 42&nbsp;&nbsp;&nbsp; $42.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $42.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Evaluator<br>19&nbsp;&nbsp;&nbsp; COMMENT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Char&nbsp;&nbsp;&nbsp; 1000&nbsp;&nbsp;&nbsp; $1002.&nbsp;&nbsp;&nbsp; $1000.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Comment<br>20&nbsp;&nbsp;&nbsp; CONDITIONAL&nbsp;&nbsp;&nbsp; Char&nbsp;&nbsp;&nbsp; 1000&nbsp;&nbsp;&nbsp; $1002.&nbsp;&nbsp;&nbsp; $1000.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; COMMENTS Conditional<br>&nbsp;9&nbsp;&nbsp;&nbsp; COREF&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Char&nbsp;&nbsp;&nbsp;&nbsp; 202&nbsp;&nbsp;&nbsp; $202.&nbsp;&nbsp;&nbsp;&nbsp; $202.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Comment Reference<br>&nbsp;6&nbsp;&nbsp;&nbsp; COSEQ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Char&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 17&nbsp;&nbsp;&nbsp; $17.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $17.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Sequence Number<br>16&nbsp;&nbsp;&nbsp; COTPT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Char&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 52&nbsp;&nbsp;&nbsp; $52.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $52.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Planned Time Point Name<br>17&nbsp;&nbsp;&nbsp; COTPTNUM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Char&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 17&nbsp;&nbsp;&nbsp; $17.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $17.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Planned Time Point Number<br>18&nbsp;&nbsp;&nbsp; COTPTREF&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Char&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 52&nbsp;&nbsp;&nbsp; $52.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $52.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Time Point Reference<br>10&nbsp;&nbsp;&nbsp; COVAL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Char&nbsp;&nbsp;&nbsp;&nbsp; 202&nbsp;&nbsp;&nbsp; $202.&nbsp;&nbsp;&nbsp;&nbsp; $202.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Comment<br>&nbsp;3&nbsp;&nbsp;&nbsp; DOMAIN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Char&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; $4.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $4.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Domain Abbreviation<br>&nbsp;7&nbsp;&nbsp;&nbsp; IDVAR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Char&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 17&nbsp;&nbsp;&nbsp; $17.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $17.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Identifying Variable<br>&nbsp;8&nbsp;&nbsp;&nbsp; IDVARVAL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Char&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 40&nbsp;&nbsp;&nbsp; $40.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $40.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Identifying Variable Value<br>&nbsp;4&nbsp;&nbsp;&nbsp; RDOMAIN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Char&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; $4.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $4.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Related Domain Abbreviation<br>&nbsp;2&nbsp;&nbsp;&nbsp; STUDYID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Char&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9&nbsp;&nbsp;&nbsp; $9.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $9.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Study Identifier<br>&nbsp;5&nbsp;&nbsp;&nbsp; USUBJID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Char&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 20&nbsp;&nbsp;&nbsp; $20.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $20.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Unique Subject Identifier<br>12&nbsp;&nbsp;&nbsp; VISIT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Char&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 22&nbsp;&nbsp;&nbsp; $22.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $22.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Visit Name<br>13&nbsp;&nbsp;&nbsp; VISITNUM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Char&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 22&nbsp;&nbsp;&nbsp; $22.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $22.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Visit Number<br></p><p>It is important to recognise that the <b>pop_co</b> variables are all <b>character</b> because they contain information on <b>where to find things to get the values from</b> to populate CO. They do not contain the values themselves. This is a mental leap that needs to be made so that you can understand how this can act as the basis for metadata to drive the population of CO.<br></p><p>You need to remember that your <b>pop_co</b> and any other <b>pop_</b> table should contain all the variables in the table it is populating except that they will all be character variables (usually slightly longer in length to allow for quotes). In addition to these variables, there will be the variables CONDITION and COMMENT. That is what you need and that is all you need.<br></p><p>Here is the sort of data we might find assigned to the variables of <b>pop_co</b>:</p><p>STUDYID=STUDYID DOMAIN="CO" RDOMAIN="XA" USUBJID=USUBJID COSEQ=&nbsp; IDVAR="XASEQ" IDVARVAL=XASEQ COREF=&nbsp; COVAL=CO_XACOM COEVAL=&nbsp; VISIT=<br>VISITNUM=&nbsp; CODTC=&nbsp; CODY=&nbsp; COTPT=&nbsp; COTPTNUM=&nbsp; COTPTREF=&nbsp; COMMENT=&nbsp; CONDITION=<br></p><p>STUDYID=STUDYID DOMAIN="CO" RDOMAIN="AE" USUBJID=USUBJID COSEQ=&nbsp; IDVAR="AESEQ" IDVARVAL=AESEQ COREF=&nbsp; COVAL=CO_AECOM COEVAL=&nbsp; VISIT=<br>VISITNUM=&nbsp; CODTC=&nbsp; CODY=&nbsp; COTPT=&nbsp; COTPTNUM=&nbsp; COTPTREF=&nbsp; COMMENT=&nbsp; CONDITION=CO_AECOM ne ""</p><p>I will explain how the values shown above drive the population of CO. It is saying that the domain being populated is "CO". For the first stage of populating CO, the source of the data is that given to RDOMAIN which is the "XA" table. That COVAL will be populated using the contents of CO_XACOM in the "XA" table. That in extracting this comments data it can be linked back to the original record in "XA" using the value of STUDYID in that record as the STUDYID, the value of USUBJID in that record as the value of USUBJID, and for full identification we use the "XASEQ" variable with the sequence number value found in XASEQ. There is no conditional set in this first record but obviously you would not want to write the data to CO if the value of CO_XACOM is missing. You can set this as a default conditional in your code somehow.<br></p><p>If you look at the second record then it is picking up the values from the "AE" dataset and COVAL will be populated from CO_AECOM and can be linked back using the identifying variable "AESEQ" using the value to be found in AESEQ. This time there is a conditional but it is an obvious one in that you only do this if CO_AECOM is not missing. This is somethign that should be automatically generated for the first observation so that if CONDITIONAL was missing you would give it the value ' CO_XACOM ne " " '.<br></p><p>What we need to do, therefore, to populate CO with values, is to go through the observation in <b>pop_co</b> one at a time and set up a PROC SQL insert statement that acts on each data source defined to RDOMAIN and extract non-missing values assigned to what we find in the variable assigned to COVAL.<br><br></p><p>And that short description above is the essence of the process for moving the supplementary data we want to keep, that is not allowed to be directly held in the SDTM domains, into the specialised domains that are intended to hold these extra values.<br></p><p><br>Spend all the time you need to to grasp what this process is doing and how the principles can be applied to populating any specialised domain with these values we want to keep.<br></p><p>And once this process of extracting data and populating specialised tables to hold this data is complete, and we have sorted and sequenced these specialised as required (using the same method we used for the SDTMPLUS domains), we can then copy the SDTMPLUS datasets to SDTM and drop the DROP_SDTM variables. That leaves us with pure SDTM data.<br></p><p>Think about what I have written in the previous paragraph and check through the process so that you completely understand what is happening and how this will end up giving you pure SDTM data.<br></p><h2>Looping through pop_co and populating CO<br></h2><p>Only read this section if you have completely understood what is in the previous section. Only when this process of populating the SDTM special domains is fully grasped can we move onto the how to loop through the <b>pop_co</b> table, extracting the values found in each row and setting up the PROC SQL to extract data from the location indicated in <b>pop_co</b>. If you have not fully grasped what is in the previous section then return to it and read it again and think the process through. In this section we look at the nitty gritty details of looping through <b>pop_co</b> and calling a routine to use PROC SQL to insert into the CO domain and it is going to look messy to start with. You need a clear vision of the process to get through this section and the next. <br></p><p>We are going to loop through the <b>pop_co</b> dataset one row at a time, and write out the contents of each column of each row to a macro variable that has the same name as the column name. Then we are going to use those macro variables with their set values to call an %insertinto macro.<br></p><p>First I would like to show you how easy it is to loop through a dataset and write out the contents of each variable to a macro variable named the same as the variable name. I will add some explanation. Any macros you see being used can be downloaded from this web site.<br></p><p>First I set up my "test" data. Note that all three fields are text. I give values to them that might be quoted, just like the pop_co dataset will contain some values quoted and some unquoted, all held in text fields. In the macro xx I set up <b>varlist</b>, <b>v</b> and <b>t</b> as local variables. I use the <a target="_blank" href="Spectre/utilmacros/varlist.sas">%varlist</a> macro to write a list of the variables in the test dataset to the local macro variable <b>varlist</b>. I then assign the list of variables to be "local" in the following line and then I ask for the list of local macro variables and their values to be displayed. When displayed the "XX" indicates that the macro variables are local to the "xx" macro. You then get the macro variable name, followed by its contents. You can see "VARLIST" followed by its content which is "STR1 STR2 STR3". But you also see them above as local macro variables with no content because they were made local by the line "%local &amp;varlist;".<br></p><p>Next I loop through the test dataset for the number of observations is has as determined by the <a target="_blank" href="Spectre/utilmacros/nobs.sas">%nobs</a> macro. Inside this loop I loop through the variable names, the number of which is determined by the <a target="_blank" href="Spectre/utilmacros/words.sas">%words</a> macro. Then for each of these variables, I extract the contents using the <a target="_blank" href="Spectre/utilmacros/getvaluems.sas">%getvaluems</a> macro which not only get the contents but for missing values, turns the missing value into a single quoted space. I then display that macro variable and its content, prefixed by "&gt;&gt;". You can see from the displayed values that they are exactly as they should be.<br></p><table border="1" cellpadding="2" cellspacing="2" width="100%"><tbody><tr><td bgcolor="#ffffff" valign="top"><pre>data test;<br>length str1 str2 str3 $ 40;<br>str1='abcd';str2='"efgh"';str3=' ';output;<br>str1=' ';str2='" "';str3='xxxxxxx';output;<br>run;<br><br>%macro xx;<br>  %local varlist v t;<br>  %let varlist=%varlist(test);<br>  %local &amp;varlist;<br>  %put _local_;<br>  %put;<br>  %do t=1 %to %nobs(test);<br>    %do v=1 %to %words(&amp;varlist);<br>      %let var=%scan(&amp;varlist,&amp;v,%str( ));<br>      %let &amp;var=%getvaluems(test,&amp;var,&amp;t);<br>      %put &gt;&gt; &amp;var=&amp;&amp;&amp;var;<br>    %end;<br>    %put;<br>  %end;<br>%mend xx;<br>%xx;<br><br><br><br>XX STR1<br>XX STR2<br>XX STR3<br>XX T<br>XX V<br>XX VARLIST STR1 STR2 STR3<br><br>&gt;&gt; STR1=abcd<br>&gt;&gt; STR2="efgh"<br>&gt;&gt; STR3=' '<br><br>&gt;&gt; STR1=' '<br>&gt;&gt; STR2=" "<br>&gt;&gt; STR3=xxxxxxx<br><br><br></pre></td></tr></tbody></table><h2>The %insertinto macro<br></h2><p>Once we have extracted the column information from <b>pop_co</b> and written each column value to a macro variable of the same name as the column name then we are ready to call the %insertinto macro that will generate the PROC SQL code that will insert into the domain we are building. Note that this macro does not have parameters that you set values for. It is not a free-standing macro. It acts more like a subroutine.<br></p><table border="1" cellpadding="2" cellspacing="2" width="100%"><tbody><tr><td bgcolor="#ffffff" valign="top"><pre>   /****************************************************<br>    ****************************************************<br>      Define macro to insert into SDTM special domains<br>    ****************************************************<br>    ****************************************************/<br><br>%macro insertinto;<br>  %local v trgtype srctype varlist var;<br><br>  %*- get a list of all the variables in the target domain -;<br>  %let varlist=%varlist(&amp;intodmn);<br><br>  %*- generate the sql code for inserting into the target -;  <br>  INSERT into &amp;intodmn ( %commas(&amp;varlist) )<br>  SELECT<br><br>  %*- Do for every variable in the target table     -;<br>  %*- (there should be a macro variable with an     -;<br>  %*- identical name for every target variable plus -;<br>  %*- macro variables "fromdmn" and "condition").   -;<br>  %do v=1 %to %words(&amp;varlist);<br>    %*- store the variable name being worked on -;<br>    %let var=%scan(&amp;varlist,&amp;v,%str( ));<br><br>    %*- Find out the type of the variable (will be -;<br>    %*- blank if the variable does not exist).     -;<br>    %let trgtype=%vartype(&amp;intodmn,&amp;var);<br><br>    %*- if not the first item then declare the comma from the previous item -;<br>    %if &amp;v GT 1 %then %do;<br>      ,<br>    %end;<br><br>    %*- logic for when defined as a missing value (or blank) -;<br>    %if &amp;&amp;&amp;var EQ ' ' or &amp;&amp;&amp;var EQ . or &amp;&amp;&amp;var EQ %str( ) %then %do;<br>      %*- assign a missing value according the the target variable type -;<br>      %if &amp;trgtype EQ N %then %do;<br>        .<br>      %end;<br>      %else %do;<br>        ' '<br>      %end;<br>    %end;<br><br>    %*- for quoted values then assign as-is -;<br>    %else %if %length(&amp;&amp;&amp;var) GT %length(%sysfunc(dequote(&amp;&amp;&amp;var))) %then %do;<br>      &amp;&amp;&amp;var<br>    %end;<br><br>    %*- Assume macro variable content is a source -;<br>    %*- variable name if we have gotten this far. -;<br>    %else %do;<br><br>      %*- Find out the type of the source variable        -;<br>      %*- (will be blank if the variable does not exist). -;<br><br>      %let srctype=%vartype(sdtmplus.&amp;fromdmn,&amp;&amp;&amp;var);<br><br>      %if &amp;srctype EQ C %then %do;<br>        %if &amp;trgtype EQ N %then %do;<br>          input(&amp;&amp;&amp;var,best16.)<br>        %end;<br>        %else %do;<br>          left(&amp;&amp;&amp;var)<br>        %end;<br>      %end;<br><br>      %else %if &amp;srctype EQ N %then %do;<br>        %if &amp;trgtype EQ N %then %do;<br>          &amp;&amp;&amp;var<br>        %end;<br>        %else %do;<br>          left(put(&amp;&amp;&amp;var,best16.))<br>        %end;<br>      %end;<br><br>      %*- source variable does not exist so plug with a missing value -;<br>      %else %do;<br>        %if &amp;trgtype EQ N %then %do;<br>          .<br>        %end;<br>        %else %do;<br>          ' '<br>        %end;<br>      %end;<br>    %end;<br>  %end;<br><br>  FROM sdtmplus.&amp;fromdmn<br>  WHERE &amp;condition;<br><br>%mend insertinto;<br></pre></td></tr></tbody></table><h2>Pseudocode for the entire SDTM+ to SDTM process<br></h2><p>If you have read through the above sections about how to get to pure SDTM then there have been enough techniques and tools explained to allow us to specify the full process as pseudocode. Here is the situation when it comes to what is in our SDTM+ library: We have perfect SDTM+ data in there that needs to be copied across to the SDTM library, dropping the DROP_SDTM variables. There is data we want to keep so we need to write it to specialised SDTM domains designed to store this information. We have to store this information before we drop the DROP_SDTM variables in the SDTM+ data. Once we have stored everything then we can copy across, dropping the DROP_SDTM variables. But we have to keep in mind that there might be extra datasets that have been placed in the SDTM+ library as part of the verification process. I have recommended setting up a COMPONENT variable in all the SDTM+ domains, marked to be dropped by DROP_SDTM, that identify the domain component table the data came from. But maybe people don't want to do it that way and have copied the domain components across into the SDTM+ library. But no matter, the definitive list of domains are the distinct values values of "domain" that we get from <b>component_tables</b>. So we have our definitive list. I will assign this list to the macro variable <b>dmnstocopy</b>. But some members of this <b>dmntocopy</b> list might be the specialised domains we need to build in SDTM such as the "CO" domain. When we build those domains in SDTM we need to look in SDTM+ to find out if they already exist. If they do exist then we copy across, dropping the DROP_SDTM variables so that we can use that table to insert our values into. If we do that then we have copied across that domain so their entry in <b>dmnstocopy</b> needs to be removed from the list. Then when the building of the specialised SDTM domains is complete then what is left in the <b>dmnstocopy</b> list can be copied across, dropping the DROP_SDTM variables, and all is done.<br></p><p>I will also be assuming some flexibility in the naming conventions for the FA and SUPPQUAL domains. These domains will take their columns definitions from <b>domain_tables</b> and <b>domain_columns</b> and need to have a memname of "FA" and "SUPPQUAL" but I will allow for the name of the output domains to be other than "FA" and "SUPPQUAL" since people may want to keep the data separate for the different source domains. However, this flexibility will be limited in that the SDTMPLUS library will be checked only for domains named "FA" and "SUPPQUAL" for copying across to be inserted into as is done for the CO domain.<br></p><p>Remember that you will be seeing pseudocode. It will not run as it is. I have SQL mixed in with SAS code as I don't want to clutter the code with "PROC SQL NOPRINT" and "QUITS". Below, I will put my looping macro code and "%if" statements inside macros, is this would not work inside "open" SAS code, but in so doing I am not suggesting you name your macros the same. I just want you to be able to see the process clearly so you can implement it in your own code. I will assume the %insertinto macro has been already defined and that the utility macros that I use are on the SASAUTOS path (you can download these "Spectre" utility macros from this web site).<br></p><p>There are certain to be a few small errors in the pseudocode. I do not have access to SAS software at home and so I do not have the ability to test any of the code.<br></p><table border="1" cellpadding="2" cellspacing="2" width="100%"><tbody><tr><td bgcolor="#ffffff" valign="top"><pre>PROC SQL NOPRINT;<br><br>*-- Get an initial list of domains that need to be copied from SDTMPLUS to SDTM --;<br>*-- (with a variable drop list applied). If any of these are special SDTM       --;<br>*-- domains such as CO and FA then they will be copied across early with the    --;<br>*-- DROP_SDTM variables dropped so that they can be inserted into by the SQL.   --;<br><br>select distinct domain into :dmnstocopy separated by ' ' from component_tables;<br><br>QUIT;<br><br><br><br>     /***********************************************<br>      ***********************************************<br>        Define macro to create SDTM special domains<br>      ***********************************************<br>      ***********************************************/<br><br>%macro popsdtm(sdtmdmn   /* SDTM domain (unquoted) as found in component_tables as "domain" */<br>              ,sdtmpop   /* SDTM pop_ dataset (unquoted) */<br>              ,dfltcond  /* Default condition (in single quotes) for outputting the record  */<br>              );<br><br>  %local p v memlabel sortkeys dummy var seqvar dropvars varspop popdmns popdmn<br>         condition intodmn fromdmn<br>         ;<br><br>  %let sdtmdmn=%upcase(%sysfunc(dequote(&amp;sdtmdmn)));<br><tt><br>  PROC SQL NOPRINT;<br><br>  select memlabel into :memlabel separated by ' '</tt> <tt><br>  from domain_tables where memname="&amp;sdtmdmn";</tt> <br><br><tt>&nbsp; %let dropvars=;
+&nbsp; select distinct name into :dropvars separated by ' '
+&nbsp; from domain_columns
+&nbsp; where memname="&amp;sdtmdmn" and drop_sdtm is not missing;<br></tt><br><br><tt>  %let sortkeys=;</tt> <br><tt>  select distinct sortord, name<br>  into :dummy separated by ' ', :sortkeys separated by ' '</tt> <br><tt>  from domain_columns</tt> <br><tt>  where memname="&amp;sdtm" and sortord is not missing;</tt>
+<br></pre><p><tt>&nbsp; %let seqvar=;</tt> <br><tt>&nbsp; select name into :seqvar separated by ' '</tt>
+                <br><tt>&nbsp; from domain_columns</tt> <br><tt>&nbsp; where memname="&amp;sdtmdmn" and seqvar is not
+                  missing;</tt></p><p><tt>&nbsp; QUIT;<br><br><br>&nbsp; *-- Use "lstattrib" to set up code segments to create --;<br>&nbsp; *-- an empty domain we can insert into if we need to. --;<br></tt></p><pre>  filename codelen  TEMP;<br>  filename codeinit TEMP;<br>  filename codeattr TEMP;<br><br>  *-- route the code segments to the temporary files --;<br>  %lstattrib(dsattr=domain_columns(where=(memname="&amp;sdtmdmn" and missing(drop_sdtm))),<br>  dsset=,lenfile=codelen,initfile=codeinit,attrfile=codeattr);</pre><pre><br>  %let varspop=%varlist(&amp;sdtmpop);<br><br>  %do p=1 %to %nobs(&amp;sdtmpop);<br><br>    %let condition=;<br>    %do v=1 %to %words(&amp;varspop);<br>      %let var=%scan(&amp;varspop,&amp;v,%str( ));<br>      %let &amp;var=%getvaluems(&amp;sdtmpop,&amp;var,&amp;p);<br>    %end;<br><br>    %let intodmn=%upcase(%sysfunc(dequote(&amp;domain)));<br>    %let domain="&amp;intodmn";<br><br>    %let fromdmn=%upcase(%sysfunc(dequote(&amp;rdomain)));<br>    %let rdomain="&amp;fromdmn";<br><br>    %if not %length(&amp;condition) %then %let condition=%sysfunc(dequote(&amp;dfltcond));<br><br>    %if not %sysfunc(exist(&amp;intodmn)) %then %do;<br><br>  &nbsp;&nbsp;&nbsp; %if %sysfunc(exist(SDTMPLUS.&amp;intodmn)) %then %do;<br></pre><p><tt>
+    &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; *-- We have the domain in SDTMPLUS so copy&nbsp;&nbsp; --;<br>
+&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; *-- across, dropping the unwanted variables. --;<br>
+&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; DATA &amp;intodmn(label="&amp;memlabel");<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; SET SDTMPLUS.&amp;intodmn(DROP=&amp;dropvars);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RUN;<br>
+    <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *-- Remove from the list of domains to copy to SDTM --;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *-- as we just did that in the previous data step.&nbsp; --;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let dmnstocopy=%sysfunc(removew(&amp;dmnstocopy,&amp;intodmn));<br>
+    </tt><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %end;</tt><tt><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %else %do;</tt></p><pre>  &nbsp;&nbsp;&nbsp;   *-- We do not have the domain in the WORK library or  --;<tt><br>        *-- in the SDTMPLUS library so we use the "lstattrib" --;<br>        *-- generated code segments to create an empty domain --;<br>        *-- to insert into.                                   --;</tt></pre><pre>        DATA &amp;intodmn(label="&amp;memlabel");<br>          %include codelen;<br>          %include codeinit;<br>          if 0=1 then OUTPUT;<br>          %include codeattr;<br>        RUN;</pre><pre><tt>&nbsp;&nbsp;&nbsp;   %end;<br><br>    %end; %*-- end of dataset not in work library --;<br><br>    PROC SQL NOPRINT;</tt><br> &nbsp;  %insertinto;<br>    QUIT;<br></pre><pre>  %end; %*-- end of looping through pop_ dataset --;<br><br><br>  *-- we can clear these down now as they are no longer needed.  --;<br>  filename codelen  CLEAR;<br>  filename codeinit CLEAR;<br>  filename codeattr CLEAR;</pre><tt><br>&nbsp; *-- We have finished building the one or more SDTM special domains&nbsp; --;<br>&nbsp; *-- for this special domain type (CO, FA or SUPPQUAL) so we have to --;<br>&nbsp; *-- find out what got built and then sort and sequence the special&nbsp; --;<br>&nbsp; *-- SDTM domains and copy out to the SDTM library. We can delete&nbsp;&nbsp;&nbsp; --;<br>&nbsp; *-- them from the work library after they have been copied across.&nbsp; --;<br><br>&nbsp; PROC SQL NOPRINT;<br><br>&nbsp; %let popdmns=;<br>&nbsp; select distinct dequote(upcase(domain)) into :popdmns separated by ' '<br>&nbsp; from &amp;sdtmpop;<br><br>&nbsp; QUIT;<br><br><br>&nbsp; %do p=1 %to %words(&amp;popdmns);<br>&nbsp;&nbsp;&nbsp; %let popdmn=%scan(&amp;popdmns,&amp;p,%str( ));<br><br>&nbsp;&nbsp;&nbsp; proc sort data=&amp;popdmn;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; by &amp;sortkeys;<br>&nbsp;&nbsp;&nbsp; run;<br></tt><p><tt>&nbsp; &nbsp; *-- Add the sequence number --;<br>&nbsp;&nbsp;&nbsp; DATA
+                  SDTM.&amp;popdmn(label="&amp;memlabel");</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; retain hold_seq 0;</tt> <br>
+                <tt>&nbsp;&nbsp; &nbsp;&nbsp; SET
+                  &amp;popdmn;</tt> <br>
+                <tt>&nbsp; &nbsp; &nbsp; by &amp;sortkeys;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if first.&amp;seqvar then
+                  hold_SEQ=0;</tt> <br>
+                <tt>&nbsp;&nbsp; &nbsp;&nbsp; hold_seq=hold_seq+1;</tt><br><tt>&nbsp; &nbsp; &nbsp; </tt><tt>&amp;sdtmdmn.SEQ=hold_seq;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </tt><tt>domain="&amp;sdtmdmn";</tt><tt><br>&nbsp;&nbsp; &nbsp;&nbsp; drop hold_seq;<br>&nbsp;&nbsp;&nbsp; run;<br><br>&nbsp; %end;<br></tt> </p>
+              <p><tt><br>&nbsp; *-- We are all done writing them to SDTM so drop from the work library --;<br>
+                  &nbsp; PROC DATASETS NOLIST;</tt> <br>
+                <tt>&nbsp;&nbsp;&nbsp; DELETE &amp;popdmns;</tt> <br>
+                <tt>&nbsp; QUIT;</tt> </p><pre>%mend popsdtm;<br><br><br><br>   /*****************************************************<br>    *****************************************************<br>      Call the macro to create the SDTM special domains<br>    *****************************************************<br>    *****************************************************/<br><br>%popsdtm(CO,pop_co,'&amp;coval is not missing');<br>%popsdtm(FA,pop_fa,'&amp;faorres is not missing');<br>%popsdtm(SUPPQUAL,pop_suppqual,'&amp;qval is not missing');<br><br><br><br>   /******************************************************<br>    ******************************************************<br>      Define and run macro to copy from SDTMPLUS to SDTM<br>    ******************************************************<br>    ******************************************************/<br><br>%macro plus2sdtm;<br>  %local i domain memlabel dropvars;<br>  %do i=1 %to %words(&amp;dmnstocopy);<br>    %let domain=%scan(&amp;dmnstocopy,&amp;i,%str( ));<br><br>    PROC SQL NOPRINT;<br><br><tt>    select memlabel into :memlabel separated by ' '</tt> <tt><br>    from domain_tables where memname="&amp;domain";</tt> <br><br><tt>&nbsp;   %let dropvars=;
+&nbsp;   select distinct name into :dropvars separated by ' '
+&nbsp;   from domain_columns
+&nbsp;   where memname="&amp;domain" and drop_sdtm is not missing;<br><br>    QUIT;<br><br></tt>    DATA SDTM.&amp;domain(label="&amp;memlabel");<br>      SET SDTMPLUS.&amp;domain(drop=&amp;dropvars);<br>    RUN;<br>  %end;<br>%mend plus2sdtm;<br><br>%plus2sdtm;<br><br></pre></td></tr></tbody></table><h2>My misgivings about the SDTM structure<br></h2><p>I have misgivings about the SDTM structure and I hope the reader can follow my reasoning on where it has gone wrong. Consider that it was claimed in 2008 that the SDTM structure could come out of the clinical trial database directly and yet, seven years later as I write this, this has not happened and does not look like it will happen. Did something go wrong that stopped this that was beyond the control of those writing the back ends of the clinical trial databases? I believe that those responsible for designing the SDTM structure basically undermined the concept of the collection of data and its presentation that made it impossible for those working on clinical trial databases to deliver the results that people were expecting. If you cannot see the flaws in the design then what highlights an obvious flaw perfectly is the idea of data exchange such as giving data to external independent investigators who want to do their own analysis on clinical trial data. For them, the agreed format for exchanging data is the SDTM structure. But think what has been added to that structure that is clinical trial specific. For example, a baseline value might be derived where there exists multiple baseline values where it becomes desirable to show the mean of the values or the geometric mean (the geometric mean would be typical for viral loads). This derived value might be fine for sending the data in for submission purposes but for independent investigators who are maybe pooling together data from a therapeutic area across different pharmaceutical companies then it is likely that they would want to set the baseline value in their own way such that it was consistent across all their data sources. So a derived baseline value could be counter productive for their analysis so we should consider whether there should maybe be an "SDEM" structure that is a "Standard Data Exchange Model" for such a purpose and that the SDTM be derived from it. Also, having fields like AESER ("AE Serious?") and other AE fields such as AESEV ("AE Severity"), AEREL ("AE Treatment Related?") and others are very common across all clinical trials and it would help in the data exchange to keep these fields with the records rather than expect the independent investigator to somehow merge these fields back in from the Supplementary datasets being careful to interpret the AESEQ number correctly which when pooled will no longer be unique. There is a clear failing here with the SDTM structure that is thwarting the exchange of data.<br></p><p>There are other problems as well. It seems to me that the DM domain has gone through design changes that make it a catch-all for some derived results such as maximum dose of the study drug for a subject on a trial. But this is not "Demography". This was not the data collected about the subject before they started on the trial. What happens on the trial, such as maximum dose of study drug, should belong to a different domain. By interfering with the DM domain in this way it breaks the link between what was collected about the demography of subjects as entered in the eCRF and undermines that whole concept of standardising data in a useful and logical way.<br></p><p>There are transformations that should be made to standardise data such as naming and content of fields and the transforming of "flat" data into "long" data that help the data exchange process that can then form the basis to be transformed into something suitable for an analysis of the clinical trial data but there are other transformations being made that are not helpful at all. To my mind, it has been these unhelpful transformations that have prevented clinical trial databases from producing useful standardised output.<br></p><p>Unfortunately, I do not see a resolution to these problems. I just see a worsening of the situation that has been worsening already for more than a decade. The pharmaceutical industry used to have a lot of highly technical and excellent SAS programmers who wrote and rolled out SAS applications for their company and there was a lot of exchange of information of technical ideas (and even code) between the companies and if this had been allowed to continue there would be none of the problems the industry is faced with now. But all the pharmaceutical companies decided to remove this technical layer of SAS programmers and by 1995 these people had all but disappeared. The people left behind to run things and apply their ideas were not of the same technical calibre as the people they rid themselves of so any efforts they could make could not result in much success.<br></p><h2>Conclusion</h2><p>What you have seen on this page is a data conversion design good for both legacy data and fresh clinical trial data, that complies with the new standard for converting legacy data which is to have a "<b>Legacy Data Conversion Plan and Report</b>" that is given to the FDA to state how you converted your data and what issues were found. This is a standard that all pharmaceutical companies will have to adhere to. The conversion design you have seen on this page not only complies with the spirit of the plan (but does so in much more detail) but it uses the content of that plan to actually make the conversion in a clear and efficient way and is kept simple enough such that the generated SAS code echoed to the SAS log can act as the basis for the code for review, should any reviewer request a copy of the SAS code in addition to the plan.</p><p><br></p><p><br></p>
+<p>
+
+<!-- Start of StatCounter Code -->
+<script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img src="counter.html" alt="statistics" border="0"></a></noscript>
+<!-- End of StatCounter Code -->
+
+<br>&nbsp;<br>&nbsp;<br><br>
+</p>
+<center>
+<p>Go back to the home <a href="index-2.html">page</a>.
+</p>
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</p>
+</center>
+  
+
+</body>
+<!-- Mirrored from www.datasavantconsulting.com/roland/metasdtm.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+</html>

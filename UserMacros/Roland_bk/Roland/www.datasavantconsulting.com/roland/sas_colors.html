@@ -1,0 +1,307 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/sas_colors.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:42 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="Choosing colors for your html output">
+   <meta name="KeyWords" content="Choosing colors sas html output">
+   <meta name="robots" content="noindex,nofollow">
+   <title>Choosing colors for your html output</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Choosing colors for your html output</h1></center>
+
+<h2>
+Introduction</h2>
+If you used SAS "<b><i>in the old days</i></b>" like I did, the colors
+you were limited to tended to be linked to the printers, or to be more
+precise, the "<b>plotters</b>". These plotters had physical colored pens
+in them and the plotter would pick out one of these pens and physically
+draw with it before replacing the pen and picking out another pen. It used
+to be quite entertaining for me to watch one of these plotters at work.
+The color you chose had to be a color in one of those pens. You could not
+mix colors. Hence you were limited to colors something like BLACK (of course),
+GREEN, RED, YELLOW, BLUE, CYAN, PINK and perhaps a few more.
+<p>Well, today, thankfully, technology has moved on. But for some programmers,
+the thinking hasn't. There are many SAS programmers today who think they
+are still limited to these simple colors. HTML output, using such a limited
+set of colors, looks unappealing. But there are many colors you can use
+and indeed, even from old times, there were many colors you could specify
+in SAS even if a "plotter" could not handle them. You can use up to 255
+different colors in a single sas session and these are held in a "color
+palette" (though anti-aliasing of "TrueType" fonts can take up about 40
+or so of these slots). But <b>what are these colors called and how can
+you find them?</b> This document will explain. After reading this document
+you will be able to find all possible colors and even specify colors that
+have no name and do it with confidence.
+<h2>
+Eight letter colors</h2>
+If you create annotate datasets then your color field is limited to only
+eight characters.&nbsp; There is no point specifying a color like "<b>AntiqueWhite</b>"
+as "proc ganno" will complain that it does not know the color "<b>ANTIQUEW</b>"
+and will tell you that it has mapped the color to another color (usually
+"black"). There are a lot of pleasing colors to use these days like "AntiqueWhite"
+and "DarkSlateGray" but how do you find a list of these colors and how
+do you use them if you are limited to eight characters? It is possible
+to do both. I will explain.
+<h2>
+Regedit and "CX" colors</h2>
+If you have interactive SAS on your computer then start up a sas session
+and in the command window (which you have maybe never used before - it
+is in the top left corner under "File", "Edit", "View", "Tools" etc.) type
+in "<b>regedit</b>" and press "Enter". A "<b>Registry Editor</b>" window
+will appear. Expand out the "COLORNAMES" folder and it will show you an
+"HTML" folder. Click on the HTML folder and a list of color names will
+appear. I just did this and I see "<b>AliceBlue</b>" at the top of the
+list. We'll find out what AliceBlue looks like shortly. But the
+name is <b>nine</b> characters long so how can I use it? Well, I can. To
+the right, in the "Data" column, it says "<b>F0, F8, FF</b>". These are
+hex codes. They are the hex values of the <b>Red, Green, Blue</b> component
+colors. It means that to make this color you need <b>F0</b> worth of <b>red</b>,
+<b>F8</b>
+worth of <b>green</b> and <b>FF</b> (the maximum) worth of <b>blue</b>.
+You can specify this color as an eight character color as "<b>CXF0F8FF</b>".
+The "<b>CX</b>" is always at the start and never changes and tells sas
+that you are using the <b>RGB</b> color scheme (there are other schemes
+but I will not go into them). To familiarize you a bit more with this scheme
+then look down the list for "blue". It's not far below and is under "BlanchedAlmond"
+on my screen. In the "Data" column for "blue" I see "<b>00, 00, FF</b>".
+Again, these are the "red", "green", "blue" hex values so this is <b>00</b>
+for <b>red</b>, <b>00</b>&nbsp; for <b>green</b> and <b>FF</b> (the maximum)
+for <b>blue</b>. So "blue" is everything and "red" and "green" are nothing.
+So instead of using the word "<b>blue</b>" I could specify this color as
+"<b>CX0000FF</b>". Now look for "black". It is above "BlanchedAlmond" on
+my screen and has the RGB hex values "00, 00, 00". That means zero amount
+of the three colors and with zero amount of any of the three colors then
+it is all dark or, in other words "black". "<b>Black</b>" can be specified
+as "<b>CX000000</b>". What about "<b>white</b>"? Can you guess what its
+three color codes are? You might not feel confident to guess at this stage
+so scroll down (the colors are in alphabetical order) and you will see
+that the RGB hex codes for "white" are "FF, FF, FF". In other words, the
+maximum amount of all three colors. You could specify "white" as "CXFFFFFF".
+Just at this point I would like to state that if the three RGB values are
+the same such as "00, 00, 00" or "FF, FF, FF" or "C8, C8, C8" or whatever
+then this is a "neutral color" or, in other words, a "shade of gray" with
+a shade between "black" and "white". The higher the values, the more towards
+"white" is the shade of gray.
+
+<p>Before we finish this section, let's find out what the color "AliceBlue"
+looks like. We can always test a color by setting "goptions" and using 
+"proc gtestit". We could set the background color to be AliceBlue. There
+is no need to use the CX code for this as long color names are accepted by
+the goptions statement. Assuming your interactive sas session is still
+active then run this code.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>goptions reset=all vpos=25 hpos=40 ftext='Arial/Bold' cback=AliceBlue;</tt>
+<p><tt>proc gtestit picture=1;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>If you ran the above sas code you will see that the background of the 
+graphics output is slightly blue. That is AliceBlue. It's a pale color that 
+is hard to see. With a CX code of CXF0F8FF then this should be no big surprise
+as it is not far off from being CXFFFFFF which is the code for "White". Change 
+the goptions "cback" setting to "cback=AntiqueWhite" if you like, to compare. 
+If you work with graphics in sas then you should get used to trying things out 
+using "proc gtestit". It is your friend. I could write you a tool to try out
+colors but you must get into the habit of using "proc gtestit" if you program
+with graphics in sas.  It will help you learn a lot more.
+
+<p>Note that although goptions can work with color names longer than eight
+characters, and you could set ctext=DarkSlateBlue if you wanted to for the default
+text color, if your annotate dataset tries to pick up that value as the default
+then you will get a problem again in that the color name is longer than eight 
+characters. I don't know why that should be - it seems like a bug to me - but we 
+are stuck with it for now.
+
+<h2>
+Old-fashioned eight character sas colors</h2>
+SAS has more than 255 colors you can refer to as a name of eight characters
+or less. I bet you didn't know that. Maybe the reason you didn't know that
+was because they didn't publicize it much so you have got to search them
+out. The complete set of old-fashioned eight-or-less sas colors that were
+kown of at the time can be seen if you Google "sas colors". The first page
+on the list when I do this is the URL I want which is this one.
+<p><a href="http://www.devenezia.com/docs/SAS/sas-colors.html" target="_blank">http://www.devenezia.com/docs/SAS/sas-colors.html</a>
+<p>You will see a complete list of known old-fashioned sas colors plus
+their "CX" codes. The same "CX" code is shown twice, side by side as black
+and white, to make sure you can see at least one of these codes against
+the background color which is the color it represents. Now, although you
+might think you have discovered a treasure trove of colors here, I want
+to warn you against something. I would ask you to scroll right down to
+the end of the page. Just above the bottom five "greenish yellows" you
+will see some of the "yellows" shades. Do you see them? Going upwards it
+reads "moderate yellow", "light yellow", "deep yellow", "strong yellow",
+"brilliant yellow" and "vivid yellow". Now, assuming you are not color
+blind for these colors, I ask you - "<b>Do these shades look yellow to
+you?</b>". Not for me. They look somewhat <b><i>greenish</i></b> to me!
+So, although you have an abundance of eight-or-less character color name
+you can use in your annotate datasets, it might not give you the colors
+you think you are going to get.
+<p>I have taken this same list of colors but knocked out some of the colors
+that are very close to "black" without it being "black". I have also knocked
+out a few very-near-white colors that for me are indistinguishable from
+white and I have a cut down list at the URL below. To this list I have
+added two "CX" grays that I made up plus three modern sas colors I got
+from the COLORNAMES/HTML list (see the previous section) namely "linen",
+"beige" and "wheat". These particular modern colors are good "<b>striping
+colors</b>". I will explain what I mean by that later in this document.
+My color page is at the following URL. On my page I have tried to sequence
+the color shades. Where a color does not fit with the associated color
+shades, such as "yellow" looking nothing like the other shades of "yellow",
+then I have put this color near the start of the page.
+<p><a href="http://www.datasavantconsulting.com/roland/sascolors.html" target="_blank">http://www.datasavantconsulting.com/roland/sascolors.html</a>
+<p>Note that the text font on the page I created looks a bit ugly. I used
+the font "swissb". That's not because I live in Switzerland (I do at the
+time of writing) but because, as I mentioned in the Introduction, if I
+used a TrueType font such as 'Times New Roman' then about 40 of the color
+palette slots would have been used in anti-aliasing the font but I needed
+all the color slots I could have. "Swissb" is a SAS software font that
+does not need any of these color palette slots for anti-aliasing.
+<p>If you are looking at the above page and the modern colors "linen",
+"beige" and "wheat" are not clearly distinguishable, and you are not color
+blind for these colors, then it means your monitor needs adjusting. Try
+reducing the contrast and adjusting the brightness to compensate and the
+colors should be distinguishable. It is important that you can distinguish
+these colors for when you design output where you use "striping colors".
+Don't worry - I'll explain what I mean by "striping colors" shortly.
+<p>Now, before I leave this section, I want to assure you that creating
+color displays as I have done in the page above is not complicated. I have
+used some annotate macros that I wrote myself, but they are not complicated
+either. Here is the code I used to produce the above output. Nervous to
+look at it? Don't be!
+<p><a href="http://www.datasavantconsulting.com/roland/sascolors.sas" target="_blank">http://www.datasavantconsulting.com/roland/sascolors.sas</a>
+<p>You will see a call to <b>%rannomac</b> near the top of the code. This
+is my own version of the SAS-Institute supplied sasautos member %annomac.
+I just don't like using macros with a lot of positional parameters like
+the ones in %annomac, as I can never remember the order of the parameters,
+so I wrote my own macros with named parameters. And besides, I think my
+macros are more useful for the sort of graphics work I do. You can link
+to my annotate macros below. Again, you will see nothing complicated there.
+Don't be afraid of SAS code that creates graphics. It is easier than you
+think.
+<p><a href="http://www.datasavantconsulting.com/roland/rannomac.sas" target="_blank">http://www.datasavantconsulting.com/roland/rannomac.sas</a>
+<h2>
+More on "CX" colors</h2>
+I want you, after reading this document, to have enough confidence to pick
+the colors you want and define them as "CX" colors. Suppose you wanted
+shades of "yellow". You might not be happy with the greenish-looking yellow
+shades that you have seen above as the SAS-Institute supplied colors. I
+want you to be able to choose your range of color shades and give them
+the correct "CX" codes, after maybe a bit of playing around. At this point
+you are probably thinking "<b>you're kidding me</b>". But after looking
+at the next few pages I hope you will be able to tune in on these "CX"
+colors and how to specify them. I have three pages below. All three pages
+show exactly the same colors but do so in different sequences. These have
+been generating using SAS code. The idea behind these pages is to show
+you what "CX" colors look like what so you can both choose these colors
+or make up your own "CX" value colors as you need to.
+<p><a href="http://www.datasavantconsulting.com/roland/cxcolor1.html" target="_blank">http://www.datasavantconsulting.com/roland/cxcolor1.html</a>
+<br><a href="http://www.datasavantconsulting.com/roland/cxcolor2.html" target="_blank">http://www.datasavantconsulting.com/roland/cxcolor2.html</a>
+<br><a href="http://www.datasavantconsulting.com/roland/cxcolor3.html" target="_blank">http://www.datasavantconsulting.com/roland/cxcolor3.html</a>
+<p>Impressive? How did I do it? Can a mere mortal program such a thing?
+Guess what - it's easy! Here is the code I used to generate these pages.
+I just had to change the "name" value for the macro variable and swap round
+the order of "r", "g" and "b" in the "do loops" to produce the three different
+pages.
+<p><a href="http://www.datasavantconsulting.com/roland/cxcolors.sas" target="_blank">http://www.datasavantconsulting.com/roland/cxcolors.sas</a>
+<p>What I want to happen with these color charts is for you to choose
+the colors you want and if not using one of these colors directly, to choose
+your own "CX" codes for them. You might have to do a bit of experimentation
+but then you can base your code on the code links I give on this page.
+Remember that you can always try out your colors using goptions and
+"proc gtestit" as I showed you in a previous section. The "cback=" parameter
+in the "goptions statement" will accept "CX" colors (don't enclose them in quotes).
+<h2>
+Color sequences</h2>
+Part of the intention of creating the same "CX" colors in three different
+sequences, as I did with the three pages above, was to help people pick
+out "color sequences". And what I mean by that is a set of colors that
+progress from one chosen color to another chosen color in a sequence. You
+might want such a sequence to represent the "intensity" increasing of something.
+I created this color page as part of the documentation on a graphical patient
+profiler I am writing. I might need a color sequence that represnets the
+intensity of a dose, for example, that I can use on the display. I guess
+that whatever sequence of colors you come up with is going to be personal
+- I'm not sure there is such a thing as a universally intuitive sequence
+of colors - but whatever sequence you want I hope the three charts will
+help you. As for going from one color to another then if you can't find
+that sequence in those three charts going from left to right or from top
+to bottom then you can maybe find a diagonal progression for what you want.
+And if the colors are not quite right then maybe you will have anough confidence
+with "CX" values to choose them yourself, now you have read this far. And,
+of course, you can try it out using code, maybe using my code examples
+as the basis.
+<h2>
+"Striping colors"</h2>
+I promised you earlier that I would explain what I meant by "striping colors".
+Here goes. It's nothing complicated. What I mean by "striping colors" is
+background colors that help you look across detail lines from left to right
+without your eye accidentally swapping up or down a line. On plain paper,
+you might have faint ruled lines to do this. Ruled lines look cluttered
+on html documents. They sort of add eye detail that you don't need. All
+you need is to be able to scan across a line without dropping down to the
+next line or jumping up to the higher line. The best thing for the eye
+is a background shading color that is very light. "Beige" is a particularly
+good color for this. If you stripe your detail lines alternately with "beige"
+and "white" then it is easy for the eye to follow the line across and stay
+on the same line while at the same time the "beige" color is not telling
+the brain "you need to look at this". "Beige" is a good color for striping.
+I highly recommend its use. But depending on the color scheme you are using,
+"beige" might not be right for you. Since I think striping backgrounds
+are important, especially for the graphical patient profiler I am currently
+working on, I created three striping color pages that you can use to pick
+out a "CX" striping color suitable for your color scheme. They follow below
+and so does the code member I used to generate them.
+<p><a href="http://www.datasavantconsulting.com/roland/cxstrip1.html" target="_blank">http://www.datasavantconsulting.com/roland/cxstrip1.html</a>
+<br><a href="http://www.datasavantconsulting.com/roland/cxstrip2.html" target="_blank">http://www.datasavantconsulting.com/roland/cxstrip2.html</a>
+<br><a href="http://www.datasavantconsulting.com/roland/cxstrip3.html" target="_blank">http://www.datasavantconsulting.com/roland/cxstrip3.html</a>
+<p>OK, suppose you look at the graphics above and you pick a striping color
+that you like. How do you actually go about using that color and producing
+that stripe? Well, I did just that when I produced the above graphics.
+I striped the background and then wrote the "CX" value on top. The code
+that produced the above three examples is <b><i>simple.</i></b> You doubt
+it? Feel you can face the code? Go on - take a risk!
+<p><a href="http://www.datasavantconsulting.com/roland/cxstripes.sas" target="_blank">http://www.datasavantconsulting.com/roland/cxstripes.sas</a>
+<h2>
+Conclusion</h2>
+In this document, you were introduced to the many colors that are available
+for html display using sas, where you can find them and how you can specify
+them using "CX" colors. You were introduced to the full range of colors
+that is possible using "CX" codes and it was explained how they work to
+the extent that you can specify whatever color you wish as a "CX" color.
+"Striping colors", such that they can help you scan detail lines from left
+to right, were explained and many examples given.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="http://www.datasavantconsulting.com/roland/counter.php" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/sas_colors.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:42 GMT -->
+</html>

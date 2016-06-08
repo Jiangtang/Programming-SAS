@@ -1,0 +1,197 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/nulltech.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:08 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="data _null_ report tips and techniques">
+   <meta name="KeyWords" content="data _null_ report tips techniques">
+   <title>Data _null_ report tips and techniques</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+data _null_ report tips and techniques</h1></center>
+<b>[This site is not connected with the SAS Institute]</b>
+<p><b>[last updated - 08 September 2007]</b>
+<h2>
+Introduction</h2>
+There is nothing on this page that is not already on the two pages I have
+written about data _null_ reporting. The page that deals with interfacing
+with the titles system is <a href="datanull.html">here</a> and the one
+that deals with doing stacked-column reports is <a href="stacking.html">here</a>.
+This page only explains techniques used on those pages with more detail.
+This page assumes you are a programmer wwho is not used to creating reports
+using "data _null_" who has been thrown into the field of data _null_ reporting
+because you have been given the task of creating reports that look like
+they could be done with proc report but somehow can not.
+<p>To do data _null_ programming well, you have to learn from somebody
+elses experience. Old-time programmers like me pre-date proc report. It
+didn't exist when I first started using SAS. And when it was offered to
+us, it was at extra cost and we couldn't see the point in having it. Many
+programmers who got into SAS were used to other computer languages. Some,
+like me, are ex-Cobol programmers. They are used to total control of every
+field on every output page -- even controlling the throw of that output
+page. But times change and the limited control that proc report had to
+offer was deemed good enough for most situations. You could do a good report
+in a short time using proc report, so people slowly converted over to using
+it. Yes, it has limitations, but if you can accept those limitations then
+using proc report is more productive than using data _null_. And so nearly
+all programmers around, at the time, converted over to using proc report
+and have long since forgotten their data _null_ skills. But sometimes a
+table shell will not allow you to use "proc report" and if the layout can't
+be negotiated into a layout that proc report can do then you might be forced
+to use data _null_. This page is about the techniques you should use with
+data _null_ reporting.
+<h2>
+Never "put" without an observation</h2>
+Never "put" a line without an observation. "<tt>if last.subject then put;</tt>"?
+That's no good ! If that was the last observation for the subject and for
+all the data in the input dataset and it occured at the very end of the
+report on the very last line then that "put" would cause a page throw and
+a new title with column headers being output. So you have a page being
+output but you have come to the end of your data in any case. You end up
+with a blank page with no data on it. Sure - it's unlikely. But you can
+not trust to luck. If it <b>can</b> happen then it
+<b>will</b> at some
+time and so you can not use code with this weakness in it. So how do you
+get round this? By all means, check for "last.subject" but use an end=
+flag after your dataset so you know when you have got the the last observation.
+If you have specified "end=last" then "<tt>if last.subject and not last
+then put;</tt>" will do the trick. But there are exceptions. If you are
+doing a stacked column report then you could be on your very last observation
+right at the top of a new page and you need to complete your stacked identifier
+values. So suppose there were four of these and you had a variable named
+"count" to keep track then you would have to use "<tt>if not last or count&lt;5
+then put;</tt>".
+<p>The same applies to your "linesleft" variable. You will probably want
+to leave a blank line before your first footnote and will want to start
+a new page. Suppose your variable is named "<tt>ll</tt>" as it often is.
+Then "<tt>if ll&lt;2 then put _page_;</tt>" sounds good. But if it is at
+the end of the data step then there may not be another observation after
+that so you would have to use "<tt>if ll&lt;2 and not last then put _page_;</tt>".
+But if it is directly after the "set" statement then there must be an observation
+otherwise there would not have been that iteration of the data step code
+so "<tt>if ll&lt;2 then put _page_;</tt>" is good.
+<p>Now this section may seem very trivial. But you have got to look after
+silly details like this. You make sure the little things are right before
+you can go on to the more significant things. You have got to start from
+the trivial and work your way up to the important. It is like programming
+backwards and you have got to do it like that. "Look after the pennies
+and the pounds will look after themselves" is an English saying and that
+is the way you have to program "data _null_" reports. Never "think big"
+and then later fill in the smaller details. Always "think small" and work
+your way up when doing "data _null_" reports.
+<h2>
+Make your report "linesize" independent</h2>
+You should not "put" at a specific column, assuming the linesize in effect.
+You need to read the linesize in effect into your data _null_ and you should
+also have a variable you set to your report width and so work out your
+start column from that (startcol=floor((ls-repwidth)/2)+1). You can read
+any option you like in the data _null_ step using the getoption() function
+so you can get all the information you need. At the first iteration of
+the data step (_n_=1) then get and store the linesize value and from the
+report width work out the start column for your report and store it. The
+code has the algorithm for that. Use this "start column" value to "put"
+your values and "put" things not at the start column as an offset from
+this value.
+<h2>
+Using the "titles" and "footnotes" options on the "file" statement</h2>
+Use both the "titles" and "footnotes" statement on the file statement even
+if you intend to handle the titles and footnotes manually. Read the titles
+into a dataset, if required, and then nullify them with a "<tt>title1;</tt>"
+before outputting them but always have that "titles" option present. You
+may get strange page throws if you do not. This is a known <a href="http://www.sas.com/service/techsup/unotes/SN/003/003818.html">bug</a>.
+Titles can always be recreated from a suitable dataset using the %titlegen
+macro if required after you nullified them, so long as the titles are in
+a dataset somewhere.
+<h2>
+Give your data _null_ titles the "proc print" and "proc report" feel</h2>
+The more you can make your "data _null_" behave like "proc print" or "proc
+report", when it comes to titles, the better. If the "byline" option is
+set then put out a dashed "byline". If not, then don't. Does your "by"
+variable have a label? If so, then your dashed byline should have the text
+of your variable label in it on the left of the equals sign. If the variable
+has no label then it should just be the variable name. If that's the way
+"proc report" or "proc print" does it then do it that way with your "data
+_null". Get it to interface with #byval and #byvar entries if they exist.
+Give people the feel that "data _null_" reporting is no different to using
+"proc print" or "proc report" and you will have less opposition to your
+"data _null_" reports. How you do this is already in those two pages. You
+are going to find yourself in a situation whereby you really <b><i>must</i></b>
+do the report using data _null_ but other people are not comfortable with
+it becasue they feel it is "too different" than using "proc report". The
+more you can give it the same feel, the more easily you can dip into "data
+_null_" when you have to without people worrying.
+<h2>
+Watch out for leading spaces</h2>
+When you "put" a string then be careful of leading spaces. If you "put"
+it at a specific column and the string has leading spaces then you will
+lose those leading spaces. You should put it at a position compensated
+for leading spaces. You do this by offsetting by an extra "<tt>length(str)-length(left(str))</tt>".
+<h2>
+put @;</h2>
+Don't forget that a "put" statement need not be a commital. If you follow
+it with a "@" then you have not written out the line yet. You can use this
+technique to "put" out identifying information before you actually "put"
+out a data value. It's called a "trailing at". You can use this to ready
+identifying information and then you can complete it with "put"ting out
+your field or if it is blank then just use a plain "put;" statement to
+commit what you have to output.
+<h2>
+_file_</h2>
+You can load information into the file output buffer and manipulate it
+there before you write it out. If you check the code examples you will
+see that for the "byline" I fill _file_ with dashes up to the length of
+linesize and then substring it with the by= value string.
+<h2>
+Labelled sections of code</h2>
+You will have a section to put out your titles or column headers. Nearly
+everybody calls it "header" and they specify "header=header" in the file
+statement. It is not a reserved word for the label. You can call it anything,
+within syntax limitations. But it doesn't have to be the one and only labelled
+section in your data step. You can have as many as you wish. The "header"
+label will automatically get linked to when a page is thrown so you don't
+have to worry about "link"ing to it. But if you have other pieces of logic,
+like for handling identifier variable information, then you could always
+put this in labelled sections and "link" to it. Don't forget those "return;"
+statements, though.
+<h2>
+"Stacked" identifier information</h2>
+Suppose you have identifier information that is being stacked four deep
+like age/race/sex/weight. Don't assume you have four observations always
+per identifier. You might only have one observation for this group. But
+if you only show the one observation then you will still have to show the
+full age/race/sex/weight. So you will have to keep a count of where you
+are from the start of the group and act if the number of observations was
+not enough to complete the group identifying information. Again, the code
+will show how I have handled this.
+<p>Also consider whether you want to start a new group like this at the
+bottom of a page. If there are only two lines left and your identifier
+information is displayed over four lines then maybe it is better to throw
+a new page before you start. It might be worth your while keeping an observation
+count for each stacked group so if you were stacking four deep and you
+had only one observation then you could easily put this group in the last
+four lines of the page. Since good use of space might be important then
+this might be a wise idea.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<center>
+<p>Go back to the home <a href="index-2.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/nulltech.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:08 GMT -->
+</html>

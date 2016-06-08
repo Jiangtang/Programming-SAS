@@ -1,0 +1,54 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/summary.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:05:03 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="SAS tips and techniques by Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="sas tips techniques">
+   <title>whosgot</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+summary</h1></center>
+<b>[last updated - 31 July 2003]</b>
+<p>This is an exercise in using the <b>sasunixskeleton</b> script. Once
+you have done this you will realise just how easy it is to create a Unix
+utility that runs SAS. I will tell you exactly what to do. First generate
+the script using <b>sasunixskeleton</b>. You are going to call this script
+<b>summary</b>.
+Edit the script. Don't bother filling in the header details as this is
+just a practise. Change the Usage line so if the user has supplied less
+than 2 parameters then the message <b>"Usage: summary varname dsname"</b>
+is displayed. Now for the code. We are going to end up doing a proc print
+so add <b>nocenter</b> to the top options line in the code. Next delete
+all the SAS code after the filename _outfile.. line and put this in instead:
+<pre><b>proc printto print=_outfile;
+run;
+proc summary missing nway data=here.$2;
+&nbsp; class $1;
+&nbsp; output out=summary(drop=_type_);
+run;
+title;
+proc print data=summary;
+run;</b></pre>
+Next make a data directory a current directory and run it on a dataset
+and you will see that it works. It's as simple as that.
+<p>Now you see how easy it is, you are ready to learn more about Unix.
+Go to the Unix tips page using this <a href="unixtips.html">link</a>.
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/summary.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:05:03 GMT -->
+</html>

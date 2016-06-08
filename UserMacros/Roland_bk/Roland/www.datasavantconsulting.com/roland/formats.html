@@ -1,0 +1,210 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/formats.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:04 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Generator" content="Microsoft Word 97">
+   <meta name="keywords" content="sas tips techniques">
+   <meta name="Description" content="fun wirth sas formats">
+   <meta name="Template" content="C:\PROGRAM FILES\MSOFFICE\OFFICE\html.dot">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="sas formats">
+   <title>Fun with formats</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Fun with formats</h1></center>
+<b>[last updated - 25 August 2003]</b>
+<h2>
+Why your format name can't end with a number</h2>
+I bet you've been caught out by this naming limitation before. You want
+your format name to end with a number, because maybe that will match your
+variable name you are formatting, but you get a syntax error. You may wonder
+why this limitation is there. I'll tell you the reason. That is because
+if you create a format you can then use a number at the end to specify
+its length. That is what the number at the end is for. To specify the length
+and that is why a number at the end can not be part of the name of the
+format.
+<p>In the following log you will see I created a format named "sex" and
+then show the effect of putting a number at the end when using the format.
+<pre><b>1&nbsp;&nbsp;&nbsp; proc format;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; value $sex
+3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'M'='Male'
+4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'F'='Female'
+5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;
+NOTE: Format $SEX has been output.
+6&nbsp;&nbsp;&nbsp; run;
+
+NOTE: PROCEDURE FORMAT used:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.04 seconds
+
+7
+8&nbsp;&nbsp;&nbsp; data _null_;
+9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; str='F';
+10&nbsp;&nbsp;&nbsp;&nbsp; put str= str=$sex. str=$sex10. str=$sex3.;
+11&nbsp;&nbsp; run;
+
+str=F str=Female str=Female str=Fem
+NOTE: DATA statement used:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.50 seconds</b></pre>
+You see that $sex3. limits the formatted value to three characters? Maybe
+did not realize that your user-defined formats could be used with a number
+at the end to modify the length but now you can see that you can do this
+and that is why your format name is not allowed to end with a number.
+<h2>
+Using other formats in user-defined formats</h2>
+You can use other formats in your user-defined formats by assigning "other"
+to be acted upon by a format. You can even use a user-defined format in
+this way. Here is an example where the format <b>z3.</b> is assigned to
+<b>other</b>.
+<pre><b>14&nbsp;&nbsp; proc format;
+15&nbsp;&nbsp;&nbsp;&nbsp; value mynum
+16&nbsp;&nbsp;&nbsp;&nbsp; 1='one'
+17&nbsp;&nbsp;&nbsp;&nbsp; 2='two'
+18&nbsp;&nbsp;&nbsp;&nbsp; other=[z3.]
+19&nbsp;&nbsp;&nbsp;&nbsp; ;
+NOTE: Format MYNUM has been output.
+20&nbsp;&nbsp; run;
+
+NOTE: PROCEDURE FORMAT used:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.00 seconds
+
+21
+22&nbsp;&nbsp; data _null_;
+23&nbsp;&nbsp;&nbsp;&nbsp; do i=1 to 4;
+24&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put i=mynum.;
+25&nbsp;&nbsp;&nbsp;&nbsp; end;
+26&nbsp;&nbsp; run;
+
+i=one
+i=two
+i=003
+i=004
+NOTE: DATA statement used:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.10 seconds</b></pre>
+You might use this method to "fix" an existing format. Suppose you wanted
+to change the formatted value of one or two lab parameters to a slightly
+different name then you could "fix" the ones you wanted to and just let
+the "other" ones be acted upon by the format. Here is an example of using
+a format named $labparm and fixing two parameter codes.
+<pre><b>41&nbsp;&nbsp; proc format;
+48&nbsp;&nbsp;&nbsp;&nbsp; value $myparm
+49&nbsp;&nbsp;&nbsp;&nbsp; 'CR'='Creatanine'
+50&nbsp;&nbsp;&nbsp;&nbsp; 'WB'='White blood cells'
+51&nbsp;&nbsp;&nbsp;&nbsp; other=[$labparm30.]
+52&nbsp;&nbsp;&nbsp;&nbsp; ;
+NOTE: Format $MYPARM has been output.
+53&nbsp;&nbsp; run;
+
+NOTE: PROCEDURE FORMAT used:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.00 seconds
+
+54
+55&nbsp;&nbsp; data _null_;
+56&nbsp;&nbsp;&nbsp;&nbsp; length str $ 3;
+57&nbsp;&nbsp;&nbsp;&nbsp; do str='WB', 'POT', 'CR', 'RB';
+58&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put str=$myparm.;
+59&nbsp;&nbsp;&nbsp;&nbsp; end;
+60&nbsp;&nbsp; run;
+
+str=White blood cells
+str=Potassium
+str=Creatanine
+str=Red blood cells
+NOTE: DATA statement used:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.00 seconds</b></pre>
+Note that when you use a format as part of a format then you are supposed
+to supply a length to the end of that format. In the above case I used
+a length of 30. If you omit the format then you get an ugly message in
+your log saying it will default to 40 so you should always supply a length.
+<h2>
+Pictures</h2>
+"Pictures" are created using proc format just like formats are. They are
+very useful for formatting out your data. They are especially useful for
+formatting percentage values where you might have a lower limit on a probability
+or an upper limit on a probability. For example, if you percentage is less
+than 0.1% but higher than zero percent then you might want to display it
+as "&lt;0.1%". Similarly, if you percentage is above 99% but not 100% then
+you might want to display it as ">99%". At these upper and lower limits
+the numbers shown are text and not real values, whereas for other values
+in-between they are real values. The best way to understand it is to see
+one of these percentage pictures that I have used in one of my clinical
+reporting macros.
+<pre><b>proc format
+&nbsp; picture pctfmt (round)
+&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = '(&nbsp; 0%)' (noedit)
+&nbsp; 0&lt;-&lt;1&nbsp;&nbsp;&nbsp; = '( &lt;1%)' (noedit)
+&nbsp; 1-&lt;9.5&nbsp;&nbsp; = '9%)' (prefix='(&nbsp; ')
+&nbsp; 9.5-99&nbsp;&nbsp; = '99%)' (prefix='( ')
+&nbsp; 99&lt;-&lt;100 = '(>99%)' (noedit)
+&nbsp; 100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = '(100%)' (noedit)
+&nbsp; ;
+run;</b></pre>
+You can see that this is defined as a picture and not a format. If you
+look at four of the entries then you can see I have specified "(noedit)"
+against them. That means the numeric values inside should not be changed.
+For the two where I have <b>not</b> used "(noedit)" the "9"s will get replaced
+by actaul numbers. Since I want numbers to be rounded in this case then
+I have to specify the "(round)" option against the name of the picture
+itself. I want all these values to be 6 characters in width since I am
+going to put them in a column in a report and want them to be all aligned
+the same way. This is easy with the "(noedit)" values since what you see
+is what you get. But for the other I have to use a prefix to give the correct
+left bracket and number of spaces. You will see that where only one digit
+is displayed I prefix with a bracket and two spaces and where two digits
+are displayed I prefix with a bracket and one space. Here is some log output
+using the picture so you can see how it is working.
+<pre><b>36&nbsp;&nbsp; data _null_;
+37&nbsp;&nbsp;&nbsp;&nbsp; pct=.9;put pct=pctfmt.;
+38&nbsp;&nbsp;&nbsp;&nbsp; pct=1;put pct=pctfmt.;
+39&nbsp;&nbsp;&nbsp;&nbsp; pct=1.49;put pct=pctfmt.;
+40&nbsp;&nbsp;&nbsp;&nbsp; pct=1.5;put pct=pctfmt.;
+41&nbsp;&nbsp;&nbsp;&nbsp; pct=8.7;put pct=pctfmt.;
+42&nbsp;&nbsp;&nbsp;&nbsp; pct=10.5;put pct=pctfmt.;
+43&nbsp;&nbsp;&nbsp;&nbsp; pct=33.9;put pct=pctfmt.;
+44&nbsp;&nbsp;&nbsp;&nbsp; pct=98.4;put pct=pctfmt.;
+45&nbsp;&nbsp;&nbsp;&nbsp; pct=99;put pct=pctfmt.;
+46&nbsp;&nbsp;&nbsp;&nbsp; pct=99.7;put pct=pctfmt.;
+47&nbsp;&nbsp;&nbsp;&nbsp; pct=100;put pct=pctfmt.;
+48&nbsp;&nbsp; run;
+
+pct=( &lt;1%)
+pct=(&nbsp; 1%)
+pct=(&nbsp; 1%)
+pct=(&nbsp; 2%)
+pct=(&nbsp; 9%)
+pct=( 11%)
+pct=( 34%)
+pct=( 98%)
+pct=( 99%)
+pct=(>99%)
+pct=(100%)
+NOTE: DATA statement used:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.05 seconds</b></pre>
+Hopefully you can see that the rounding is working correctly and that all
+the formatted values are the same width.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/formats.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:04 GMT -->
+</html>

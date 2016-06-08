@@ -1,0 +1,191 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/document.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="sas documentation">
+   <meta name="KeyWords" content="sas code documentation">
+   <title>sas documentation</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+SAS Code Documentation</h1></center>
+<b>[This site is not connected with the SAS Institute]</b>
+<p><b>(Last updated: 24 Aug 2015)</b>
+<h2>
+Introduction</h2>
+I would like to impress upon you my view that the proper documentation
+of code is just as important as your skills in coding. In my view, you
+can only count yourself as a good SAS programmer if you can write code
+of such clear worth that some of it gets used by others. And in order for
+it to get used by others, both in the near future and later, then it is
+important that the future users can clearly understand what the purpose
+of your code is and how they should use it. And your code should be clear
+and documented appropriately such that others programmers can maintain
+it.
+<h2>
+Standard Code Headers</h2>
+Your code header is extremely important. It should state the name of your
+program or macro, who wrote it and when. It should clearly and briefly
+state its function. If the code is to go through various versions, then
+the version number should be present. It should have further explanatory
+notes, if required. It should have usage notes so that people know how
+to apply your code. Where code gets amended and perhaps later versions
+released, a history of these amendments should also be documented in the
+header. And, of course, if you are writing many such programs then it would
+be helpful if the header of your code was consistent in style. So this
+means you need to adopt a standard code header.
+<p>If you look at all my SAS programs on this web site you will see that
+the style of the header is consistent. In fact every program I write either
+starts with just the header or is an amended version of another code member
+that originally started with the standard header. In fact, I did not write
+a single piece of code on this web site without first designing the code
+header and being happy with its design. It took me over a day to write
+the original header and make changes until I was happy with it. Most of
+the macros I have on this web site were written in a much shorter time.
+The original header I used before I even started coding any of the macros
+on this web site is shown below.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><b><tt>/*</tt></b>
+<br><b><tt>/ Program&nbsp;&nbsp; :</tt></b>
+<br><b><tt>/ Version&nbsp;&nbsp; : 1.0</tt></b>
+<br><b><tt>/ Author&nbsp;&nbsp;&nbsp; : Roland Rashleigh-Berry</tt></b>
+<br><b><tt>/ Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : October 2002</tt></b>
+<br><b><tt>/ Contact&nbsp;&nbsp; : rolandberry@hotmail.com</tt></b>
+<br><b><tt>/ Purpose&nbsp;&nbsp; :</tt></b>
+<br><b><tt>/ SubMacros : none</tt></b>
+<br><b><tt>/ Notes&nbsp;&nbsp;&nbsp;&nbsp; :</tt></b>
+<br><b><tt>/ Usage&nbsp;&nbsp;&nbsp;&nbsp; :</tt></b>
+<br><b><tt>/</tt></b>
+<br><b><tt>/===============================================================================</tt></b>
+<br><b><tt>/ PARAMETERS:</tt></b>
+<br><b><tt>/-------name------- -------------------------description------------------------</tt></b>
+<br><b><tt>/</tt></b>
+<br><b><tt>/</tt></b>
+<br><b><tt>/</tt></b>
+<br><b><tt>/</tt></b>
+<br><b><tt>/===============================================================================</tt></b>
+<br><b><tt>/ AMENDMENT HISTORY:</tt></b>
+<br><b><tt>/ init --date-- mod-id ----------------------description------------------------</tt></b>
+<br><b><tt>/</tt></b>
+<br><b><tt>/===============================================================================</tt></b>
+<br><b><tt>/ This is public domain software. No guarantee as to suitability
+or accuracy is</tt></b>
+<br><b><tt>/ given or implied. User uses this code entirely at their own
+risk.</tt></b>
+<br><b><tt>/=============================================================================*/</tt></b></td>
+</tr>
+</table>
+
+<p>Note that the header has slots for putting in the program name, its
+purpose and has room for notes and usage examples. Since most of the code
+on this site is macro code and macros have parameters then there is room
+to list these and put a description. I even have blank spaces in all the
+right places so that the text I type in will align correctly. If you've
+got a good header like this and you always start your program by editing
+the header then you are documenting right from the beginning which is the
+best time to start.
+<p>Note that unlike many program headers you will see where in the workplace,
+there is no rightmost ending character. Over the years I have found that
+the benefits it gives in terms of clarity are very small and these end
+characters have to be realigned when you type in the text which is time
+consuming. Anything that hampers you from producing good documentation
+without adding at least more than compensatory benefit is best avoided.
+Hence no rightmost character.
+<p>Also note that the header is in sections. If the header gets too long
+it can be hard to read unless there are sections. Click on <a href="Spectre/clinmacros/npcttab.sas">npcttab</a>
+and you will see what I mean.
+<p>Your code will get changed from time to time. Maybe not by you. So that
+is why the "amendment history" section is there. If code has changed from
+what it was then it is important to detail what changes have been made,
+by whom and preferably when as well. And if the code member is very long
+then it might be important to identify <b>where</b> the code has been changed.
+This is something most people forget. The "mod-id" is for when you want
+to flag in your code the place where you changed it so that people can
+find this mod-id using the editor search. I might use the mod-id <b>RRB001</b>
+if I were making my first amendment to a long program and I could put it
+in the code in a comment like this <b>/* RRB001 */</b>. But if the code
+member were short then I might not bother with a mod-id. I didn't bother
+using one <a href="varlen.sas">here</a>, for example.
+<h2>
+In-line Code Documentation</h2>
+Now we come to documenting the code itself. If the processing falls logically
+into sections and your code is long then it makes sense to label those
+sections. And label them with an eye-catching banner so you can see at
+a glance what code belongs in what section. If you click on <a href="Spectre/clinmacros/npcttab.sas">npcttab</a>
+again you will see how I have done this. I tend to use <b>/* */</b> style
+comments because you can have unbalanced quotes in them or whatever you
+like. I have had problems using <b>* ;</b> style comments with unbalanced
+quotes in macros so I avoid that style altogether. It is a matter of personal
+choice.
+<p>Once you have your program split into logical sections that are clearly
+labelled, your code will be much easier to follow. In fact it might be
+possible for other programmers to follow your code without any further
+in-line documentation provided to use variable names that make the purpose
+of your code clear. But a small amount of further documentation helps.
+Certainly, if some clever thought is going into your code then you should
+document at that place what your plan or what your thinking is. If you
+have a "brainwave" while you are coding and use a non-obvious method to
+arrive at the desired result then don't expect that brainwave to return
+to you when you revisit the code at a later date. You need to write it
+down so you know what the thinking was at the time.
+<h2>
+Coding style and Indentation</h2>
+I'll end this section by talking about code indentation and coding style.
+Since there is no clear "right" and "wrong" way to write code and indent
+it, I will describe what I do and why.
+<ul>
+<h3>
+How much to indent:</h3>
+I tend to write very compact code because I like to keep my lines to about
+80 characters long or less. For me, the code is more readable that way.
+But in limiting the line length I want to use up all the columns I can
+so I code tight. I also indent code two spaces. Many people indent three
+spaces. Some of my routines can have many indentations and I find two spaces
+gives clarity and does not rob me of too many column positions for my code.
+I think people who code tight like I do tend to use two space indentations.
+<h3>
+Indenting macro code:</h3>
+Some people always indent code if it is within a macro. I do as well, but
+only if the macro is declared within other code. If the macro is standalone
+then I don't bother. In these cases, not indenting the lines of code gives
+me an extra two columns to use.
+<h3>
+Case of SAS keywords:</h3>
+I have seen cases where SAS keywords are religiously typed in uppercase.
+I don't do this. It takes too long. And, for me, it does not add clarity,
+which should be an important consideration for the reasons you adopt a
+style and invest work into it. If you look in the SAS documentation at
+the examples then you will see that the people who write for the SAS Institute
+don't do this either. Enough said.
+<h3>
+do's and matching end's:</h3>
+I always put the "end;" that matches my "do" directly underneath the start
+of the line with the "do" on. It is much easier to spot it that way and
+also to see where you have omitted it.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;</ul>
+
+<center>
+<p><br>Go back to the home <a href="index-2.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/document.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+</html>

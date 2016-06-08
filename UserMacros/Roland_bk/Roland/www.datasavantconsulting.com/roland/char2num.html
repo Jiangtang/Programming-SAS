@@ -1,0 +1,250 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/char2num.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <title>Converting character variables to numeric</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Converting character variables to numeric</h1></center>
+<b>Author: Roland Rashleigh-Berry</b>
+<br><b>Updated: 23 Nov 2012</b>
+<h2>
+Introduction</h2>
+Sometimes you <b>know</b> a variable is numeric but when you get the dataset
+the variable is character. This often happens when you import spreadsheets.
+And it can be unpredictable and happen to any numeric variable. What you
+need is a technique to fix variables if they are character and not to fix
+them or change them if they are numeric as you expected.
+<p>There has been a lot of talk about this problem. The solution is very
+easy!
+<h2>
+Reassign, Drop, Rename - Job Done!</h2>
+The solution is to <b>reassign a value</b>, whether numeric or character,
+to a new numeric variable with a name based on the input variable name
+and then to <b>DROP</b> the input variable name and then <b>RENAME</b>
+the new variable name to the old one. Here is a very simple example:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data test;</tt>
+<br><tt>&nbsp; set test;</tt>
+<br><tt>&nbsp; new_var=old_var*1;</tt>
+<br><tt>&nbsp; DROP old_var;</tt>
+<br><tt>&nbsp; RENAME new_var=old_var;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>It really is as simple as what is shown above. If old_var is character
+then it will be converted to numeric first before it gets multiplied by
+"1". If it comes in as numeric then it will just be multiplied by "1".
+The value gets assigned to new_var which will be made numeric. Then the
+old variable is dropped and the new variable renamed as the old variable.
+<p>You will get a message in the log to say if has converted character
+values to numeric. This should be no surprise. But if this is not acceptable
+then you can get it to convert from character to numeric without writing
+a message to the log. But in this case you have to use a suitable format
+to "put" the value out with. It has to be a format that makes sense both
+to numeric fields and character fields,. The format "8." is such a suitable
+format because if you use it to put a character string then SAS automatically
+put s "$" in front of it and "$8." is a valid format that it will use and
+not complain about.
+<p>The following will work for integers and no message will be written
+to the log to say that character values have been converted to numeric.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data test;</tt>
+<br><tt>&nbsp; set test;</tt>
+<br><tt>&nbsp; new_var=input(put(old_var,8.),8.);</tt>
+<br><tt>&nbsp; DROP old_var;</tt>
+<br><tt>&nbsp; RENAME new_var=old_var;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>So that is the solution. Do this to all "suspect" variables to make
+sure they end up as numeric variables of the same name.
+<h2>
+Using a macro approach</h2>
+Wouldn't it be good if we could fix variables like this, where "vara",
+"varb" and "varc" are our suspect variables?
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data test2;</tt>
+<br><tt>&nbsp; set test;</tt>
+<br><tt>&nbsp; %vars2num(vara varb varc)</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>The above is <b>very easy to do!!</b>
+<p>First let me introduce you to a very simple macro of mine called %editlist.
+You give it a list of things and for each "item" (referenced as "&amp;item")
+you can then use each item in an expression, maybe using the same item
+several places in the expression. You can find it in the Spectre utility
+macros.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>/*</tt>
+<br><tt>/ Program&nbsp;&nbsp; : editlist.sas</tt>
+<br><tt>/ Version&nbsp;&nbsp; : 1.0</tt>
+<br><tt>/ Author&nbsp;&nbsp;&nbsp; : Roland Rashleigh-Berry</tt>
+<br><tt>/ Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 01-Nov-2012</tt>
+<br><tt>/ Purpose&nbsp;&nbsp; : Function-style macro to allow you to edit
+a list of space&nbsp;</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+delimited items.</tt>
+<br><tt>/ SubMacros : none</tt>
+<br><tt>/ Notes&nbsp;&nbsp;&nbsp;&nbsp; : This macro is for tasks like
+generating rename statements where a</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+repeat of items in a list is required (see usage notes). The edit</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+string must be enclosed in single quotes. Elements of the list</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+are written to the macro variable "item" which can be referenced</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+in the edit string. If semicolons form part of the edit string</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+then for certain uses these can be protected using %nrstr().</tt>
+<br><tt>/</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+If used in sas code you might need to %unquote() the final string.</tt>
+<br><tt>/</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+This macro is essentially the same as the %doallitem macro but</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+giving a different usage emphasis and with no submacros.</tt>
+<br><tt>/</tt>
+<br><tt>/ Usage&nbsp;&nbsp;&nbsp;&nbsp; : %put >>> %editlist(aa bb cc dd,'&amp;item=mr_&amp;item');</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+%put >>> %editlist(xx_aa xx_bb xx_cc,</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+'&amp;item=%substr(&amp;item,4)');</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+%put >>> %editlist(xx_aa xx_bb xx_cc,</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+'%substr(&amp;item,4)=&amp;item%nrbquote(;)');</tt>
+<br><tt>/</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(will write to log:)</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+>>> aa=mr_aa bb=mr_bb cc=mr_cc dd=mr_dd</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+>>> xx_aa=aa xx_bb=bb xx_cc=cc</tt>
+<br><tt>/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+>>> aa=xx_aa; bb=xx_bb; cc=xx_cc;</tt>
+<br><tt>/===============================================================================</tt>
+<br><tt>/ PARAMETERS:</tt>
+<br><tt>/-------name------- -------------------------description------------------------</tt>
+<br><tt>/ list&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(pos) List of space delimited items</tt>
+<br><tt>/ editstr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(pos) Edit string (in single quotes)</tt>
+<br><tt>/===============================================================================</tt>
+<br><tt>/ AMENDMENT HISTORY:</tt>
+<br><tt>/ init --date-- mod-id ----------------------description------------------------</tt>
+<br><tt>/ rrb&nbsp; 31Oct12&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+New (v1.0)</tt>
+<br><tt>/===============================================================================</tt>
+<br><tt>/ This is public domain software. No guarantee as to suitability
+or accuracy is</tt>
+<br><tt>/ given or implied. User uses this code entirely at their own risk.</tt>
+<br><tt>/=============================================================================*/</tt>
+<p><tt>%put MACRO CALLED: editlist v1.0;</tt>
+<p><tt>%macro editlist(list,editstr);</tt>
+<br><tt>&nbsp; %local i item;</tt>
+<br><tt>&nbsp; %let i=1;</tt>
+<br><tt>&nbsp; %let item=%scan(&amp;list,&amp;i,%str( ));</tt>
+<br><tt>&nbsp; %do %while(%length(&amp;item));</tt>
+<br><tt>%sysfunc(dequote(&amp;editstr))</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %let i=%eval(&amp;i + 1);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %let item=%scan(&amp;list,&amp;i,%str( ));</tt>
+<br><tt>&nbsp; %end;</tt>
+<br><tt>%mend editlist;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>So now we can create a %vars2num macro like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%macro vars2num(varlist);</tt>
+<br><tt>%editlist(&amp;varlist,'__&amp;item=&amp;item*1;drop &amp;item;rename
+__&amp;item=&amp;item;')</tt>
+<br><tt>%mend vars2num;</tt></td>
+</tr>
+</table>
+
+<p>and then we can call it like this and it will set up a new numeric variable
+that is the same name as the old variable but starting with two underscores,
+will drop the original variable and rename the new variable as the old
+one.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data test2;</tt>
+<br><tt>&nbsp; set test;</tt>
+<br><tt>&nbsp; %vars2num(vara varb varc)</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>If we don't like the "character values were converted to numeric" message
+in the log and we know all our values are supposed to be integers then
+we can have an integer version of the macro like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%macro int2num(varlist);</tt>
+<br><tt>%editlist(&amp;varlist,'__&amp;item=input(put(&amp;item,32.),32.);drop
+&amp;item;rename __&amp;item=&amp;item;')</tt>
+<br><tt>%mend int2num;</tt></td>
+</tr>
+</table>
+
+<p>and then we can call it like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data test2;</tt>
+<br><tt>&nbsp; set test;</tt>
+<br><tt>&nbsp; %int2num(vara varb varc)</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+You have seen how to very simply convert character variables to numeric
+variables of the same name.
+<br>&nbsp;
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<br>&nbsp;
+<br>&nbsp;
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/char2num.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+</html>

@@ -1,0 +1,90 @@
+#!/bin/bash
+#<pre><b>
+# Script     : mhdr
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 18-Feb-2007
+# Purpose    : To create a standard SAS macro header
+# SubScripts : getname
+# Notes      : This shell script generates a SAS macro header for a sas macro
+#              in the current directory and places it at the top of the code if
+#              the macro exists. If invoked without a following program name 
+#              then the user will be prompted to enter the name. 
+# Usage      : mhdr
+#              mhdr progname
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   macro name (optional)
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  18Feb07         SAS version changed to 9.1.3
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# prompt for the program name if not supplied
+if [ $# -lt 1 ]
+then
+  echo -n "Enter program name: "
+  read progname
+else
+  progname=$1
+fi
+
+# make sure program name has ".sas" at the end
+progname=`echo $progname | awk -F. '{print $1 ".sas"}'`
+
+# prompt for the program purpose
+echo -n "Enter program purpose: "
+read purpose
+
+# use "getname" to find out the full name of the person invoking this script
+author=`getname`
+
+# format today's date in DD-Mon-YYYY form
+date=`date '+%d-%b-%Y'`
+
+
+# write out the following to a file until "FINISH" is encountered
+cat > $HOME/mhdr.tmp << FINISH
+/*
+/ Program      : $progname
+/ Version      : 1.0
+/ Author       : $author
+/ Date         : $date
+/ SAS version  : 9.1.3
+/ Purpose      : $purpose
+/ SubMacros    : none
+/ Notes        : 
+/ Usage        : 
+/ 
+/===============================================================================
+/ PARAMETERS:
+/-------name------- -------------------------description------------------------
+/ 
+/===============================================================================
+/ AMENDMENT HISTORY:
+/ init --date-- mod-id ----------------------description------------------------
+/ 
+/=============================================================================*/
+
+FINISH
+
+# if the program already exists then add the header to the top,
+# otherwise just create the program out of the generated header
+if [ -f $progname ]
+then
+  cat $HOME/mhdr.tmp $progname > $HOME/mhdr2.tmp
+  rm -f $progname
+  cat $HOME/mhdr2.tmp > $progname
+  rm -f $HOME/mhdr2.tmp
+else
+  cat $HOME/mhdr.tmp > $progname
+  echo "created $progname"
+fi
+
+# delete the temporary file
+rm -f $HOME/mhdr.tmp

@@ -1,0 +1,96 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/progplan.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="Using a programming plan for clinical reporting">
+   <meta name="KeyWords" content="programming plan clinical reporting">
+   <title>Using a programming plan for clinical reporting</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Using a "programming plan" for clinical reporting</h1></center>
+
+<p><br>This page is not about a SAS tip. It is about organizing the sas
+work for producing tables and listings for clinical trials. Some pharmaceutical
+companies create a "<b>programming plan</b>" before any work on sas programming
+commences and this plan has to be "signed off" as part of their SOPs. I
+think it is a very good idea and having followed SOPs that do not require
+this and those that do, I have seen the advantages in requiring this extra
+step. What it does is very simple, for each program that must be written,
+it contains a minimal description about what special technique should be
+used (if any) for a program and how the data should be selected for each
+table and listing. Both the programmer and QC programmer are required to
+follow this plan. The entry for each program might be as simple as "FASCD=1"
+or "Window data as per page 8 of protocol. ITTPOP=1".
+<p>Here are a list of reasons why I think doing this is a good idea and
+should be part of the SOPs.
+<ul>
+<li>
+This is planning before taking action, which is always a good idea. The
+planning can be completed before data comes in when the programmers are
+under no pressure to produce output, so this gives the planning a chance
+to be accurate and thorough.</li>
+
+<li>
+When programmers are under pressure to produce output, they have less time
+to spend checking through the protocol for important information on how
+to select data. Sometimes they will try but give up due to lack of time
+and just make an educated guess. This can give rise to errors.</li>
+
+<li>
+If outputs are checked by a QC programmer by double-programming, most of
+the time spent by the QC programmer resolving differences will be due to
+a different method being used to select data. If there is a document that
+states this clearly for each table and listing that has been agreed upon,
+then this problem will not occur and the QC work runs faster for both the
+QC programmer and the tables and listings programmer who gets less interruptions
+to resolve these differences.</li>
+
+<li>
+If the "programming plan" is signed off by the study statistician then
+they might spot problems that the programmers are blind to and have gotten
+wrong. This will avoid some errors and hopefully give the statistician
+more confidence in the outputs being produced.</li>
+
+<li>
+Protocol changes happen from time to time and if the programmers have already
+started programming it might not be clear to them how this will affect
+output. But if the protocol change is followed by an update of the "programming
+plan" and it is made clear what the new changes are then both the programmer
+and QC programmer willl be able to update their code easily and correctly.</li>
+
+<li>
+Tables to listings cross-checking can take a long time and programmers
+will be doing this when they are tired from completing the programming
+tasks and will be more prone to error. Differences will mainly be due to
+differing data selection so if this is made clear in the "programming plan"
+then cross-check errors should rarely occur.</li>
+</ul>
+
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><br>
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/progplan.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:37 GMT -->
+</html>

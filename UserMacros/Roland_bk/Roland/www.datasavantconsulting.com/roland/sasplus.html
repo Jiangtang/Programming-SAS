@@ -1,0 +1,278 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/sasplus.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:06 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="Extending the power of SAS software using other software packages">
+   <meta name="KeyWords" content="Extending the power of SAS software using other software packages">
+   <meta name="robots" content="noindex,nofollow">
+   <meta name="author" content="Roland Rashleigh-Berry">
+   <title>Extending the power of SAS software using other software packages</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Extending the power of SAS&reg; software using other software packages</h1></center>
+<b>[last updated: 06 July 2008]</b>
+<h2>
+Introduction</h2>
+I sometimes read discussions about what is the best statistical software
+package. Those that feature include, but are not limited to, <b>Matlab,
+R, SAS, S-Plus, SPSS</b> and <b>Stata</b>. "<b>R</b>" seems to dominate
+these discussions at the moment with its extendable nature and its better
+graphics. But all seem to agree that for handling very large amounts of
+data (think tens of gigabytes) that <b>SAS is King</b>. SAS is more a data
+handling language with stats and graphics added on. The other packages
+are more visualisation or statistical and most will require that all the
+data be in memory. This is not always possible where large amounts of data
+are involved. If you have SAS then you will probably not want it to be
+replaced by another statistical package with poorer data handling capabilities
+but you might wish that SAS could do some of the things that some of the
+other packages can do and thereby extend its power. In this way you could
+use the power of SAS to manipulate the data in the way you want to and
+then call another software package to do the analysis or do the graphics
+for you. "Is this possible?", you may wonder. Can you imagine SAS communicating
+with another software package, passing the data to it, telling it what
+code to run and then getting back the results -- or does this sound too
+much like science fiction? Well, actually, <b>it is easy to do this</b>........
+but in a very unexciting<b><i> </i></b>way.
+<h2>
+Batch Mode</h2>
+The way to make the functionality of the other software packages easily
+available to your SAS program is to run the other software package <b>in
+batch mode</b> using a system call with the data prepared and the code
+(or "script") to run put in a file for the software package to read. Nearly
+all statistical software packages can run in batch mode. All the ones I
+have listed above can run in batch mode. Then, when the software package
+has finished running the code in batch mode and creating the analysis or
+the output that you want, your SAS program will resume and carry on running.
+You can have the best of both worlds! Better still, since there is no limit
+to the number of software packages you can call in this way, <b>you can
+have the best of all worlds!!</b>
+<h2>
+Adding the software package to your PATH</h2>
+In order for your SAS program to be able to call the software package by
+its executable name, using a system call, your computer has to know where
+to find it. Both Windows versions and Unix/Linux/AIX have a <b>PATH</b>
+system environment variable and this tells the computer where to look for
+executable files such as the software package. You can edit the setting
+of the PATH variable or it can be edited for you. On a Unix/Linux system,
+if you are running the "bash" shell, you will have a file in your home
+directory called <b>.bashrc</b> or <b>.bashrc_own</b> that you can edit
+and change the value of the PATH variable. On a Windows system, if you
+<b>right</b>
+click on your "<b>My Computer</b>" icon, Choose "<b>Properties</b>" and
+then select the tab for "<b>Advanced</b>" (for Windows XP) you will find
+"<b>Environment Variables</b>". Click on this and you will see two panels.
+The top panel is for "User Variables" (which we don't want) and the bottom
+panel is for "<b>System Variables</b>". Click on "Sytem Variables" and
+you will find a variable called "<b>Path</b>". This you can click on and
+edit. To the end of this you can use a semicolon as a separator (Unix/Linux
+uses a colon for this) and after it add the full path name of the directory
+that contains the ".exe" file of the statistical package. If you are on
+Windows, you can find both the path and the ".exe" file name by right-clicking
+on the program icon of the software package you want to call, choosing
+"<b>Properties</b>", then the "<b>Shortcut</b>" tab and this information
+will be in the "<b>Target</b>" field. By adding the directory that contains
+this executable to your PATH variable you will be able to call this executable
+by its name from your SAS program using your system call.
+<h2>
+Inside your SAS program before the call</h2>
+Before you call the other statistical software package, you have to write
+the code (sometimes called a "script") to a file that you will specify.
+The best way to do this is with a "data _null_" using DATALINES4 and "put"ting
+_INFILE_ out to the file that will contain your code. DATALINES4 will allow
+for there being semicolons in the data, which is quite possibly the case
+for other computer languages. Below is an example of how to do this. I
+am writing the code to a file named "roland.r" in a directory I have chosen.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data _null_;&nbsp;</tt>
+<br><tt>&nbsp; file "C:\spectre\roland.r";&nbsp;</tt>
+<br><tt>&nbsp; input;&nbsp;</tt>
+<br><tt>&nbsp; put _infile_;&nbsp;</tt>
+<br><tt>&nbsp; datalines4;&nbsp;</tt>
+<br><tt>this is a the first line of code; with; semicolons&nbsp;</tt>
+<br><tt>this is the second line of code</tt>
+<br><tt>;;;;&nbsp;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>Whatever code you provide must create the output in a format you can
+use and put it in a file somewhere where you can find it. Note that for
+graphics, the best format for including into printable documents is "<b>vector
+graphics</b>". You can read about these image file formats <a href="http://en.wikipedia.org/wiki/Image_file" target="_blank">here</a>.
+<p>Next you have to prepare the data so that the software package can read
+it. Some packages can read sas files directly. This is the easiest way
+but the program you call won't know about a dataset called "sales" or "work.sales"
+since it won't know about your libraries you have set up. You will have
+to write this dataset to a libref whose destination you know and then "<b>clear</b>"
+this libref before you call the software package. Then the software package
+will have to be told its full pathname location.
+<p>For those software packages that can't read sas datasets, you will have
+to put the data in a form that it can read and put it in a place that you
+tell it. You might have to write out your data to a comma-delimited file.
+<p>In the above cases, it would be a good idea to make sure these files
+are deleted before you create them -- just in case something goes wrong
+and the external software uses old copies of the data or runs out-of-date
+code. Also, any files the external software creates should be deleted before
+the run.
+<h2>
+Making the call</h2>
+To call the software package, I recommand you use the "<b>systask command</b>"
+method rather than using "<b>X</b>" with which you are probably more familiar.
+This is because, certainly for Windows systems, it prevents unwanted windows
+popping up and disappearing again. You have to set the right system option
+for this. The following is what you need.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>options xsync noxwait;</tt></td>
+</tr>
+</table>
+
+<p>With those options in effect you call the software package like this.
+What you put in double quotes will have to be the correct syntax for calling
+the software package in batch mode that you have read about from the documentation
+for that software package.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>systask command "the .exe file plus tell it where the code is"
+taskname=xxx;</tt>
+<br><tt>waitfor xxx;</tt></td>
+</tr>
+</table>
+
+<p>....where "<b>xxx</b>" shown above is a name you choose for the task
+(can be anything sensible). The SAS program will (should) wait for the
+task to finish before resuming execution. I say "should" because it can
+vary with the software package but what I suggest should work so you should
+try that first.
+<p>So the software has run and it should have created your output. Yippee!
+What next?
+<h2>
+Inside your program after the call</h2>
+After the external software package has finished its batch run, you are
+highly advised to copy its log file into your own sas log file but in a
+way that identifies itself with the software package you have called. I
+like the system suggested in the paper "<a href="http://www.hollandnumerics.co.uk/pdf/SAS2R2SAS_paper.pdf" target="_blank">SAS
+to R to SAS</a>" written by <a href="http://www.hollandnumerics.co.uk/" target="_blank">Phil
+Holland</a> where he reads in the log creates by the external software
+package. In this case it is the log from an R program and that is why the
+lines he writes to the log are prefixed with "**R: ". You should follow
+that notation for other software packages as well such that a stata program
+will have its log prefixed with "**STATA: ". I hope you will read his paper
+for a real-life example of SAS calling R, although the focus of that paper
+was more on using ODS in conjunction with "R" and some of the techniques
+I recommend in this document differ from the example shown in that paper.
+Note that although SAS writes profuse notes, warnings and error messages,
+the software package you call might not tell you much when things go wrong.
+It's not SAS's fault!
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>DATA _NULL_;</tt>
+<br><tt>&nbsp; INFILE 'c:\temp\r\program.log';</tt>
+<br><tt>&nbsp; FILE LOG;</tt>
+<br><tt>&nbsp; INPUT;</tt>
+<br><tt>&nbsp; PUT '**R: ' _INFILE_;</tt>
+<br><tt>RUN;</tt></td>
+</tr>
+</table>
+
+<h2>
+A cheaper alternative to SAS software</h2>
+Now we can see how easy it is for SAS to use the functionality of other
+software packages, it opens the door for a cheaper alternative to using
+SAS software. That is to use <a href="http://www.teamwpc.co.uk/home" target="_blank">WPS</a>
+which is a software package where the native language is identical to SAS
+code, though its functionality, especially on the graphics and statistics
+side, is more limited. WPS supports system calls using the "X" system.
+The licence is cheaper than for SAS, it has the same strengths for handling
+large volumes of data, and its lack of graphics and statistical functionalities
+can be complemented using other software packages called in batch mode.
+Within WPS you will be able to call other software packages as shown below
+but note that the documentation for "WPS" says making system calls is <b>only
+suitable for Windows platforms</b> as this copy of part of their user manual
+says.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><b>Remarks</b>
+<br>The X statement executes the command as if it had been typed into an
+operating
+<br>system command prompt or shell. The X statement is only suitable for
+use on the
+<br>Windows platform.</td>
+</tr>
+</table>
+
+<p>Instead of "systask command" that I recommend for your call from a SAS
+program, your WPS code would look like this.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>options xsync xwait;</tt>
+<br><tt>X "the .exe file plus tell it where the code is";</tt></td>
+</tr>
+</table>
+
+<p>Note that I do not recommend giving up using SAS software and moving
+over to WPS to try to save on costs. This would be a very difficult decision
+to take. But you might identify situations where exactly the same job could
+be done using WPS instead of SAS and then it might be worthwhile using
+WPS instead.
+<h2>
+"Moving over to R"</h2>
+There is some talk in the pharmaceutical industry about "moving over to
+R". That is to run down the SAS side of things for clinical reporting and
+shift more analysis and graphics to R. I do not believe a <b>complete</b>
+transition from SAS to "R" will be possible in the next few years. This
+is because R can not handle the very large volumes of data that would be
+typical of lab data, for example. I guess somebody might write extensions
+to R to allow it to handle large volumes of data but the emphasis of R
+is on the visualisation and analysis side. There is no incentive to develop
+it along the lines of handling large volumes of data so this might never
+be done. The ideal is to keep SAS (or WPS) for its data handling capabilities
+but have the functionality of R. You have seen from the above that it is
+easy to combine R with SAS. That should be a happy marriage for the pharmaceutical
+industry for the forseeable future.
+<h2>
+Conclusion</h2>
+You have seen how SAS (and WPS) can call external statistics software packages
+and then resume execution and in this way add the functionality of other
+software vendors to its own, thereby effectively extending its power.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="http://www.datasavantconsulting.com/roland/counter.php" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/roland/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+<br>&nbsp;
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/sasplus.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:06 GMT -->
+</html>

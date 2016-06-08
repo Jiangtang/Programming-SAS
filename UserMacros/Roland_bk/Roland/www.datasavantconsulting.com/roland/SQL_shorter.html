@@ -1,0 +1,563 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/SQL_shorter.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <title>SQL shorter than sas code</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+SQL shorter than sas code</h1></center>
+<b>Updated: 18 Aug 2015</b>
+<h2>
+Introduction</h2>
+SQL code is usually shorter than normal SAS data step code for doing routine
+work on data. With SQL, you do not need to sort datasets before you merge
+them. That saves a lot of untidiness in the code. And your SQL statements
+can be short, simple and clearly understandable, leading to code that is
+clear and easy to maintain.
+<p>As SAS programmers, you should not be trying to avoid using SQL. In
+some cases it is better not to use it. For example, for doing complex joins
+(especially with clinical data), data steps can be more convenient because
+they allow you to set flags and whatever is needed to debug the merge where
+you might be not getting what you expected. But for some uses, such as
+data checking, SQL code can be a lot simpler and easier to understand.
+<p>SAS programmers need to master both SQL skills and normal SAS data step
+code skills and use them where appropriate. On this page you will see how
+SQL can be shorter and clearer than using sorts and data steps in the cases
+shown. Examples of some familiar uses will be shown and explained to help
+you recognise the form of SQL to use when achieving what you already know
+how to achieve using sort steps and data steps.
+<h2>
+Checking for one or more missing values</h2>
+For this example, we are only concerned if for one variable in a data set
+there is a missing value. Not how many. This will be fed back to the user
+in a report to say if there were missing values found. It is up to the
+user to remedy this. The actual count of missing values is not of interest
+and besides, it might be a very large dataset and it is better not to read
+the whole dataset as it might be time consuming. This is very basic checking,
+typical of where a user submits data to an exchange server for their data
+to be uploaded into a central database. This way of working will soon become
+the standard for the pharmaceutical industry.
+<p>Firstly the test dataset. I will create it with 10 million records and
+set one in a thousand to be a missing value. Obviously, we will want to
+avoid reading all 10 million records if we find a missing value in the
+first thousand. Here is the code to generate the test dataset.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>*-- create test dataset --;</tt>
+<br><tt>data test;</tt>
+<br><tt>&nbsp; do x=1 to 10000000;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; m=x;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if mod(m,1000)=0 then m=.;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; output;</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>To test for a missing value using a data step then we will want to use
+a "where" clause to select just missing values and then stop the processing
+as soon as we have detected one missing value. If this is detected then
+we will write it to a macro variable. We would do it like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%let err_msg=;</tt>
+<p><tt>data _null_;</tt>
+<br><tt>set test;</tt>
+<br><tt>where m is missing;</tt>
+<br><tt>call symput('err_msg',"M is missing");</tt>
+<br><tt>stop;</tt>
+<br><tt>run;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>The above data step code is short. But it will be shorter using SQL.
+Bear in mind that if you are doing error checking in SQL then this will
+all be done in one or just a few invocations using <b>"proc sql noprint;"
+</b>and
+<b>"quit;"</b>
+so that should not be counted as part of the code. These lines will be
+omitted for the second example.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>proc sql noprint;</tt>
+<p><tt>%let err_msg=;</tt>
+<br><tt>select "M is missing" into :err_msg from test where m is missing;</tt>
+<p><tt>quit;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>You might wonder in the above example how we stop after finding the
+first missing value. But SQL does that automatically. Once it has found
+a condition to satisfy the "where clause" and has moved the text into the
+macro variable then it will stop as the operation has finished. As mentioned
+previously, all your data checking could be done maybe in one call to "proc
+sql" so let us look at the code without the invocation.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%let err_msg=;</tt>
+<br><tt>select "M is missing" into :err_msg from test where m is missing;</tt></td>
+</tr>
+</table>
+
+<p>I think you will agree that the above is clearer and simpler than using
+a data step. If you are vetting data submitted via an exchange server to
+a database then you might be performing 40 or more checks on the data.
+With SQL then these 40 or more checks should not take up many lines of
+code and it will be clear what checks are being done at a glance. This
+will not be so easy if data step code is used. If you numbered your checks
+in a comment according to any row numbering that existed in a specifications
+spreadsheet then you could see at a glance whether all the checks are being
+done as specified and debugging them if there is a problem should be very
+quick and easy.
+<h2>
+Checking if patients in a source table exist in a sample table</h2>
+Let us assume that a user is uploading new "source" data on patients and
+you would expect that these patients match what has already been uploaded
+and databased in your "sample" data. We want a list of patients who should
+not be there so the user can be informed and fix the incorrect patient
+numbers.
+<p>First, let us generate our test "source" and "sample" data:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>*-- create test datasets --;</tt>
+<br><tt>data source;</tt>
+<br><tt>&nbsp; do ptno=1 to 10;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; output;</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>run;</tt>
+<p><tt>data sample;</tt>
+<br><tt>&nbsp; do ptno=2 to 7;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; output;</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>run;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>You can see from above that we need to flag patient numbers 1, 8, 9
+and 10 in an error message. We would only want to flag a patient once so
+with a data step we would need to do a "proc sort nodupkey" on both datasets.
+This is where normal sas code starts to look messy. Assume this is all
+contained in a macro so that you can use macro code as well such as "%if".
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%let string=;</tt>
+<br><tt>%let err_msg=;</tt>
+<p><tt>proc sort nodpukey data=source out=source2;</tt>
+<br><tt>&nbsp; by ptno;</tt>
+<br><tt>run;</tt>
+<p><tt>proc sort nodpukey data=sample out=sample2;</tt>
+<br><tt>&nbsp; by ptno;</tt>
+<br><tt>run;</tt>
+<br>&nbsp;
+<p><tt>data _null_;</tt>
+<br><tt>&nbsp; length string $ 2000;</tt>
+<br><tt>&nbsp; retain string;</tt>
+<br><tt>&nbsp; merge source2(in=_a) sample2(in=_b) end=_last;</tt>
+<br><tt>&nbsp; by ptno;</tt>
+<br><tt>&nbsp; if _a and not _b;</tt>
+<br><tt>&nbsp; if string NE " " then string=trim(string)||', '||compress(put(ptno,10.));</tt>
+<br><tt>&nbsp; else string=compress(put(ptno,10.));</tt>
+<br><tt>&nbsp; if _last then call symput('string',trim(string));</tt>
+<br><tt>run;</tt>
+<p><tt>%if %length(&amp;string) %then %let err_msg=Invalid patients (&amp;string)
+found;</tt>
+<p>&nbsp;</td>
+</tr>
+</table>
+
+<p>And now for the SQL equivalent, and here I miss out the "proc sql noprint;"
+invocation because I assume all checks will be done in a single call to
+"proc sql". And if you do not know, then macro code can be freely mixed
+with SQL code and even calls to macro can be mixed in with SQL code, so
+long as these macros do not "push" any non-SQL sas code.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%let string=;</tt>
+<br><tt>%let err_msg=;</tt>
+<p><tt>select distinct ptno into :string separated by ', ' from source</tt>
+<br><tt>where ptno not in (select distinct ptno from sample);</tt>
+<p><tt>%if %length(&amp;string) %then %let err_msg=Invalid patients (&amp;string)
+found;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>I think you can see from the above example that using SQL for simple
+data checking can be clearer and far more elegant than using normal sas
+code in some circumstances.
+<h2>
+FIRST. and LAST.</h2>
+Many times you have wanted the observation whose value is the smallest
+in a group or the largest in a group. You sort in the order you want and
+use the <b>FIRST</b> or <b>LAST</b> observation in that group. You can
+do the same with SQL but more directly by asking for the observations(s)
+corresponding to the <b>minimum</b> or <b>maximum</b> for a group. Note
+I used the word "<b>observations(s)</b>" because there might be more than
+one observation satisfying the minimum or maximum value. But you can also
+use "<b>distinct</b>" with your SQL select statement to give you just one
+observation like you get using FIRST or LAST.
+<p>First let us generate our test data. Note that for group "BB" there
+are two observations with minimum value:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data test;</tt>
+<br><tt>&nbsp; grp="AA";x=5;output;</tt>
+<br><tt>&nbsp; grp="AA";x=2;output;</tt>
+<br><tt>&nbsp; grp="AA";x=4;output;</tt>
+<br><tt>&nbsp; grp="AA";x=9;output;</tt>
+<br><tt>&nbsp; grp="BB";x=5;output;</tt>
+<br><tt>&nbsp; grp="BB";x=9;output;</tt>
+<br><tt>&nbsp; grp="BB";x=1;output;</tt>
+<br><tt>&nbsp; grp="BB";x=1;output;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>This is how we would select the observations with the minimum value
+per group using sorts and data steps.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>proc sort data=test out=test2;</tt>
+<br><tt>&nbsp; by grp x;</tt>
+<br><tt>run;</tt>
+<p><tt>data test_dset;</tt>
+<br><tt>&nbsp; set test2;</tt>
+<br><tt>&nbsp; by grp;</tt>
+<br><tt>&nbsp; if first.grp;</tt>
+<br><tt>run;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>The above is short and easy. One small inconvenience is that we needed
+to create an extra dataset, assuming it was better not to sort the dataset
+in place. But it is even easier with SQL, but you must remember to use
+"distinct". I will miss out the "<b>proc sql noprint;</b>" invocation and
+the "<b>quit;</b>" as most likely you will be using it in a long call to
+"proc sql".
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>create table test_sql as select distinct grp, x from test group
+by grp having x=min(x);</tt></td>
+</tr>
+</table>
+
+<p>You can see that the above is clearly shorter <b>but</b> it is only
+good for where you are selecting a limited set of fields such that you
+know that using "<b>distinct</b>" will have the effect of dropping duplicates.
+For cases where you have to select all fields (select *) you should use
+the "<b>monotonic()</b>" function to create row number after ordering the
+data and select on the minimum row number per group. Then it gets more
+complicated and less efficient than using sorts and data steps. You effectively
+have to do a "proc sort" and select on the minimum row number in each group.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>create table test2 as select * from test order by grp, x;</tt>
+<p><tt>create table test_sql as select *, monotonic() as rownum from test2
+group by grp having rownum=min(rownum);</tt></td>
+</tr>
+</table>
+
+<p>You can see that the above is looking more complicated than normal sas
+code and it will be less efficient due to having to calculate the minimum
+row number.
+<p>A warning at this point - for "proc sql", <b>the function monotonic()
+is not supported</b>, even though it is there. Even the SAS Institute warns
+about using it. My recommendation for even slightly complex cases is to
+drop out of SQL and do it in a data step. You can use the "order by" ending
+statement in your SQL code to put the data in the sort order you want and
+then drop out of SQL, keep your "first" or "last" in a data step and reinvoke
+"proc sql" again. It will be more efficient and reliable that way.
+<h2>
+The SQL query optimizer</h2>
+A problem with using the monotonic() function is that in complex joins,
+you may not get what you are expecting. SAS has an <b>SQL query optimizer</b>
+(the same goes for most vendors of SQL) and so may change the join method
+if it thinks doing so would be more efficient. So things might not be done
+in the order you were expecting and so your monotonic() row numbers might
+therefore be different. It may choose a different join method depending
+on the number of observations so that when you rerun on different data
+it may behave differently. Also it may change for later releases of SAS.
+Because of this, using monotonic() can be unreliable. But back to this
+"SQL query optimizer" again, an important topic.
+<p><b>The SQL optimizer is both your friend and enemy.</b> With SQL doing
+complex joins, especially using the innocent looking "," between tables
+such as "table1 as a, table2 as b, table3 as c" which is an implicit <b>cartesian
+join</b> (a cartesian join combines all rows with all other rows) then
+the SQL optimizer will choose what it thinks is a better method to combine
+the tables depending on the metadata it holds about the tables. It will
+mostly make a better choice than you, especially as it can change its method
+dynamically (sometinme even during the process). But sometimes it will
+choose a method that is not the best method and an SQL join that took just
+a few minutes might unexpectedly take a few hours the next time you run
+it on different data so it is better to avoid using cartesian joins and
+hope the optimizer will do the work for you. Using "inner join" is better.
+Using normal sorts and data step merges on large volumes of data can be
+time consuming but at least it is consistent and predictable. But for complex
+SQL joins using large amounts of data then this can present a performance
+nightmare unless you code your joins well - and sometimes even then it
+can still be a performance headache. It may make you wish you never started
+out down the SQL path.
+<p>If you have taken the SQL path then one day you might be maintaining
+some SQL code with cartesian joins in it. You might make a change that
+you think will give an improvement but find the performance worsens to
+a marked degree. There is a<b> lot </b>to learn about the SQL optimizer
+and you can find out how complex this subject is by following this <a href="http://www2.sas.com/proceedings/sugi30/101-30.pdf" target="_blank">link</a>.
+<h2>
+List Aggregation</h2>
+Aggregating a list of items over a group is a common enough requirement.
+You sometimes need to have a list of unique items for each group, maybe
+separated by commas. Here we come to an instance where <b>"proc sql" is
+difficult to use for this</b>. It is because it is lacking a function to
+do this. Other versions of SQL have functions to do this.
+<b>Oracle</b>
+SQL has the function <b>listagg()</b>, for example (Google for this if
+you are interested). Different vendors' versions of SQL have other-named
+functions to do this. "Proc sql" has no such function at the time of writing.
+<p>First our test dataset (we will use the one in the previous section):
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data test;</tt>
+<br><tt>&nbsp; grp="AA";x=5;output;</tt>
+<br><tt>&nbsp; grp="AA";x=2;output;</tt>
+<br><tt>&nbsp; grp="AA";x=4;output;</tt>
+<br><tt>&nbsp; grp="AA";x=9;output;</tt>
+<br><tt>&nbsp; grp="BB";x=5;output;</tt>
+<br><tt>&nbsp; grp="BB";x=9;output;</tt>
+<br><tt>&nbsp; grp="BB";x=1;output;</tt>
+<br><tt>&nbsp; grp="BB";x=1;output;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>This is how we would aggregate the list of unique "x" per group using
+sorts and data steps. Note that when we sort it is "<b>nodup</b>" so we
+only get unique values of "x" per group:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>proc sort nodupkey data=test out=test2;</tt>
+<br><tt>&nbsp; by grp x;</tt>
+<br><tt>run;</tt>
+<p><tt>data summary_ds;</tt>
+<br><tt>&nbsp; length xlist $ 200;</tt>
+<br><tt>&nbsp; retain xlist " ";</tt>
+<br><tt>&nbsp; set test2;</tt>
+<br><tt>&nbsp; by grp;</tt>
+<br><tt>&nbsp; if first.grp then xlist=compress(put(x,10.));</tt>
+<br><tt>&nbsp; else xlist=trim(xlist)||', '||compress(put(x,10.));</tt>
+<br><tt>&nbsp; if last.grp then output;</tt>
+<br><tt>&nbsp; keep grp xlist;</tt>
+<br><tt>run;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>Now here is the "proc sql" version. It is <b>messy</b> because we have
+no "<b>listagg()</b>" function or the equivalent. <b>I always drop out
+of SQL and use sorts and data steps like the above when I have to do this</b>
+but I will show you how to do it (less efficiently) with SQL. You can not
+have a "<b>retain</b>" variable with SQL. Instead you have to put the values
+in a <b>macro variable</b> and <b>update a summary dataset </b>with this,
+one row at a time. Here is how it is done but <b>don't use this technique
+in real life</b>. Wait until "proc sql" has something like the "listagg()"
+function and use that. Use the above method instead but it might interest
+you to know how to do it "<b>the hard way</b>" using "proc sql". I am using
+a macro loop in the code below so you will have to assume this is done
+inside a macro.
+<p>Note that I am creating a row number using the "<b>monotonic()</b>"
+function and I create this in an "<b>outside select</b>" so I apply the
+row numbers to the summarised list:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>create table summary as select *, monotonic() as rownum from</tt>
+<br><tt>(select distinct grp, " " as xlist length=200 from test);</tt>
+<p><tt>%do i=1 %to &amp;sqlobs;</tt>
+<br><tt>&nbsp; select distinct x into :xlist separated by ', ' from</tt>
+<br><tt>&nbsp; summary as a&nbsp;</tt>
+<br><tt>&nbsp; inner join</tt>
+<br><tt>&nbsp; test as b</tt>
+<br><tt>&nbsp; on a.grp=b.grp</tt>
+<br><tt>&nbsp; where rownum=&amp;i;</tt>
+<p><tt>&nbsp; update summary</tt>
+<br><tt>&nbsp; set xlist="&amp;xlist"</tt>
+<br><tt>&nbsp; where rownum=&amp;i;</tt>
+<br><tt>%end;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>Note that "<b>sqlobs</b>" is an automatic variable that will contain
+the number of observations in the table last created. We could also put
+the number of observations in a macro variable like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>create table summary as select *, monotonic() as rownum from</tt>
+<br><tt>(select distinct grp, " " as xlist length=200 from test);</tt>
+<p><tt>select count(*) into :nobs from summary;</tt>
+<p><tt>%do i=1 %to &amp;nobs;</tt>
+<br><tt>&nbsp; select distinct x into :xlist separated by ', ' from</tt>
+<br><tt>&nbsp; summary as a</tt>
+<br><tt>&nbsp; inner join</tt>
+<br><tt>&nbsp; test as b</tt>
+<br><tt>&nbsp; on a.grp=b.grp</tt>
+<br><tt>&nbsp; where rownum=&amp;i;</tt>
+<p><tt>&nbsp; update summary</tt>
+<br><tt>&nbsp; set xlist="&amp;xlist"</tt>
+<br><tt>&nbsp; where rownum=&amp;i;</tt>
+<br><tt>%end;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<h2>
+Another Merge</h2>
+In this example of a merge we want to flag situations where an identifying
+variable value also occurs in other datasets. Here is the code to create
+the test datasets and how to do a data step merge at the end:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data base;</tt>
+<br><tt>&nbsp; do x=1 to 10;</tt>
+<br><tt>&nbsp; output;</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>run;</tt>
+<br>&nbsp;
+<p><tt>data test1;</tt>
+<br><tt>&nbsp; x=4;output;</tt>
+<br><tt>&nbsp; x=6;output;</tt>
+<br><tt>&nbsp; x=7;output;</tt>
+<br><tt>run;</tt>
+<br>&nbsp;
+<p><tt>data test2;</tt>
+<br><tt>&nbsp; x=6;output;</tt>
+<br><tt>&nbsp; x=7;output;</tt>
+<br><tt>&nbsp; x=9;output;</tt>
+<br><tt>run;</tt>
+<br>&nbsp;
+<p><tt>*- Merge to flag where identifying variable value exists in other
+datasets -;</tt>
+<br><tt>data base_plus;</tt>
+<br><tt>&nbsp; merge base test1(in=_1) test2(in=_2);</tt>
+<br><tt>&nbsp; by x;</tt>
+<br><tt>&nbsp; if _1 then action1="1";</tt>
+<br><tt>&nbsp; if _2 then action2="2";</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>The SQL replacement for the final <b>merge</b> step is not obvious (I
+had to ask other people how to do it). But if you ignore the start and
+quit of the "proc sql" call you can see it is actually very simple and
+elegant and just as short as the data step merge.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>proc sql;</tt>
+<br><tt>&nbsp; create table base_plus as</tt>
+<br><tt>&nbsp; select a.x,(select "1" from test1 where x=a.x)&nbsp; as
+action1&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+,(select "2" from test2 where x=a.x)&nbsp; as action2</tt>
+<br><tt>&nbsp; from base as a;</tt>
+<br><tt>quit;</tt></td>
+</tr>
+</table>
+
+<h2>
+Displaying duplicates and where they can be found</h2>
+Sometimes you do a check where a condition should have unique occurrences
+and you find it is not the case. Suppose for certain values of variables,
+there should only be one measurement unit to go with it but you find there
+are more than one. You might want to report not only these different measurement
+units but also help the user locate them in their data by showing them
+the unique combinations of values associated with the duplicate units.
+The following example shows a reporting dataset being created to do this
+in a piece of code I wrote. I will let you study it and work out exactly
+what it is doing. Note that it is being done in a single SQL statement
+(ending with the semicolon). Although it is a long statement, it is a lot
+tidier than trying to do the same with data steps and "proc sort"s.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt></tt>
+<br><tt>create table &amp;source._det350(label='Multiple KP Units found|FT03')
+as</tt>
+<br><tt>select 1 as holder, a.*</tt>
+<br><tt>from (select distinct PKPERc, ACTEVENT, PKMATRIX, ANALYTE, KPNM,
+KPU from &amp;source) as a</tt>
+<br><tt>INNER JOIN</tt>
+<br><tt>(select distinct PKMATRIX, ANALYTE, KPNM from</tt>
+<br><tt>(select distinct PKMATRIX, ANALYTE, KPNM, KPU from &amp;source)</tt>
+<br><tt>group by PKMATRIX, ANALYTE, KPNM</tt>
+<br><tt>having count(*) > 1) as b</tt>
+<br><tt>on a.PKMATRIX=b.PKMATRIX and a.ANALYTE=b.ANALYTE and a.KPNM=b.KPNM</tt>
+<br><tt>order by PKPERc, ACTEVENT, PKMATRIX, ANALYTE, KPNM, KPU;</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<h2>
+Nowarn</h2>
+Sometimes you are going to be annoyed by the warning messages that "proc
+sql" puts out and wish they were not there as they are not telling you
+anything you don't already know that you are already happy about. To switch
+off the warnings you can call "proc sql" as "<b>proc sql nowarn;</b>".
+This will disable warnings for the whole "proc sql" invocation right up
+to the "quit;". If you want to disable the warnings for specific "proc
+sql" statements then instead you can use "<b>reset nowarn;</b>" before
+the SQL statement(s) you wish to switch off the warnings for and use "<b>reset
+warn;</b>" after the statement(s) to switch the warnings back on again.
+<h2>
+Conclusion</h2>
+You have seen how SQL code can be shorter and clearer than the equivalent
+normal sas code in some circumstances. Also, what SQL equivalent code looks
+like for some common uses of normal sas code. You have also been introduced
+to the SQL query optimizer.
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<br>&nbsp;
+<br>&nbsp;
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/SQL_shorter.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+</html>

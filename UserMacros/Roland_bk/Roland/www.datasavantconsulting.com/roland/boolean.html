@@ -1,0 +1,100 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/boolean.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:04 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Generator" content="Microsoft Word 97">
+   <meta name="keywords" content="data _null_ report stacking">
+   <meta name="Description" content="Using Boolean expressions in sas calculations">
+   <meta name="Template" content="C:\PROGRAM FILES\MSOFFICE\OFFICE\html.dot">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland">
+   <meta name="KeyWords" content="Boolean expressions sas calculations">
+   <title>Using Boolean expressions in calculations</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Using Boolean expressions in calculations</h1></center>
+<b>[last updated - 12 September 2007</b>
+<br><b>]</b>
+<p>A Boolean expression will return a 0 or 1 respectively if something
+is false or true. It can sometimes be useful to use these as part of a
+calculation. An obvious example is in finding out the length of a character
+string. You should be aware that if a character variable has been set to
+a space or a null then the length function will return the value 1 and
+not 0. But what if we wanted it to return a length of 0 in the case of
+a space or null to distinguish it from a true single character? It is very
+easy to do this using a Boolean expression as part of a calculation.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt><font color="#000080">data </font><font color="#0000FF">_null_</font><font color="#000080">;</font></tt>
+<br><tt><font color="#000080">&nbsp; str=</font><font color="#800080">'
+'</font><font color="#000080">;</font></tt>
+<br><tt><font color="#000080">&nbsp; len=length(str)*(str ne </font><font color="#800080">'
+'</font><font color="#000080">);</font></tt>
+<br><tt><font color="#0000FF">&nbsp; put</font><font color="#000080"> len=;</font></tt>
+<br><tt><font color="#000080">run;</font></tt></td>
+</tr>
+</table>
+
+<p>In the above case you can see that I have the expression <tt>"str ne
+' '"</tt> in brackets and I am multiplying it by the length of the string.
+In the case where str has been set to a space or a null then the expression
+is false and so it resolves to the value 0 (for "false") rather than 1
+(for "true") and if we multiply a value by zero then we get zero. So although
+the length function is returning the value 1 when str is set to a space
+it gets multiplied by zero and so len is set to the value 0 which is what
+we want.
+<p>The above case is multiplication by a Boolean expression. There are
+other cases where we might want to add or subtract the results of a Boolean
+expression. I do this within the macro I wrote to calculate <a href="age.sas">age</a>.
+Here is the line of code from within the macro:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>year(&amp;date)-year(&amp;dob)-1+((month(&amp;date)>month(&amp;dob))</tt>
+<br><tt>or ((month(&amp;date)=month(&amp;dob)) and (day(&amp;date)>=day(&amp;dob))))</tt></td>
+</tr>
+</table>
+
+<p>The above looks quite complex as the Boolean expression is long. The
+Boolean expression itself is this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>((month(&amp;date)>month(&amp;dob))</tt>
+<br><tt>or ((month(&amp;date)=month(&amp;dob)) and (day(&amp;date)>=day(&amp;dob))))</tt></td>
+</tr>
+</table>
+
+<p>It will return a 1 (for "true") if the month of the date is greater
+than the month of the date of birth OR the months are the same but the
+day of the month is greater than or equal to the day of birth. So in the
+calculation of the age in years it is first assuming that the date in the
+year is not after or on a person's birthday but then it is testing for
+this condition and if true then it adds the value for "true" (the value
+1) to the number of years elapsed. And this gives us exactly what we want.
+<p>Opportunities for using this technique are various and can crop up in
+sometimes unexpected circumstances. But if you are aware that these Boolean
+expressions can be used as part of a calculation, then you can sometimes
+make your code both shorter and easier to understand.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/boolean.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:04 GMT -->
+</html>

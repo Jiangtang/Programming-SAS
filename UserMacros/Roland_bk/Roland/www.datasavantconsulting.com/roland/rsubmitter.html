@@ -1,0 +1,217 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/rsubmitter.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="Description" content="%rsubmitter usage">
+   <meta name="KeyWords" content="%rsubmitter usage game changer">
+   <title>Rsubmitter - the Game Changer</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Rsubmitter - the Game Changer</h1></center>
+<b><font face="Arial,Helvetica">Last Updated: 07 Jun 2014</font></b>
+<br>&nbsp;
+<h2>
+Introduction</h2>
+CPU chips - the things inside your computer that run your code, <b>haven't
+got much faster since 2006</b>. All the computer manufacturers knew that
+this time was coming some years in advance. The transistor junctions can
+not be made any narrower, so with the current architecture, there is a
+natural barrier to the clock speed at which these chips run. Beyond 2 gigahertz,
+things hot up. Get to 3 gigahertz and these CPU chips get so hot they can
+melt. And it is this clock speed that determines how fast your code can
+be run. It takes 3 to 4 "cycles" to process a computer instruction, depending
+on what that instruction is. Assume 4 cycles per instruction and a 2 gigahertz
+chip then that works out to 500 million instructions per second. That is
+a lot, but we always want more. And <b>the CPU manufacturers gave us more!</b>
+They gave us <b>more "cores" on the one CPU chip</b>. Each core is a processor.
+Most high end laptops are <b>quad</b> core these days which means there
+are 4 processors on the one CPU chip. So the intention of the computer
+manufacturers is for us to <b>use multiple cores to gain more speed</b>.
+They assume that everybody understands that and will exploit these multiples
+cores. But not everybody does.
+<h2>
+What SAS did about multiple core CPU chips</h2>
+SAS responded to this need to gain more power through more cores, rather
+than faster CPUs, by introducing Multi-process <b>(MP) Connect</b> in the
+Version 8 release of their software in November 1999. This is part of the
+SAS/CONNECT product. You can read some old version 8 documentation on this
+if you follow <a href="http://support.sas.com/documentation/onlinedoc/v8/whatsnew/tw5508/znid-130.htm" target="_blank">this
+link</a>. So multi-processing has been available since late 1999 when they
+released v8.0. The last version 8 - version 8.2 - was released in early
+2001 and many SAS sites waited until this late release of version 8 before
+they upgraded to it so for most sites, multiproceessing has been available
+since early 2001. So SAS software was well ahead of the need to exploit
+multiple cores and well before processors hit their limit in 2006. That
+was very far-sighted of them and showed that they were aware of the CPU
+processing needs of their users and gave the users what they needed, well
+in advance.
+<h2>
+What the pharmaceutical industry did about using SAS multi-processing capabilities</h2>
+Obviously the pharmaceutical industry are major users of SAS software.
+The amount of data they process has grown over the years. Now, in 2014,
+they have been pooling studies for a few years and analysing the data and
+obviously they need more processing power to do this. Obviously, the pharmaceutical
+industry could benefit from this multiprocessing capability that SAS introduced.
+<p>So how did the pharmaceutical industry respond?
+<p>The answer is that pharmaceutical industry <b>did nothing about it</b>.
+<h2>
+Why is the pharmaceutical industry not using multi-processing?</h2>
+From having worked in the pharmaceutical industry, in and around clinical
+trials, for more than a decade then it is obvious that there is a lack
+of computer knowledge in the industry. The cost of a SAS license running
+on a large server, say with 16 cores, is astronomic and so it is essential
+therefore that they have technical people to help them get the most out
+of SAS. Unfortunately, the industry is not aware of the need for technical
+help and probably assume that computers are getting faster. But they are
+not. They are using multiple cores to give more speed instead.
+<p>This lack of technical expertise takes other forms. Some of the clinical
+reporting systems that pharmaceutical companies use are very inefficient
+and slow. There is not an awareness of the sort of speed they should be
+expecting, even if they are not using multi-processing. While other industries
+are using SAS multiprocessing and are processing observations at the rate
+of <b>millions of observations per second</b>, some of the pharmaceutical
+clinical reporting systems are processing observations at the rate of one
+or two <b>hundreds of observations per second</b>.
+<p>This page is not to do with the sort of speed the pharmaceutical industry
+should be achieving without multi-processing, when analysing and reporting
+on data. The figure I use for this is 10,000 observations per second. This
+is easily achievable if the software is designed around the key principles
+required for speed. I discuss this in length on <a href="speedtips.html" target="_blank">this
+page</a>.
+<h2>
+Fixing the speed problem in clinical reporting systems</h2>
+If a clinical reporting system does not follow the principles for high
+processing speed then it is probably not fit for use and should be replaced.
+It would never have been released if the System Design Life Cycle methodology
+had been used because it should never have got past the "acceptance testing"
+phase. But these reporting systems were artificially pushed through this
+phase and the real users of the software were never allowed to complain
+about the poor speed and so just had to accept the bad software as delivered.
+But there is no secret to achieving speed - this knowledge has been around
+for a long time and those who design clinical reporting systems should
+have been aware of it. Again, I discuss this at length on <a href="speedtips.html" target="_blank">this
+page</a>.
+<h2>
+Welcome to multi-processing</h2>
+Speed problems with software need to be fixed before multi-processing can
+be used. The reason is that <b>multiprocessing</b> is not a <b>"little
+extra task"</b>. It is not the same as "multithreading". Instead, it is
+the duplication of users on a computer. If your software is multiprocessing
+using 3 streams then it is like having three times the number of users
+on the computer. And the more users there are, the higher the computer
+overhead is for managing these users' tasks. And a tripling of some computer
+resources, such as memory, will be required. This is not something trivial
+- this can cause computers to slow down and jobs to fail. But if the speed
+problems can be fixed then jobs will run quicker and complete quicker and
+this reduces the job occupancy of the computer and so reduce the concurrent
+usage of its resources. At this point, exploiting multi-processing becomes
+an advantage.
+<h2>
+Some reasons why multi-processing never took off</h2>
+Let us take a kind view and imagine that some pharmaceutical SAS programmers
+have tried to use multi-processing in the past but hit some problems that
+stopped them.
+<p><b>1) Is it too complicated for people to understand?</b>
+<p>The answer to this has to be "<b>no</b>". Once people look into it then
+they will realize that it is easy to understand and use. Maybe they just
+never looked.
+<p><b>2) Is it documented well enough to make immediate use of it in the
+pharmaceutical industry?</b>
+<p>The answer to this is "<b>no</b>". Nobody has gone down that path in
+the pharmaceutical industry and fully documented what needs to be done.
+Somebody has to make that journey to describe the path that must be followed
+and from the documentation on the Internet, this has never been done. But
+it has now. You can read how to do it on this web site.
+<p><b>3) Where is it documented how I share resources with multi-processing
+sessions?</b>
+<p><b>How to share resources with multi-processing sessions has never been
+properly documented</b> until now. For clinical reporting, if you call
+extra sessions to help speed up your work then these extra sessions, in
+some circumstances, will need access to your WORK library, the formats
+in the WORK.FORMATS catalog, the macros on your SASAUTOS path and the macros
+you compiled in your local sessions. This has never been fully explained
+until now where you can read about it on <a href="sharerem.html" target="_blank">this
+page</a>.
+<p><b>4) Are there fundamental drawbacks to writing code that uses multi-processing?</b>
+<p>The answer to this is "<b>yes</b>" for the simple reason that if you
+write code that reports on your clinical data then you might have to send
+this code to a regulatory authority so they can run it themselves. But
+they might not have the multi-processing product SAS/CONNECT licensed for
+their computer. Therefore you would have to write your code in such a way
+that it could run on a version of SAS with or without SAS/CONNECT licensed.
+<p>So there are reasons why multiprocessing never got off the ground in
+the pharmaceutical industry. But now a new macro named <a href="Spectre/utilmacros/rsubmitter.sas" target="_blank">%rsubmitter</a>
+exists that can help the industry go down the multiprocessing path and
+get around all the problems.
+<h2>
+%rsubmitter</h2>
+<b>%rsubmitter</b> is a very advanced macro for managing multiprocessing
+streams. It was primarily designed to manage and control a limited number
+of streams for a greater number of tasks than streams and to close down
+and sign off sessions in the original task order, even where they would
+probably not be the same as the finishing order. Signing off processes
+in the original submission order means that outputs are collected in that
+order and this is usually a requirement. The macro does this in an efficient
+way such that it closes down session sequentially as soon as it can and
+therefore returns allocated resources to the computer. As far as I am aware,
+there has never been a macro available for free to users to do this. Now
+there is.
+<p>But <a href="Spectre/utilmacros/rsubmitter.sas" target="_blank">%rsubmitter</a>
+also works if SAS/CONNECT is not licensed. In that case, it does not complain,
+it merely writes a NOTE to the log to that effect and processes all the
+tasks sequentially in the local session. So it works the same with SAS/CONNECT
+as without it, except that without it it can not use multi-processing to
+gain speed.
+<p>%rsubmitter not only takes away the need to learn the syntax of using
+rsubmit sessions, it keeps your code simple and enables your code to run
+both with or without SAS/CONNECT. Maybe it is the <b>GAME CHANGER</b> that
+will get the pharmaceutical industry to go down the multiprocessing path,
+even after a thirteen year delay.
+<h2>
+What %rsubmitter needs from you</h2>
+<b>%rsubmitter</b> needs code members that can automatically adjust to
+run both in your local session and also in rsubmit sessions without needing
+any code change. This is explained fully on the following two pages you
+can link to, but I will warn you that there is a lot of information on
+these pages that is needed to "get you to the end" so you understand what
+is going on. You can link to these pages below.
+<p><a href="sharerem.html" target="_blank">Sharing Resources with Remote
+Sessions</a>
+<br><a href="managemp.html" target="_blank">Managing your Multiprocessing
+Sessions</a>
+<br>&nbsp;
+<h2>
+Conclusion</h2>
+You have been introduced to the <a href="Spectre/utilmacros/rsubmitter.sas" target="_blank">%rsubmitter</a>
+macro to help your pharmaceutical company go down the path of multiprocessing.
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<br>
+<br>
+<br>
+<center>
+<p>Go back to the home <a href="index-2.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/rsubmitter.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+</html>

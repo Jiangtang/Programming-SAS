@@ -1,0 +1,32 @@
+#!/bin/bash
+#<pre><b>
+# Script     : quotelst
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 12-Jun-2011
+# Purpose    : To put all arguments in double quotes
+# SubScripts : none
+# Notes      : This is useful for putting a list of files in double quotes where
+#              file names could contain spaces.
+# Usage      : quotelst C:\mylib\*
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   normally a file pattern
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+#
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+if [ $# -lt 1 ] ; then
+  echo "Usage: quotelst a*.*" 1>&2
+  exit 1
+fi
+
+for filename in "$@" ; do
+  echo \"$filename\"
+done

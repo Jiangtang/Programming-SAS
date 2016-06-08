@@ -1,0 +1,210 @@
+#!/bin/bash
+#<pre><b>
+# Script     : layout2lsps
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 21-Feb-2007
+# Purpose    : Production script to calculate sas linesize and pagesize values
+#              based on paper type, margins and layout.
+# SubScripts : toupper
+# Notes      : All options must be used and given a value. linesize and pagesize
+#              are echoed to standard output separated by a space.
+# Usage      : layout2lsps -l 1.0 -r 1.0 -t 1.0 -b 1.0 -p A4 -f LC12
+#===============================================================================
+# OPTIONS:
+#-opt- -------------------------------description-------------------------------
+#  l   (value)  left margin (in)                                  
+#  r   (value)  right margin (in)                                 
+#  t   (value)  top margin (in)                                   
+#  b   (value)  bottom margin (in)                                
+#  p   (value)  paper: A4, Letter                                                             
+#  f   (value)  format (layout)                                   
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Use options and not parameters 
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  21Feb07         Header tidy
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Define give-usage-message-then-exit function
+usage () {
+  echo "Usage: layout2lsps -l <left margin (in)> -r <right margin (in)>" 1>&2
+  echo "       -t <top margin (in)> -b <bottom margin (in)>" 1>&2
+  echo "       -p <paper: A4, Letter> -f <format (layout)> " 1>&2
+  exit 1
+}
+
+
+# Defaults
+valuel=                             # Default value for left margin (in)                                  
+valuer=                             # Default value for right margin (in)                                 
+valuet=                             # Default value for top margin (in)                                   
+valueb=                             # Default value for bottom margin (in)                                
+valuep=                             # Default value for paper                                             
+valuef=                             # Default value for format (layout)                                   
+
+
+
+# Set shell option "extglob" for extended glob pattern matching.
+# This is needed to check the layout value supplied.
+shopt -s extglob
+
+
+
+# "case" statement for action to take on selected options
+while getopts "l:r:t:b:p:f:" param ; do
+  case $param in
+   "?") # bad option supplied
+        usage
+        ;;
+   "l") # (value) left margin (in)
+        valuel=$OPTARG
+        ;;
+   "r") # (value) right margin (in)
+        valuer=$OPTARG
+        ;;
+   "t") # (value) top margin (in)
+        valuet=$OPTARG
+        ;;
+   "b") # (value) bottom margin (in)
+        valueb=$OPTARG
+        ;;
+   "p") # (value) paper
+        # Check that a valid value was entered
+        OK=0
+        valuep=$(toupper $OPTARG)
+        case "$valuep" in
+          "A4"|"LETTER"|"A4LETTER")
+                OK=1
+                ;;
+        esac
+        if [ $OK -eq 0 ] ; then 
+          echo "Error: Invalid value supplied to option -p" 1>&2
+          usage
+        fi
+        ;;
+   "f") # (value) Format (layout)
+        # Check that a valid value was entered
+        OK=0
+        valuef=$(toupper $OPTARG)
+        case "$valuef" in    #- extended globbing used here
+           @(L|P)?(C|CT|CW|T|W|TC|WC)@(7|7.5|8|8.5|9|9.5|10|10.5|11|11.5|12))
+                OK=1
+                ;;
+        esac
+        if [ $OK -eq 0 ] ; then 
+          echo "Error: Invalid value supplied to option -f" 1>&2
+          usage
+        fi
+        ;;
+  esac
+done
+
+
+
+# shift to bring first parameter to position 1
+shift $(($OPTIND - 1))
+
+
+# No parameters allowed
+if [ $# -gt 0 ] ; then
+  echo "Error: (layout2lsps) Do not supply parameters for this script. Use
+options only." 1>&2
+  usage
+fi
+
+
+# Use gawk to calculate linesize and pagesize.
+# Echo nothing into it so that we can pass parameter values in.
+echo | gawk '
+
+# Use the BEGIN block to fill arrays with height and width inch values
+BEGIN {
+width["A4P"]=8.2677
+height["A4P"]=11.6929
+width["A4L"]=11.6929
+height["A4L"]=8.2677
+width["LETTERP"]=8.5
+height["LETTERP"]=11
+width["LETTERL"]=11
+height["LETTERL"]=8.5
+width["A4LETTERP"]=8.2677
+height["A4LETTERP"]=11
+width["A4LETTERL"]=11
+height["A4LETTERL"]=8.2677
+}
+
+
+# ======= main block start here =======
+{
+
+# make sure paper and layout are upper case
+layout=toupper(layout)
+paper=toupper(paper)
+
+
+# paper form to match array entries is the paper size with the first layout letter
+form=paper substr(layout,1,1)
+
+
+# swap round the margins for landscape mode
+if (substr(layout,1,1)=="L")
+  {
+  holdm1=lmargin
+  holdm2=rmargin
+  lmargin=bmargin
+  rmargin=tmargin
+  tmargin=holdm1
+  bmargin=holdm2
+  }
+
+
+# Font width to height ratio is normally 0.6 
+# but is 0.5 for a "condensed" (i.e. narrow) font.
+ratio=0.6
+if (index(layout,"C")>0)
+  ratio=0.5
+
+
+# If using a tight layout format then line spacing is 1.0 times font point size.
+# If standard then the value 1.1 is used. If wide then the value 1.2 is used.
+# Font point size is the number at the end of the layout identifier.
+spacing=1.1
+if (index(layout,"T")>0)   #- tight
+  spacing=1.0
+if (index(layout,"W")>0)  #- wide
+    spacing=1.2
+
+
+# get font point size by removing letters from the layout
+pointsz=layout
+gsub(/[LPCTW]/,"",pointsz)
+
+
+# usable width is the paper width minus left margin minus right margin
+usewidth=width[form]-lmargin-rmargin
+
+
+# maximum characters to fit in usable width
+linesize=int((120.450*0.6*usewidth+0.0001)/(pointsz*(ratio+0)))
+
+
+# usable height is the paper height minus top margin minus bottom margin
+useheight=height[form]-tmargin-bmargin
+
+
+# maximum lines to fit in usable height
+pagesize=int((72.27*useheight+0.0001)/(pointsz*spacing))
+
+
+# output the results
+print linesize, pagesize
+
+}' lmargin="$valuel" rmargin="$valuer" tmargin="$valuet" bmargin="$valueb"
+paper="$valuep" layout="$valuef" 

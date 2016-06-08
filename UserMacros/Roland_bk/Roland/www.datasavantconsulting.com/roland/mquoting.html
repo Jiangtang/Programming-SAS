@@ -1,0 +1,429 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/mquoting.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:04 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <title>Macro quoting functions</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Macro Quoting Functions</h1></center>
+<b>Author: Roland Rashleigh-Berry</b>
+<br><b>Updated: 09 Oct 2012</b>
+<br>&nbsp;
+<h2>
+Introduction</h2>
+When using the SAS macro language you are probably aware that if you use
+unmatched quotes, unpaired brackets, commas and words such as "AND" then
+this gives the SAS macro language parser difficulties. If you are referring
+to these characters as text then these characters need to be masked, somehow,
+so that the macro parser knows that you are treating these characters as
+text. There are several so called "quoting functions" to do this and knowing
+which one to use and when can be confusing. For many years I used "trial
+and error" until I hit on the right combination because I did not have
+time to study all the documentation on macro quoting which I thought would
+take several hours. Indeed, if you try to learn from the online documentation
+then not only will it take hours but you will be confused as well, because
+the documentation is flawed.
+<p>You will be pleased to know that all you need to learn about sas macro
+quoting is explained on this one page and that it will take you less than
+fifteen minutes to reach a full understanding. There will be no need for
+trial and error in the future as you will instantly know what macro quoting
+function to use. It is very easy once you have a grasp of the subject.
+<p>The sas macro quoting functions discussed here are as follows: %str(),
+%nrstr(), %quote(), %nrquote(), %bquote(), %nrbquote(), %superq() and %unquote().
+<h2>
+The Problem</h2>
+First I will remind you of the problem of when the macro parser reads your
+code and encounters these characters that you intended to be treated as
+text.
+<p>In the first example we run into a problem with an unmatched single
+quote. The macro parser thinks you are quoting something as soon as its
+hits the quote mark and regards everything as a string until it finds the
+closing quote. It will assign everything following the equals sign to the
+closing semicolon on the second line to the macro variable "str". Obviously,
+that was not intended and you can see the result when it writes the content
+to the log.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>1 %let str=Roland's place;</tt>
+<br><tt>2 %let str2=, Biberach';</tt>
+<br><tt>3 %put >>>> str=&amp;str;</tt>
+<br><tt>>>>> str=Roland's place;%let str2=, Biberach'</tt></td>
+</tr>
+</table>
+
+<p>In the second example we run into a problem of an unmatched round bracket:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>19 %let str=%trim(Rolands place( );</tt>
+<br><tt>20</tt>
+<br><tt>21 %put >>>> str=&amp;str;</tt>
+<br><tt>ERROR: Open code statement recursion detected.</tt></td>
+</tr>
+</table>
+
+<p>In the third example we see a problem with the word AND:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>78 %macro test;</tt>
+<br><tt>79 %let str=AND;</tt>
+<br><tt>80 %if &amp;str EQ AND %then %put >>> str is AND;</tt>
+<br><tt>81 %mend;</tt>
+<br><tt>82</tt>
+<br><tt>83 %test;</tt>
+<br><tt>ERROR: A character operand was found in the %EVAL function or %IF
+condition where a numeric operand is required. The condition was: &amp;str
+EQ AND</tt>
+<br><tt>ERROR: The macro TEST will stop executing.</tt></td>
+</tr>
+</table>
+
+<p>We need to mask these symbols or words that might cause us a problem.
+This is what the macro quoting functions are for. But there are several
+of these and it may not be obvious which one to use and when. All will
+be made clear on this page.
+<h2>
+Macro variables populated from datasets</h2>
+The biggest problem with macro quoting is where macro variables get populated
+from datasets. This could be a "call symput" in a data step or a "select
+into:" in SQL. A character variable in SAS can contain all sorts of characters
+that will give the sas macro parser problems when its contents have been
+written to a macro variable. In the following example you see an unmatched
+single quote and a comma written to a macro variable that will give us
+trouble in macro code once we try to resolve the contents of the macro
+variable.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data _null_;</tt>
+<br><tt>call symput('mvar',"Roland's place, Biberach");</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>Unless we can be completely sure that no such characters can find their
+way into our macro variables then we need to use macro quoting functions
+so that the macro parser treats the contents as text.
+<h2>
+%str() and %nrstr()</h2>
+These two macro quoting functions, <b>%str() </b>and <b>%nrstr()</b>, are
+used to quote fixed text. They have no effect on macros or macro variables
+when they are resolved because they do their work before macro resolution
+or macro variable resolution. They are known as "<b>compile time</b>" functions.
+They might not be in a macro, though, they might be in open code, but the
+fact is they finish their work before macro references get resolved which
+is at "<b>execution time</b>". You do not need to worry about this fine
+distinction. All you need to know is that you should use these macro quoting
+function for fixed text - i.e. text that never changes.
+<p>Remember this for %str() and %nrstr(). <b>They are for fixed text only</b>.
+They do not work on resolved macro variable references because they are
+unaware of them. If you try to use them, assuming they will work on the
+contents of macro variables, you will get problems.
+<p>Here is a simple example. We will write a string containing a comma
+to a macro variable.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data _null_;</tt>
+<br><tt>call symput('mvar',"three, four&nbsp;&nbsp;&nbsp; ");</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>We will have no problem with the following because %str() will have
+marked the two commas in the fixed text:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%put >>>>>> %sysfunc(trim(%str(one, two, )));</tt></td>
+</tr>
+</table>
+
+<p>But we will have a problem if we assume it is masking the content of
+a macro variable. It can not do this as it is a "compile time" function
+and can only work on fixed text. The comma in the resolved macro variable
+is causing the problem, not the two commas after "one" and "two" because
+it has masked these. It masked them and then its work was finished. Next,
+the macro variable was resolved and it is this that caused the problem.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>139&nbsp; %put >>>>>> %sysfunc(trim(%str(one, two, &amp;mvar&nbsp;&nbsp;
+)));</tt>
+<br><tt>ERROR: The function TRIM referenced by the %SYSFUNC or %QSYSFUNC
+macro function has too many arguments.</tt>
+<br><tt>>>>>>></tt></td>
+</tr>
+</table>
+
+<p>Now we come to %nrstr(). The "nr" could be though of as "<b>no resolve</b>".
+It masks macro variable references that start with "&amp;" and macro references
+that start with "%" so that they do not resolve. Keeping out code for "mvar"
+above then if we add a macro reference and compare the output then we can
+see that %nrstr() has masked the "&amp;" and "%" so that it does not resolve.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>157</tt>
+<br><tt>158&nbsp; %macro m; MMMMMMMM %mend m;</tt>
+<br><tt>159</tt>
+<br><tt>160</tt>
+<br><tt>161&nbsp; %put >>>>>> %str(one, two, &amp;mvar %m&nbsp; );</tt>
+<br><tt>>>>>>> one, two, three, four&nbsp;&nbsp;&nbsp;&nbsp; MMMMMMMM</tt>
+<br><tt>162</tt>
+<br><tt>163&nbsp; %put >>>>>> %nrstr(one, two, &amp;mvar %m&nbsp; );</tt>
+<br><tt>>>>>>> one, two, &amp;mvar %m</tt></td>
+</tr>
+</table>
+
+<p>%str() is often used in macros to test whether a parameter value has
+been supplied as a quoted string or not. But in testing whether the first
+character is a quote mark then we have to "quote" it or we will run into
+the problem of an unmatched quote so we would test it like this. Note that
+we use %qsubstr() and not %substr() because if the value started with a
+quote mark then %substr() would resolve to a literal quote which would
+give us a syntax error. When you use %str() or %nrstr() to quote text that
+has an unmatched quote or unmatched bracket or a percent sign then you
+further have to mark these by placing a "%" in front of the character.
+It's a strange oddity that you just have to remember to do.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%if %qsubstr(&amp;parm,1,1) EQ %str(%')</tt>
+<br><tt>&nbsp;or %qsubstr(&amp;parm,1,1) EQ %str(%") %then %do;</tt></td>
+</tr>
+</table>
+
+<p>To remind you about %str() and %nrstr() then these are used to mask
+fixed text. %nrstr() is the "No Replace" version that masks "&amp;" and
+"%" as well. And additionally, for unmatched quotes, unmatched brackets
+and percent signs, you need to precede them with a "%".
+<p>You'll be pleased to know that <b>the hard part is over</b>. The rest
+is easy to understand and remember.
+<p>Before leaving this section I will give a warning about the online sas
+documentation where it seems to imply that %str() and %nrstr() can work
+on resolved macro variable contents. They can not. They have finished their
+work before the macro variable reference can be substituted so they can
+not work on the macro variable contents.
+<h2>
+%quote() and %nrquote()</h2>
+Now we come to the "<b>execution time</b>" functions. It is at execution
+time that macro references and macro variable references get resolved so
+you would use these "execution time" functions to macro quote resolved
+macro variables and macros. This can be a mixture of fixed text and macro
+references and macro variable references. %quote() and %nrquote() are early
+versions of execution time macro quoting functions. <b>They are not very
+useful.</b> They can not macro quote unmatched brackets and unmatched quotes.
+They have been <b>superseded</b> by the "b" (for "blind") macro quoting
+functions that you will learn about in the next section. They are obsolete
+so you should never use them. They are only there so that legacy code can
+use them. <b>You can forget about these two old quoting functions.</b>
+<p>Before leaving this section then it is useful to explain that the "<b>nr</b>"
+in the second function does not mean "no resolve" or "no replace". It stands
+for "<b>no rescan</b>". These macro quoting functions are "execution time"
+functions and so you would expect them to resolve macro variable references
+and macro references, and indeed they do, but the "nr" macro function will
+mask the "&amp;" and "%" <b>after</b> all references have been resolved
+so that they are not "<b>rescanned</b>".
+<h2>
+%bquote() and %nrbquote()</h2>
+The "b" in these execution time macro functions is short for "blind". They
+are blind to what the contents inside the brackets might resolve to. They
+will cope with unmatched brackets and unmatched quotes. You can think of
+them as "version B" macros or "B for better" macros. The "nr" in the name
+of the second macro function is for "no rescan", as explained in the previous
+section.
+<p>The "no rescan" of <b>%nrbquote()</b> is especially useful for limiting
+warning messages written to the log so it is the better macro function
+to use. But you have got to bear in mind that it masks the "&amp;" and
+"%". If you are passing the results to the %eval() function and you want
+the "&amp;" to be used as "AND" in that function then you must not use
+%nrbquote(). You should use <b>%bquote()</b> instead. But for any other
+use you should use %nrbquote() because this avoids clutter in the log when
+there is a warning about macro variables or macros unable to resolve.
+<p>In the following case they both act in the same way:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>166&nbsp; data _null_;</tt>
+<br><tt>167&nbsp; call symput('mvar',"three, four&nbsp;&nbsp;&nbsp; ");</tt>
+<br><tt>168&nbsp; run;</tt>
+<br><tt>169</tt>
+<br><tt>170&nbsp; %macro m; MMMMMMMM %mend m;</tt>
+<br><tt>171</tt>
+<br><tt>172</tt>
+<br><tt>173&nbsp; %let x=%bquote(one, two, &amp;mvar %m&nbsp; );</tt>
+<br><tt>174&nbsp; %put >>>>>> &amp;x;</tt>
+<br><tt>>>>>>> one, two, three, four&nbsp;&nbsp;&nbsp;&nbsp; MMMMMMMM</tt>
+<br><tt>175</tt>
+<br><tt>176&nbsp; %let x=%nrbquote(one, two, &amp;mvar %m&nbsp; );</tt>
+<br><tt>177&nbsp; %put >>>>>> &amp;x;</tt>
+<br><tt>>>>>>> one, two, three, four&nbsp;&nbsp;&nbsp;&nbsp; MMMMMMMM</tt></td>
+</tr>
+</table>
+
+<p>But if we change the macro variable reference and the macro reference
+so they can not be resolved and we see a difference in what is written
+to the log.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>178&nbsp; %let x=%bquote(one, two, &amp;xx %x&nbsp; );</tt>
+<br><tt>WARNING: Apparent symbolic reference XX not resolved.</tt>
+<br><tt>WARNING: Apparent invocation of macro X not resolved.</tt>
+<br><tt>WARNING: Apparent symbolic reference XX not resolved.</tt>
+<br><tt>WARNING: Apparent invocation of macro X not resolved.</tt>
+<br><tt>179&nbsp; %put >>>>>> &amp;x;</tt>
+<br><tt>WARNING: Apparent symbolic reference XX not resolved.</tt>
+<br><tt>WARNING: Apparent invocation of macro X not resolved.</tt>
+<br><tt>>>>>>> one, two, &amp;xx %x</tt>
+<br><tt>180</tt>
+<br><tt>181&nbsp; %let x=%nrbquote(one, two, &amp;xx %x&nbsp; );</tt>
+<br><tt>WARNING: Apparent symbolic reference XX not resolved.</tt>
+<br><tt>WARNING: Apparent invocation of macro X not resolved.</tt>
+<br><tt>182&nbsp; %put >>>>>> &amp;x;</tt>
+<br><tt>>>>>>> one, two, &amp;xx %x</tt></td>
+</tr>
+</table>
+
+<p>You can see from the above that %nrbquote() has quoted the "&amp;" and
+"%" so that the macro parser does not try to resolve them a second time
+for the "%put". With %bquote() a warning message is generated every time
+this macro string is encountered because the "&amp;" and "%" are not masked
+and so the macro parser tries to resolve them every time.
+<p>In nearly all cases you will be better served by using <b>%nrbquote()</b>.
+You will see it commonly used to enclose strings being passed to a macro
+where the string might contain commas like in the following simple example:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%mymacro(%nrbquote(&amp;mystring));</tt></td>
+</tr>
+</table>
+
+<p>You can use a mixture of fixed text and macro variable references. All
+these execution time macros enable you to resolve macro variables inside
+single quotes. You may have thought that it was not possible to resolve
+macro variables inside single quotes but since these macro functions mask
+the quotes then it will happily resolve.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%nrbquote('&amp;mystring')</tt></td>
+</tr>
+</table>
+
+<h2>
+%superq()</h2>
+<b>%superq</b> is another execution time macro that takes as its argument
+a <b>single macro variable name</b>. Note that it takes the <b>name</b>
+of the macro variable. <b>You do not put a "&amp;" in front</b>. It only
+works on <b>one</b> macro variable and is a fail-safe way of macro quoting
+its contents. Unlike the other execution time macro quoting function that
+allow for full and even nested resolution of macro variables and macro
+calls, <b>%superq() allows for none at all</b>. You just get the characters
+assigned to the macro variable with no substitution done because every
+character that needs masking gets masked. In the following example you
+see a comparison with the way %superq() behaves compared to %bquote() and
+%nrbquote(). For the first macro variable all three mask in the same way
+but for the second macro variable, %bquote() and %nrbquote() try to resolve
+the macro variable contents, resulting in warnings. If you never want the
+contents of a macro variable to be resolved then you should use %superq().
+Despite its limitation of only working on one macro variable and nothing
+else it is a very useful macro quoting function that you should use at
+the appropriate time.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>70 options nonotes;</tt>
+<br><tt>71</tt>
+<br><tt>72 data _null_;</tt>
+<br><tt>73 call symput('mvar1',"Roland's place, Biberach");</tt>
+<br><tt>74 call symput('mvar2',')"%x&amp;x');</tt>
+<br><tt>75 run;</tt>
+<br><tt>76</tt>
+<br><tt>77</tt>
+<br><tt>78</tt>
+<br><tt>79 %put >>>>>> %superq(mvar1);</tt>
+<br><tt>>>>>>> Roland's place, Biberach</tt>
+<br><tt>80</tt>
+<br><tt>81 %put >>>>>> %bquote(&amp;mvar1);</tt>
+<br><tt>>>>>>> Roland's place, Biberach</tt>
+<br><tt>82</tt>
+<br><tt>83 %put >>>>>> %nrbquote(&amp;mvar1);</tt>
+<br><tt>>>>>>> Roland's place, Biberach</tt>
+<br><tt>84</tt>
+<br><tt>85</tt>
+<br><tt>86</tt>
+<br><tt>87 %put >>>>>> %superq(mvar2);</tt>
+<br><tt>>>>>>> )"%x&amp;x</tt>
+<br><tt>88</tt>
+<br><tt>89 %put >>>>>> %bquote(&amp;mvar2);</tt>
+<br><tt>WARNING: Apparent symbolic reference X not resolved.</tt>
+<br><tt>WARNING: Apparent invocation of macro X not resolved.</tt>
+<br><tt>WARNING: Apparent symbolic reference X not resolved.</tt>
+<br><tt>WARNING: Apparent symbolic reference X not resolved.</tt>
+<br><tt>WARNING: Apparent invocation of macro X not resolved.</tt>
+<br><tt>WARNING: Apparent symbolic reference X not resolved.</tt>
+<br><tt>>>>>>> )"%x&amp;x</tt>
+<br><tt>90</tt>
+<br><tt>91 %put >>>>>> %nrbquote(&amp;mvar2);</tt>
+<br><tt>WARNING: Apparent symbolic reference X not resolved.</tt>
+<br><tt>WARNING: Apparent invocation of macro X not resolved.</tt>
+<br><tt>WARNING: Apparent symbolic reference X not resolved.</tt>
+<br><tt>>>>>>> )"%x&amp;x</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<h2>
+%unquote()</h2>
+If you stay within macro code then you do not need to use the <b>%unquote()
+</b>function
+but if you resolve a macro variable in such a way that you are creating
+a piece of ordinary sas code, such as part of a data step or SQL, and you
+want the contents of the macro variable to be treated as ordinary sas code
+then you need to %unquote the final result otherwise you will get syntax
+errors in a lot of situations. Just surround your macro expression with
+the call to %unquote() like the following:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%unquote(macro expression &amp;a &amp;b etc.)</tt></td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+You have seen that the compile time macro quoting functions, %str() and
+%nrstr(), should be used for fixed text only and out of the four execution
+time quoting functions then %nrbquote() should be the one you nearly always
+use. Also that %superq() is a fail safe way to resolve a macro that is
+supplied with a macro variable name (rather than a macro variable reference).
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<br>&nbsp;
+<br>&nbsp;
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/mquoting.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:04 GMT -->
+</html>

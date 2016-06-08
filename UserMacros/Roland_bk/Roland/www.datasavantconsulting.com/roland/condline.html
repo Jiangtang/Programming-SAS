@@ -1,0 +1,386 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/condline.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:06 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="Conditional line statements in proc report">
+   <meta name="KeyWords" content="Conditional line statements in proc report">
+   <title>Conditional line statements in proc report</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Conditional line statement in proc report</h1></center>
+
+<h2>
+Introduction</h2>
+Sometimes people ask if it is possible to have conditional "line" statements
+in "proc report". They want to display a line sometimes and at other times
+not. They soon realise that conditional line statements are not possible
+using normal methods. But what they are trying to do is possible using
+the <b>$varying</b> format as will be shown below.
+<h2>
+The problem</h2>
+Firstly, here is a line statement in a compute block that is <b>not conditional.</b>
+<br>.
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>options nocenter;</tt>
+<p><tt>proc sort data=sashelp.class out=class;</tt>
+<br><tt>by sex;</tt>
+<p><tt>proc report data=class nowd;</tt>
+<br><tt>columns sex name age;</tt>
+<br><tt>define sex / order width=3 spacing=0;</tt>
+<br><tt>define name / display;</tt>
+<br><tt>define age / display;</tt>
+<br><tt>compute after sex;</tt>
+<br><tt>&nbsp; line @1 "------------------------";</tt>
+<br><tt>endcomp;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Sex&nbsp; Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Age</tt>
+<br><tt>F&nbsp;&nbsp;&nbsp; Alice&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+13</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Barbara&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+13</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Carol&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+14</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Jane&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+12</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Janet&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+15</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Joyce&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+11</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Judy&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+14</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Louise&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+12</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Mary&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+15</tt>
+<br><tt>------------------------</tt>
+<br><tt>M&nbsp;&nbsp;&nbsp; Alfred&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+14</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Henry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+14</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; James&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+12</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Jeffrey&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+13</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; John&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+12</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Philip&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+16</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Robert&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+12</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Ronald&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+15</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Thomas&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+11</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; William&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+15</tt>
+<br><tt>------------------------</tt></td>
+</tr>
+</table>
+
+<p>Now we try to make it conditional so we get no line after the "F" sex.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>proc report data=class nowd;</tt>
+<br><tt>columns sex name age;</tt>
+<br><tt>define sex / order width=3 spacing=0;</tt>
+<br><tt>define name / display;</tt>
+<br><tt>define age / display;</tt>
+<br><tt>compute after sex;</tt>
+<br><tt>&nbsp; if sex="M" then do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; line @1 "------------------------";</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>endcomp;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>The output is exactly the same. We have a dashed line under both sexes.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Sex&nbsp; Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Age</tt>
+<br><tt>F&nbsp;&nbsp;&nbsp; Alice&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+13</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Barbara&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+13</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Carol&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+14</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Jane&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+12</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Janet&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+15</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Joyce&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+11</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Judy&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+14</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Louise&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+12</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Mary&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+15</tt>
+<br><tt>------------------------</tt>
+<br><tt>M&nbsp;&nbsp;&nbsp; Alfred&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+14</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Henry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+14</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; James&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+12</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Jeffrey&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+13</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; John&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+12</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Philip&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+16</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Robert&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+12</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Ronald&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+15</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Thomas&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+11</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; William&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+15</tt>
+<br><tt>------------------------</tt></td>
+</tr>
+</table>
+
+<p>And what does it say in the log to tell us we can not do this? I'll
+show you.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>276&nbsp; proc report data=class nowd;</tt>
+<br><tt>277&nbsp; columns sex name age;</tt>
+<br><tt>278&nbsp; define sex / order width=3 spacing=0;</tt>
+<br><tt>279&nbsp; define name / display;</tt>
+<br><tt>280&nbsp; define age / display;</tt>
+<br><tt>281&nbsp; compute after sex;</tt>
+<br><tt>282&nbsp;&nbsp;&nbsp; if sex="M" then do;</tt>
+<br><tt>283&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; line @1 "------------------------";</tt>
+<br><tt>284&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>285&nbsp; endcomp;</tt>
+<br><tt>286&nbsp; run;</tt>
+<p><tt>NOTE: There were 19 observations read from the data set WORK.CLASS.</tt>
+<br><tt>NOTE: PROCEDURE REPORT used (Total process time):</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.01 seconds</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.01 seconds</tt>
+<p>&nbsp;</td>
+</tr>
+</table>
+
+<p>There is <b>nothing in the log</b> to tell us something is wrong, even
+though it has not worked in the way we expected.
+<p>We can change what gets displayed by the line statement and show nothing
+for sex="F" but we can't get rid of the line using this method.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>proc report data=class nowd;</tt>
+<br><tt>columns sex name age;</tt>
+<br><tt>define sex / order width=3 spacing=0;</tt>
+<br><tt>define name / display;</tt>
+<br><tt>define age / display;</tt>
+<br><tt>compute after sex;</tt>
+<br><tt>&nbsp; msg="------------------------";</tt>
+<br><tt>&nbsp; if sex="F" then msg="";</tt>
+<br><tt>&nbsp; line @1 msg $24.;</tt>
+<br><tt>endcomp;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Sex&nbsp; Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Age</tt>
+<br><tt>F&nbsp;&nbsp;&nbsp; Alice&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+13</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Barbara&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+13</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Carol&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+14</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Jane&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+12</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Janet&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+15</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Joyce&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+11</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Judy&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+14</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Louise&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+12</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Mary&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+15</tt>
+<p><tt>M&nbsp;&nbsp;&nbsp; Alfred&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+14</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Henry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+14</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; James&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+12</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Jeffrey&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+13</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; John&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+12</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Philip&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+16</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Robert&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+12</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Ronald&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+15</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Thomas&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+11</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; William&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+15</tt>
+<br><tt>------------------------</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<h2>
+The solution</h2>
+The solution is to use the <b>$varying</b> format and to suppress the output
+of the line by using a length of 0. (I won't explain the $varying format.
+You can look this up in the sas documentation.)
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>proc report data=class nowd;</tt>
+<br><tt>columns sex name age;</tt>
+<br><tt>define sex / order width=3 spacing=0;</tt>
+<br><tt>define name / display;</tt>
+<br><tt>define age / display;</tt>
+<br><tt>compute after sex;</tt>
+<br><tt>&nbsp; msg="------------------------";</tt>
+<br><tt>&nbsp; if sex="F" then len=0;</tt>
+<br><tt>&nbsp; else len=24;</tt>
+<br><tt>&nbsp; line @1 msg $varying24. len;</tt>
+<br><tt>endcomp;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>Now we get what we want.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Sex&nbsp; Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Age</tt>
+<br><tt>F&nbsp;&nbsp;&nbsp; Alice&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+13</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Barbara&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+13</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Carol&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+14</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Jane&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+12</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Janet&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+15</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Joyce&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+11</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Judy&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+14</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Louise&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+12</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Mary&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+15</tt>
+<br><tt>M&nbsp;&nbsp;&nbsp; Alfred&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+14</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Henry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+14</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; James&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+12</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Jeffrey&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+13</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; John&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+12</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Philip&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+16</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Robert&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+12</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Ronald&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+15</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; Thomas&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+11</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; William&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+15</tt>
+<br><tt>------------------------</tt></td>
+</tr>
+</table>
+
+<h2>
+Compute after _page_ lines</h2>
+Sometimes you want to draw a line at the end of each page using "compute
+after _page_" but you would like the line on the very last page to be directly
+under the data rather than at the bottom of the page. You can do this using
+this method.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>options nocenter ps=40 ;</tt>
+<br><tt>&nbsp;</tt>
+<br><tt>proc report data=sasuser.adv headline headskip nowd;</tt>
+<br><tt>&nbsp; columns patno amsoc;</tt>
+<br><tt>&nbsp; define patno / display;</tt>
+<br><tt>&nbsp; define amsoc / display;</tt>
+<br><tt>&nbsp; compute before;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; len=71;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; len2=len;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; text=repeat("_",135);</tt>
+<br><tt>&nbsp; endcomp;</tt>
+<br><tt>&nbsp; compute after _page_;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; line @3 text $varying. len;</tt>
+<br><tt>&nbsp; endcomp;</tt>
+<br><tt>&nbsp; compute after;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; len=0;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; line @3 text $varying. len2;</tt>
+<br><tt>&nbsp; endcomp;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+You can seen a way to effectively make the "line" statement in a proc report
+"compute" block conditional by using the <b>$varying</b> format.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<center>
+<p>Go back to the home <a href="index-2.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/condline.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:06 GMT -->
+</html>

@@ -1,0 +1,105 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/charlen.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:05 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Generator" content="Microsoft Word 97">
+   <meta name="keywords" content="sas tips techniques">
+   <meta name="Description" content="SAS tips and techniques by Roland Rashleigh-Berry">
+   <meta name="Template" content="C:\PROGRAM FILES\MSOFFICE\OFFICE\html.dot">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <title>Roland's SAS tips and techniques</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Combining character variables with different lengths</h1></center>
+<b>[This site is not connected with the SAS Institute]</b>
+<p><b>[last updated - 06 September 2003]</b>
+<h2>
+Introduction</h2>
+You know how our job gets complicated and messy sometimes? This page is
+about one of those times. It is to do with when you get data sets from
+different sources. <b>Sometimes you will find that the lengths of identically-named
+character variables differ in your input data sets</b>. You have got to
+be very careful in these circumstances. Let us say you are bringing together
+a number of data sets in a "set" statement. As you will know, the name
+(case-wise), length and other characteristics of the final variable in
+the output data sets will use the characteristics in the first data set
+in the list. But supposing you were doing an Integrated Safety Summary
+(ISS) from a number of studies then it could be that one of these studies
+has had to change the standard length of a character field for some reason.
+And if you are relying on using the length of that variable from the first
+data set then it is possible that important information could be lost when
+longer variables of the same name in other data sets are combined together.
+<h2>
+%clength</h2>
+Because this is a potentially serious problem I wrote a macro to get round
+it. But you have got to understand how it works and what it does. It is
+called <a href="clength.sas">clength</a>. You give it the list of data
+sets that you are going to combine using a "set" statement (i.e. one after
+the other rather than doing a merge) and it checks all the character variables
+in those data sets to see if there is a clash of character variable lengths.
+If it finds a clash in one or more variables then it will create a "length"
+statement for you so that you can include it at the top of your data statement
+that defines the data set that contains all the input data sets. It will
+pick the maximum length for each character variable if there is a clash.
+And because variable names can vary in case, and traditionally you use
+what is in the first input data set in the list, then it will keep that
+variable name case from the first data set in the list. If you look at
+it, you will see that it is a quite complex macro.
+<h2>
+Optimizing character variable lengths</h2>
+It is possible to optimize character variable lengths, but I don't recommend
+that you do it in an indiscriminate way. It is better if a character variable
+has a length associated with it that is consistent across all data sets
+with that variable. But it is maybe useful to know where a character variable
+has been assigned a length that is inappropriate with the contents length.
+To this end I wrote a macro called <a href="optlength.sas">optlength</a>.
+This generates a "length" statement for trimming the length of character
+variables, if you want to do so, down to the maximum length of the contents
+found. But please note that I do not recommend you do this. Character variables
+should have a fixed length that should be consistent across other data
+sets having the same variable. If you change it to something shorter, then
+you are maybe causing problems for other programmers who might receive
+those data sets and are unaware you have made a change in variable length.
+I am so opposed to making changes like this that the optlength macro will
+only generate a length statement for you. It will not apply it. You have
+to do this yourself in a following data step and should only do so if it
+is appropriate. Because some character variables should never have their
+lengths changed no matter what then I wrote a macro to "chomp" out a variable
+name and its associated information from the macro string created by the
+optlength macro and I called it <a href="chompw.sas">chompw</a>. It "chomps"
+words out of the string so you can specify the variable name and also "chomp"
+out its associated "$" and length information in the next two words. I've
+got lots of macros on my web site that seem weird and inapplicable but
+every single one of them is there for a purpose and at some stage you will
+find it has a practical use.
+<h2>
+Conclusion</h2>
+In concluding, I will re-iterate my warning that the same-named variable
+coming from different data sets may have different lengths and by default
+you should use the longest length. I wrote the <a href="clength.sas">clength</a>
+macro especially for this and I recommend that you use it. I have written
+other tools that will allow you to optimize the length of character variables
+but would warn against their indiscriminate use. I have deliberately pulled
+back the power of these macros so you have got to deliberately use this
+power by coding an extra data step yourself.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/charlen.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:06 GMT -->
+</html>

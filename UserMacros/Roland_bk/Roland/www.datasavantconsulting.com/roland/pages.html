@@ -1,0 +1,94 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/pages.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="Select pages from a file">
+   <meta name="KeyWords" content="select pages file">
+   <title>pages</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+pages</h1></center>
+<b>[last updated - 27 July 2003]</b>
+<p>This is a very useful tool for printing out a limited number of pages
+from all your output listings. It is especially useful for Clinical so
+they can see a sample of what they are going to get without wading through
+a few trees. You specify a start and end page and the files you want to
+extract those pages from. It uses awk and I'll introduce you to a new feature
+of awk - the BEGIN block.
+<pre><b>#!/bin/sh
+# Script&nbsp;&nbsp;&nbsp;&nbsp; : pages
+# Version&nbsp;&nbsp;&nbsp; : 1.0
+# Author&nbsp;&nbsp;&nbsp;&nbsp; : Roland Rashleigh-Berry
+# Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 27 July 2003
+# Contact&nbsp;&nbsp;&nbsp; : rolandberry@hotmail.com
+# Purpose&nbsp;&nbsp;&nbsp; : To print out a selected range of pages from multiple files
+# SubScripts : none
+# Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : none
+# Usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : pages 2 4 *.lst
+#&nbsp;
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+#&nbsp; 1&nbsp;&nbsp; start page number
+#&nbsp; 2&nbsp;&nbsp; end page number
+#&nbsp; 3&nbsp;&nbsp; files
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+#&nbsp;
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+if [ $# -lt 3 ] ; then
+&nbsp; echo "Usage: pages start-page end-page *.lst" 1>&amp;2
+&nbsp; exit 1
+fi
+
+spage=$1
+epage=$2
+shift
+shift
+
+while [ $# -gt 0 ] ; do
+awk 'BEGIN{pgcnt=1}{if (index($0,"\014")>0) pgcnt++;
+if (pgcnt>"'$epage'") exit;
+if (pgcnt>="'$spage'") {print $0}}' $1
+shift
+done</b></pre>
+The BEGIN block only works when awk starts up. In this case it is setting
+up a page count variable that gets initialised to 1. Outside this BEGIN
+block you will see that the page count gets incremented (using the ++ notation)
+when it finds the octal number \014 in the input record that awk refers
+to as $0. If it exceeds the specifed end page then the utility will exit.
+But if the page is between the start and end page then it will print the
+full record to standard output. It does this for every file supplied to
+it. Output from this procedure should be redirected to a file which can
+then be printed.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/pages.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+</html>

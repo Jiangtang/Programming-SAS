@@ -1,0 +1,132 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/getname.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Generator" content="Microsoft Word 97">
+   <meta name="keywords" content="sas tips techniques">
+   <meta name="Description" content="getname">
+   <meta name="Template" content="C:\PROGRAM FILES\MSOFFICE\OFFICE\html.dot">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="getname">
+   <title>Getname</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+getname</h1></center>
+<b>[last updated - 27 July 2003]</b>
+<p>If you have a userid and you want to know the name of the person who
+owns it, then you can find out by issuing this command:
+<p><b><tt>ypcat passwd</tt></b>
+<p>..and piping it to grep like this:
+<p><b><tt>ypcat passwd | grep userid</tt></b>
+<p>This would give you a whole line of information with fields in it separated
+by colons. You want the fifth field with the name in it. Also there is
+a small chance that you will get more than one line if you have another
+userid that starts the same as the userid you are looking for. Perhaps
+grep isn't so good at this task. Let me introduce you to another utility
+called <b>awk</b>. With awk you can more easily look at the different fields
+in lines with separator characters. The userid will be in the first field
+and we want to extract the fifth field. Take a look at this command:
+<p><b><tt>ypcat passwd | awk -F: '{if ($1=="'$userid'") {print $5}}'</tt></b>
+<p>The above is the awk way of doing it. You are piping to awk and telling
+it that the field separator character is a colon by doing this "<b>-F:</b>".
+You are then saying that if the first field equals what you have set up
+in the variable "userid" then you want the fifth field printed.
+<p>We have what we want but there is no way either you or I are going to
+remember it all. Even if we could then it is too long to type in. So we
+are going to turn it into a script and I will describe a bit more about
+the script.
+<p>If you write a script then you should store it in a script library that
+will be recognized as such when you log on. I described setting up a library
+like this on this <a href="unixstart.html">page</a>. If you think of a
+script like a SAS macro then it should have a standard header with useful
+information in it. So without further ado I am going to show you the script
+with these commands in it and will then describe its components.
+<pre><b>#!/bin/sh
+# Script&nbsp;&nbsp;&nbsp;&nbsp; : getname
+# Version&nbsp;&nbsp;&nbsp; : 1.0
+# Author&nbsp;&nbsp;&nbsp;&nbsp; : Roland Rashleigh-Berry
+# Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 27 July 2003
+# Contact&nbsp;&nbsp;&nbsp; : rolandberry@hotmail.com
+# Purpose&nbsp;&nbsp;&nbsp; : To return the name of a user, given a userid
+# SubScripts : none
+# Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : none
+# Usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : getname
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; getname userid
+#&nbsp;
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+#&nbsp; 1&nbsp;&nbsp; (optional) Userid. Defaults to current user $USER
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+#&nbsp;
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+if [ $# -lt 1 ]
+then
+&nbsp; userid=$USER
+else
+&nbsp; userid=$1
+fi
+
+ypcat passwd | awk -F: '{if ($1=="'$userid'") {print $5}}'</b></pre>
+It's mostly header, as you can see, with the command we decided to use
+right at the end. But there is a little bit more that needs explaining.
+Comments, in shell scripts, are indicated by hash symbols. Everything after
+a hash symbol is comment. So you can see that the header is all comment
+lines. However, the top line is not quite a comment line. Because there
+is more than one scripting language, you have got to let Unix know what
+shell you want to run your script because if the wrong shell tries to run
+it then the syntax may not be understood. So the top line contains "<b>!/bin/sh</b>".
+This is telling Unix that you want the shell program located at <b>/bin/sh</b>
+to run it. This is the Bourne shell. If you wanted the Korn shell to run
+it then that top line would contain <b>!/bin/ksh</b> instead. (Go to that
+directory, if you want to, by typing in the command <b>cd /bin/</b> and
+you will see many executable programs there).
+<p>Now look at the lines that follow the header. <b>$#</b> represents the
+number of parameters you supplied to the script. What the code is saying
+is that if the number of parameters supplied was less than one (in other
+words, none were supplied) then the variable "userid" should be set to
+the invoker's userid which will be defined to the USER system environment
+variable. Otherwise, if a parameter were supplied, then userid should be
+set to the value of that first parameter. Note also how many lines are
+used to code this. If you were to put the "then" on the same line as the
+"if" then you would get a syntax error. Scripts only expect one statement
+per line. If you want to put more than one statement on a line then you
+have to use a semi-colon to separate them. In SAS, you use a semi-colon
+to tell the compiler where your statement ends. With shell scripts, you
+use a semicolon to warn the interpreter that you have more than one statement
+on a line.
+<p>And now to try out the script. Create a member in your shell script
+library called "getname" and copy the shell code into it. Then try typing
+in the command <b>getname</b> at the terminal and hopefully it will return
+your own name. Then find out somebody else's Unix userid who you know and
+try out <b>getname userid</b> and see that you get their name displayed.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/getname.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+</html>

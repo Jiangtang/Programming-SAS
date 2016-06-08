@@ -1,0 +1,104 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/commsas.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="SAS tips and techniques system environment variables">
+   <meta name="KeyWords" content="sas tips techniques system environment variables">
+   <title>Communicating with sas programs</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+"Communicating"with sas programs</h1></center>
+<b>[last updated - 11 May 2011]</b>
+<h2>
+Introduction</h2>
+I have seen cases where somebody has to run a number of sas programs but
+they opt to run all the programs in one sas call. This is a bad idea as
+there is the possibility that what is left over in one program can affect
+a following program. When they realize this then you might see some code
+added at the end of every program to clear out the work libraries and formats
+and reset the options to an agreed standard. It starts getting messy. If
+each program ran in a separate sas session then there would not be this
+problem but what sas programmers sometimes need to do is to communicate
+some piece of information to all the sas programs and that this information
+is different for a full run of all programs rather than runs of individual
+programs as is typical during development. So they think that there is
+no alternative but to run all the programs in one sas session and set up
+these values at the start before the first program runs in macro variables.
+There will be a block of code at the top of each program that is active
+for individual runs when the program is being developed but must be commented
+out for the collective run. Again, this is a bad idea, as there is no guarantee
+that the programmer will remember to do this. It is also very messy and
+to make it worse, after a program has been "validated", then the code must
+be changed slightly by commenting out this block before it can be run in
+"production". This introduces the chance of an error so by making this
+sort of edit you might have "invalidated" a "validated" program. This less
+than optimum situation all comes from the mistaken belief that you can
+not "communicate" with sas programs independently of changing sas code
+or setting parameters. You can.
+<h2>
+System environment variables</h2>
+One way to do this is to change sas code in the autoexec.sas member so
+that each program can pick it up and so each program can run independently
+in its own sas session. Although this is a much better way and avoids sas
+programs all running together, it is still changing sas code, if only in
+autoexec.sas. Sometimes this would be inconvenient due to the system setup.
+Luckily there is another and much better way to do this and this is by
+using "<b>system environment variables</b>". Most sas programmers have
+never heard of "system environment variables" because they have limited
+knowledge of the platform they are working on, such as Windows and Unix,
+and what it can do. It is not the programmer's fault as SAS software claims
+to be platform independent and so programmers never think they need to
+bother to learn much about the platform it runs on. If you have a script
+or a batch (.bat) file to run your sas programs then you can set up an
+environment variable, give it a value and "export" it. This makes it available
+to all the sas programs run by the script if they know to look for it.
+In your sas code you can check to see what this environment variable is
+set to using <b>sysget()</b> in a data step or <b>%sysget()</b> as a sas
+macro function. You might want to look at the SAS documentation for these.
+But there is a small problem. Using %sysget() will cause a warning message
+to be written to your log if the environment variable does not exist, which
+will most likely be the case when you are developing your program and trying
+to read a system environment variable that will only be there for the final
+production run. It is best to avoid this warning message. To get round
+this I use a macro I wrote called <b>%qreadpipe()</b> which reads the results
+of system commands, so that you can issue an "echo" command for the system
+environment variable. Doing it this way avoids the warning message. You
+can link to the %qreadpipe() macro <a href="Spectre/utilmacros/qreadpipe.sas">here</a>.
+<p>The clinical reporting system I wrote has an example of using this technique.
+It has a macro named <b>%closerep()</b> that closes a report. It looks
+at the system environment variable OUTDIR to determine which directory
+it should put the final output files in and one called DONELIST so it knows
+which "donelist" file to write an entry to (if OUTDIR is set) to say what
+output has been created. Take a look at the code and see how it is done.
+Note that for Windows (&amp;sysscp EQ WIN) it is done differently than
+for Unix. Note the %readpipe() call. You can link to the %closerep macro
+<a href="Spectre/sysmacros/closerep.sas">here</a>.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><br>
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/commsas.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+</html>

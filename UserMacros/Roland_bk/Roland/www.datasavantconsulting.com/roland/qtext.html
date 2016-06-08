@@ -1,0 +1,124 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/qtext.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:05 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Generator" content="Microsoft Word 97">
+   <meta name="keywords" content="sas tips techniques">
+   <meta name="Description" content="Quoting quoted text using SAS">
+   <meta name="Template" content="C:\PROGRAM FILES\MSOFFICE\OFFICE\html.dot">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="quoting text with quotes in it">
+   <title>Quoting quoted text</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Quoting text with quotes in it</h1></center>
+
+<h2>
+Introduction</h2>
+Sometimes, doing advanced programming, you may need to generate sas code
+and put text in quotes that came from a data step variable that may itself
+contain quotes of any description (single or multiple single or double
+quotes or any combination of these) and you need to make sure that any
+possible quotes in the text do not result in a syntax error. This page
+shows you how to cope with that situation.
+<h2>
+The Solution</h2>
+The solution is to double up any possible quotes in the text that you are
+using to quote the text with using the tranwrd() function. Put a clearer
+way, if you are quoting text in <b>single quotes</b> then double up any
+<b>single quotes</b> in the text using <b><tt>tranwrd(textvar,"'","''")</tt></b>.
+It's as simple as that. You will see from the following code that you can
+run yourself that this method is robust:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data test;</tt>
+<br><tt>&nbsp; length label $ 80;</tt>
+<br><tt>&nbsp; label="aa bb cc";output;</tt>
+<br><tt>&nbsp; label="Dd's single quote";output;</tt>
+<br><tt>&nbsp; label="Dd's and ee's cafe";output;</tt>
+<br><tt>&nbsp; label='Fisher''s "exact" test';output;</tt>
+<br><tt>&nbsp; label="another Fisher's ""exact"" test";output;</tt>
+<br><tt>&nbsp; label="string with ''double single'' quotes";output;</tt>
+<br><tt>&nbsp; label='string with ""double double"" quotes';output;</tt>
+<br><tt>&nbsp; label='unbalanced double quote " ';output;</tt>
+<br><tt>run;</tt><tt></tt>
+<p><tt>filename gencode TEMP;</tt><tt></tt>
+<p><tt>data _null_;</tt>
+<br><tt>&nbsp; length string $ 80;</tt>
+<br><tt>&nbsp; file gencode;</tt>
+<br><tt>&nbsp; set test end=last;</tt>
+<br><tt>&nbsp; if _n_=1 then do;&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; put "data _null_;";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; put "length str $ 80;";</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>&nbsp; *-- the BIG secret is to double all the single quotes --;</tt>
+<br><tt>&nbsp; *-- in the string and enclose in single quotes in the --;</tt>
+<br><tt>&nbsp; *-- generated code. --;</tt>
+<br><tt>&nbsp; string="str='"||trim(tranwrd(label,"'","''"))||"';";</tt>
+<br><tt>&nbsp; put string;</tt>
+<br><tt>&nbsp; string="put str=;";</tt>
+<br><tt>&nbsp; put string;</tt>
+<br><tt>&nbsp; if last then put "run;";</tt>
+<br><tt>run;</tt><tt></tt>
+<p><tt>%inc gencode / source;</tt><tt></tt>
+<p><tt>filename gencode clear;</tt>
+<br><tt></tt>&nbsp;<tt></tt>
+<p><tt>/*** The above writes the following to the log:</tt>
+<br><tt>471</tt>
+<br><tt>472&nbsp; %inc gencode / source;</tt>
+<br><tt>NOTE: %INCLUDE (level 1) file GENCODE is file E:\-------\-------\SASWork\_TD2380\#LN00031.</tt>
+<br><tt>473 +data _null_;</tt>
+<br><tt>474 +length str $ 80;</tt>
+<br><tt>475 +str='aa bb cc';</tt>
+<br><tt>476 +put str=;</tt>
+<br><tt>477 +str='Dd''s single quote';</tt>
+<br><tt>478 +put str=;</tt>
+<br><tt>479 +str='Dd''s and ee''s cafe';</tt>
+<br><tt>480 +put str=;</tt>
+<br><tt>481 +str='Fisher''s "exact" test';</tt>
+<br><tt>482 +put str=;</tt>
+<br><tt>483 +str='another Fisher''s "exact" test';</tt>
+<br><tt>484 +put str=;</tt>
+<br><tt>485 +str='string with ''''double single'''' quotes';</tt>
+<br><tt>486 +put str=;</tt>
+<br><tt>487 +str='string with ""double double"" quotes';</tt>
+<br><tt>488 +put str=;</tt>
+<br><tt>489 +str='unbalanced double quote "';</tt>
+<br><tt>490 +put str=;</tt>
+<br><tt>491 +run;</tt><tt></tt>
+<p><tt>STR=aa bb cc</tt>
+<br><tt>STR=Dd's single quote</tt>
+<br><tt>STR=Dd's and ee's cafe</tt>
+<br><tt>STR=Fisher's "exact" test</tt>
+<br><tt>STR=another Fisher's "exact" test</tt>
+<br><tt>STR=string with ''double single'' quotes</tt>
+<br><tt>STR=string with ""double double"" quotes</tt>
+<br><tt>STR=unbalanced double quote "</tt>
+<br><tt>***/</tt></td>
+</tr>
+</table>
+
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/qtext.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:05 GMT -->
+</html>

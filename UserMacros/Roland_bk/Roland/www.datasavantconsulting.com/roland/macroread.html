@@ -1,0 +1,125 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/macroread.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:05 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Generator" content="Microsoft Word 97">
+   <meta name="keywords" content="sas tips techniques">
+   <meta name="Description" content="reading a sas dataset using pure macro code">
+   <meta name="Template" content="C:\PROGRAM FILES\MSOFFICE\OFFICE\html.dot">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="reading sas dataset macro code">
+   <title>Reading a dataset using pure macro code</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Reading a data set using pure macro code</h1></center>
+<b>[This site is not connected with the SAS Institute]</b>
+<p><b>[last updated - 01 September 2003]</b>
+<h2>
+SCL and Data sets</h2>
+In the old days, "SCL" stood for "Screen control language". Now it stands
+for "SAS component language". You would use SCL when writing SAS/AF applications.
+But SCL was very different from normal SAS code with its procedural steps
+and data steps. SCL was more like other computer languages. You could still
+have the same SAS data sets with SCL but you had to access them in a way
+similar to how you access random-access files in other languages. Let's
+call these random-access files "data sets" to keep things in familiar terms
+since they are effectively the same. To access a data set you had to <b>open</b>
+it first. To get hold of a record you had to issue a <b>get</b>. To replace
+a record with changed values in it you had to issue a <b>put</b>. And when
+you were finished you had to issue a <b>close</b>. So you had to do something
+similar with SCL and if you used to write SAS/AF applications then you
+would be familiar with accessing SAS data sets in this way.
+<h2>
+%sysfunc and SCL</h2>
+%sysfunc has been around for nearly as long as SCL. %sysfunc allows macro
+code to use functions native to SAS code and also SCL. These functions
+include those for reading SAS data sets as used in SCL. So this means that
+you can do data set processing using pure macro code. For normal processing
+of data then doing it the macro way is not a good idea. Data steps are
+a lot faster. But there are times when it becomes useful. If you need a
+piece of information from a SAS data set while you are writing macro code
+then it might make more sense to access this information using macro code
+rather than a data step. It so happens that SAS stores information about
+macro variables in the views <b>sashelp.vmacro</b> and <b>dictionary.macros</b>
+and sometimes you need to know this information when writing macro code.
+It makes more sense to read this information using pure macro code in macros
+if you can so that you don't have to break up the flow of your macro code.
+For example, suppose you want to test for the existence of a global macro
+variable. It would be neater and more convenient if it could be done like
+this:
+<p><b><tt>%if %globexist(macrovar) %then %do ....</tt></b>
+<p>rather than have to break out of your macro code and insert a data step.
+<h2>
+%globlist</h2>
+With macro variable information being held in the views sashelp.vmacro
+and dictionary.macros I considered it a prime candidate for writing a macro
+containing pure macro code to access this information. Of particular interest
+was a list of global macro variables. I know you can display these using
+%put _global_ but the information is not in a very convenient form. So
+I wrote a macro called <a href="globlist.sas">globlist</a> to extract this
+information. This is the only macro so far on this web site that actually
+reads a data set using pure macro code (although I have other macros that
+open data sets to extract data set information such as <a href="attrn.sas">attrn</a>).
+So you can learn how this is done using this macro as a guide and use that
+as the basis of writing your own code when you come across a need.
+<p>I'll include a link to this macro again further down the page. I'll
+point out the important features of this macro here and it would be useful
+if you spotted this in the code. It may be better to print off a copy of
+the macro so you can refer to it. Although in this case the macro is reading
+a SAS view I will refer to it as a data set since the processing is the
+same and chances are when you write your own code to do this then you will
+be reading a data set.
+<p>1) Note the setting up of local macro variables. This is something you
+should always do in a macro. Although the scope of a new macro variable
+in a macro is only local, you don't know whether there is a macro variable
+outside your macro of the same name. It would be very confusing if your
+macro updated macro variables outside your macro so it is important to
+explicitly define them as local.
+<p>2) Note that the data set is open in <b>i</b>nput <b>s</b>equential
+mode and returns a file number to the macro variable dsid. If this number
+is zero then the open has failed. You should always check for this condition
+and put out a message if this fails. Note that %put %sysfunc(sysmsg());
+puts out the message generated by SAS rather than your own message. I put
+two messages out. The first is my own error message saying in which macro
+the failure has occurred. It is a good idea to do this as it helps the
+debugging process. The system message that follows then says specifically
+what is wrong.
+<p>3) Note that you have to access fields in a data set by their variable
+number. Since I want to read the <b>scope</b> and <b>name</b> fields then
+I have to find out what variable number they are. This is done using the
+<b>varnum</b>
+function. And also note that the data set is referred to by its resolved
+dsid number and not by data set name.
+<p>4) You read a data set sequentially by using the <b>fetch</b> function.
+This returns a code as well. If the code is zero then the record was successfully
+fetched. If it returns a 1 then you have tried to read past the end of
+the data set so you need to end off your processing.
+<p>5) Fetching a record does not automatically give you access to the information
+in the field you want. You have to use the <b>getvarc</b> function to get
+the value for a character variable.
+<p>6) You should always remember to <b>close</b> the data set when you
+have finished with it.
+<p>Here, again, is the link to the macro <a href="globlist.sas">globlist</a>.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/macroread.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:05 GMT -->
+</html>

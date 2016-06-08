@@ -1,0 +1,619 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/epochsdtm.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <title>Worst-case EPOCH merging with SDTM and ADaM</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Worst-case EPOCH merging with SDTM and ADaM</h1></center>
+<b>Last updated: 26 Feb 2014</b>
+<h2>
+Introduction</h2>
+This page covers the very difficult topic of assigning "worst-case" period
+identifiers to events where, due to a partial date for an event, or a non-exact
+datetime value for an interval boundary, or lack of an exact definition
+that can be taken from a CRF page, an event can be assigned to two (or
+more)&nbsp; periods and so we have to assign the period for the "worst
+case". You will see a thorough description of this problem on this page
+plus the solution. The very final step in the solution, for SDTM, is left
+for you to complete at the end as a carefully guided exercise. Be prepared
+to put in some quality time for this. This is not a subject you can possibly
+gloss over and get a good result out of.
+<p>It is assumed the reader will be familiar with a CRF (Case Report Form
+- whether paper or electronic) and will have an understanding of "pages"
+of the CRF and how these might relate to the different periods of the study.
+This is because sometimes the "pages" of a CRF can precisely indicate a
+study period if it is designed in such a way. There will be discussion
+of this in following sections.
+<p>You will see the abbreviation "AE" in a few places. This is short for
+"Adverse Event". "Adverse Event" is like a bad thing happening to your
+health like having a sneezing fit (as a mild example).
+<h2>
+CRF page numbers - knowing when you know</h2>
+The <b>page</b> on which information is collected on a CRF (whether electronic
+or not) can sometimes precisely identify the study period it belongs to.
+Suppose your screening details collection starts on page 10 but before
+that you collect AE information on page 9. In this case it should be obvious
+that the AE information is for pre-screening. So suppose you have an AE
+entered on page 9 for the date of 21Nov012 and that is in the morning of
+that very day and the screening starts on 21Nov2012 that morning then when
+processing AE data then in which period does it belong to - screening or
+pre-screening. In this case it is obvious from the CRF design - it is pre-screening
+because details were entered before data collection for screening.
+<p>If it is clear what period an event belongs to by virtue of its CRF
+page then it should be labelled as such. And if labelled then no attempt
+should be made to change it. There are computer systems that take in AE
+data collected over various pages and try to assign a treatment period
+based on a "worst case" scenario. This is only justified where the period
+is unknown. But it could be obvious from the page number due to the CRF
+design. This is where a lot of computer systems for creating SDTM data
+are going wrong. They are recalculating the period label when it is already
+implicit from the CRF page number. Typically, the data will be coming through
+with EPOCH as a blank variable with an AE date and an absent page number.
+This gets compared with interval start and end dates and it is up to the
+program to assign the "worst case" period label where the AE date sits
+on the date boundary of interval change. "Worst case" will be to assign
+it to "screening" rather than "pre-screening" if it lies on this interval
+boundary yet when the AE data was collected, its CRF page number might
+have precisely indicated that it was a pre-screening AE that happened on
+the morning before screening started. People who use computer systems for
+creating SDTM data and those who write them need to be aware that sometimes
+the assignment of period labels is being done and choices made even though
+there should be no choice to make as it is already implicit from the page
+number.
+<p>So remember, CRF page numbers might dictate what period an event belongs
+to. In this case <b>it should be supplied</b> to any computer system and
+the computer system should not attempt to recalculate it. Especially if
+it can be derived from a CRF page number and this page number is not supplied
+with the data, should this be done. <b>What follows on this page is for
+situations where the treatment period is genuinely uncertain for an event
+and the period for the "worst case" scenario needs to be assigned.</b>
+<h2>
+Check up on this "CRF page number" issue</h2>
+Check up on this "CRF page number" issue before reading any further. I
+want to make it clear that the rest of this page is to do with assigning
+worst case periods to events where it is <b>genuinely uncertain</b> what
+period it belongs to due to lack of qualifying information.
+<p>Here is how things can get messed up when Data Managers talk to programmers.
+Data Managers will choose to talk to programmers in terms that they feel
+the programmer will be comfortable with. They know that programmers have
+difficulty grasping the implications of a CRF structure so they avoid this
+complexity.
+<p>So the Data Manager says to the programmer <b>"For events that lie on
+an interval boundary and it is uncertain in which period the event falls
+then assign on a worst case basis"</b>.
+<p>What they were thinking when they were saying that was <b>"For events
+that lie on an interval boundary and it is uncertain in which period the
+event falls (e.g. because from the page number alone you can not determine
+with certainty that it belonged to a particular period) then assign on
+a worst case basis"</b>. They assume the programmer understood their thinking
+because they did not look puzzled or ask questions and you emailed them
+the annotated CRF at least a month ago and they did not come back with
+any questions on that either.
+<p>The programmer, not being able to read the Data Manager's mind and not
+having had the time nor the inclination to read some annotated CRF sent
+to them at least a month ago, thinks that all they said and meant was <b>"For
+events that lie on an interval boundary and it is uncertain in which period
+the event falls then assign on a worst case basis"</b>. And then they set
+out to accurately reassign periods (even though, unknown to them, they
+are already precisely known based on the CRF page number).
+<h2>
+The annotated CRF - a diversion</h2>
+Excuse me if I diverge off-topic for a few seconds and have a small bitch
+about the way clinical programmers ignore the annotated CRF ...
+<p>Early in my clinical reporting career I was once asked to report a study
+in a short time. I asked what standard macros I should use to do this and
+in response to my question I was handed an annotated CRF and told that
+I should do it on that basis. I did it. Understanding an annotated CRF
+and what information is given across implicitly in its structure is something
+of a lost art among clinical programmers these days. It is a shame because
+it gives you a good understanding of the data - and only having a good
+understanding of the data should programmers be analysing and reporting
+on it.
+<p>What is worse, these days, is that data being passed over to programs
+to produce reports has been semi-transformed into SDTM format and sometimes
+important information like CRF page numbers has been dropped and hence
+implicit defining information is lost. The page number was never a "measurement"
+so it is not "data" as such, but it was "data about data" or "metadata".
+This "metadata" tells you something about your data - and sometimes this
+is important - and sometimes this is being thrown away.
+<p>Oh well, I guess that is progress for you ...
+<p>This little diversion is over - now back to the topic.
+<h2>
+If you find out that the "CRF page number" issue is an issue</h2>
+If you find that that indeed, the CRF page numbers in some cases precisely
+define a study period then make sure that these are already labelled as
+they come in and you check on this label and do not recalculate if this
+label is already set. You maybe have a generic program and with this generic
+program it is impossible or undesirable to give consideration to individual
+study CRF design and its page numbers but this should not be an excuse
+to recalculate. Just insist that the data coming in has the period labelled
+if it is known and then do not recalculate if the period label already
+has a value.
+<h2>
+And so, off into the wilderness ...</h2>
+Assuming these previous issues have been settled and you are reading the
+rest of this page because you genuinely have situations where the study
+period is unknown then we venture out into the wilderness and discuss the
+various complications. You should take this slowly and not skip over any
+parts it. Make sure you totally understand each part before moving onto
+the next stage. This is going to get <b>very complicated</b> but you will
+see that the solution to it is both simple to understand and apply once
+you thoroughly understand the situation.
+<h2>
+Non-exact period boundaries</h2>
+Each subject will have information about when study periods started and
+ended. Period starts, as defined, are never "partial", though they may
+be non-exact in the sense that they are missing s start time. For example,
+"screening" may start on the date of 21JUN2013. This is non-exact as it
+does not tell you what <b>time</b> on that date it started. Before the
+date of 21JUN2013 it is "pre-screening", post 21JUN2013 then it is in the
+screening period or beyond, but what about an AE (Adverse Event) that happens
+on 21JUN2013 or even if it happened on 21JUN2013 and the time was precisely
+known? Then does this AE belong to the pre-screening or screening period?
+If we do not have information about which study period this AE happened
+(typically got from the CRF page) then we have to assign on a worst case
+basis.
+<p>But typically, although "screening" only has a start date - in contrast
+- "start of treatment" will likely has a date and a precise time (from
+which you can combine into a <b>datetime</b> values in SAS).
+<p>The problem with this scenario where you have a mixture of study period
+start dates with start datetimes is that it makes it more complicated to
+match an event timepoint to the study period. The event timepoint may be
+just a date. It also might be a precise datetime value. You are then trying
+to match this with a mixture of interval start dates and datetime values.
+This is a challenge.
+<p>Another challenge is that the end of interval might not have happened
+yet (because they are still on treatment, to give an obvious example) and
+so you need to plug the end time or datetime.
+<p>Basically, you interval data needs to be changed into something more
+useful before you can use it for merging event data with.
+<p>Now this is getting <b>complicated</b>. But, as promised, the solution
+is quite <b>simple</b>.
+<p>Here is the solution. For pure interval boundary dates then to turn
+them into datetime values we have to make sure the end date overlaps the
+same following begin date. Remember that these dates are the same. For
+that to work then we add a time value of 23:59:59.9 to the end date and
+a value of 00:00:00.0 to the following start date. That way, any datetime
+value for an event on that day can fall into both periods.
+<p>The solution for pure dates is to use the dates as they stand and for
+when we have datetime interval starts then to use just the datepart of
+that. When matching on date periods we allow "less than or equal to" for
+the end of the period whereas for datetime values we are more strict and
+match on "less than" the end of the period. This is no big deal when we
+have generated end datetimes from pure dates as being right at the end
+of the day (23:59:59.9).
+<p>Below you can see some code where I have taken interval data and derived
+dates and datetimes from it and plugged missing end dates and datetimes.
+Please take the time to carefully think about it. This is what you are
+going to have to do with your interval data to make it useful and you need
+to know what you are doing and why you are doing it.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>*- defines the intervals dataset for merging with epoch -;</tt>
+<br><tt>data intervals;</tt>
+<br><tt>&nbsp; set source.e_se2;</tt>
+<br><tt>&nbsp; if not missing(bi_sestdt) then do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; startdt=bi_sestdt;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if not missing(bi_sesttm)&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; then startdttm=dhms(bi_sestdt,0,0,bi_sesttm);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; else startdttm=dhms(bi_sestdt,0,0,0);</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>&nbsp; else do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; *- set to low values if missing -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; startdt=0;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; startdttm=0;</tt>
+<br><tt>&nbsp; end;</tt>
+<p><tt>&nbsp; if not missing(bi_seendt) then do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; enddt=bi_seendt;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if not missing(bi_seentm)&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; then enddttm=dhms(bi_seendt,0,0,bi_seentm);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; else enddttm=dhms(bi_seendt,23,59,59.9);</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>&nbsp; else do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; *- set to high values if missing -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; enddt=date();</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; enddttm=datetime();</tt>
+<br><tt>&nbsp; end;</tt>
+<p><tt>&nbsp; if missing(epoch) then epoch=etcd;</tt>
+<p><tt>&nbsp; *- assign worseness values to the different epochs -;</tt>
+<br><tt>&nbsp; if epoch=:"SCR" then worseness=1;</tt>
+<br><tt>&nbsp; else worseness=2;</tt>
+<p><tt>&nbsp; KEEP usubjid epoch worseness&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; startdt startdttm enddt enddttm;</tt>
+<br><tt>&nbsp; FORMAT startdt enddt date9. startdttm&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; enddttm datetime32.;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<h2>
+Worseness</h2>
+I we are going to assign events that fall into two periods (or perhaps
+more) then we need to know the "worseness" value for each of the periods.
+Obviously, if on study drug, then that has a higher "worseness" value than
+not being on the study drug. For a very simple scenario of pre-screening,
+screening, on-treatment, post-treatment, post-study you could give it worseness
+value of (I like to give study drug periods a multiple of "5" so be warned)
+pre-screening=0, screening=1, on-treatment=5, post-treatment=1, post-study=0.
+I hard-coded it in the above code. What I would like is to be able to pick
+up these "worseness" values from the people who are giving me the data.
+It might not be simple as in the case I just described.
+<p>Here is another situation - we have pre-screening, screening, placebo-run-in,
+on-treatment, tapered-wash-out, post-treatment, post-study. What do we
+do here with our worseness values? I am guessing pre-screening=0, screening=1,
+placebo-run-in=2, on-treatment=5, tapered-wash-out= I don't have a clue!
+If something happened in tapered wash-out then is that worse than it happening
+on-treatment? I don't have a clue. That is why I need to get this information
+from somebody who knows the study. I need to pick it up somehow. Maybe
+that could be in the treatment arm data. Maybe it should be in the interval
+data. I would be happier if it were in the interval data for the subject
+just in case "worst case" is dependent on more complicated treatment regimens
+like for a cross-over study.
+<p>But whatever, if we are to assign "worse case" programmatically, somehow,
+then we need to have somehow a "worseness" value for the study periods
+such that we can select "worst case" if there is more than one period.
+<h2>
+Partial event dates</h2>
+You can get partial event dates and you may need to map these to a "worse
+case". You may have the day of the month missing for the date if it is
+an AE. You may have a minute missing in some rare cases. If the event date
+is partial then it will cover a range of possibilities. There will be a
+"low-high" range for these. You need to consider the whole range is you
+are assigning worst case. We need something to give us that range in the
+case of partial dates. But if the date or datetime value is not partial
+then we would expect bit high and low values to be the same.
+<p>This is quite a complicated topic but fortunately the code is already
+written to give this range as "--HI" and "--LO" values in the form of DATELO,
+DATEHI, TIMELO, TIMEHI, DTTMLO, DTTMHI and the macro is called <a href="Spectre/utilmacros/fixiso8601.sas" target="_blank">%fixiso8601</a>
+. This also adds a variable <b>_obsno</b> which is set to the observation
+count <b>_n_</b> that we will need to use.
+<p>The above macro only currently works for the simple case where you have
+a text datetime of the form yyyy-mm-ddThh:mm:ss.ss
+<p>You will need to use a macro like %fixiso8601 to ensure your event dates
+are given appropriate ranges if partial. All the observations need to go
+through such a routine to give high and low values even though you may
+only have a few partial dates.
+<p>Just to remind you, the %fixiso8601 macro only deals with text ISO 8601
+datetime of the format <b>yyyy-mm-ddThh.mm.ss.ss</b> . However, so long
+as you can convert your own ISO 8601 text value into the same format then
+the macro should work for you. Please read and understand the disclaimer
+at the end of the macro header (applicable for all my macros). Just because
+it works well for me does not mean that in all cases it will work well
+for you.
+<p>Before we move on to the next very important topic, to do with overlapping
+intervals, then I want to remind you what %fixiso8601 is doing. It give
+you range values from --LO to --HI. This is an interval. We are going to
+work out&nbsp; way of detecting overlapping intervals in the next section.
+Using %fixiso8601 for non-partial values will mean that the --LO values
+are the same as the --HI values but you need to still regard this as an
+interval, except the interval has zero width. It still applies when we
+need to detect overlapping intervals.
+<h2>
+Overlapping Intervals</h2>
+<b>This is the most important topic on this page</b>. We will start with
+a very simple formula that can detect when two intervals overlap. We will
+have to change it, however, to cope with our situations. Although it is
+simple, you have got to thoroughly understand it such that you can make
+it work for you in various ways and that you are able to augment it with
+extra conditions when you need to.
+<p>What follows is the basic formula, that you can find using an Internet
+search, that we will have to amend slightly.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Intervals overlap when (A.START &lt; B.END) and (B.START &lt; A.END)</tt>
+<p><tt>Case 1</tt>
+<br><tt>A&nbsp;&nbsp;&nbsp;&nbsp; &brvbar;------------&brvbar;</tt>
+<br><tt>B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&brvbar;---------&brvbar;</tt>
+<p><tt>Case 2</tt>
+<br><tt>A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&brvbar;----------&brvbar;</tt>
+<br><tt>B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &brvbar;---&brvbar;</tt>
+<p><tt>Case 3</tt>
+<br><tt>A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &brvbar;---------------&brvbar;</tt>
+<br><tt>B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&brvbar;-----------&brvbar;</tt>
+<p><tt>Case 4</tt>
+<br><tt>A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&brvbar;-------------&brvbar;</tt>
+<br><tt>B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &brvbar;-------&brvbar;</tt>
+<p><tt>Case 5</tt>
+<br><tt>A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &brvbar;---------------&brvbar;</tt>
+<br><tt>B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &brvbar;---&brvbar;</tt>
+<p><tt>Case 6</tt>
+<br><tt>A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&brvbar;---&brvbar;</tt>
+<br><tt>B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &brvbar;---------------&brvbar;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>If we use the formula for the above cases then in Case 1, b.start is
+not less than a.end so we don not have an overlap. In Case 2 then a.start
+is not less than b.end so we do not have a overlap. In the other cases
+the condition is satisfied and we have overlaps.
+<p>We need to change the formula for boundary effects. For date intervals
+then the start and end days, if they are the same, can belong to both periods
+and so they can be considered to be overlapping.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>DATE intervals overlap when (A.START &lt;= B.END) and (B.START
+&lt;= A.END)</tt>
+<p><tt>Case 1</tt>
+<br><tt>A&nbsp;&nbsp;&nbsp;&nbsp; &brvbar;------------&brvbar;</tt>
+<br><tt>B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&brvbar;---------&brvbar;&nbsp;&nbsp;&nbsp; (overlap)</tt>
+<p><tt>Case 2</tt>
+<br><tt>A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&brvbar;----------&brvbar;</tt>
+<br><tt>B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&brvbar;---&brvbar;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(overlap)</tt>
+<p><tt>Case 3</tt>
+<br><tt>A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &brvbar;--------------------&brvbar;</tt>
+<br><tt>B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&brvbar;-----------&brvbar;&nbsp;&nbsp;&nbsp; (overlap)</tt>
+<p><tt>Case 4</tt>
+<br><tt>A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &brvbar;-------------&brvbar;</tt>
+<br><tt>B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &brvbar;-------&brvbar;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(overlap)</tt>
+<p><tt>Case 5</tt>
+<br><tt>A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &brvbar;--------------------&brvbar;</tt>
+<br><tt>B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&brvbar;&nbsp;&nbsp;&nbsp; (overlap)</tt>
+<p><tt>Case 6</tt>
+<br><tt>A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &brvbar;-------------&brvbar;</tt>
+<br><tt>B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &brvbar;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(overlap)</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>We need to change the formula again for datetime boundaries and we need
+to distinguish between a study period and an event period. This is because
+for the study interval end then we only have overlap if it is less than
+this value. This is because of the precise nature of the boundary. You
+will see why in the following cases. See how the formula has changed. Where
+an event interval is just a single upright line then this means that it
+is not partial and has a zero width interval.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>DATETIME intervals overlap when (EVENT.START &lt; STUDY.END) and
+(STUDY.START &lt;= EVENT.END)</tt>
+<p><tt>Case 1</tt>
+<br><tt>STUDY INTERVAL&nbsp;&nbsp;&nbsp;&nbsp; &brvbar;------------&brvbar;</tt>
+<br><tt>EVENT INTERVAL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&brvbar;---------&brvbar;&nbsp;&nbsp;&nbsp;&nbsp; (No overlap)</tt>
+<p><tt>Case 2</tt>
+<br><tt>STUDY INTERVAL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&brvbar;------------&brvbar;</tt>
+<br><tt>EVENT INTERVAL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &brvbar;---------&brvbar;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(overlap)</tt>
+<p><tt>Case 3</tt>
+<br><tt>STUDY INTERVAL&nbsp;&nbsp;&nbsp;&nbsp; &brvbar;------------&brvbar;</tt>
+<br><tt>EVENT INTERVAL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&brvbar;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(No overlap)</tt>
+<p><tt>Case 2</tt>
+<br><tt>STUDY INTERVAL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&brvbar;------------&brvbar;</tt>
+<br><tt>EVENT INTERVAL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&brvbar;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(overlap)</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>Now that we have had to distinguish between study intervals and event
+intervals then our two algorithms can be stated as follows:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>DATE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; intervals overlap when&nbsp;&nbsp;&nbsp;
+(EVENT.START &lt;= STUDY.END) and (STUDY.START &lt;= EVENT.END)</tt>
+<p><tt>DATETIME&nbsp;&nbsp; intervals overlap when&nbsp;&nbsp;&nbsp; (EVENT.START
+&lt; STUDY.END) and (STUDY.START &lt;= EVENT.END)</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>Now that we are clear on the algorithms to use, you will see this used
+in the following code. The code above is repeated at the start of the code
+below. You will see that this is followed by a call to %fixiso8601, followed
+by the SQL join using the above algorithms. You will see that I match on
+date or datetime depending on the length of the ISO 8601 text string. Note
+than in the SQL I am imputing start dates and start datetimes. This is
+something normally done for ADaM and not SDTM. The output dataset is ordered
+(sorted) by <b>_obsno</b> (put there by the %iso8601 macro) and <b>worseness</b>
+that will ensure uniqueness. Finally, only the worse case is kept for when
+we have multiple periods for an original input observation number. This
+assumes that one of the periods definitely has the highest "worseness"
+value. For more complicated cases then you might have to order (sort) in
+a different way.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>*- defines the intervals dataset for merging with epoch -;</tt>
+<br><tt>data intervals;</tt>
+<br><tt>&nbsp; set source.e_se2;</tt>
+<br><tt>&nbsp; if not missing(bi_sestdt) then do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; startdt=bi_sestdt;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if not missing(bi_sesttm)&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; then startdttm=dhms(bi_sestdt,0,0,bi_sesttm);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; else startdttm=dhms(bi_sestdt,0,0,0);</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>&nbsp; else do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; *- set to low values if missing -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; startdt=0;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; startdttm=0;</tt>
+<br><tt>&nbsp; end;</tt>
+<p><tt>&nbsp; if not missing(bi_seendt) then do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; enddt=bi_seendt;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if not missing(bi_seentm)&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; then enddttm=dhms(bi_seendt,0,0,bi_seentm);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; else enddttm=dhms(bi_seendt,23,59,59.9);</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>&nbsp; else do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; *- set to high values if missing -;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; enddt=date();</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; enddttm=datetime();</tt>
+<br><tt>&nbsp; end;</tt>
+<p><tt>&nbsp; if missing(epoch) then epoch=etcd;</tt>
+<p><tt>&nbsp; *- assign worseness values to the different epochs -;</tt>
+<br><tt>&nbsp; if epoch=:"SCR" then worseness=1;</tt>
+<br><tt>&nbsp; else worseness=2;</tt>
+<p><tt>&nbsp; KEEP usubjid epoch worseness&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; startdt startdttm enddt enddttm;</tt>
+<br><tt>&nbsp; FORMAT startdt enddt date9. startdttm&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; enddttm datetime32.;</tt>
+<br><tt>run;</tt>
+<br>&nbsp;
+<p><tt>*- fix the iso 8601 datetime values -;</tt>
+<br><tt>data eg2;</tt>
+<br><tt>&nbsp; set source.eg;</tt>
+<br><tt>&nbsp; %fixiso8601(egdtc);</tt>
+<br><tt>run;</tt>
+<br>&nbsp;
+<p><tt>proc sql noprint;</tt>
+<p><tt>*- Typical ADaM join with epoch with imputed dates -;</tt>
+<br><tt>create table eg3 as select event.*</tt>
+<br><tt>, study.worseness</tt>
+<br><tt>, study.epoch as epoch_xx</tt>
+<br><tt>, max(study.startdt, event.datelo) as impute_startdt</tt>
+<br><tt>, max(study.startdttm, event.dttmlo) as impute_startdttm</tt>
+<br><tt>from eg2 as event</tt>
+<br><tt>left join</tt>
+<br><tt>intervals as study</tt>
+<br><tt>on event.usubjid=study.usubjid and</tt>
+<br><tt>(</tt>
+<br><tt>(length(event.egdtc)&lt;11 and (event.datelo&lt;=study.enddt) and
+(study.startdt&lt;=event.datehi))</tt>
+<br><tt>or</tt>
+<br><tt>(length(event.egdtc)>10 and (event.dttmlo&lt;study.enddttm) and
+(study.startdttm&lt;=event.dttmhi))</tt>
+<br><tt>)</tt>
+<br><tt>order by _obsno, worseness;</tt>
+<br><tt>;</tt>
+<br><tt>quit;</tt>
+<br>&nbsp;
+<p><tt>*- keep only the worst case -;</tt>
+<br><tt>data eg4;</tt>
+<br><tt>&nbsp; set eg3;</tt>
+<br><tt>&nbsp; by _obsno;</tt>
+<br><tt>&nbsp; if last._obsno;</tt>
+<br><tt>run;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<h2>
+The SDTM vs. ADaM difference</h2>
+What you see in the above code is typical for ADaM and not SDTM. ADaM are
+analysis datasets and so if we had a partial event date and this had a
+possibility of falling in two or more periods then we would pick the worst
+case. We would then impute a start date as the maximum of the event start
+date and the worst case period start date and similarly for the imputed
+start datetime. This is what you can see in the code above and should be
+useful to you for programming ADaM datasets. However, it is not useful
+for SDTM.
+<p>For SDTM data, since this is not analysis data, then we normally do
+not impute dates. If we have a range of dates or datetimes due to a partial
+event date or datetime then we do not pick one of them to use as an identifier
+to match on epoch. However, we can still sometimes deal with ranges and
+we can still choose worst case in some circumstances, as I will explain.
+<p>Firstly, we deal with a range of dates. Suppose you had a partial event
+date of --Jul2012. In that case then if the whole of July of that year
+was contained in a single study period then you are safe to match on that
+study period epoch. But if it could fall into two different periods then
+you would not assign the epoch as this is for SDTM and not ADaM and so
+you are not allowed to impute the date or even choose part of the range
+of dates.
+<p>Secondly, we deal with single dates. If we know the date then we are
+not imputing the date. It is fixed. But if that date falls on a study period
+date boundary then because the end and start dates of the periods are shared,
+we choose the worst case! It all hangs on this idea of not imputing dates.
+We do our best to assign periods and worst case but it is never done on
+the basis of imputing a date or choosing part of a possible range. This
+is the difference between SDTM and ADaM data. For ADaM you impute dates
+- for SDTM you do not impute dates.
+<p>So we are ready to recode the SQL join for SDTM by adding extra conditions.
+We will match on a range only if the whole range fits inside a single period.
+As for it being a single date that lies on a boundary then this condition
+will be automatically met (though you should think that through to convince
+yourself).
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>proc sql noprint;</tt>
+<p><tt>*- Typical SDTM join with epoch -;</tt>
+<br><tt>create table eg3 as select event.*</tt>
+<br><tt>, study.worseness</tt>
+<br><tt>, study.epoch as epoch_xx</tt>
+<br><tt>from eg2 as event</tt>
+<br><tt>left join</tt>
+<br><tt>intervals as study</tt>
+<br><tt>on event.usubjid=study.usubjid and</tt>
+<br><tt>(</tt>
+<br><tt>(length(event.egdtc)&lt;11 and (event.datelo&lt;=study.enddt) and
+(study.startdt&lt;=event.datehi)</tt>
+<br><tt>and (event.datelo>=study.startdt and event.datehi&lt;=study.enddt)</tt>
+<br><tt>)</tt>
+<br><tt>or</tt>
+<br><tt>(length(event.egdtc)>10 and (event.dttmlo&lt;study.enddttm) and
+(study.startdttm&lt;=event.dttmhi)</tt>
+<br><tt>and (event.dttmlo>=study.startdttm and event.dttmhi&lt;study.enddttm)</tt>
+<br><tt>)</tt>
+<br><tt>)</tt>
+<br><tt>order by _obsno, worseness;</tt>
+<br><tt>;</tt>
+<br><tt>quit;</tt>
+<br>&nbsp;
+<p><tt>*- keep only the worst case -;</tt>
+<br><tt>data eg4;</tt>
+<br><tt>&nbsp; set eg3;</tt>
+<br><tt>&nbsp; by _obsno;</tt>
+<br><tt>&nbsp; if last._obsno;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+You have been given a thorough introduction to study and event interval
+periods, the overlapping of periods and the assignment of "worst-case"
+epochs for both SDTM and ADaM.
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<br>&nbsp;
+<br>&nbsp;
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/epochsdtm.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+</html>

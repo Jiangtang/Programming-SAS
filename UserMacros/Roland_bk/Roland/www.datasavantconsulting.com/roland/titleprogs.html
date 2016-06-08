@@ -1,0 +1,45 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/titleprogs.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:11 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="SAS tips and techniques by Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="sas tips techniques">
+   <title>whosgot</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+titleprogs</h1></center>
+<b>[last updated - 31 July 2003]</b>
+<p>You have to write this one yourself. Use <b>sasunixskeleton</b> to create
+a script called <b>titleprogs</b> and then edit it. What you need is a
+list of unique program name in your titles dataset written to standard
+output in sorted order. <b>Don't put the ".sas" entension</b> on the end
+of these program names. If your actual program names are lowercase then
+this list should be lowercase as well. I later aim to match these entries
+up with the actual programs in your program folders. You should be able
+to run this from any directory that has your protocol and study in the
+path name. Only you will know where your titles dataset is located so you
+should be able to specify its location. You will maybe need to know how
+to strip the protocol and study identity from your directory path as I
+covered in this <a href="sed%26awk.html">tutorial</a>. I am going to use
+the output from this script in my next script. The next script will compare
+the program list that is output from this script to the programs you have
+in your programs folders for that protocol and study. Happy scripting !
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/titleprogs.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:11 GMT -->
+</html>

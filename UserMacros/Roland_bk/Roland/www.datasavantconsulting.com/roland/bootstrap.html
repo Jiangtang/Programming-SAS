@@ -1,0 +1,217 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/bootstrap.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:37 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <title>Bootstrap performance improvement of sas code</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Improving Bootstrap Performance of SAS Code</h1></center>
+<b>Author: Roland Rashleigh-Berry</b>
+<br><b>Updated: 20 Nov 2011</b>
+<h2>
+Introduction</h2>
+Bootstrapping is becoming increasingly popular as a technique. There are
+many good articles on this that a Google search will reveal. This article
+is not about how to use the technique but rather how to get optimum performance
+when doing it to reduce run times to a minimum. The difference in CPU and
+elapsed time from doing it the optimum way compared to the worst way can
+be a factor of 4. In extreme cases, bootstrap processing can take more
+than a day to run. If you can reduce that to a quarter of that time then
+it is well worth striving for.
+<h2>
+What slows it down the most?</h2>
+<b>What slows bootstrapping down the most</b> is <b>calling sas procedures
+multiple times</b> instead of calling them <b>once using BY processing</b>.
+Programmers often call these procedures in a macro loop, maybe trying to
+avoid creating a dataset with millions of observations in it, but this
+is actually the best approach. Datasets with a million or more observations
+in them are not a problem. Even having ten million observations is okay.
+Invoking a procedure such as "proc logistic" is expensive in terms of time
+and resources. It is a lot of work to load the procedure and to clean up
+after it ends. It is better to call it once using BY processing than it
+is to call it maybe ten thousand times for each generated sample. In the
+case of "proc logistic" you will <b>reduce the run time to one quarter</b>
+if you call the procedure only once using BY processing rather than call
+it multiple times.
+<h2>
+SASFILE Statement</h2>
+Your main performance gain is in calling sas procedure only once using
+BY processing . But there is another less known and rarely used facility
+in SAS for when you are reading a sas dataset multiples times or doing
+random access using the point= option. When you are bootstrapping you are
+reading a dataset with maybe about 300 observations in each treatment arm
+and creating maybe a million observations by sampling. You have probably
+split the data into two datasets that correspond with the treatment arm
+such that one dataset contains the drug results and the other dataset is
+for placebo patients or for the other treatment arm and you generate samples
+from each dataset. In these circumstances you can get a huge performance
+boost using the SASFILE Statement. This loads the dataset into the computer's
+memory. It reads the dataset into memory at a normal speed but once it
+is in memory then it is <b>six times faster</b> to access the data. This
+technique can not be used for all your data. Your datasets must not be
+too large and it is only worth using this technique if you are reading
+the dataset multiple times (or making a very large number of random accesses
+that equate to reading it multiple times). It is done simply like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>SASFILE mysas.dataset LOAD;</tt>
+<p>Read the dataset multiple times or access it randomly many times.....
+<p><tt>SASFILE mysas.dataset CLOSE;</tt></td>
+</tr>
+</table>
+
+<p>You should not neglect to issue the SASFILE CLOSE when you have finished
+reading the data.
+<h2>
+Avoid macro looping</h2>
+Looping macro code is very much slower and more resource hungry than data
+step looping so avoid macro looping whenever possible and give the looping
+work to the data step.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>* Instead of doing it this way looping with a macro variable... ;
+<p><tt>data sample;</tt>
+<br><tt>&nbsp; %do i=1 %to &amp;loop;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; loop=&amp;i;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; *- generate data -;</tt>
+<br><tt>&nbsp; %end;</tt>
+<br><tt>&nbsp; stop;</tt>
+<br><tt>run;</tt>
+<p>* Do it this way by looping in the data step ;
+<p><tt>data sample;</tt>
+<br><tt>&nbsp; do loop=1 to &amp;loop;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; *- generate data -;</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>&nbsp; stop;</tt>
+<br><tt>run;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<h2>
+Avoid sorting the generated data</h2>
+You will be generating maybe a few million records from each treatment
+arm and then bringing these two sample datasets together. This is a large
+amount of data to sort. But if you generate the data already sorted into
+the order you want then a sort can be avoided and instead the data combined
+using a set statement.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data treatall;</tt>
+<br><tt>&nbsp; set treat0 treat1;</tt>
+<br><tt>&nbsp; BY loop sampsize;</tt>
+<br><tt>run;</tt>
+<p><tt>proc logistic data=treatall etc.;</tt>
+<br><tt>&nbsp; BY loop sampsize;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<h2>
+What your code might look like</h2>
+It is difficult to guess what your code is supposed to look like but I
+will give a rough outline of what I am expecting and how these techniques
+are applied. I will just deal with running the analysis on the generated
+data.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>*- split the data into the different treatment arms -;</tt>
+<p><tt>data treat0 treat1;</tt>
+<br><tt>&nbsp; set results;</tt>
+<br><tt>&nbsp; if trt=0 then output treat0;</tt>
+<br><tt>&nbsp; else output treat1;</tt>
+<br><tt>run;</tt>
+<p><tt>*- define looping macro -;</tt>
+<br><tt>%macro loop(loops=,samplow=,samphigh=,incr=,seed=);</tt>
+<p><tt>&nbsp; *- load trt=0 data into memory -;</tt>
+<br><tt>&nbsp; sasfile treat0 load;</tt>
+<p><tt>&nbsp; *- generate samples -;</tt>
+<br><tt>&nbsp; data samp0;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; do loop=1 to &amp;loops;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; do sampsize=&amp;samplow to &amp;samphigh
+by &amp;incr;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; do i=1 to sampsize;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set treat0
+point=ceil(ranuni(&amp;seed)*totobs) nobs=totobs;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; stop;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; drop i;</tt>
+<br><tt>&nbsp; run;</tt>
+<p><tt>&nbsp; *- free data from memory -;</tt>
+<br><tt>&nbsp; sasfile treat0 close;</tt>
+<br>&nbsp;
+<p><tt>&nbsp; *- load trt=1 data into memory -;</tt>
+<br><tt>&nbsp; sasfile treat1 load;</tt>
+<p><tt>&nbsp; *- generate samples -;</tt>
+<br><tt>&nbsp; data samp1;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; do loop=1 to &amp;loops;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; do sampsize=&amp;samplow to &amp;samphigh
+by &amp;incr;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; do i=1 to sampsize;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set treat1
+point=ceil(ranuni(&amp;seed)*totobs) nobs=totobs;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; stop;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; drop i;</tt>
+<br><tt>&nbsp; run;</tt>
+<p><tt>&nbsp; *- free data from memory -;</tt>
+<br><tt>&nbsp; sasfile treat1 close;</tt>
+<br>&nbsp;
+<p><tt>&nbsp; *- add sample data together -;</tt>
+<br><tt>&nbsp; data sampboth;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; set samp0 samp1;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; by loop sampsize;</tt>
+<br><tt>&nbsp; run;</tt>
+<p><tt>&nbsp; *- run whatever procedure is needed -;</tt>
+<br><tt>&nbsp; proc logistic /* or some other procedure */ data=sampboth;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; by loop sampsize;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; model statement or whatever;</tt>
+<br><tt>&nbsp; run;</tt>
+<p><tt>%mend loop;</tt>
+<p><tt>*- call the macro -;</tt>
+<br><tt>%loop(loops=1000,samplow=50,samphigh=300,incr=50,seed=99);</tt>
+<p>&nbsp;</td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+On this page I have shown how to get optimum speed for running bootstrap
+processing. There is a speed factor of 4 between worst case and best case.
+The major saving comes from using BY processing and calling sas procedures
+only once.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<br>&nbsp;
+<br>&nbsp;
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/bootstrap.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:37 GMT -->
+</html>

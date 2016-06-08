@@ -1,0 +1,47 @@
+#!/bin/bash
+#<pre><b>
+# Script     : derprogs
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 02-Jun-2004
+# Purpose    : To list all valid derived dataset build programs
+# SubScripts : none
+# Notes      : Valid derived dataset build programs match the regular expression
+#              '^[sd][^_]*[0-9]_.*\.sas$' . Use this utility to find out if your
+#              program matches. You can call it with parameters or pipe into it
+#              or run it interactively (use Ctrl-D to quit). If piped into or
+#              run interactively then only have one program name per line.
+# Usage      : derprogs s_myprog.sas d_myprog2.sas
+#              myfiles [sd]*.sas | derprogs
+#              derprogs   (interactive -- use Ctrl-D to end)
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   (optional) File pattern or file name or multiple file names
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+if [ $# -gt 0 ] ; then
+  for file in "$@"; do
+    if echo "$file" | /usr/xpg4/bin/grep -q '^[sd][^_]*[0-9]_.*\.sas$' ; then
+      echo "$file matches the derived dataset build file pattern"
+    else
+      echo "$file does not match the derived dataset build file pattern"
+    fi
+  done
+else
+  while read file
+  do
+   if echo "$file" | /usr/xpg4/bin/grep -q '^[sd][^_]*[0-9]_.*\.sas$' ; then
+      echo "$file matches the derived dataset build file pattern"
+    else
+      echo "$file does not match the derived dataset build file pattern"
+    fi
+  done
+fi

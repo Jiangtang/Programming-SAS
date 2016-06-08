@@ -1,0 +1,85 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/sasfonts.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:42 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="Improving the look of text for SAS/GRAPH">
+   <meta name="KeyWords" content="Improving look text SAS/GRAPH">
+   <meta name="robots" content="noindex,nofollow">
+   <title>Improving the look of text for SAS/GRAPH</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Improving the look of text for SAS/GRAPH</h1></center>
+
+<h2>
+Introduction</h2>
+Graphs created by SAS/GRAPH have gained the reputation of looking ugly.
+However, in many cases, this is due to the fonts used. SAS has a lot of
+its own fonts but these are mostly software fonts and do not look good.
+You might have used the fonts "simplex" and "duplex" and been disappointed
+in the results. However, if you are working on a PC, then there are a lot
+of other fonts you can use and these can look a lot better and give more
+readable text.
+<h2>
+Your source of fonts</h2>
+If you click on "Start" and then "Control Panel" you will either see just
+a few categoories or you will see a lot of icons. If you are only seeing
+a few categories then switch to "Classic View" to see the full list of
+icons and then double click on "Fonts". You might then want to choose the
+"Details" view in the "View" pull-down menu. SAS can use a lot of the TrueType
+fonts you will see listed there. Here you will see some of the fonts that
+are commony used such as "Arial" and "Times New Roman".
+<h2>
+proc gtestit</h2>
+You can use "proc gtestit" to test out different goptions to see how they
+affect the look of graphics display. Here is a bit of code you can play
+around with. Look in the log for the message about where it wrote the html
+page to. Also, if SAS had a problem with the font as it will use "simplex"
+in these cases. Note that these TrueType fonts must be specified in <b>single
+quotes</b>, unlike the sas fonts which do not need quotes. When using a
+modified font such as "<b>bold</b>" then use a slash before the modifier
+in this way - <b>'Arial / Bold'</b>.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>goptions reset=all dev=html vpos=25 hpos=40 ftext='Arial';</tt>
+<p><tt>proc gtestit picture=1;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>For this particular setting, it created the following html <a href="http://www.datasavantconsulting.com/roland/gtestit.html" target="_blank">page</a>.
+<h2>
+Conclusion</h2>
+Getting your SAS/GRAPH output to look right requires choosing your goptions
+carefully and using the best fonts available. Some experimentation is needed.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="http://www.datasavantconsulting.com/roland/counter.php" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/sasfonts.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:42 GMT -->
+</html>

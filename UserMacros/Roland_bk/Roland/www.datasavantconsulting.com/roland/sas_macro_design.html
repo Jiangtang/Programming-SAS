@@ -1,0 +1,381 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/sas_macro_design.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <title>SAS macro design</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+SAS Macro Design</h1></center>
+<b>Author: Roland Rashleigh-Berry</b>
+<br><b>Updated: 26 Oct 2009</b>
+<br>&nbsp;
+<h2>
+Modular Macro Design</h2>
+
+<h3>
+Introduction</h3>
+If our aim is to build up a collection of macros for use in clinical reporting
+then we need to start with a higher level view of what we want to achieve
+and how we are going to achieve it. For the higher level view we turn to
+the idea of “Modular Programming” as this can provide us with benefits.
+The Spectre macro collection will provide real-world examples throughout,
+although this is not intended as a recommendation.
+<h3>
+Spectre Macros</h3>
+Spectre Macros (originally “Roland’s SAS Macros”) are an example of a collection
+of macros using modular programming design. From the Wikipedia article
+on Modular Programming we have this as a description “Modular programming
+is a software design technique that increases the extent to which software
+is composed from separate parts, called modules. Conceptually, modules
+represent a separation of concerns, and improve maintainability by enforcing
+logical boundaries between components”. Spectre macros started out as a
+collection of utility macros that was extended over many years until it
+covered every low level task that might be encountered in Clinical Reporting
+and ended up as a complete Clinical Reporting system. There are many low-level
+tasks that are common to all clinical reporting functions, such as counting
+the number of observations in a dataset, returning the format of a variable,
+etc.. Nearly every clinical reporting function will possess these as tools,
+usually in the form of macros. This results in a lot of duplication in
+the industry. Spectre macros aimed to collect the full set of these utilities
+and make them freely available to everyone in the industry as public domain
+software so that it was free of Copyright considerations. The Spectre macro
+collection can be linked to at the following web site.
+<p><a href="Spectre/maclist2.html" target="_blank">http://www.datasavantconsulting.com/roland/Spectre/maclist2.html</a>
+<h3>
+“Separation of Concerns”</h3>
+If you look at the Wikipedia description of “Modular Programming” you see
+the phrase “separation of concerns”. This phrase can easily be glossed
+over but it is worth stopping and thinking about this as this is the key
+to writing a truly useful collection of macros. If you can “separate the
+concerns” into different macros then you will have components from which
+it is possible to create larger structures made of these components. Spectre
+turned into a complete Clinical Reporting System that naturally grew out
+of its component macros. The component macros become like a meta language
+from which it becomes easier to build more complex structures. The key
+to success is to truly separate out the functions of the macros. This is
+more easily said than done and requires a great deal of thought. There
+are approaches you can take to help you achieve this. One is to limit the
+scope of each macro and name it according to its task so that it does this
+function (well) and does no more. For example, a macro that counts the
+number of observations in a dataset might be called “nobs” (“Number of
+observations”) that returns the number of observations in a dataset but
+can do no more than this. This way, you know that if you have a macro called
+“nobs” then you can rely on it to give you the number of observations in
+a dataset without having any concerns about whatever other functionality
+it may have. It is easy to lose this idea of “separation of concerns” as
+your macros become more complex. For example, most clinical reporting macros
+you will encounter in the industry are concerned to some extent with titles
+and footnotes. You will see reporting macros with parameters named title1=,
+title2, foot1=, foot2= etc.. The “concerns” have then become mixed since
+creating output should be a separate concern to positioning titles and
+footnotes. It is far better if you can avoid this. The Spectre clinical
+reporting macros, for example, do no titles and footnotes handling. There
+are other macros for this. The Spectre reporting macros are also entirely
+independent from other aspects of the reporting system such as the handling
+of titles and footnotes and the running of reports. This is done to such
+an extent that the reporting macros can be removed entirely from the reporting
+system known as Spectre and will work independently and will not even know
+if the Spectre system is working in the same environment.
+<p>The Spectre reporting macros have further “separation of concerns”.
+The p-values these macros calculate are done in co-macros so that if problems
+are found then these macros can be worked on independently. The mapping
+of statistic labels such as mapping “Std.” to STD are done in a separate
+macro so that the user can change this to add labels and change the mapping
+without this affecting the main reporting macro. Wherever a separate “concern”
+is identified then there will be a separate macro to do this.
+<h3>
+Reliability of the Components</h3>
+The more low-level the macro, the more you need to be able to rely on it.
+A complex reporting macro will have bugs in it. The more complex it is,
+the more bugs it will have. Even after many years of use there will be
+bugs discovered. However, the lower the level of macro, the less visible
+it is and the more insidious will be the consequences of any bug so these
+low level macros have to be more reliable. If these macros are simple enough
+then it should be possible to eliminate all bugs. You should avoid any
+potential problem from these macros. A good example of such a macro is
+the “words” macro used in Spectre. This counts the number of space-delimited
+strings (or “words”) in a macro string. This macro was updated at some
+time to use the countw() function but it was found that in rare circumstances
+it could return a zero value in a form such as 1.4567E-147 which although
+equal to zero from a numeric accuracy point of view, is not equal to the
+actual “0” expected. As a result, this macro had to be changed back to
+its original form where it did not use the countw() function even though
+efficiency was lost as a result. Reliability is more important than efficiency
+for these low level components.
+<p>You would normally take more care writing a macro that is a component
+of a modular system. A great deal of thought has to be put into defining
+its purpose and the way it will work with the other macros and because,
+once written, it will become the “standard” component for performing this
+function then its documentation has to be of a high standard so that programmers
+know how to call it and use it. For the smaller macros in Spectre, the
+ratio of time and documentation compared to actual coding time is about
+5:1 and a typical small macro that might only contain fifty lines of code
+will take about twelve hours of work before it can be released.
+<h3>
+Modular macros in action</h3>
+The best way to see modular macro design in action is to study an example.
+Below is a link to the %unistats macro in Spectre.
+<p><a href="Spectre/clinmacros/unistats.sas" target="_blank">http://www.datasavantconsulting.com/roland/Spectre/clinmacros/unistats.sas</a>
+<h2>
+Macro Collection Standards</h2>
+
+<h3>
+Introduction</h3>
+Once we have worked out our higher level approach then it is time to think
+about the standards we will impose on our collection of macros as a whole
+which goes beyond just accumulating individual macros.
+<h3>
+Naming Convention</h3>
+There are different approaches to naming the individual macros in your
+collection. Some might start them all with a “u” to signify that they are
+“User” macros. You might start them with an “x” to indicate they are system
+macros. If you had two libraries of macros, one for system macros and one
+for user macros, then this naming convention would make a lot of sense.
+It depends on circumstances. The Spectre macros have no naming conventions
+applied beyond that given in the first section on “Modular Macro Design”
+in that the name says what the macro does. The Spectre macros were intended
+to all go in one library and become a user library of sasautos and since
+the macros in the SAS supplied sasautos have no particular naming convention
+then no naming convention is applied to the Spectre macros. The downside
+to this is that you have got to hope that some of these macros do not get
+overwritten by work macros of the same name during the normal course of
+programming.
+<h3>
+Macro Headers</h3>
+All the macros should have the same style header. This might be a different
+header to normal program code headers since different categories might
+apply. What you put in the header is up to you but bear in mind whether
+people will correctly fill in these headers and keep them up to date when
+changes are made.&nbsp; If you make the header too complicated then the
+header information will not be properly maintained and the macro could
+become less useful as a result or the macro description could become misleading,
+which is worse. Most macro headers use a rightmost character such as an
+asterisk. It gives a better box shape to the header. But if people maintaining
+these macros lengthen strings in the header and do not reset the position
+of this rightmost character, or use a text editor when tabs are used, then
+the header will go out of shape after a time. Spectre macros do not use
+a rightmost character in the header because of this problem. Macros should
+have an amendment history section. You have got to think how many times
+the most amended macro will be updated and design your amendment section
+accordingly. If, for example, you think one of the macros might be amended
+fifty times then it would be better if the amendment history section allowed
+single line updates. You will see that the Spectre macros allow for single
+line updates if you follow the link above. There are no hard and fast rules
+for header design other than having a header that will be simple enough
+so that its information will be kept up to date and will maintain its usefulness
+even after many changes.
+<h3>
+Code Indentation</h3>
+It is better if the indentation of code is the same across the collection
+of macros but so long as it is consistent within a single macro then this
+should not be a big problem. Bear in mind that the SAS editor may be using
+tabs for indentation and the code might be worked on by another person
+using a text editor that does not show the indentation due to tabs so the
+alignment can go out of shape. It is better to deactivate the tabs in the
+SAS editor. It is normal practice to indent macro declarations. Certainly,
+you should do this if you define macros within your macro. But as for the
+macro as a whole then the benefit of this is doubtful as it would mean
+wasting two or three spaces on every line without adding to the clarity
+of the code. Most Spectre macros do not indent the whole macro but indent
+macros defined within them.
+<h3>
+Code Style</h3>
+Code style can cover things like capitalizing SAS keywords and the “tightness”
+of the code in that there will be spaces left before and after equals signs
+or not to aid readability. Tight code might be better if your macros contain
+long lines of code but only if it helps the code to be more readable by
+keeping code on one line rather than splitting it into two. As for the
+length of the lines of code then it is better if you do not have to scroll
+across the page to see the end of the line. For whatever editor you use,
+make sure the lines do not cause a scroll bar to appear. To do this you
+might have to limit the line length to eighty or ninety characters. Sometimes
+you will break this rule but it should not become a habit. The only exception
+to this allowed in the macro header should be for when you are including
+example output from the macro as part of the macro description. If the
+header alone causes a scroll bar to appear it will give the impression
+that some of your lines of code might be longer than page width when in
+fact this might not be the case.
+<h3>
+Macro Parameter Naming Conventions</h3>
+You will need a consistent naming convention for your parameters. The parameter
+name for the input dataset, for example, should be the same for all macros
+having an input dataset. The name you choose should be descriptive enough
+without being too long or too short. Using the input dataset as an example
+then “d=” is not descriptive enough - “dsin=” would be better. You will
+often have both input and output datasets so “dsin=” and “dsout=” are good
+names for these.
+<h3>
+Keyword or Positional parameters</h3>
+Macro parameters can either be positional or keyword parameters. Positional
+parameters are defined first for a macro followed by the keyword parameters,
+if there are any. For positional parameters you need not supply the name
+of the macro parameter, you just have to supply the value. But you need
+to know what value goes where. If you have a lot of positional parameters
+then it is possible for people to forget the order and so your macro might
+crash or might give the wrong results so, as a general rule, only macros
+with a small number of parameters should be allowed to use positional parameters.
+Some people think they have to standardize on this across their macro collection
+but if you have a macro that returns the observation count of a dataset
+then “%nobs(dataset)” is easier to use than “%nobs(dsin=dataset)” for example.
+Many of the Spectre macros allow for positional parameters for ease of
+use.
+<h3>
+Function-Style Macros</h3>
+If you can write a utility macro that avoids using data step or procedure
+boundaries then you have the possibility of creating what is called a “function-style
+macro”. These function-style macros “return” a value and act like a macro
+function does in SAS macro code. You can open, read and close SAS datasets
+using pure macro code rather than using a data step and this should be
+the method you use if you can. The Spectre “nobs” dataset, for returning
+the number of observations in a dataset, works in this way. You can link
+to it below. If your macro is a function-style macros then you should clearly
+state this in the header of the macro. Also, in this case, a “usage” section,
+to show how the macro is called would be of help. And, of course, to keep
+the header consistent for all macros then a “usage” section will be needed
+in every macro header.
+<p><a href="Spectre/utilmacros/nobs.sas" target="_blank">http://www.datasavantconsulting.com/roland/Spectre/utilmacros/nobs.sas</a>
+<p>More care is required when writing function-style macros than when writing
+macros of the ordinary type. For example, most people assume that when
+a macro is called then the macro call has to end with a semicolon. This
+has never been the case and will cause a function-style macro to issue
+strange syntax errors that are hard to debug. You should avoid using “%put”s
+in function-style macros except perhaps for putting out error messages
+if the macro fails. Comments in function-style macros should be “macro”
+comments (starting with “%*”) rather than sas code comments (starting with
+“*”) or else syntax errors will result. Another trap is when you return
+the result macro-quoted. In your SAS supplied macro library you will notice
+that there are some macros that start with a “Q” and there are also inbuilt
+macro functions that start with a “Q”. This is to tell you that a macro-quoted
+value is returned. Macro-quoted values can cause syntax errors if the value
+the macro returns is used in ordinary SAS code. You have to use the “%unquote()”
+function to nullify macro-quoting if you want to use the result in SAS
+code. If you return a macro-quoted result then this should be made very
+clear in your macro description. Preferably, you should start the name
+of any macro that returns a result macro-quoted with a “Q”. An example
+of a macro that returns a result macro-quoted can be linked to below.
+<br>http://www.datasavantconsulting.com/roland/dequote.sas
+<h3>
+Parameter Descriptions</h3>
+The list of parameters and their descriptions should be clearly stated
+in the macro header in its own section. If the parameter has a default
+value, either coded into the macro call or set up inside the macro then
+this should be shown. Positional parameters should be clearly indicated.
+The Spectre macros use the indicator “(pos)” for positional parameters
+and omit this for keyword parameters. It should be made clear whether the
+value you supply to the parameter should be quoted or unquoted.
+<h3>
+Parameter Value Checking</h3>
+We should check parameter values to some extent. The minimum checking done
+should at least ensure that the macro can run, given the parameters values
+provided. More comprehensive checking could check whether parameter values
+are as expected such as whether they are numeric or character (the SAS
+supplied %datatyp macro can be useful for this) or, for variable names,
+whether these variables exist in the dataset. There is a great deal of
+checking that could be done but the more checking you do, the longer it
+will take to code the checking and more will be added to the processing
+overhead of the macro. If your macro users are not experienced programmers
+then you will tend to do more parameter value checking to “catch” the problems
+before the macro starts processing proper. This will allow you to put out
+more meaningful error messages then the user will be able to understand
+from the SAS log. Also, in trapping these errors, trap as many errors as
+you can at one time. If the first parameter value is wrong, for example,
+then do not just put out an error message for this first parameter and
+end the macro – check all the parameters you can, report on them all, and
+then end the macro. This way the user can hopefully call the macro correctly
+at the next attempt. The Spectre macros are aimed to be used by experienced
+programmers and are aimed to run on low powered servers so the parameter
+checking done is at a minimum. However, as many parameters as possible
+will be checked to help the programmer call the macro correctly at their
+next attempt.
+<h3>
+Macro Version Numbers</h3>
+It is helpful to both have a macro version number in the macro header and
+to write this same version number to the log. You only need to write the
+version number once to the log so the best place for this is before the
+macro definition so that when the macro gets compiled, the version number
+will be written to the log at compile time but will not be written for
+subsequent calls. The Spectre macros do this for all macros. The release
+version of the Spectre macros is always shown as version 1.0 with a blank
+amendment history, even if the macro went through many iterations before
+it was released. It is the release of the macro that starts the version
+number counting system. Small changes to the macro that affect functionality
+are reflected in incrementing the count after the decimal point. It is
+not a decimal fraction. If the macro undergoes a major revision then the
+count to the left of the decimal point is incremented and the value to
+the right of the decimal point is reset to “0”. For example, a version
+number of 6.17 means that the macro underwent 5 major revisions and 17
+minor revisions since the last major revision. If the header of a Spectre
+macro is updated but the code is not changed then the version number stays
+the same except that the date shown in the header will change. Version
+numbers are purely to do with functionality.
+<h2>
+Individual Macro Standards</h2>
+
+<h3>
+Introduction</h3>
+After we have decided on our high-level approach and our standards for
+the macro collection as a whole we have to decide upon standards for the
+individual macros or indeed, what we allow to become a macro.
+<h3>
+The “added value” approach</h3>
+A macro should add value otherwise there is no point in having a macro.
+That value could come in the form of making coding easier or in help imposing
+a standard that adds consistency across the programming function. A programmer
+has to learn about the macro if they are supposed to use it and this takes
+time. We should not slow the programmer down if they could do with ease
+what the macro is doing by using straight SAS code. Take the task of sorting
+datasets, for example. It would be pointless to write a macro that sorts
+datasets since this is easily done by using “proc sort” in normal SAS code.
+Such a macro would not add value. Macros should be written because they
+“need” to be written – not just for the sake of it.
+<h3>
+Coding Standards</h3>
+Most of the coding standards for these macros will be covered by existing
+coding standards except the macro header might differ from the usual program
+header. Extra specific macro coding standards will be to store and restore
+system options at the star of a macro and restore them at the end of the
+macro for when macros change these options. It is very important to declare
+all your local macro variables. If you do not do this for your incremental
+variables (e.g. “i” as used in “%do i=1 %to 10;”) then this could affect
+variables in the calling macros and cause strange results and incomprehensible
+errors. Declaring your local macro variables should be done somewhere near
+the top of your macro code. If your macro creates temporary datasets that
+are not needed after the macro ends then you should delete these datasets
+somewhere in your macro. You should be careful that the names you choose
+for your temporary datasets do not conflict with the dataset names of the
+macro user. You might like to start the temporary dataset name with an
+underscore and somehow link the name to the macro name. For example, the
+temporary datasets used by the %unistats macro that you can link to above
+usually start with “_uni”. If you create temporary variables then again,
+ensure there is no naming conflict with any existing variables. You could
+use the convention of naming temporary variables starting with an underscore
+and make it a rule that programmers using your macro should not themselves
+have variables in their datasets whose name starts with an underscore.
+<h2>
+Conclusion</h2>
+On this page you have read about the approach I use for designing SAS macros.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<br>&nbsp;
+<br>&nbsp;
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/sas_macro_design.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+</html>

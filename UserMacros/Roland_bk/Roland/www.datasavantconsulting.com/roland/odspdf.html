@@ -1,0 +1,401 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/odspdf.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:42 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Description" content="Getting Started with ODS PDF">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="SAS ODS PDF">
+   <title>Getting Started with ODS PDF</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Getting Started with ODS PDF</h1></center>
+
+<h2>
+Introduction</h2>
+User expectations about the quality of the reports they get have risen
+over the years. It is normal now for users to ask for bookmarked PDFs.
+Not just that, but they are often particular about the layout. They will
+insist on meaningfully labelled and properly structured PDF bookmarks.
+They may want the pages to be numbered, perhaps with page numbers displayed
+next to the total number of pages. They may want a title page for the report.
+These things are possible using ODS PDF but the information on how to program
+this in sas are hard to find. The intent of this page is to get you started
+using ODS PDF and get you to the point where you can label and structure
+PDF bookmarks, create a title page for your PDF report and show page numbers
+alongside the page total. The data to be used for this will be the CLASS
+dataset in the SASHELP library that you will have access to, assuming you
+have a working version of SAS. If you are reading this without access to
+SAS then there will be sufficient explanation, examples and illustrations
+to enable you to quickly put this information to use when asked to create
+a PDF report at your place of work.
+<h2>
+Setup Code</h2>
+Firstly, let us look at code you might want to run before you start creating
+your report. Typical code is shown in the box below. You will most likely
+want to control the display of the date and page numbering yourself so
+you will need to deactivate this using the relevant sas options. You might
+want to nullify any titles and footnotes left over from a previous process.
+You will need to tell SAS where you want the PDF written to and you will
+need to choose an ODS "escape character" that you are unlikely to use in
+any text you wish to display in the report, so that ODS is warned that
+what follows the escape character is some sort of instruction to ODS to
+do some special processing. Programmers often choose to use a carat ("^")
+sign for this.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>*- Set options and nullify titles and footnotes -;</tt>
+<br><tt>options nodate nonumber center;</tt>
+<br><tt>title1;</tt>
+<br><tt>footnote1;</tt>
+<br>&nbsp;
+<p><tt>*- Destination for the PDF file -;</tt>
+<br><tt>%let pdfdest="\\Client\C$\Users\rashleig\Downloads\class.pdf";</tt>
+<br>&nbsp;
+<p><tt>*- ODS "escape" character to tell it that what follows is not text
+-;</tt>
+<br><tt>ods escapechar="^";</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<h2>
+(1) First Attempt</h2>
+Now we are ready to produce our PDF using ODS PDF. We need to choose a
+style for the report. I find BarrettsBlue to be a nice looking style so
+we will use that. It is left to you to investigate other styles.&nbsp;
+Below is the code to do this. At this stage we will be using both "proc
+print" and "proc report". "Proc print" is actually easier to use with ODS
+PDF but lacks some of the functionality we are almost certain to need for
+more advanced ODS reporting, so we will be dropping use of "proc print"
+at an early stage and will be using "proc report" exclusively, which is
+a little more messy but easy when you know what to do.
+<p>One thing to notice about the "proc report" call is the lack of COLUMN
+variables and the lack of DEFINE statements in the "proc report" step.
+It is usually better to leave out as much of the structure as syntax will
+allow as this can lend itself to automation opportunities in the right
+circumstances. Both "proc print" and "proc report" will give very nearly
+the same report as used below except that "proc print" does a little better
+in choosing a consistent format for displaying numeric values, whereas
+"proc report" uses a "BEST." format.
+<p>Note that in the code we are suppressing normal listing output using
+"ods listing close;" at the start and reinstating with "ods listing;" at
+the end.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>ods listing close;</tt>
+<br><tt>ods pdf file=&amp;pdfdest style=BarrettsBlue;</tt>
+<br>&nbsp;
+<p><tt>title1 "Class Members";</tt>
+<br><tt>footnote1;</tt>
+<p><tt>proc print noobs data=sashelp.class;</tt>
+<br><tt>run;</tt>
+<p><tt>proc report missing nowd data=sashelp.class;</tt>
+<br><tt>run;</tt>
+<br>&nbsp;
+<p><tt>ods pdf close;</tt>
+<br><tt>ods listing;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>Running the above code gives us a PDF that will look like the following
+when opened. Only the "proc report" output is shown. The table looks pleasant
+enough but if you look at the bookmarks then you can see that they are
+far from helpful. This is something we need to fix.
+<p><img SRC="odspdf1.jpg" height=534 width=921>
+<br>&nbsp;
+<h2>
+(2) Using "proclabel" and "contents"</h2>
+We can give the bookmarks more meaningful labels using "proclabel" to override
+"The Print Procedure" and "The Report Procedure" labels at the top level
+of the bookmarks and we can use "contents" at the lower levels of the bookmarks.
+Take a look at how this is done in the code below.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>ods listing close;</tt>
+<br><tt>ods pdf file=&amp;pdfdest style=BarrettsBlue;</tt>
+<br>&nbsp;
+<p><tt>title1 "Class Members";</tt>
+<br><tt>footnote1;</tt>
+<p><tt>ods proclabel "School membership (1)";</tt>
+<br><tt>proc print noobs data=sashelp.class contents="Class Members";</tt>
+<br><tt>run;</tt>
+<p><tt>ods proclabel "School membership (2)";</tt>
+<br><tt>proc report missing nowd data=sashelp.class contents="Class Members";</tt>
+<br><tt>run;</tt>
+<br>&nbsp;
+<p><tt>ods pdf close;</tt>
+<br><tt>ods listing;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>And here is what the PDF will look like when open. Note that we have
+a lower level for "proc report" that has the label "<b>Table 1</b>". We
+will learn how to stop it displaying that lower level.
+<p><img SRC="odspdf2.jpg" height=536 width=920>
+<br>&nbsp;
+<h2>
+(3) Using a "holder" variable with "proc report"</h2>
+Next we will learn how to stop "proc report" displaying tha "<b>Table 1</b>"
+level in the report. We have to use a "trick" to do this. Having to use
+a "trick" is rather annoying, but there is no way around it at the time
+of writing. We have to set up a dummy variable and give it a single value
+and then activate a "contents" definition that is set to null, where that
+variable value changes, and that will stop the level from being displayed.
+This dummy variable is named "<b>holder</b>" and is given the value "1"
+(numeric). It could be called any name and given any consistent value but
+this is a traditional notation as will be explained on a more advanced
+page on this topic on this web site. Don't worry about it for now - just
+use it the way you see it being used.
+<p>The annoying thing about using this "trick" is that you have to make
+sure this "<b>holder</b>" variable exists in every dataset you are reporting.
+Usually, you have to put it there by artificial means. This is what I will
+do for the CLASS dataset and I will place it in the WORK library as you
+can see from the code below.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>*- sashelp.class dataset with "holder" variable added -;</tt>
+<br><tt>data work.class;</tt>
+<br><tt>&nbsp; retain holder 1;</tt>
+<br><tt>&nbsp; set sashelp.class;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>Assuming the above code has been run to add the "holder" variable to
+the CLASS dataset then below is how we will use "proc report" to force
+it to remove the bottom "Table 1" level. At this point we will discontinue
+use of "proc print" as this will not allow us to do more complicated work
+with ODS that we might need to do in the future. Note that in the "proc
+report" step we are only DEFINE'ing characteristics for the "holder" variable.
+We have no COLUMN statement nor DEFINE statements for the other variables
+we will be reporting. We do not need to specify these and it is best not
+to. It will still display all the variables in the CLASS dataset.
+<p>Note that in the "break" line, "contents" is set to a null. There is
+nothing inside of the quotes (which can be single quotes or double quotes).
+The quotes are not enclosing a space.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>ods listing close;</tt>
+<br><tt>ods pdf file=&amp;pdfdest style=BarrettsBlue;</tt>
+<br>&nbsp;
+<p><tt>title1 "Class Members";</tt>
+<br><tt>footnote1;</tt>
+<p><tt>ods proclabel "School membership";</tt>
+<br><tt>proc report missing nowd data=work.class contents="Class Members";</tt>
+<br><tt>&nbsp; define holder / noprint order;</tt>
+<br><tt>&nbsp; break before holder / page contents="";</tt>
+<br><tt>run;</tt>
+<br>&nbsp;
+<p><tt>ods pdf close;</tt>
+<br><tt>ods listing;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>And now, the annoying "<b>Table 1</b>" level is gone, but at the expense
+of having to use an equally annoying "trick" to get rid of it.
+<p><img SRC="odspdf3.jpg" height=535 width=922>
+<br>&nbsp;
+<h2>
+(4) Adding page numbers and footnotes</h2>
+Next we will see how to add page numbers and footnotes. Usually, footnotes
+are left aligned and often shown in an italic version of a font. We can
+"justify" (i.e. place left, right or centre) the different parts of a title
+or footnote as we wish. For this example, titles will be centred, page
+number labels will be right aligned and footnotes will be italic left justified.
+<p>For the page labels, we will show the number of the current page on
+the left of the total number of pages. We do this using "{thispage}" and
+"{lastpage}" ODS instructions, both of which need to be activated as instructions
+by using the ODS escape character in front of each, that we previously
+defined.
+<br>&nbsp;
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>ods listing close;</tt>
+<br><tt>ods pdf file=&amp;pdfdest style=BarrettsBlue;</tt>
+<br>&nbsp;
+<p><tt>title1 j=c "Class Members" j=r "Page ^{thispage} of ^{lastpage}";</tt>
+<br><tt>footnote1 j=l c=blue italic</tt>
+<br><tt>"This is a left aligned blue footnote in italic font style";</tt>
+<p><tt>ods proclabel "School membership";</tt>
+<br><tt>proc report missing nowd data=work.class contents="Class Members";</tt>
+<br><tt>&nbsp; define holder / noprint order;</tt>
+<br><tt>&nbsp; break before holder / page contents="";</tt>
+<br><tt>run;</tt>
+<br>&nbsp;
+<p><tt>ods pdf close;</tt>
+<br><tt>ods listing;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>Now we see the page number label and footnote added.
+<p><img SRC="odspdf4.jpg" height=535 width=921>
+<h2>
+(5) Adding a title page (but bad page numbering)</h2>
+Next I will show you how to add a title page to the report. We just want
+this as large bold black writing on a white background without the grey
+and blue colours of the tables that the style BarrettsBlue gives us by
+default. First, let us create the dataset that will be used to display
+the text of the title page. Note that I am using the ODS escape character
+to signify that I want to output some "newlines" (^n) to give me spacing
+before the first title line and between the first title line and the second
+title line.
+<p>Something is going to go wrong with the page numbering on this first
+attempt, as you will see.
+<p>First, the code for the title dataset. And "yes", it needs a "holder"
+variable as well, in case you were wondering.This will be true in very
+nearly all cases.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>*- Title page dataset -;</tt>
+<br><tt>data _pdftitle;</tt>
+<br><tt>&nbsp; holder=1;</tt>
+<br><tt>&nbsp; text="^n^n^n^nKing Edward's School^n^n^n^n^n</tt>
+<br><tt>&nbsp; Date and Time: %sysfunc(datetime(),datetime21.)";</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>And now for the code. There are a lot of "style" instructions for the
+title page that nullify the BarrettsBlue style so that it gives purely
+black on white with no hint of any grid lines. You will never be able to
+remember the code needed to achieve this for the title page. I can't remember
+the code either. But it is a simple matter to find this page on the Internet
+and copy and paste what is in the code box below.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>ods listing close;</tt>
+<br><tt>ods pdf file=&amp;pdfdest style=BarrettsBlue;</tt>
+<br>&nbsp;
+<p><tt>*- No titles or footnotes are to be seen on the title page -;</tt>
+<br><tt>title1;</tt>
+<br><tt>footnote1;</tt>
+<p><tt>*- produce the title page -;</tt>
+<br><tt>ods proclabel "King Edward's School";</tt>
+<br><tt>proc report data=_pdftitle nowd noheader style(report)={rules=none
+frame=void} contents=""</tt>
+<br><tt>&nbsp; style(column)={font_weight=bold font_size=24pt just=c backgroundcolor=white};</tt>
+<br><tt>&nbsp; define holder / noprint order;</tt>
+<br><tt>&nbsp; break before holder / page contents="";</tt>
+<br><tt>run;</tt>
+<br>&nbsp;
+<p><tt>title1 j=c "Class Members" j=r "Page ^{thispage} of ^{lastpage}";</tt>
+<br><tt>footnote1 j=l c=blue italic</tt>
+<br><tt>"This is a left aligned blue footnote in italic font style";</tt>
+<p><tt>ods proclabel "School membership";</tt>
+<br><tt>proc report missing nowd data=work.class contents="Class Members";</tt>
+<br><tt>&nbsp; define holder / noprint order;</tt>
+<br><tt>&nbsp; break before holder / page contents="";</tt>
+<br><tt>run;</tt>
+<br>&nbsp;
+<p><tt>ods pdf close;</tt>
+<br><tt>ods listing;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>And here is the PDF opened on the title page. It looks good. It is obvious
+from the code that creates the title dataset and the above style code how
+to adjust the writing size. Everything looks good so far <b>...</b>
+<p><img SRC="odspdf5a.jpg" height=533 width=920>
+<p><b>...</b> but below is the table and something has gone wrong with
+the page numbering shown on the right of the title line. The total number
+of pages is wrong.
+<p><img SRC="odspdf5b.jpg" height=535 width=923>
+<h2>
+(6) Adding a title page (page numbering fixed)</h2>
+The total number of pages is wrong, as shown above, because this total
+is calculated by counting up the number of occurrences of "{lastpage}"
+that get written to the PDF. The title page does not have a "{lastpage}"
+on it because we do not want to display the page number on the title page.
+We know it is page one - that is obvious - it is the title page!
+<p>To fix this problem we need to sneak in a "{lastpage}" on the title
+page. We can do that in an invisible way. The page has a white background
+so if we make "{lastpage}" itself white then we won't be able to see it
+on the title page. I don't know if there is a better way to do this but
+it works. All that is needed is a "{lastpage}". We don't have to use the
+same page label as for the other pages.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>ods listing close;</tt>
+<br><tt>ods pdf file=&amp;pdfdest style=BarrettsBlue;</tt>
+<br>&nbsp;
+<p><tt>*- Add a white (i.e. invisible) "lastpage" to the title page -;</tt>
+<br><tt>title1 j=r c=w "^{lastpage}";</tt>
+<br><tt>footnote1;</tt>
+<p><tt>ods proclabel "King Edward's School";</tt>
+<br><tt>proc report data=_pdftitle nowd noheader style(report)={rules=none
+frame=void} contents=""</tt>
+<br><tt>&nbsp; style(column)={font_weight=bold font_size=24pt just=c backgroundcolor=white};</tt>
+<br><tt>&nbsp; define holder / noprint order;</tt>
+<br><tt>&nbsp; break before holder / page contents="";</tt>
+<br><tt>run;</tt>
+<br>&nbsp;
+<p><tt>title1 j=c "Class Members" j=r "Page ^{thispage} of ^{lastpage}";</tt>
+<br><tt>footnote1 j=l c=blue italic</tt>
+<br><tt>"This is a left aligned blue footnote in italic font style";</tt>
+<p><tt>ods proclabel "School membership";</tt>
+<br><tt>proc report missing nowd data=work.class contents="Class Members";</tt>
+<br><tt>&nbsp; define holder / noprint order;</tt>
+<br><tt>&nbsp; break before holder / page contents="";</tt>
+<br><tt>run;</tt>
+<br>&nbsp;
+<p><tt>ods pdf close;</tt>
+<br><tt>ods listing;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>And now we see that the page total in the title line has been fixed.
+<p><img SRC="odspdf6.jpg" height=532 width=919>
+<h2>
+Conclusion</h2>
+You have been given a step-by-step guide for producing a PDF report using
+ODS PDF that shows control of PDF bookmarks, use of a title page and the
+use of page numbering with the page total.
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/odspdf.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+</html>

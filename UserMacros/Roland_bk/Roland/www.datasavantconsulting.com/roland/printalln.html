@@ -1,0 +1,105 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/printalln.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:11 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="SAS tips and techniques by Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="sas tips techniques">
+   <title>whosgot</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+printalln</h1></center>
+<b>[last updated - 31 July 2003]</b>
+<p>This utility prints all the information it can find in a library that
+satisfies a condition on a numeric variable. You would typically use this
+to print out all information for a subject if "subject" were a numeric
+variable like this <b>printall subject=1234</b>. Output goes to the terminal
+window by default as always. It is up to the user to redirect if required.
+<pre>
+<b>#!/bin/sh
+# Script&nbsp;&nbsp;&nbsp;&nbsp; : printalln
+# Version&nbsp;&nbsp;&nbsp; : 1.0
+# Author&nbsp;&nbsp;&nbsp;&nbsp; : Roland Rashleigh-Berry
+# Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 31 July 2003
+# Contact&nbsp;&nbsp;&nbsp; : rolandberry@hotmail.com
+# Purpose&nbsp;&nbsp;&nbsp; : To print out all records in a library that satisfy a condition on
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; a numeric variable&nbsp;
+# SubScripts : none
+# Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Make the data directory the current directory. Output goes to
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; terminal window by default.
+# Usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : printalln subject=1234
+#&nbsp;
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+#&nbsp; 1&nbsp;&nbsp; condition on numeric variable
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+#&nbsp;
+#================================================================================
+
+# Put out a usage message if not enough parameters supplied
+if [ $# -lt 1 ] ; then
+&nbsp; echo "Usage: printalln subject=1234" 1>&amp;2
+&nbsp; exit 1
+fi
+
+# check on the existence of a sas program in the home directory
+if [ -f $HOME/printalln.sas ] ; then
+&nbsp; echo "SAS program printalln already exists in your home directory. You need to check" 1>&amp;2
+&nbsp; echo "if you need it and delete it if not. This utility will not overwrite it and" 1>&amp;2
+&nbsp; echo "will now exit." 1>&amp;2
+&nbsp; exit 1
+fi
+
+# Write SAS code out to a temporary file
+cat > $HOME/printalln.sas &lt;&lt; END
+options validvarname=any nofmterr formdlim='-' symbolgen;
+libname here './' access=readonly;
+filename _outfile "$HOME/printalln.tmp";
+%let variable=%scan($1,1,^=&lt;>%str( ));
+proc printto print=_outfile;
+run;
+data _null_;
+&nbsp; set sashelp.vcolumn(where=(libname="HERE" and upcase(name)=upcase("&amp;variable")));
+&nbsp; call execute('proc print data='||trim(libname)||'.'||trim(memname)||'(where=($1));
+&nbsp; title "$1 - ALL DATA FOR '||trim(libname)||'.'||trim(memname)||'";run;');
+run;
+END
+
+
+# Run the SAS code
+sas -log "$HOME" -sysin "$HOME/printalln.sas"
+
+
+# Delete the temporary SAS code and optionally the log
+rm -f $HOME/printalln.sas # $HOME/printalln.log&nbsp;
+
+
+# If output file exists then cat it and delete it
+if [ -f $HOME/printalln.tmp ]
+then
+&nbsp; cat $HOME/printalln.tmp
+&nbsp; rm -f $HOME/printalln.tmp
+fi</b>
+
+</pre>
+
+<center>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/printalln.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:11 GMT -->
+</html>

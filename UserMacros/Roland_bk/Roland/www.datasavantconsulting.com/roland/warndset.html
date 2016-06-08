@@ -1,0 +1,368 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/warndset.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <title>A "Warnings" dataset and Reporting it</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+A "Warnings" dataset and Reporting it</h1></center>
+<b>Author: Roland Rashleigh-Berry</b>
+<br><b>Updated: 15 Apr 2013</b>
+<br>&nbsp;
+<h2>
+Introduction</h2>
+A non-technical user may "own" a sas job that runs automatically in a system
+and if there are any errors or warnings they will need to know about them
+but maybe they do not have the skills to look in the sas job log and find
+out what is going wrong. In these cases it is better if they can be sent
+a report of all error or warning conditions that happened while the job
+ran instead of expecting them to look through the log. This errors and
+warnings report may take the form of an Excel file or a PDF or both. If
+in PDF form then it is better if it is of publication quality with the
+output split into separate pages per category, each with its own bookmark.
+At the time of writing, in April 2013, this appears to be an emerging standard
+in the industry.
+<p>On this page you will see how this can be done in the simplest and most
+efficient way.
+<h2>
+The SQL solution</h2>
+A "warnings" dataset is more easily set up in SQL than using a data step.
+This is because using a data step we will get a single observation with
+missing values unless we remember to "trick" the data step into not writing
+out an observation using something like "<b>if 0 = 1 then output;</b>".
+And when it comes to updating the warnings dataset then SQL has the advantage
+of being able to "<b>insert</b>" directly into it compared to writing to
+a temporary dataset and using "proc append" to append to the warnings dataset.
+SQL wins on both counts. It is also more concise and therefore should be
+easier to understand and maintain so what you will see on this page is
+the SQL solution rather than a data step solution.
+<h2>
+The Task</h2>
+To illustrate the creation of the warnings dataset, the echoing of the
+warnings to the log and its formatting into a CSV file and&nbsp; PDF, we
+will use <b>sashelp.class</b> and warn when a pupil is less than 13 years
+old. To add a deliberate piece of complexity, this will be done in two
+stages - once for males and then for females. This is to split the processing
+so that warning messages for males are written to the log after processing
+has finished for males and warning messages for females are written to
+the log after processing has finished for females. In this way we mimic
+real life situations where there will be multiple checking categories.
+If you have access to sas software then you can run this code yourself
+and play around with it.
+<p>Here are the requirements:
+<p><b>1)</b> The warnings written to the warnings dataset must be exactly
+the same as what is written to the log - preferably taken from the same
+source.
+<br><b>2)</b> The warnings in the log must be written at the point they
+were detected and not deferred for later.
+<br><b>3)</b> Processing of the warnings should be done in the simplest
+way and should avoid macro language and avoid multiple passes of the warnings
+dataset if possible.
+<br><b>4)</b> A CSV file should be created from the complete warnings dataset
+such that, when opened using Excel, it shows the data in columns without
+any further formatting.
+<br><b>5)</b> A bookmarked PDF should be created with one checking category
+per page with the bookmarks clearly labelled and without confusing sub-layers.
+The displayed tables should only show the required columns.
+<h2>
+Creating the empty "warnings" dataset</h2>
+When you create a dataset (table) using SQL then it will have zero observations
+which is what you want. The table we will create to contain the warnings
+is done with the code below (assume you are already in a PROC SQL step).
+The last column "holder" is a utility column useful for "proc report" that
+I want set to 1 in all cases:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp; *- set up empty warnings dataset -;</tt>
+<br><tt>&nbsp; CREATE table warnings(label="Class Diagnostics")</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (test&nbsp;&nbsp;&nbsp;&nbsp;
+char(40)&nbsp; label='Test type',</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; name&nbsp;&nbsp;&nbsp;&nbsp;
+char(8)&nbsp;&nbsp; label='Student Name',</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; age&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+num(8)&nbsp;&nbsp;&nbsp; label='Age',&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sex&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+char(1)&nbsp;&nbsp; label='Gender',</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; wrnmsg&nbsp;&nbsp; char(200)
+label='Warning Message',</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; holder&nbsp;&nbsp; num(8)&nbsp;&nbsp;&nbsp;
+label='proc report dummy variable'</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; );</tt></td>
+</tr>
+</table>
+
+<h2>
+"Inserting" into the warnings dataset</h2>
+There are two different ways of inserting into the dataset using SQL. We
+can use the "VALUES" method and insert constant text or numbers (we can
+not refer to dataset variables but we can resolve macro variables using
+this method) or we use the "SELECT" method to select variables by name
+plus constants to insert into the table.
+<p>You would typically use the "VALUES" method if you were in a macro loop
+and resolve macro variables to give you your "constant" text or values.
+In this particular case we are trying to minimize macro processing so we
+will use the "SELECT" method instead.
+<p>Using the "SELECT" method then we would insert into the warnings dataset
+as shown below. Note that the list of columns for the warnings dataset
+shown after the warnings table is optional but is useful to remind us what
+columns need to be inserted into. Values get inserted in the order of the
+select. We do not need to specify what selected value goes in what column.
+<p><b>I also need to echo the warning to the log</b>. This is the hard
+part. Normally I would write a "1" (numeric) to the "holder" field but
+I need to echo the warning to the log - and I want to do both these things
+in one "select" operation if possible. Fortunately, it is possible. I can
+use the "<b>resolve()</b>" function to issue a "<b>%put</b>" to put the
+warning message in the log. This will happen in the background and the
+resulting value available to "select" is a blank field. I can then test
+this field for being a blank in a boolean expression and sas will return
+the numeric value "1" (true) which then gets inserted into the holder variable.
+I can also use "<b>calculated</b>" to give me access to the generated warning
+message variable "msg" instead of having to repeat the code for constructing
+the warning message. Look carefully at the "resolve" line in the code below.
+The result of that line (space=space = true = 1) gives me the numeric "1"
+that gets written to the holder variable.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp; *- insert for MALE pupils &lt; 13 years old and echo in
+the log -;</tt>
+<br><tt>&nbsp; INSERT into warnings(test, name, age, sex, wrnmsg, holder)</tt>
+<br><tt>&nbsp; select 'Male pupils &lt; 13', name, age, sex,</tt>
+<br><tt>&nbsp; 'WARNING: Male pupil '||trim(name)||' age '||strip(put(age,3.))||'
+is &lt; 13 years old' as msg,</tt>
+<br><tt>&nbsp; resolve('%PUT '||trim(calculated msg)||';')=' '</tt>
+<br><tt>&nbsp; from sashelp.class where sex='M' and age &lt; 13;</tt></td>
+</tr>
+</table>
+
+<h2>
+Complete code for populating the "warnings" dataset</h2>
+Here is the complete code for populating the warnings dataset and writing
+warning messages to the log:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>PROC SQL NOPRINT;</tt>
+<p><tt>&nbsp; *- set up empty warnings dataset -;</tt>
+<br><tt>&nbsp; CREATE table warnings(label="Class Diagnostics")</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (test&nbsp;&nbsp;&nbsp;&nbsp;
+char(40)&nbsp; label='Test type',</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; name&nbsp;&nbsp;&nbsp;&nbsp;
+char(8)&nbsp;&nbsp; label='Student Name',</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; age&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+num(8)&nbsp;&nbsp;&nbsp; label='Age',&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sex&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+char(1)&nbsp;&nbsp; label='Gender',</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; wrnmsg&nbsp;&nbsp; char(200)
+label='Warning Message',</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; holder&nbsp;&nbsp; num(8)&nbsp;&nbsp;&nbsp;
+label='proc report dummy variable'</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; );</tt>
+<p><tt>&nbsp; *- insert for MALE pupils &lt; 13 years old and echo in the
+log -;</tt>
+<br><tt>&nbsp; INSERT into warnings(test, name, age, sex, wrnmsg, holder)</tt>
+<br><tt>&nbsp; select 'Male pupils &lt; 13', name, age, sex,</tt>
+<br><tt>&nbsp; 'WARNING: Male pupil '||trim(name)||' age '||strip(put(age,3.))||'
+is &lt; 13 years old' as msg,</tt>
+<br><tt>&nbsp; resolve('%PUT '||trim(calculated msg)||';')=' '</tt>
+<br><tt>&nbsp; from sashelp.class where sex='M' and age &lt; 13;</tt>
+<p><tt>&nbsp; *- insert for FEMALE pupils &lt; 13 years old and echo in
+the log -;</tt>
+<br><tt>&nbsp; INSERT into warnings(test, name, age, sex, wrnmsg, holder)</tt>
+<br><tt>&nbsp; select 'Female pupils &lt; 13', name, age, sex,</tt>
+<br><tt>&nbsp; 'WARNING: Female pupil '||trim(name)||' age '||strip(put(age,3.))||'
+is &lt; 13 years old' as msg,</tt>
+<br><tt>&nbsp; resolve('%PUT '||trim(calculated msg)||';')=' '</tt>
+<br><tt>&nbsp; from sashelp.class where sex='F' and age &lt; 13;</tt>
+<p><tt>QUIT;</tt></td>
+</tr>
+</table>
+
+<h2>
+The CSV file</h2>
+The CSV file is simple to produce using "ods csv" and to ensure the data
+is in columns when it is opened by Excel we can use a semicolon to separate
+fields instead of the default comma. We don't want the "holder" variable
+as that it just a utility variable for "proc report" so we will drop it.
+The code looks like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%let csvdest="\\Client\C$\BISDTM\class.csv";</tt>
+<p><tt>*- Create a csv file that can be opened directly -;</tt>
+<br><tt>*- using Excel with data aligned in columns.&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>ods csv file=&amp;csvdest options(delimiter=';');</tt>
+<br><tt>proc print label noobs data=warnings(drop=holder);</tt>
+<br><tt>run;</tt>
+<br><tt>ods csv close;</tt></td>
+</tr>
+</table>
+
+<h2>
+The PDF file</h2>
+Creating the bookmarked PDF file is much more complicated if we want it
+to have a good layout. For more complicated cases you will want to use
+"proc report" instead of "proc print" and you have to trick "proc report"
+into not generating the "<b>Table1</b>" level in the bookmark. You have
+to set "contents" to blank not only at the "proc report" level but inside
+it as well using a trick that will be shown below. The trick is to add
+a dummy variable and break before it so that the first and all other pages
+has the contents set to null. We already have that dummy variable present
+in the form of the "holder" variable so no further modification of the
+warnings dataset is required.
+<p>Note that when using "proc report" to create PDF output you should allow
+things such as column widths to default. Also, you do not need to list
+the columns you are using - it works like "proc print" in that it prints
+the columns in variable position order. What we need to do is print all
+the columns that are there, suppressing the "holder" variable and any other
+columns we do not want to see using "noprint". We could also drop variable
+from the input data as was done for the CSV creation.
+<p>Here is how "proc report" will be used to create multiple pages:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%let pdfdest="\\Client\C$\BISDTM\class.pdf";</tt>
+<p><tt>*- Create a bookmarked PDF where there is a new page&nbsp;&nbsp;
+-;</tt>
+<br><tt>*- for each category (Male and Female) and only needed -;</tt>
+<br><tt>*- columns are shown (i.e. not the "sex" column).&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>ods pdf style=BarrettsBlue file=&amp;pdfdest;</tt>
+<p><tt>ods proclabel="Male pupils &lt; 13 y.o.";</tt>
+<br><tt>proc report nowd missing contents="" data=warnings(where=(test=:"Male"));</tt>
+<br><tt>title1 "Male pupils &lt; 13 y.o.";</tt>
+<br><tt>&nbsp; define test / noprint;</tt>
+<br><tt>&nbsp; define sex / noprint;</tt>
+<br><tt>&nbsp; define holder / noprint order;</tt>
+<br><tt>&nbsp; break before holder / page contents='';</tt>
+<br><tt>run;</tt>
+<p><tt>ods proclabel="Female pupils &lt; 13 y.o.";</tt>
+<br><tt>proc report nowd missing contents="" data=warnings(where=(test=:"Female"));</tt>
+<br><tt>title1 "Female pupils &lt; 13 y.o.";</tt>
+<br><tt>&nbsp; define test / noprint;</tt>
+<br><tt>&nbsp; define sex / noprint;</tt>
+<br><tt>&nbsp; define holder / noprint order;</tt>
+<br><tt>&nbsp; break before holder / page contents='';</tt>
+<br><tt>run;</tt>
+<p><tt>ods pdf close;</tt></td>
+</tr>
+</table>
+
+<h2>
+The Full Code</h2>
+Now that we have discussed the individual features of the code, the full
+code for this example is shown below:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%let csvdest="\\Client\C$\BISDTM\class.csv";</tt>
+<br><tt>%let pdfdest="\\Client\C$\BISDTM\class.pdf";</tt>
+<p><tt>PROC SQL NOPRINT;</tt>
+<p><tt>&nbsp; *- set up empty warnings dataset -;</tt>
+<br><tt>&nbsp; CREATE table warnings(label="Class Diagnostics")</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (test&nbsp;&nbsp;&nbsp;&nbsp;
+char(40)&nbsp; label='Test type',</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; name&nbsp;&nbsp;&nbsp;&nbsp;
+char(8)&nbsp;&nbsp; label='Student Name',</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; age&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+num(8)&nbsp;&nbsp;&nbsp; label='Age',&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sex&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+char(1)&nbsp;&nbsp; label='Gender',</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; wrnmsg&nbsp;&nbsp; char(200)
+label='Warning Message',</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; holder&nbsp;&nbsp; num(8)&nbsp;&nbsp;&nbsp;
+label='proc report dummy variable'</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; );</tt>
+<p><tt>&nbsp; *- insert for MALE pupils &lt; 13 years old and echo in the
+log -;</tt>
+<br><tt>&nbsp; INSERT into warnings(test, name, age, sex, wrnmsg, holder)</tt>
+<br><tt>&nbsp; select 'Male pupils &lt; 13', name, age, sex,</tt>
+<br><tt>&nbsp; 'WARNING: Male pupil '||trim(name)||' age '||strip(put(age,3.))||'
+is &lt; 13 years old' as msg,</tt>
+<br><tt>&nbsp; resolve('%PUT '||trim(calculated msg)||';')=' '</tt>
+<br><tt>&nbsp; from sashelp.class where sex='M' and age &lt; 13;</tt>
+<p><tt>&nbsp; *- insert for FEMALE pupils &lt; 13 years old and echo in
+the log -;</tt>
+<br><tt>&nbsp; INSERT into warnings(test, name, age, sex, wrnmsg, holder)</tt>
+<br><tt>&nbsp; select 'Female pupils &lt; 13', name, age, sex,</tt>
+<br><tt>&nbsp; 'WARNING: Female pupil '||trim(name)||' age '||strip(put(age,3.))||'
+is &lt; 13 years old' as msg,</tt>
+<br><tt>&nbsp; resolve('%PUT '||trim(calculated msg)||';')=' '</tt>
+<br><tt>&nbsp; from sashelp.class where sex='F' and age &lt; 13;</tt>
+<p><tt>QUIT;</tt>
+<br>&nbsp;
+<p><tt>ods results off;</tt>
+<br><tt>ods listing close;</tt>
+<p><tt>*- Create a csv file that can be opened directly -;</tt>
+<br><tt>*- using Excel with data aligned in columns.&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>ods csv file=&amp;csvdest options(delimiter=';');</tt>
+<br><tt>proc print label noobs data=warnings(drop=holder);</tt>
+<br><tt>run;</tt>
+<br><tt>ods csv close;</tt>
+<br>&nbsp;
+<p><tt>*- Create a bookmarked PDF where there is a new page&nbsp;&nbsp;
+-;</tt>
+<br><tt>*- for each category (Male and Female) and only needed -;</tt>
+<br><tt>*- columns are shown (i.e. not the "sex" column).&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-;</tt>
+<br><tt>ods pdf style=BarrettsBlue file=&amp;pdfdest;</tt>
+<p><tt>ods proclabel="Male pupils &lt; 13 y.o.";</tt>
+<br><tt>proc report nowd missing contents="" data=warnings(where=(test=:"Male"));</tt>
+<br><tt>title1 "Male pupils &lt; 13 y.o.";</tt>
+<br><tt>&nbsp; define test / noprint;</tt>
+<br><tt>&nbsp; define sex / noprint;</tt>
+<br><tt>&nbsp; define holder / noprint order;</tt>
+<br><tt>&nbsp; break before holder / page contents='';</tt>
+<br><tt>run;</tt>
+<p><tt>ods proclabel="Female pupils &lt; 13 y.o.";</tt>
+<br><tt>proc report nowd missing contents="" data=warnings(where=(test=:"Female"));</tt>
+<br><tt>title1 "Female pupils &lt; 13 y.o.";</tt>
+<br><tt>&nbsp; define test / noprint;</tt>
+<br><tt>&nbsp; define sex / noprint;</tt>
+<br><tt>&nbsp; define holder / noprint order;</tt>
+<br><tt>&nbsp; break before holder / page contents='';</tt>
+<br><tt>run;</tt>
+<p><tt>ods pdf close;</tt>
+<br>&nbsp;
+<p><tt>ods listing;</tt>
+<br><tt>ods results on;</tt></td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+You have seen how to create and update a "warnings" dataset while echoing
+the warning messages to the log and writing the warnings dataset to a CSV
+file and a paged bookmarked PDF.
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<br>&nbsp;
+<br>&nbsp;
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/warndset.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+</html>

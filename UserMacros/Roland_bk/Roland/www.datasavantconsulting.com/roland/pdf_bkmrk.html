@@ -1,0 +1,521 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/pdf_bkmrk.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <title>Moving PDF bookmarks using SAS v9.2</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Moving PDF bookmarks using SAS v9.2</h1></center>
+<b>Author: Roland Rashleigh-Berry</b>
+<br><b>Updated: 19 Aug 2012</b>
+<h2>
+Introduction</h2>
+When I started using SAS in September 1986 then the sort of reports you
+could produce were very limited by their presentation. Pure ascii reports
+printed out on a dot matrix printer being the norm. But over the years,
+with the introduction of ODS plus other enhancements, SAS output reporting
+has improved greatly. Adobe PDF is the industry accepted way these days
+of formatting reports for users and SAS is very capable of doing this.
+One of the limitations up until SAS v9.2 is the ability to move PDF bookmarks.
+Now you might think that moving PDF bookmarks is a nice thing to have but
+not a necessary requirement but some times it really is needed. Imagine
+a situation where a user is uploading batches of files to a central database
+location. The want a report back telling them, on the first page, what
+files were loaded and what not and if the loads were clean, or done with
+warnings or not at all due to an error condition. Then for each file submitted
+they want to see a file summary report of the checks done and the results
+for each check. Then for each individual check that produced warnings or
+errors they will want to see the diagnostics.
+<p>Now if we think of the situation above then if a user has submitted
+6 files then each file might have on average 10 diagnostic listing so that
+being the case then with the overall summary, the 6 individual file summaries
+with the 10, on average, diagnostic listings for each then we have a PDF
+containing 67 reports. You would not want all 67 reports with bookmarks
+all at the same level. You would want the overall summary report as the
+first page, followed by each individual file summary, making 7 bookmarks
+in total, and underneath each individual file summary hold the 10, on average,
+diagnostic listings. <b>7 top level bookmarks is good - 67 top level bookmarks
+is bad.</b>
+<p>When SAS produces reports then each is an independent thing. There is
+currently no way to tell it what report should be subordinate to what higher
+level report. I think there should be. We don't even have that with SAS
+v9.2 - but what we do have since SAS v9.2 is <b>the ability to move bookmarks
+around</b> and this can be done <b>programmatically</b>.
+<p>I must warn you that this page is going to be long. You should not read
+it unless you think you will have to do the job of creating reporting PDFs
+using SAS and that you will need to move bookmarks around and "nest" them
+to make your PDF reports more presentable. I will have to introduce this
+method gradually because there are a few things you have to know about
+before you can tackle this job.
+<br>PDF reports are simpler than Ascii reports
+<h2>
+Unlearning PROC REPORT</h2>
+You maybe spent years learning the ins-and-outs of proc report, Well, when
+it comes to using it for producing PDF reports, then to a large extent
+you have to <b>unlearn</b> most of what you learned.
+<p><b>This is what you have to unlearn about PROC REPORT:</b>
+<p>You learned about setting column widths - <b>forget about column widths</b>
+- for PDFs you are better off not specifying this at all because it will
+be ignored in any case. There is a way of doing this but you should avoid
+using it. Just let "proc report" handle it.
+<p>You learned about "flow" - <b>forget about "flow"</b> - for PDFs then
+SAS will use <b>flow</b> in any case whether you want it to or not so do
+not specify it.
+<p><b>Forget about the COLUMN statement</b> - just like "proc print", you
+do not need to list the variables you intend to report to "proc report".
+Just like "proc print", it will print whatever variables it finds in the
+input dataset in variable position order. To get your variables in the
+order you want then define them in the order you want. With SQL then your
+"select" order of variables is the variable order. With data steps you
+can use a LENGTH statement to define the order of variables. Just create
+your dataset or SQL table with the variables in the order you want them
+reported. Sometimes you will need to use a "column" statement but this
+should be an exception rather than the rule.
+<p><b>Forget about "define"-ing every variable to "proc report".</b> You
+can define just one variable, if you want, as "order noprint", with no
+"column" variables listed, and "proc report" will treat that one variable
+in that way and display the rest.
+<p>So what sort of form of "proc report" should you be aiming at for producing
+PDFs? Well how about this? Notice the use of "<b>&amp;memname</b>" and
+"<b>&amp;memlabel</b>". I pulled these values out of <b>dictionary.tables</b>.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>ods proclabel " ";</tt>
+<br><tt>title1 "&amp;memlabel";</tt>
+<br><tt>footnote1;</tt>
+<p><tt>proc report nowd data=&amp;memname contents="&amp;memlabel";</tt>
+<br><tt>&nbsp; define holder / order noprint;</tt>
+<br><tt>&nbsp; break before holder / page contents="";</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>If you look at the simple code above then you can see I have used no
+"column" statement but I have defined the variable "<b>holder</b>" as "<b>order
+noprint</b>" and I break before it to set <b>contents=" "</b>. This is
+a technique you will have to use when creating PDFs with bookmarks.
+<p>But what about the title of the report? Each different printed table
+is going to need a different title, surely? <b>Sure it does!</b> But then
+why not put the report title in the dataset label and pull it out of <b>dictionary.tables</b>
+and assign it to a macro variable (<b>memlabel</b>) and use that? This
+is an important technique you need to use for generic PDF creation.
+<p>Below you see me creating a reporting dataset and putting its title
+("Additional information found") in the dataset label:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>create table &amp;subnm._det31(label="Additional information found")
+as</tt>
+<br><tt>select distinct analyte label="ANALYTE", pkmatrix label="PKMATRIX",
+1 as holder</tt>
+<br><tt>from &amp;subnm as a</tt>
+<br><tt>where not exists</tt>
+<br><tt>(select 1 from crosschk.&amp;sample as b</tt>
+<br><tt>&nbsp;where a.analyte=b.analyte and a.pkmatrix=b.pkmatrix);&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>... and somewhere else in my code I pull the title out of <b>dictionary.tables</b>
+and then assign it to a macro variable of the same name using my <b>%getvalue</b>
+macro. I then resolve it in the "title" statement:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>proc sql noprint;</tt>
+<br><tt>&nbsp; create table listfiles as&nbsp;</tt>
+<br><tt>&nbsp; select memname, memlabel</tt>
+<br><tt>&nbsp; from dictionary.tables&nbsp;</tt>
+<br><tt>&nbsp; where libname eq 'WORK' and</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nobs gt 0 and</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; index(memname,"&amp;subnm._DET")
+EQ 1;&nbsp;</tt>
+<br><tt>quit;</tt>
+<p><tt>%do l=1 %to %nobs(listfiles);</tt>
+<br><tt>&nbsp; %let memname=%getvalue(listfiles,memname,&amp;l);</tt>
+<br><tt>&nbsp; %let memlabel=%getvalue(listfiles,memlabel,&amp;l);</tt>
+<p><tt>&nbsp; ods proclabel " ";</tt>
+<br><tt>&nbsp; title1 "&amp;memlabel";</tt>
+<br><tt>&nbsp; footnote1;</tt>
+<p><tt>&nbsp; proc report nowd data=&amp;memname contents="&amp;memlabel";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; define holder / order noprint;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; break before holder / page contents="";</tt>
+<br><tt>&nbsp; run;</tt></td>
+</tr>
+</table>
+
+<h2>
+The three levels of PDF bookmarks and the "holder" variable</h2>
+There is nothing magic about a variable named <b>"holder"</b>. The reason
+I stick to using that name is because of a very important SAS paper that
+was written. If you want to control PDF bookmarks (and at some stage you
+will) then you <b>must</b> read the following paper, starting at page 9.
+<p><a href="http://support.sas.com/resources/papers/proceedings11/246-2011.pdf" target="_blank">Changing
+nodes in an ODS PDF bookmark using the Document Procedure</a>&nbsp;&nbsp;&nbsp;
+(scroll down to page 9)
+<p>This paper is what started me down the path of seeking to control and
+move PDF bookmarks and if you intend to produce nice user-friendly PDF
+reports using SAS then you have to go down that path too.
+<p>The "<b>holder</b>" variable (it could have any other valid variable
+name but I will stick to "holder") is used as a "trick" to wipe out the
+lowest level bookmark, thus leaving us with the two levels we want. It
+is used to stop you seeing the label "Table 1" as a PDF bookmark label
+when you produce output using "proc report". You don't get that with "proc
+print" but we are not going to use "proc print" because with SAS v9.2 "ods
+document" it will give you an annoying warning message. Besides, "proc
+report" is more flexible than "proc print" and hopefully, this warning
+message will disappear with later releases of SAS.
+<p><b>So what is this "holder" variable used for and how? </b>You see it
+in the code above in the box. The three PDF bookmark level labels are related
+to the value assigned to "proclabel" (the top level) and "contents" at
+the proc report line level (the middle level) and "contents" at the variable
+break level (the bottom level). If you set up a holder level and give it
+the same value (such as numeric 1) then you can "break before holder" and
+throw a page and set contents="" and this will get rid of the lowest level
+"Table 1" label.
+<p>With the lowest level label removed, by always using the "holder" variable
+as seen above, then we are left with the two levels. To place our output
+at the highest level then we need to set "proclabel" to the label we want
+to see in the PDF bookmark and use contents="" on the "proc report" call
+line. To place our output at the middle level we set "proclabel" to a space
+(as is done above) and set "contents" to a value in the "proc report" line
+(also as done above).
+<p>That sums it up for the three levels of PDF bookmark. We get rid of
+the lowest level using "holder" and choose the highest or middle level.
+If you want to move a bookmark to have it subordinate to a high level bookmark
+then you should create it as a middle level bookmark. How to move it will
+be described later.
+<p>Before you finish reading this section then I will remind you of how
+to create a top level and middle level PDF bookmark. It is to do with "proclabel"
+and "contents".
+<p>This is for a <b>top level bookmark:</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>ods proclabel "put-something-in-here";</tt>
+<p><tt>proc report nowd data=&amp;memname contents="";</tt>
+<br><tt>&nbsp; define holder / order noprint;</tt>
+<br><tt>&nbsp; break before holder / page contents="";</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>This is for a <b>middle level bookmark</b> (the ones we might want to
+move)<b>:</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>ods proclabel " ";</tt>
+<p><tt>proc report nowd data=&amp;memname contents="put-something-in-here";</tt>
+<br><tt>&nbsp; define holder / order noprint;</tt>
+<br><tt>&nbsp; break before holder / page contents="";</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>For a <b>"starting" middle level bookmark </b>where you have a table
+that will be the first mid-level table of a group of other tables and you
+are going to move other tables to sit alongside with then you have to specify
+both proclabel and contents like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>ods proclabel "put-something-in-here-to-act-as-a-label-for-all-the-reports";</tt>
+<p><tt>proc report nowd data=&amp;memname contents="put-something-in-here";</tt>
+<br><tt>&nbsp; define holder / order noprint;</tt>
+<br><tt>&nbsp; break before holder / page contents="";</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>What you specify in "proclabel" and "contents" will be what is displayed
+in the PDF bookmarks and what will end up in the "label" variable of the
+document "Properties" dataset that will be explained later.
+<p>Back to the holder variable - should you add it to every reporting dataset
+you create when you create it or add it in an extra step before you produce
+a report using a "retain" statement in a data step?
+<p><b>Good question!</b> I don't have a strong recommendation because I
+have only been working on this for a few months, but looking to the future,
+I would recommend putting it in the dataset when you create it. The reason
+why? - well if you consider that I am already writing the report title
+as the dataset label, and since "holder" will never be displayed, then
+its label space could come in useful. If I know that some of the variables
+in the dataset (table) I want to report are "<b>define ---- / order order=internal
+noprint</b>" then I could write them to the "holder" variable label as
+a space-delimited list and pull them out of "<b>dictionary.columns</b>"
+before it prints and loop through the list and do the "define"s. And if
+I were really clever then I could use a "<b>;</b>" after this list as a
+scan character and put something else useful after the "<b>;</b>" like
+to tell it to override variable labels (which "proc report" always gives
+you unless you precede it with "options nolabel;" and reset with "options
+label;" afterwards). Extracting the contents of this label is easy. You
+do it the same way I did to extract the title written away to the dataset
+label that I showed you in the previous section in the last code box at
+the start, creating a table and using %getvalue, except you are extracting
+from "dictionary.columns" instead. With a bit of ingenuity you could fully
+automate report production when you call "proc report".
+<h2>
+ods document name=mydoc(write)</h2>
+If you intend to move your bookmarks then you should not write to a PDF
+using "ods PDF". Instead, you need to write to an "<b>ods document</b>"
+and then later use "<b>proc document</b>" to list out your document contents,
+prepare your "move" and "delete" statements for manipulating the bookmarks,
+then call "proc document" again to apply the bookmark changes and <b>after
+that</b>, while still in the "proc document" call, "<b>replay</b>" to "ods
+PDF". The syntax is simply what you see in this section header except "mydoc"
+will be any name you choose. When you are done writing to the document
+then you close with "ods document close;" as you would expect.
+<p>Assuming you wrote your "move" and "delete" lines of code to a temporary
+file you set up like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>*--- sas code will be written to this temporary file ---;</tt>
+<br><tt>filename movecode TEMP;</tt></td>
+</tr>
+</table>
+
+<p>....... and then use it as output using a "<b>file movecode;</b>" statement
+in your data step and write to it using "put"s like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp; *--- generate the directory move and delete statements ---;</tt>
+<br><tt>&nbsp; data _null_;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; retain target "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; length movestr $ 40;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; set doc_properties;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; file movecode;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if scan(path,2,"\") EQ " " and input(subpad(label,1,4),??comma13.)
+> 0</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; or scan(path,2,"\") EQ " " and index(label,"valid
+combinations")</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; then target=substr(path,2);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; else if scan(path,2,"\") NE " " and label ne
+" "</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; and target ne " " and scan(path,1,"\")
+NE target then do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; movestr="move "||trim(substr(path,2))||"
+to "||trim(target)||";";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put movestr;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; movestr="delete "||scan(path,1,"\")||";";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put movestr;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; KEEP movestr;</tt>
+<br><tt>&nbsp; run;</tt></td>
+</tr>
+</table>
+
+<p>...... then you "include" the code in the "proc document" procedure
+and then "replay" to your final PDF like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>*--- apply the directory move and delete statements then replay
+to a PDF ---;</tt>
+<br><tt>proc document name=exdoc;</tt>
+<br><tt>&nbsp; %INCLUDE movecode;</tt>
+<br><tt>run;</tt>
+<br><tt>&nbsp; ods pdf file=&amp;pdffile style=BarrettsBlue pdftoc=1;</tt>
+<br><tt>&nbsp; replay;</tt>
+<br><tt>run;</tt>
+<br><tt>&nbsp; ods pdf close;</tt>
+<br><tt>quit;</tt></td>
+</tr>
+</table>
+
+<h2>
+Treat "ods document" the same as "ods PDF"</h2>
+Because we are not going to write directly to "ods PDF", but rather to
+"ods document" instead then I want to make it clear that <b>it acts as
+the same thing</b>. You should think of "ods document" as "ods PDF" and
+use whatever formatting styles that you would want to use in a PDF such
+as setting "escapechar" as "^" and using "^S={}" notation to set styles
+in the text. Your final output will have the same look using "ods document"
+replayed to a PDF as if you wrote to a PDF directly.
+<p>Carry on as normal with the sort of stuff you see below:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>ods escapechar="^";</tt>
+<p><tt>footnote1 "^S={color=red}Warning^S={}: Nice red warning.";</tt>
+<p><tt>footnote2 "^S={textdecoration=underline fontstyle=italic}Note^S={}:
+More fancy formatting.";</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<h2>
+Extracting the document contents</h2>
+"Proc document" will list out the contents of your document but of course
+you need it in dataset form. No problem. You can use "ODS TRACE" to tell
+you its ods output location it is writing to. I will save you the bother
+of running "ods trace" and tell you that it writes this information to
+a location name "Properties" so you can route this to a dataset name of
+your choosing like this ( I've included the "ods document close;" at the
+start to remind you that you need to close it after you have finished writing
+to it):
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>ods document close;</tt>
+<p><tt>*--- write the document contents to a dataset ---;</tt>
+<br><tt>ods output Properties=doc_properties;</tt>
+<p><tt>proc document name=mydoc;</tt>
+<br><tt>&nbsp; list / details levels=all;</tt>
+<br><tt>run;</tt>
+<br><tt>quit;</tt>
+<p><tt>ods output close;</tt></td>
+</tr>
+</table>
+
+<h2>
+Coding the "moves" and "deletes"</h2>
+I can't help you to code the "move"s and "delete"s except to say that you
+must "move" before you "delete" a directory. You can see an example above
+that worked for me for one job but it will not be suitable for your circumstances.
+You need to look at your "Properties" dataset that comes out of "proc document"
+and make sense of it and decide what you need to do. The paper you can
+link to above should be a help in understanding what you need to do for
+the "move"s and "delete"s to give you what you want. You will need to play
+around with this using trial and error as I did.
+<p>However, I will try to explain what my code is doing and reference the
+SAS paper so you can get an idea of how you have to code it. I have put
+my same code below.
+<br>&nbsp;
+<p>First I will explain the lines of code before the <b>"if scan"</b> line.
+<p>I use "data _null_" because I am writing to a temporary file with the
+fileref "movecode" and not creating a sas dataset.
+<p>I retain a string "target" which is the node I will be "move"ing my
+reports to.
+<p>The length of "movestr" is set long enough to contain my "move" and
+"delete" instructions I will generate.
+<p>The dataset properties are in the dataset "doc_properties". The variables
+in this dataset you are intested in are named "path" and "label". "Label"
+contains the test you defined to "proclabel" or "contents" when you created
+your output dataset as I showed you above. The "path" variable contains
+contents such as "\Report #1" for a top level report and "\Report #1\Report
+#1" for a mid level report.
+<p>I am witing the "move" and "delete" instructions to a temporary file
+with fileref "movecode" and not a dataset so I can "include" this file
+in a following "proc document" step so I have a line "file movecode;" so
+that my "put"s are written to this file.
+<br>&nbsp;
+<p>OK, that was the easy part. Now we come to the logic of the "move"s
+and "delete"s starting at the <b>"if scan"</b> line.
+<p>I am only going to move a report a mid level report to sit under a top
+level node. A top level node has a path like <b>"\Report #1"</b>. To move
+it you move it to that location minus the starting "\". If what you are
+moving has the path <b>"\Report #2\Report #1"</b> then your "move" statement
+would be <b>"move Report #2\Report #1 to Report #1;"</b>. Note that the
+starting "\" has been removed and it ends with a semicolon. And now you
+have moved the report you no longer want the node that contained the report
+so you would delete it with "<b>delete Report #2;</b>". Again note that
+the starting "\" is removed and it ends with a semicolon.
+<p>The "label" variable contains whatever you specified to "proclabel"
+or "contents". If you followed the recommendation above then for top level
+tables the "label" variable will be populated from "proclabel" for single
+paths such as "\Report #1". For mid-level tables it will be populated from
+"contents" for mid-level paths such as "\Report #2\Report #1". For <b>"starting"
+mid-level tables</b> it will be populated for both the top level path like
+"\Report #13" from "proclabel" and also for the "starting" mid-level path
+"\Report #13\Report #" from "contents" . Note that you would never want
+to move a "starting" mid-level table because it is already in the right
+place. You would only move other tables to sit alongside it.
+<p>Just to take a break at this point - the above is pretty hard to follow
+or remember but will be easier if you list out your properties dataset
+and get a feel for this. Don't worry if it seems difficult at this stage
+as it will all make sense once you have spent some time looking at your
+own properties dataset.
+<p>Now back to the logic of the code. I have <b>two types of "move"s</b>
+to do. I have some top level reports that I want to move mid levels reports
+under and I have some starting mid level reports that I want to move other
+reports alongside.
+<p>I am always moving reports to sit under a top node (the "target") and
+a top node will only have a one-piece path name like "\Report#1" so to
+get this target I check that it is a one piece path using '<b>if scan(path,2,"\")
+EQ " " '.</b>
+<p>I have top level reports that are file summary reports and the first
+4 characters are a number so I use "<b>input(subpad(label,1,4),??comma13.)
+> 0</b><tt>"</tt> to detect this.
+<p>I have top level nodes that have a "starting" mid level report and I
+detect these with <b>' index(label,"valid combinations") '.</b>
+<p>OK, we have identified and set the<b> targets</b> for the moves and
+"retained" that in a variable named "target". Now for the moves themselves.
+<p>What needs moving will have a two piece path name plus it will have
+the variable "label" set to a value (assuming you followed my recommendations
+above). The exception being a "starting" mid level table because it is
+already in the right place. So I need to test that the second part of the
+path name is present using <b>' if scan(path,2,"\") NE " " '</b> and that
+there is something in the label field using <b>' label ne " " '</b> and
+that there is a target to move to using <b>' target ne " " ' </b>and also
+checking for "starting" mid level reports that it is not already at the
+target location using <b>' scan(path,1,"\") NE target '</b>. If a report
+satisfies these conditions then I move it using <b>' "move "||trim(substr(path,2))||"
+to "||trim(target)||";" '</b>and delete the node it was in using <b>' "delete
+"||scan(path,1,"\")||";" '.</b>
+<p>This may seem overwhelming right now but it will eventually make sense
+once you experiment with your own "properties" dataset.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp; *--- generate the directory move and delete statements ---;</tt>
+<br><tt>&nbsp; data _null_;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; retain target "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; length movestr $ 40;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; set doc_properties;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; file movecode;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; if scan(path,2,"\") EQ " " and input(subpad(label,1,4),??comma13.)
+> 0</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; or scan(path,2,"\") EQ " " and index(label,"valid
+combinations")</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; then target=substr(path,2);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; else if scan(path,2,"\") NE " " and label ne
+" "</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp; and target ne " " and scan(path,1,"\")
+NE target then do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; movestr="move "||trim(substr(path,2))||"
+to "||trim(target)||";";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put movestr;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; movestr="delete "||scan(path,1,"\")||";";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put movestr;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; KEEP movestr;</tt>
+<br><tt>&nbsp; run;</tt></td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+What has been described on this page is the very different approach needed
+to produce PDF reports using SAS and how the PDF bookmarks can be assigned
+levels and moved programmatically to produce attractive user-friendly PDF
+reports suitable for the modern age.
+<br>&nbsp;
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<br>&nbsp;
+<br>&nbsp;
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/pdf_bkmrk.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+</html>

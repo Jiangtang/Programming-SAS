@@ -1,0 +1,126 @@
+#!/bin/bash
+#<pre><b>
+# Script     : ddiff
+# Version    : 1.1
+# Author     : Roland Rashleigh-Berry
+# Date       : 24-Nov-2006
+# Purpose    : Production script to compare identically named files with those
+#              in another directory (default is parent directory)
+# SubScripts : none
+# Notes      : Refer to documentation on diff (man diff). Note that this utility
+#              has pattern matching and substitution in it to mask lines that
+#              will always change for each run. You need to supply this to the
+#              -i option. You should supply a regular expression and this would
+#              normally start with the ^ character signifying the beginning of
+#              a line. The rest of the line will be automatically ignored.
+#              You can run this utility in quiet mode using option -q and then
+#              it will only list the files where differences were found.
+#              A check is performed to see if the file in the current directory
+#              matches a file in the target directory and if there is no
+#              matching file name then no comparison is done and no message will
+#              be issued in that case. Use the "compdirs" script to find out
+#              which files are extra or missing in the compared directories.
+#
+# Usage      : ddiff -i "^OUTPUT" *.LST > differ.txt
+#              ddiff -i "^Report No" *.lis > differ.txt
+#              ddiff -i "^Report No" -d /aaa/bbb/ccc *.lis > differ.txt
+#              ddiff -i ^Report -q > changedfiles.txt
+#===============================================================================
+# OPTIONS:
+#-opt- -------------------------------description-------------------------------
+#  i   (value)  Ignore lines matching this regular expression
+#  d   (value)  Other directory (defaults to parent directory ../)
+#  q   (switch) Quiet mode to just list files where differences were found
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   File(s) to compare with those in target directory
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  08sep05         added -d option 
+# rrb  12sep05         added -q option
+# rrb  24nov06         only compare if file name exists in target directory
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+usage () {
+  echo "Usage: ddiff -i <regular expression for lines to ignore> " 1>&2
+  echo "             -d <specific directory if not ../ > -q <quiet mode> *.lis"
+1>&2
+  exit 1
+}
+
+# Default values for quiet mode, ignore lines and other directory
+switchq=0
+valuei=
+valued='../'
+
+
+# "case" statement for action to take on selected options
+while getopts "i:d:q" param ; do
+  case $param in
+   "?") # bad option supplied
+        usage
+        ;;
+   "i") # (value) Ignore these lines
+        valuei=$OPTARG
+        ;;
+   "d") # (value) Other directory
+        valued=$OPTARG
+        ;;
+   "q") # (value) Other directory
+        switchq=1
+        ;;
+  esac
+done
+
+
+# make sure directory ends with a slash
+valued=$(echo "$valued" | sed 's%[^/]$%&/%')
+
+# shift to bring first parameter to position 1
+shift $(($OPTIND - 1))
+
+
+if [ $# -lt 1 ] ; then
+  echo "Error: (ddiff) No files to compare supplied as a parameter" 1>&2
+  usage
+fi
+
+
+for file in "$@" ; do
+  if [ -e ${valued}$file ] ; then
+    if [ $switchq -ne 1 ] ; then
+    echo ; echo ; echo
+    echo
+'============================================================================================='
+    echo " < = $file   > = ${valued}$file"
+    echo
+'============================================================================================='
+    fi
+    if [ -n "$valuei" ] ; then
+      sed "s/${valuei}.*//"          $file > ~/file1_$$.tmp
+      sed "s/${valuei}.*//" ${valued}$file > ~/file2_$$.tmp
+    else
+      cp          $file ~/file1_$$.tmp
+      cp ${valued}$file ~/file2_$$.tmp
+    fi
+    if [ $switchq -ne 1 ] ; then
+      diff -b ~/file1_$$.tmp ~/file2_$$.tmp
+    else
+      # quiet mode so route standard output to /dev/null
+      # and report file name only if differences found
+      diff -b ~/file1_$$.tmp ~/file2_$$.tmp 1> /dev/null
+      rc=$?
+      if [ $rc -eq 1 ] ; then
+        echo "$file"
+      fi
+    fi
+    rm -f ~/file1_$$.tmp ~/file2_$$.tmp
+  fi
+done
+
+rm -f ~/file1_$$.tmp ~/file2_$$.tmp

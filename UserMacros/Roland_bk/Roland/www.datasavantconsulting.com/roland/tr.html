@@ -1,0 +1,119 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/tr.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:11 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="Using tr to delete Windows carriage returns">
+   <meta name="KeyWords" content="Using tr to delete Windows carriage returns">
+   <title>Using tr to delete Windows carriage returns</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Using tr to delete Windows carriage returns</h1></center>
+<b>[last updated - 01 April 2004]</b>
+<p>This is a very important topic for Clinical SAS programmers on a Unix
+platform. The sad thing is that most Clinical SAS programmers are not aware
+of the problem in this area - much less how to solve it.
+<p>A recent development is CROs sending statistical reporting teams information
+in exported Excel spreadsheets. For a start-off, they shouldn't be doing
+this. All data that a reporting team uses should come from their own Data
+Management department. These CROs should be sending this information to
+you <b><i>via</i></b> your Data Management department since that department
+has the facilities for storing this data for the required length of time
+and know the regulations surrounding the handling of data. So my first
+recommendation is <b>do not accept any Clinical trials data from any other
+source other than your own Data Management department</b>. But the problem
+is here and now and things are going wrong. I will tell you what is going
+wrong and how to solve it. But in the short-term future you should change
+policy so that you only accept data via your own Data Management department.
+<p>The problem is that some CROs do not have a SAS licence. And who can
+blame them - it is that expensive? So they export data out of their database
+to an Excel spreadsheet and send it off as an exported Excel spreadsheet.
+It will be a file with a <b>.csv</b> extension. But this is a <b>Windows
+file</b>. It is not a Unix file. Both Windows and Unix use ascii characters
+but the files are not the same. Windows is based on an old operating system
+called DOS (Disk Operating System). If you had a file then you would often
+be printing off copies. The dot matrix printers in those days were not
+very sophisticated. So at the end of each line in the text file would be
+two carriage control characters to help the dot matrix printer work properly.
+The first character would be a carriage return character so that the print
+head would return to the start of the line. The next carriage control character
+was a line feed so the the paper roller would advance the paper by one
+line. So at the end of every line in a DOS flat file there would be a carriage
+return character followed by a line feed character. And this is true for
+all Windows files today, since Windows runs DOS underneath it. But for
+Unix, the carriage return character is not used. There is just a line feed
+character at the end of the line. The result is that when you read a Windows
+file into Unix you are left with carriage return characters at the end
+of the lines. And when you read these <b>.csv</b> files into SAS it will
+honor the carriage return character as being a real character and will
+add it to the end of a variable string, for example, if that occurs at
+the end of a line. <b>YOU CAN'T SEE THESE CARRIAGE RETURN CHARACTERS. THEY
+ARE INVISIBLE</b>. But they might be there at the end of a SAS text variable
+without your being aware of it. I have seen the confusion it can cause
+when these carriage return characters end up in SAS datasets. This is something
+you should take great pains to avoid.
+<p>What you have to do is to delete these carriage returns from the <b>.csv</b>
+file. They all have them. If you display the file then you probably will
+not see them. But you can display then using <b>cat</b> and set an option
+<b>-v</b>
+like this:
+<p><b><tt>cat -v myfile.cs</tt></b>v
+<p>...and then you will see them at the end of the line as <b>^M</b> (Cntl-M)
+<p>It is <b>important</b> that you remove these characters before you read
+these <b>.csv</b> files into SAS. You can use the <b>tr</b> utility to
+do this. First convince yourself they are there by using <b>cat -v</b>.
+Then delete them using <b>tr</b> like this, but this will only work in
+the following form if "\r" is recognised as a carriage return character.
+Some versions of tr and sed do not. So before you try this out you should
+set up a test file with a few "r"s in it in obvious places to make sure
+the following command is not just deleting "r"s.
+<p><b><tt>tr -d '\r' &lt; infile.csv > outfile.csv</tt></b>
+<p>If the above command deleted "r"s instead of carriage returns then instead
+of using '\r' use 'Cntl-v-m'. The Cntl-v works on a few shells to let it
+know that you are going to enter a special character and the "m" you follow
+it with indicates a carriage return. "m" as in the "^M" you see at the
+end of the lines when you use cat -v.
+<p>There are other ways of removing these carriage returns. You can use
+sed to do it but again you have to check is it accepts "\r" as a carriage
+return by experimenting on a very small test file with a few obvious "r"s
+in it.
+<p><b><tt>sed 's/\r$//' infile.csv > outfile.csv</tt></b>
+<p>Then when you have done that, run <b>cat -v</b> on the output file to
+convince yourself they are gone. Note that the input file name and output
+file name have to be different. You can not make the same file both input
+and output. Do this to every <b>.csv</b> file you get and make sure these
+carriage return characters have been removed before reading them into SAS.
+<p>Also note that if a programmer works on their PC at home and uploads
+the programs to Unix when they return to work, then the same problem occurs.
+And this can cause problems when you edit the programs because the editors
+get confused by these characters and display things that are not there
+or don't display things that are there. You end up editing lines to fix
+these problems but you are actually making matters worse. You have to look
+out for this.
+<p>On a final note, you might have to convert a Unix file to a DOS/Windows
+file sometimes. You can do it like this:
+<p><b><tt>awk '{ print $0 "\r"}' unix.txt > dos.txt</tt></b>
+<p>A caveat for the above. Although it should work, I am running Cygwin
+on my PC working under Windows and if I create a file with carriage returns
+in the right place (I assume) as above then Notepad can get very confused.
+If you edit a file with Notepad then it will accept whatever edits you
+have done but when it saves it, it will lose the carriage returns originally
+added using awk. I do not know why this is. I never edit Unix files using
+Notepad, I use Wordpad, which works very well.
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/tr.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:11 GMT -->
+</html>

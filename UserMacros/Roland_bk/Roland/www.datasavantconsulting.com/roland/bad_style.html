@@ -1,0 +1,302 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/bad_style.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <title>Bad SAS Coding Style</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Bad SAS Coding Style</h1></center>
+<b>Author: Roland Rashleigh-Berry</b>
+<br><b>Updated: 27 Apr 2012</b>
+<h2>
+Introduction</h2>
+When programmers are learning SAS and aspire to writing "<b>good sas code</b>"
+they are often guided by the standards they see used by more experienced
+SAS programmers or the standards they see in use at former sites they have
+worked at. But there is a pitfall in that regard. They have, perhaps, assumed
+that these more experienced programmers have picked up this style, either
+through official training or indirectly through official training. They
+are assuming they are picking up some sort of generally accepted style
+standard and therefore they copy this style and apply it.
+<p>The fact is that there is no such universal standard. The styles they
+see have mostly been blindly copied. It is a case of "<b>the blind leading
+the blind</b>".
+<p><b>SAS coding style has to be thought out from basics</b>. But what
+are "the basics"?
+<h2>
+Some Basics of Good Style</h2>
+What is "good style"? Is it "the way something looks"? Is it "good consistency"?
+Is it "regular indentation of code"?
+<p>What is the <b>point</b> of "good style"?
+<p>If "good style" has a point then it has to have a purpose. That "purpose"
+must be to provide something useful. When we write computer programs then
+there are a few desirable things we want from them. <b>"Good style" is
+a style of coding that will ensure we have some desirable attributes.</b>
+We want our code to be <b>an asset rather than being a liability</b> so
+we need to adopt approaches to give us this.
+<p>When I write SAS code then the guiding idea in my mind is that <b>a
+14 year old should be able to read it, understand it and be able to amend
+it if need be.</b> I can't hope to achieve that for the more complicated
+macros I write but at least I hope the 14 year old would be able to understand
+what the macro does overall and what parts of the code do what.
+<p>This is not a comprehensive list but rather a few basic things we want
+from our SAS source code.
+<ul>
+<li>
+<b>It must work correctly</b></li>
+
+<li>
+<b>It should be efficient</b></li>
+
+<li>
+<b>It should be obvious what the purpose of the code or macro is both at
+a glance plus on a more detailed basis</b></li>
+
+<li>
+<b>The code and logic flowing through it should be easy to follow - like
+reading a story or a book. A 14 year old child can read a story or a book
+so likewise, they should be able to read and understand the code</b></li>
+
+<li>
+<b>The logical demarcations in the code should be clear and obvious like
+chapters in a book</b></li>
+
+<li>
+<b>The code must be maintainable, hopefully by a programmer of much lesser
+experience than the original author</b></li>
+
+<li>
+<b>If the code detects that something is wrong and the caller maybe does
+not know what they are doing in calling the code then it should help the
+caller by providing useful information</b></li>
+</ul>
+The above is vaguely, overall what we want. The list is not exhaustive.
+<p>There are no real set standards. All we want from "good style" is to
+give us the above few positives.
+<p>If you come across code that is maybe doing something complex but it
+has all the highlighted points above such that the code is easy to understand
+and easy to maintain, is correct, efficient etc. then <b>that is good style</b>
+notwithstanding your own company standards. Your company standards are
+aimed at achieving these positive attributes. If a piece of code has all
+those attributes then the programmer has written a valuable piece of code
+in a good style and has achieved the goal your company standards try to
+help you to achieve.
+<h2>
+Bad Style</h2>
+If you agree or just "go along" with the above loose definition of "good
+style" then "<b>bad style</b>", by definition, is the antithesis. It is
+those techniques that, through their use, <b>deprive us</b> of the above
+desirable goals.
+<p>But why and how can "bad style" come about in an organization and find
+itself an integral part of the functioning of that organization? Well,
+that is best answered by the "blind leading the blind" explanation already
+given.
+<p>In listing the following "bad styles" then I guess my opinion must enter
+into it. I have my "pet hates". I have been writing SAS code for a long
+time and I have my preferences - but the basis of my preferences are the
+basics of good style as written above as filtered through my experiences.
+Your own view will be different to some degree. So if you accept the basics
+of good style to whatever degree you do then do not let me be the judge
+but rather make the judgement yourself on whether a particular style is
+a "<b>bad</b>" style or not. For the listed bad styles below I will refer
+back to the basic reasoning above.
+<h2>
+Some Bad Styles Listed</h2>
+
+<ul>
+<li>
+<b>Code clutter:</b> The code should be easy to follow. If the code is
+cluttered with processes that are not part of the main logic flow of the
+program then it can be hard to follow. Verbose error checking or parameter
+checking may need to be done but it should be done neatly and discreetly
+so as not to detract from the main logic of the program or macro. Error
+checking distraction can be worsened by accompanying error messages written
+to the log with lines across the page before and after. These lines do
+not add any clarity to an error or warning message and furthermore clutter
+the source code with distracting lines giving the mental effect of the
+reader thinking the lines are separating different sections or logical
+processes in the code. Think of trying to follow the program logic like
+reading a book. You would be put off reading a book if there were distracting
+deviations and interruptions in the pages of the book. <b>Obtrusive and
+overly verbose error and warning coding is bad style.</b></li>
+
+<li>
+<b>Mixed case:</b> Which is easier to read - "<b><tt><font color="#663300">once
+upon a time there were three little pigs and the time came for them to
+leave home and seek their fortunes</font></tt></b>" ....or ......</li>
+
+<br>"<b><tt><font color="#663300">once upon a TIME there WERE three little
+PIGS and the TIME CAME for THEM to LEAVE HOME and SEEK their FORTUNES</font></tt></b>"?
+In the second case I have been very helpful to the reader by capitalizing
+the nouns and verbs so it is clear where they are so you can distinguish
+them from the adjectives, adverbs and pronouns. The mixed case version
+is harder to read and follow, obviously. So if our code should be easy
+to follow then we should be using lower case consistently. I guess programmers
+have picked up that style from publications which have segments of source
+code in it and this mixed case looks OK in that case because we need to
+make the mental change from reading the descriptive text to reading a segment
+of code. The change in style is useful as it gives us a mental jolt. This
+style is useful for publications but it should not be the governing example
+for the way we write our ordinary SAS code. You would not want to read
+the story of "the three little pigs" if it were written in mixed case so
+don't use it in your code. <b>Mixed case coding is bad style.</b>
+<li>
+<b>Clever code:</b> I have had to maintain code written by clever SAS programmers
+and they have coded in a way that proves they are clever and know their
+stuff. They aim to bamboozle the programmer reading the code and to impress
+upon them their status. They could have written the code more simply, of
+course, but instead they chose not to. There is no chance of a 14 year
+old being able to read and understand it. By using "clever coding" they
+have made the code harder to follow, therefore, <b>clever coding is bad
+style.</b></li>
+
+<li>
+<b>Fragmented logic:</b> Macros sometimes get a bad name as being hard
+to follow the logic of. This is because programmers break up their overall
+logic into manageable sections and call things in sequence from different
+locations. If they do this then there is no one "top program" or "top macro"
+that they can read and understand the logic of the full process. If the
+logic of a process is hugely complicated and can not exist in one piece
+then that is OK but there should be an overall top program or macro that
+is easy to follow that is on control and makes the overall processing clear.
+Keep the overall logic clearly et out and documented in a controlling code
+member. <b>Fragmented logic is bad style</b>.</li>
+
+<li>
+<b>Incomplete problem diagnosis:</b> If you have a macro and a programmer
+calls it and they have mistakes in one of the macro parameter settings
+then don't just assume this is a little glitch that a single error or warning
+message will sort out. The chances are that the calling programmer does
+not have a clue what they are doing. Assume this worst case and check every
+parameter setting you can and put out diagnostics so that when they make
+the call the second time it has got a chance of working. Through the code
+not being helpful in this regard then<b> incomplete problem diagnosis is
+bad style.</b></li>
+
+<li>
+<b>Monolithic coding: </b>Some programs are long and without sections and
+yet there are logical section in all long programs. It would be hard to
+read a book that did not have chapters and chapter headers. You can do
+the equivalent in your code by having clear section headers with a short
+text like a book chapter so you should do that to help orientate the reader.
+<b>Monolithic
+coding is bad style</b></li>
+
+<li>
+<b>Poor documentation: </b>If you buy some electrical equipment then you
+expect to get a manual with it to explain how to use it and what the functions
+are. You do not want this manual to be too short nor too long. Similarly,
+your code needs enough description to say what it is doing without being
+verbose. If it lacks that then people can not make confident use of it.
+A person might be able to write a thousand lines of brilliant code but
+the difference between it being a liability to the organisation or an asset
+might lie in a mere 50 lines of explanation that is either present or not.
+<b>Poor
+documentation is bad style</b></li>
+
+<li>
+<b>100% SQL: </b>SQL definitely has its place. I use it where there is
+an advantage. Beware of complex joins. It might work perfectly well on
+small volumes of data but there is no guarantee it will be efficient for
+large volumes of data. Some benchmarking might be required and keep in
+mind that the SAS internals of SQL are subject to change. For handling
+huge volumes of data like for LABs and AEs then,&nbsp; from experience,
+a join using SQL is more efficient than using sorts and data step merges
+but there is a limit to which I will trust SQL for efficiency purposes.
+For complex merging of data then you might need to run some diagnostics
+on what exactly is going into the joins or merges and what is being rejected
+and data steps are more flexible in this regard for producing diagnostics,
+compared to complex SQL joins. <b>Ten data steps with sorts can be better
+than one complex SQL statement</b> in these situations. You want your code
+to be an <b>asset </b>rather than a <b>liability</b> so you should not
+use SQL 100%, just for its own sake, because there will be situations where
+using data steps gives you better diagnostics to ensure your processing
+is correct. For sure, use SQL in the right situations, but <b>100% SQL
+for its own sake is bad style</b></li>
+
+<li>
+<b>Inefficient code: </b>Sometimes you have to balance efficiency against
+understandibility and maintainability. I have a lot of utility macros that
+extract information about datasets and variables that open and close the
+dataset each time. This is inefficient but it is also easy to use and convenient
+so the one thing balances the other. But I am careful when I am handling
+large volumes of data to make sure the method used is efficient. Other
+people don't seem to care. I have come across LAB macros that take 100x
+or 1000x as long to run as a macro I can write to do the same thing and
+yet the client prefers to use the much slower macro, to slow up their study
+reporting and pay for the inconvenience. That does not make sense to me.
+It could have been done efficiently if somebody had stood their ground
+and insisted. <b>Inefficient coding is bad style</b></li>
+
+<li>
+<b>Overwriting work datasets: </b>By "overwriting" work datasets I mean
+reusing the same work dataset name so that it gets overwritten. In some
+circumstances this is a good idea. For example, your LAB work datasets
+might be huge and you might have space problems so you might choose to
+overwrite to save space. Sometimes, in production macros, it does not matter
+as these will not be frequently amended and the person doing it might know
+that this is done inside the macro and will just add numbers onto the name
+until the macro is debugged and change it back when the changes are made,
+I do this myself. But for any code likely to be worked on then it is best
+to keep all the work datasets for debugging purposes and if you have a
+named dataset that gets updated then name it something like dset1, dset2,
+dset3 etc.. Usually, <b>overwriting work datasets is bad style</b></li>
+
+<li>
+<b>More than one sas statement on a line: </b>It is usually not a good
+idea to put two sas statements on the same line. It depends on the circumstances.
+I do this myself when I am initialising variables using BY processing when
+a FIRST.var situation requires that a number of variables be initialised.
+It makes the code much neater and easier to read if I can initialise all
+the variables in just a few lines. But in most circumstances, <b>more than
+one sas statement on a line is bad style</b></li>
+
+<li>
+<b>Confusing dataset names: </b>Your dataset name should be an explanation
+of what it contains. I have seen meaningless dataset names used, obscure
+ones and names that are downright misleading. For somebody maintaining
+code then this can cause them 5 days of painstaking work analysing what
+the code is doing and perhaps forcing them to rename datasets just to make
+sense of the code where if the original author had taken more care then
+the maintenance programmer could have understood the code in 5 minutes.
+Using <b>confusing dataset names is bad style</b></li>
+
+<li>
+<b>Messed-up headers: </b>I am talking about that block of comments right
+at the top of your code that says who wrote it, what it does, who maintained
+it, etc.. If this is confusing to look at or contains inaccurate or out-of-date
+information and is perhaps a dishevelled mess then this can be very off-putting
+to a maintenance programmer approaching the code for the first time. <b>Messed-up
+headers is bad style</b></li>
+</ul>
+
+<h2>
+Conclusion</h2>
+You have seen an argument that "bad style" is the antithesis of what we
+might consider to be a loose definition of desirable things we want from
+our source code.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<br>&nbsp;
+<br>&nbsp;
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/bad_style.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+</html>

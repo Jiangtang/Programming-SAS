@@ -1,0 +1,74 @@
+#!/bin/bash
+#<pre><b>
+# Script     : printpdfbookmarks
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 22-Aug-2005
+# Purpose    : To list all the PDF bookmarks in a pdf file
+# SubScripts : none
+# Notes      : Output goes to standard output. Redirect to keep the list.
+# Usage      : printpdfbookmarks BIG2.pdf
+#              printpdfbookmarks BIG2.pdf > bookmarks2.txt
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   pdf file name
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# One only
+if [ $# -ne 1 ] ; then
+  echo "Usage: printpdfbookmarks file.pdf" 1>&2
+  exit 1
+fi
+
+gawk '
+
+##### function to convert an octal string to a number #####
+function oct2dec(str,        ret, n, i, k, c)
+{
+      n = length(str)
+        ret = 0
+        for (i = 2; i <= n; i++) {
+            c = substr(str, i, 1)
+            if ((k = index("01234567", c)) > 0)
+                k-- # adjust for 1-basing in awk
+
+            ret = ret * 8 + k
+        }
+    return ret
+}
+
+
+##### function to convert all octal strings to character #####
+function convoctal(str,        newstr,num)
+{
+  if (match(str,/\\[0-7][0-7][0-7]/))
+    {
+     newstr=str
+     while (match(newstr,/\\[0-7][0-7][0-7]/))
+       {
+        num=oct2dec(substr(newstr,RSTART,RLENGTH))
+        newstr=substr(newstr,0,RSTART-1) sprintf("%c",num)
+substr(newstr,RSTART+RLENGTH)
+       }
+     return newstr
+    }
+  else
+    return str
+}
+
+
+
+/^<< \/Title/  {
+str=substr($0,11,length($0)-11)
+gsub("\\\\\\(","(",str)
+gsub("\\\\\\)",")",str)
+print convoctal(str)
+}' "$1"

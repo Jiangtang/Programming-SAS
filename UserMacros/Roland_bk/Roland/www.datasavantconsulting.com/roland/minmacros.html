@@ -1,0 +1,295 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/minmacros.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:02:52 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="Copying a minimum set of macros to a library">
+   <meta name="KeyWords" content="Copying a minimum set of macros to a library">
+   <title>Copying a minimum set of macros to a library</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Copying a minimum set of macros to a library</h1></center>
+<b>[Last updated - 22 Aug 2008]</b>
+<h2>
+Introduction</h2>
+Sometimes you will not want to copy all of my macros and place them in
+a library where other people can use them. Instead you may want a minimum
+set of these macros such that your solution, which uses my macros, uses
+only those macros that will be needed in the process. This page tells you
+how to do this.
+<h2>
+Windows and Cygwin</h2>
+The system commands and scripting capabilities of Windows PCs are almost
+non-existent even though the operating system does much the same as most
+other operating systems. On Linux, the commands and scripting capabilities
+are excellent and yet Linux does the same sort of thing that Windows does.
+In an ideal world, you would be able to use Linux commands and scripting
+capabilities on Windows -- and indeed that is possible using a Linux emulator
+such as Cygwin that runs on Windows PCs and emulates the Linux environment.
+The description I will give you tells you how to copy a minimum set of
+macros using Linux commands. If you have a Windows PC then you will need
+to install the Cygwin Linux emulator on your PC. How to do this is explained
+elsewhere on this web site. If you don't want to install Cygwin then you
+can still do things manually and this will be explained. Installing Cygwin
+on your PC should never bother you. Your PC does not turn into a Linux
+box if you install Cygwin on it. It will still use Windows services to
+do everything. All Cygwin does is emulate Linux using Windows services.
+Cygwin is a <b>Linux emulator</b>. It is not Linux itself. If your platform
+is Linux or Unix then you have no problem. If it is Windows then somebody
+ought to give serious thought to installing Cygwin on it so people have
+a good set of tools to use. If you don't have Cygwin on your PC then I
+can't give you much help except to let you know how to identify the macros
+you need to copy so that you can do this manually. They are identified
+in your sas log by lines that start with "MACRO CALLED:" as will be explained
+in the next section.
+<h2>
+Copying a list of all the needed macros</h2>
+All my macros put out a message saying what macro has been called. So long
+as you don't have the MRECALL option in effect then this message will be
+put out once for each macro and only once. If you run your code in batch
+then these messages will get written to the log. You then have exactly
+what you want in the log -- just those macros that got called and therefore
+the ones you need to copy. This is what one of these "<b>MACRO CALLED:</b>"
+messages will look like in the log.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>MACRO CALLED: readpipe v1.0</tt></td>
+</tr>
+</table>
+
+<p>I have very carefully made this message consistent for all my macros
+so it is easy to strip out these messages or find them using an editor.
+I have a sas log on my PC from a program I wrote called <b>t_demog</b>.
+This is what I get when I "<b>grep</b>" for lines beginning with "MACRO
+CALLED:".
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>$ grep ^"MACRO CALLED:" t_demog.log</tt>
+<br><tt>MACRO CALLED: readpipe v1.0</tt>
+<br><tt>MACRO CALLED: titles v1.2</tt>
+<br><tt>MACRO CALLED: jobinfo v2.0</tt>
+<br><tt>MACRO CALLED: protinfo v1.3</tt>
+<br><tt>MACRO CALLED: proginfo v1.2</tt>
+<br><tt>MACRO CALLED: attrn v1.0</tt>
+<br><tt>MACRO CALLED: layout2lsps v1.0</tt>
+<br><tt>MACRO CALLED: verifyb v1.0</tt>
+<br><tt>MACRO CALLED: xytitles v1.2</tt>
+<br><tt>MACRO CALLED: casestrmac v1.0</tt>
+<br><tt>MACRO CALLED: maxtitle v1.0</tt>
+<br><tt>MACRO CALLED: titlegen v1.0</tt>
+<br><tt>MACRO CALLED: popfmt v2.1</tt>
+<br><tt>MACRO CALLED: varfmt v1.0</tt>
+<br><tt>MACRO CALLED: attrv v1.0</tt>
+<br><tt>MACRO CALLED: vartype v1.0</tt>
+<br><tt>MACRO CALLED: openrep v2.0</tt>
+<br><tt>MACRO CALLED: dequote v1.0</tt>
+<br><tt>MACRO CALLED: endwith v1.0</tt>
+<br><tt>MACRO CALLED: unistats v4.7</tt>
+<br><tt>MACRO CALLED: noquotes v1.0</tt>
+<br><tt>MACRO CALLED: words v1.0</tt>
+<br><tt>MACRO CALLED: quotecnt v1.0</tt>
+<br><tt>MACRO CALLED: unimap v1.1</tt>
+<br><tt>MACRO CALLED: remove v1.0</tt>
+<br><tt>MACRO CALLED: windex v1.1</tt>
+<br><tt>MACRO CALLED: varnum v1.0</tt>
+<br><tt>MACRO CALLED: quotelst v1.0</tt>
+<br><tt>MACRO CALLED: varlen v1.0</tt>
+<br><tt>MACRO CALLED: fmtord v1.0</tt>
+<br><tt>MACRO CALLED: fmtpath v1.0</tt>
+<br><tt>MACRO CALLED: unipvals v1.2</tt>
+<br><tt>MACRO CALLED: unicatrep v3.3</tt>
+<br><tt>MACRO CALLED: closerep v4.3</tt>
+<br><tt>MACRO CALLED: pagexofy v5.5</tt></td>
+</tr>
+</table>
+
+<p>What I want to do with the above list is strip out the third word, which
+is the macro and therefore the sas program name, and give it the extension
+"<b>.sas</b>". "grep" isn't so good for this task. "<b>gaw</b>k" is better.
+Here goes.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>$ gawk '/^MACRO CALLED:/ {print $3 ".sas"}' t_demog.log</tt>
+<br><tt>readpipe.sas</tt>
+<br><tt>titles.sas</tt>
+<br><tt>jobinfo.sas</tt>
+<br><tt>protinfo.sas</tt>
+<br><tt>proginfo.sas</tt>
+<br><tt>attrn.sas</tt>
+<br><tt>layout2lsps.sas</tt>
+<br><tt>verifyb.sas</tt>
+<br><tt>xytitles.sas</tt>
+<br><tt>casestrmac.sas</tt>
+<br><tt>maxtitle.sas</tt>
+<br><tt>titlegen.sas</tt>
+<br><tt>popfmt.sas</tt>
+<br><tt>varfmt.sas</tt>
+<br><tt>attrv.sas</tt>
+<br><tt>vartype.sas</tt>
+<br><tt>openrep.sas</tt>
+<br><tt>dequote.sas</tt>
+<br><tt>endwith.sas</tt>
+<br><tt>unistats.sas</tt>
+<br><tt>noquotes.sas</tt>
+<br><tt>words.sas</tt>
+<br><tt>quotecnt.sas</tt>
+<br><tt>unimap.sas</tt>
+<br><tt>remove.sas</tt>
+<br><tt>windex.sas</tt>
+<br><tt>varnum.sas</tt>
+<br><tt>quotelst.sas</tt>
+<br><tt>varlen.sas</tt>
+<br><tt>fmtord.sas</tt>
+<br><tt>fmtpath.sas</tt>
+<br><tt>unipvals.sas</tt>
+<br><tt>unicatrep.sas</tt>
+<br><tt>closerep.sas</tt>
+<br><tt>pagexofy.sas</tt></td>
+</tr>
+</table>
+
+<p>The above list is the macros I want to copy. I want to copy them from
+the full library of my sas macros to a new library that will end up containing
+just the list of macros shown above. I need to run the above "gawk" command
+from the directory my full set of sas macros is in so since t_demog.log
+is not in my sas macro library, I will have to refer to it using its full
+path name. Below you will see me move to my macros directory and then run
+the command above using the t_demog.log full path name.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>$ cd $macros</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/spectre/macros</tt>
+<br><tt>$ gawk '/^MACRO CALLED:/ {print $3 ".sas"}' /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/t_demog.log</tt>
+<br><tt>readpipe.sas</tt>
+<br><tt>titles.sas</tt>
+<br><tt>jobinfo.sas</tt>
+<br><tt>protinfo.sas</tt>
+<br><tt>proginfo.sas</tt>
+<br><tt>attrn.sas</tt>
+<br><tt>layout2lsps.sas</tt>
+<br><tt>verifyb.sas</tt>
+<br><tt>xytitles.sas</tt>
+<br><tt>casestrmac.sas</tt>
+<br><tt>maxtitle.sas</tt>
+<br><tt>titlegen.sas</tt>
+<br><tt>popfmt.sas</tt>
+<br><tt>varfmt.sas</tt>
+<br><tt>attrv.sas</tt>
+<br><tt>vartype.sas</tt>
+<br><tt>openrep.sas</tt>
+<br><tt>dequote.sas</tt>
+<br><tt>endwith.sas</tt>
+<br><tt>unistats.sas</tt>
+<br><tt>noquotes.sas</tt>
+<br><tt>words.sas</tt>
+<br><tt>quotecnt.sas</tt>
+<br><tt>unimap.sas</tt>
+<br><tt>remove.sas</tt>
+<br><tt>windex.sas</tt>
+<br><tt>varnum.sas</tt>
+<br><tt>quotelst.sas</tt>
+<br><tt>varlen.sas</tt>
+<br><tt>fmtord.sas</tt>
+<br><tt>fmtpath.sas</tt>
+<br><tt>unipvals.sas</tt>
+<br><tt>unicatrep.sas</tt>
+<br><tt>closerep.sas</tt>
+<br><tt>pagexofy.sas</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/spectre/macros</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>Now I will set up a new macro library called <b>spectre/minmacros</b>.
+I will use the "<b>echo</b>" command afterwards to make sure it was created.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/spectre/macros</tt>
+<br><tt>$ mkdir ../minmacros</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/spectre/macros</tt>
+<br><tt>$ echo ../*/</tt>
+<br><tt>../2008-07-06/ ../macros/ ../minmacros/ ../scripts/ ../work/</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/spectre/macros</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<p>You can see that the <b>minmacros</b> directory is there when I used
+the "echo" command.
+<p>Next I want to run the command on the full path name of the log and
+copy all those sas macros to the minmacros library. This is how I do it
+using the "<b>cp</b>" command with the "<b>-p</b>" ("preserve") option.
+I will put the gawk expression in brackets like this "$( )" (using "$(
+)" is known as "substitution") and this will make the list of sas macros
+available to the "cp" command. After I have done the copy, I will list
+out the contents of the minmacros directory and you will see that all the
+macros have been copied into there.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>Roland@DELL1 /cygdrive/c/spectre/macros</tt>
+<br><tt>$ cp -p $(gawk '/^MACRO CALLED:/ {print $3 ".sas"}' /cygdrive/c/pharma/xenuyama/tokyo/DRUG001/DRUG001C3001/24weeks/progs/t_demog.log)
+../minmacros</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/spectre/macros</tt>
+<br><tt>$ ls ../minmacros</tt>
+<br><tt>attrn.sas&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fmtpath.sas&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+popfmt.sas&nbsp;&nbsp;&nbsp; titlegen.sas&nbsp;&nbsp; varlen.sas</tt>
+<br><tt>attrv.sas&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; jobinfo.sas&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+proginfo.sas&nbsp; titles.sas&nbsp;&nbsp;&nbsp;&nbsp; varnum.sas</tt>
+<br><tt>casestrmac.sas&nbsp; layout2lsps.sas&nbsp; protinfo.sas&nbsp; unicatrep.sas&nbsp;
+vartype.sas</tt>
+<br><tt>closerep.sas&nbsp;&nbsp;&nbsp; maxtitle.sas&nbsp;&nbsp;&nbsp;&nbsp;
+quotecnt.sas&nbsp; unimap.sas&nbsp;&nbsp;&nbsp;&nbsp; verifyb.sas</tt>
+<br><tt>dequote.sas&nbsp;&nbsp;&nbsp;&nbsp; noquotes.sas&nbsp;&nbsp;&nbsp;&nbsp;
+quotelst.sas&nbsp; unipvals.sas&nbsp;&nbsp; windex.sas</tt>
+<br><tt>endwith.sas&nbsp;&nbsp;&nbsp;&nbsp; openrep.sas&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+readpipe.sas&nbsp; unistats.sas&nbsp;&nbsp; words.sas</tt>
+<br><tt>fmtord.sas&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pagexofy.sas&nbsp;&nbsp;&nbsp;&nbsp;
+remove.sas&nbsp;&nbsp;&nbsp; varfmt.sas&nbsp;&nbsp;&nbsp;&nbsp; xytitles.sas</tt>
+<p><tt>Roland@DELL1 /cygdrive/c/spectre/macros</tt>
+<br><tt>$&nbsp;</tt></td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+You have been shown how to copy just the macros you need, based on the
+contents of a sas log, from the main macro library to a new one that will
+only contain the macros that you need. If you do not have Linux or a Linux
+emulator then how to identify which macros to copy has been explained so
+that you can do the copy manually.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<center>
+<p>Go back to the home <a href="index-2.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/minmacros.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:02:52 GMT -->
+</html>

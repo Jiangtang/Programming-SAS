@@ -1,0 +1,105 @@
+#!/bin/bash
+#<pre><b>
+# Script     : userfmts_win
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 20-Feb-2007
+# Purpose    : To list variables with a user format assigned (uses SAS)
+# SubScripts : none
+# Notes      : WINDOWS VERSION
+#              Must be run with data directory as current directory. Dataset
+#              file extensions will be ignored.
+# Usage      : userfmts_win adv
+#              userfmts_win adv acct
+#              userfmts_win    # all datasets are listed
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   one or more datasets (optional - will work on whole library by default)
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  20Feb07         Remove allocation of Spectre macros
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+if [ $# -lt 1 ]
+then
+
+###### no datasets specified so do for the whole library #####
+
+# Write SAS code to a temporary file
+cat > $HOME/userfmts_$$.sas << -----FINISH-----
+filename _outfile "$HOMEW\userfmts_$$.tmp";
+options validvarname=any nofmterr;
+libname here './' access=readonly;
+proc contents noprint data=here._all_ mtype=data out=contents;
+proc sort data=contents;
+  by memname varnum;
+data contents;
+  set contents;
+  if format in (" " %sysfmtlist) then delete;
+data _null_;
+  file _outfile notitles noprint;
+  set contents;
+  put @1 memname @10 name @21 format @30;
+run;
+-----FINISH-----
+
+# run the code
+sas -nosplash -nologo -icon -log "$HOMEW" -sysin "$HOMEW\userfmts_$$.sas"
+
+# if output file exists then cat it and delete it
+if [ -f $HOME/userfmts_$$.tmp ] ; then
+  cat $HOME/userfmts_$$.tmp 
+  rm -f $HOME/userfmts_$$.tmp 
+fi
+
+# tidy up
+rm -f $HOME/userfmts_$$.sas $HOME/userfmts_$$.log
+
+else
+
+########### one or more dataset specified so do for each #########
+
+for dataset in "$@" ; do
+
+dset=$(echo $dataset | cut -d. -f1)
+
+# Write SAS code to a temporary file
+cat > $HOME/userfmts_$$.sas << -----FINISH-----
+filename _outfile "$HOMEW\userfmts_$$.tmp";
+options validvarname=any nofmterr;
+libname here './' access=readonly;
+proc contents noprint data=here.$dset mtype=data out=contents;
+proc sort data=contents;
+  by memname varnum;
+data contents;
+  set contents;
+  if format in (" " %sysfmtlist) then delete;
+data _null_;
+  file _outfile notitles noprint;
+  set contents;
+  put @1 memname @10 name @21 format @30;
+run;
+-----FINISH-----
+
+# run the code
+sas -nosplash -nologo -icon -log "$HOMEW" -sysin "$HOMEW\userfmts_$$.sas"
+
+# if output file exists then cat it and delete it
+if [ -f $HOME/userfmts_$$.tmp ] ; then
+  cat $HOME/userfmts_$$.tmp 
+  rm -f $HOME/userfmts_$$.tmp 
+fi
+
+# tidy up
+rm -f $HOME/userfmts_$$.sas $HOME/userfmts_$$.log
+
+done
+
+
+
+fi

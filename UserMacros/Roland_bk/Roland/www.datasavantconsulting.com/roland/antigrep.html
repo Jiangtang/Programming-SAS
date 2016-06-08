@@ -1,0 +1,114 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/antigrep.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Generator" content="Microsoft Word 97">
+   <meta name="keywords" content="sas tips techniques">
+   <meta name="Description" content="SAS tips and techniques by Roland Rashleigh-Berry">
+   <meta name="Template" content="C:\PROGRAM FILES\MSOFFICE\OFFICE\html.dot">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <title>whosgot</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+antigrep</h1></center>
+<b>[last updated - 28 July 2003]</b>
+<p>This is more a learning exercise than a very useful script. It shows
+you how an idea can turn into a script. It has its uses, though. I am sure
+you have copied code from one study to another and updated it to run in
+your new project area. Also, I expect there are some standards in place
+that say that the header of the program must contain the correct protocol
+identity and study. But if you are updating the code by hand then it is
+going to be easy to forget to update the header for some programs with
+the new protocol and study. But before your code members get QC'ed then
+you are going to have to make sure this has been done. Hence this script.
+<p>I expect you have used the grep utility on a number of occasions. You
+might not be aware of the options available with grep. There is a "c" option
+that gives you a count of strings found in a file. And you get a zero count
+for files that do not contain a string. What I'd like you to do now is
+try this out on a directory containing SAS programs and look for a string
+you expect to be in most of the SAS programs but not all like this:
+<p><b><tt>grep -c "string" *.sas</tt></b>
+<p>You will see a list of the sas programs ending in a colon with a number
+following. This number is the count of the string found in sas programs.
+Ones that end in <b><tt>":0"</tt></b> do not contain the string. Those
+are the ones you are interested in. We could select out on those like this:
+<p><b><tt>grep -c "string" *.sas | grep ':0$'</tt></b>
+<p>Do you see that "$" sign in that command? I am doing "pattern matching"
+and it has a special meaning. It says that you want to match the string
+<b>":0"</b>
+only right at the end of the line. That is what that final "$" signifies.
+If you ever become a script writer then some day you are going to have
+to learn pattern matching well. You can't avoid it. I'm making you aware
+of it now on a gentle basis. So now we get a list of the sas programs that
+do not contain this string. The name of the sas program is followed by
+":0". We can improve things by getting rid of the ":0" at the end and just
+list the sas program name. This is a job for awk !
+<p><b><tt>grep -c "string" *.sas | grep ':0$' | awk -F: '{print $1}'</tt></b>
+<p>So we have the final command and it has some uses. Useful for QC'ing
+and making that task easier and more accurate is a good thing. So we are
+going to turn this into a script called "antigrep". That's got to be better
+than remembering it and typing it all in. So here goes. Copy and paste
+it into a member called "antigrep" in your shell library:
+<pre><b>#!/bin/sh
+# Script&nbsp;&nbsp;&nbsp;&nbsp; : antigrep
+# Version&nbsp;&nbsp;&nbsp; : 1.0
+# Author&nbsp;&nbsp;&nbsp;&nbsp; : Roland Rashleigh-Berry
+# Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 27 July 2003
+# Contact&nbsp;&nbsp;&nbsp; : rolandberry@hotmail.com
+# Purpose&nbsp;&nbsp;&nbsp; : To list all files that do not contain a string
+# SubScripts : none
+# Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : none
+# Usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : antigrep 'study' *.sas
+#&nbsp;
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+#&nbsp; 1&nbsp;&nbsp; string
+#&nbsp; 2&nbsp;&nbsp; files
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+#&nbsp;
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+if [ $# -lt 2 ] ; then
+&nbsp; echo "Usage: antigrep 'string' *.sas" 1>&amp;2
+&nbsp; exit 1
+fi
+
+string=$1
+shift
+
+grep -c "$string" $* | grep ':0$' | awk -F: '{print $1}'</b></pre>
+There should be only one thing new in the above script. That is referring
+to the complete list of parameters as <b>$*</b>. All other features have
+been covered in previous examples. This has just been a gentle talk about
+how an idea can be turned into a script. It has its uses and is worthwhile
+doing. You will write your own scripts in the near future and some of those
+will grow out of an idea, just like this one did.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/antigrep.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+</html>

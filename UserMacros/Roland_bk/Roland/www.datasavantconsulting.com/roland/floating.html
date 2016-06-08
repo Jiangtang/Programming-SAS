@@ -1,0 +1,211 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/floating.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="sas floating point number accuracy">
+   <meta name="KeyWords" content="sas floating point number accuracy">
+   <title>Floating-point Number Accuracy</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Floating-point Number Accuracy</h1></center>
+<b>[This site is not connected with the SAS Institute]</b>
+<p><b>[last updated - 10 September 2007]</b>
+<h2>
+The VAX to Unix puzzle</h2>
+You transfer SAS data from a VAX to a Unix platform. You know full well
+you have visits with a numeric session number of 2.1. You are looking at
+the data and you select on the data with "where sess=2.1". Nothing there.
+You cancel the where clause, look at your data again and you see observations
+with sess=2.1. What on Earth is going on?
+<p>The answer lies in the way numeric values are stored on a computer.
+In the case of floating point numbers, the values are rarely stored exactly.
+They are a very close approximation instead. And the problem is that on
+different platforms you get different approximations. If you had done the
+same "where sess=2.1" on the VAX then you would have seen the observations
+you know are there. But after it has moved to Unix then they are changed
+very slightly and the equality no longer holds. On the VAX, the literal
+"2.1" gets converted into its numeric form and it matches with the "2.1"
+held in the "sess" variable. Again, they are not exactly 2.1. They are
+approximations. But they are the <b>same</b> approximations in this case.
+But when the data gets transferred over onto Unix, the 2.1 in the sess
+variable turns into something slightly different than the literal "2.1"
+does when converted to numeric form.
+<p>This is just the start of your problems. If you test equalities, even
+just on the one platform, then you can get surprised by these inaccuracies.
+This will be taken up in the next section. But staying with the VAX to
+Unix transfer of data - what is the best way to handle this situation?
+<p>Suggested solutions will vary. I personally consider the numeric inaccuracy
+you get when SAS data moves platforms as a SAS problem. If the equality
+works on the VAX then it should work on Unix, in my opinion. Yes, the numbers
+will not be exact - but they should be inexact by the same amount. If SAS
+data is transferable from one platform to another, then to me, it should
+behave the same on each platform. The way I got round this problem was
+to round every single numeric field in every dataset to the tenth decimal
+place. Now this is naughty in one sense since if you had a representation
+of pi (sorry, no symbol) then you would have introduced an inaccuracy by
+rounding to the tenth decimal place. But since the data was Clinical data
+and since each number represented a field that the investigator had to
+fill in that had limited decimal places then rounding to the tenth place
+could not possibly adversely affect the accuracy of the values. So I did
+this and it worked fine. It was very easy to do as well since I wrote a
+macro to do this which you can see a version of <a href="round.sas">here</a>.
+<h2>
+The problem with equalities</h2>
+if you are able, then copy this piece of code and run it under SAS:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data _null_;</tt>
+<br><tt>&nbsp; x=7.3;</tt>
+<br><tt>&nbsp; x=x+0.1;</tt>
+<br><tt>&nbsp; put x=;</tt>
+<br><tt>&nbsp; if x EQ 7.4 then put "equals 7.4";</tt>
+<br><tt>&nbsp; else put "not equal to 7.4";</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>What you will find if you do, is that "x" displays as 7.4, but when
+the equality is tested, it will be found that the equality is not met.
+Try another number like start with 7.2, add 0.1, and test the equality
+with 7.3 and the equality will be met. So if we arrive at a number through
+a mathematical process then we should not expect equalities to hold on
+every occasion. This is an irritation more than anything else. You could
+always round the result to the tenth decimal place (like I did to data
+transferred from VAX to Unix) and then you would never have a problem doing
+the above sort of test. Take a look at the log of the same code I have
+made some additions to:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>73 data _null_;</tt>
+<br><tt>74 y=7.4;</tt>
+<br><tt>75 put y= y=hex16.;</tt>
+<br><tt>76 x=7.3;</tt>
+<br><tt>77 x=x+0.1;</tt>
+<br><tt>78 put x= x=hex16.;</tt>
+<br><tt>79 if x EQ 7.4 then put "equals 7.4";</tt>
+<br><tt>80 else put "not equal to 7.4";</tt>
+<br><tt>81 x=round(x,0.0000000001);</tt>
+<br><tt>82 put x= x=hex16.;</tt>
+<br><tt>83 if x EQ 7.4 then put "equals 7.4";</tt>
+<br><tt>84 else put "not equal to 7.4";</tt>
+<br><tt>85 run;</tt>
+<p><tt>y=7.4 y=401D99999999999A</tt>
+<br><tt>x=7.4 x=401D999999999999</tt>
+<br><tt>not equal to 7.4</tt>
+<br><tt>x=7.4 x=401D99999999999A</tt>
+<br><tt>equals 7.4</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p>If you study the above you will see that the 7.4 in the "y" variable,
+when displayed also in hex, is different to the 7.4 in the "x" variable
+after 0.1 is added to 7.3. The "A" at the end equates to binary "1010"
+whereas the "9" at the end equates to binary "1001". When you test for
+an equality, the computer is doing a direct comparison of these effective
+binary digits and the equality will be found not to hold. But if you look
+later on in the code you will see that I have rounded the value in "x"
+to the tenth decimal place and the equality will now hold since the value
+in "x" gets "corrected" by this rounding.
+<p>So how do we get round this problem? Well, you could either round to
+the tenth decimal place and then do the test or you could test for equality
+and apply whatever rounding you desired like this "if round(x,0.1) EQ 7.4".
+But both these methods have limitations. In the case of rounding to the
+tenth decimal place then that will be no good for extremely large numbers
+and in the case of rounding to one decimal place then if x=7.37 then it
+will equate with 7.4 using the above test. Do we really want that? I wouldn't
+have thought so. So we have come up with two solutions and both of them
+have problems. Perhaps it is time to look at numbers at the other extreme
+to see if we can generate a few new ideas.
+<h2>
+Big numbers have problems as well</h2>
+Take a look at the following log of code I have run:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>102 data _null_;</tt>
+<br><tt>103 x=123456789012345678;</tt>
+<br><tt>104 put x=18.;</tt>
+<br><tt>105 x=123456789012345678901;</tt>
+<br><tt>106 put x=21.;</tt>
+<br><tt>107 run;</tt>
+<p><tt>x=123456789012345680</tt>
+<br><tt>x=123456789012345683968</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p>You will see that the first "x" is out by 2 since it ends with "80"
+instead of the original "78". The second "x" is out by 5067 since it ends
+with "83968" instead of the original "78901". There is no point trying
+to get round this by rounding to the tenth decimal place since these are
+whole numbers in any case and large ones at that.
+<p>If you were to express the numbers as exponentials then you will see
+that the problem seems to creep in after the 15th decimal place. But if
+two numbers match to 15 decimal places then maybe we should consider them
+as equal, to all intents and purposes. Is there maybe another way we could
+test for equality that took this into account such that we could use it
+on small numbers like 7.4 and large numbers like the above?
+<h2>
+The %equals macro</h2>
+There is a way to compare numbers for equality that will work for both
+small and large numbers. I have incorporated code I found on the SAS Technical
+Support site (in their macro <a href="http://www.sas.com/service/techsup/unotes/SN/003/003510.html">%fuzzcomp</a>)
+into the macro %equals, after making a change. It maybe needs a bit more
+"tuning".
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>174 data _null_;</tt>
+<br><tt>175 x=7.3;</tt>
+<br><tt>176 x=x+0.1;</tt>
+<br><tt>177 if %equals(x,7.4) then put "equals";</tt>
+<br><tt>178 else put "not equal";</tt>
+<br><tt>179 x=123456789012345678;</tt>
+<br><tt>180 if %equals(x,123456789012345678) then put "equals";</tt>
+<br><tt>181 else put "not equal";</tt>
+<br><tt>182 x=123456789012345678901;</tt>
+<br><tt>183 if %equals(x,123456789012345678901) then put "equals";</tt>
+<br><tt>184 else put "not equal";</tt>
+<br><tt>185 run;</tt>
+<p><tt>equals</tt>
+<br><tt>equals</tt>
+<br><tt>equals</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p>I invite people to play around with the values in the macro. To "tune"
+it, in a sense. I am fairly happy with the way it works currently but I
+am sure it could be improved. The idea is to use the macro universally
+to test for equality (or very near equality). Perhaps it could be adopted
+as the "standard" for testing equality. You can view the macro
+<a href="equals.sas">here</a>.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><br>
+<center>
+<p>Go back to the home <a href="index-2.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/floating.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:04 GMT -->
+</html>

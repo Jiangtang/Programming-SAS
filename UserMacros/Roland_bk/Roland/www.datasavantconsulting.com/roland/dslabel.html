@@ -1,0 +1,409 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/dslabel.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="Using the dataset label to automate reporting">
+   <meta name="KeyWords" content="Using the dataset label to automate reporting">
+   <title>Using the dataset label to automate reporting</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Using the dataset label to automate reporting</h1></center>
+<b>Last updated: 19 Aug 2014</b>
+<h2>
+Introduction</h2>
+<b>Wouldn't it be nice if we could somehow attach to a dataset all the
+instructions needed for printing it?</b> This would have to somehow include
+the <b>title</b>, the <b>footnotes</b> and, if not a standard "proc report"
+of whatever variables happen to be there then a <b>list of variables and
+their printing instructions</b> attached such as "<b>*o</b>" for "<b>order
+order=internal</b>" and "<b>*on</b>" for "<b>order order=internal noprint</b>".
+Well, we have <b>256 characters to play with</b> in the <b>dataset label</b>.
+In most cases, we have enough space to store all three. We could have the
+<b>title</b>
+as the full text at the start of the dataset label (with maybe a split
+character if there is more than one title), followed by a delimiter, followed
+by a <b>list of footnote identifiers</b>, followed by another delimiter,
+followed by a <b>list of variables with printing instructions</b> attached
+(if a standard "proc report" will not give you what you want). I have used
+this technique and it works very well and allows your reporting code to
+be a lot simpler. Here is an example that I recently used in my work:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data &amp;source._det18_&amp;sampfile</tt>
+<br><tt>(label="The following CPEVENT-PTM-PTNO combinations were not found
+in sampling table &amp;sampfile:| FT05 |</tt>
+<br><tt>&nbsp;actevent*on cpevent*o ptm*on ptmc ptno_list ");</tt></td>
+</tr>
+</table>
+
+<p>In the example above you see the text I am going to use as the report
+title, followed by the delimiter which is a "|", the footnote identifiers
+(just FT05 in this case - but all reports will end with a common extra
+final footnote), followed by another delimiter, and since a default "proc
+report" will not give me what I need then the list of variables follows
+with printing instructions attached to some variables as you can see from
+the "*on", "*o" and "*on" attached to the "actevent", "cpevent" and "ptm"
+variables (there will always be a variable named "holder" present so this
+will be automatically added).
+<p><b>And there you have the solution - it is so simple!&nbsp;</b> Just
+put this needed information in the dataset label!
+<p>In the following sections you will see how I handle this in some code
+I am working on as I write this page.
+<br>&nbsp;
+<h2>
+Extracting the information from the dataset label</h2>
+Imagine I have generated a number of datasets that I want to print. First,
+I gather together a list of these datasets into the table "<b>listfiles</b>"
+using the following code:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *--- get a list of all the details
+listings ---;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; proc sql noprint;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; create table listfiles
+as&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; select distinct memname
+, memlabel</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; from dictionary.tables&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; where libname eq 'WORK'
+and nobs gt 0</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; and index(memname,"&amp;source._DET")
+EQ 1;&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; quit;</tt></td>
+</tr>
+</table>
+
+<p>You can see from the code above that I am looking for datasets that
+start with &amp;source (which is a macro variable I have set up) followed
+by the characters "_DET" which indicate to me that it is a "details" dataset
+I have created that I want to print, and I am only interested in those
+datasets that have observations in them so I select those datasets using
+"and nobs gt 0".
+<p>Next, I loop through the datasets in "<b>listfiles</b>" and print them.
+I extract the contents using my %getvalue macro (that you can download
+from this web site). You can see that I am extracting the title of the
+report that I call "listlabel", the footnote identifiers as "listfoots"
+(if any are declared - otherwise this will be blank) and the variables
+and their attached printing instructions as "listvars" (if any are declared
+- otherwise this will be blank). Next I display these values in the log
+for debugging purposes. Lastly, I print the datasets using an internally
+defined macro named "%printit".
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *--- loop through the detail listings
+---;&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %do l=1 %to %nobs(listfiles);</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let listfile=%getvalue(listfiles,memname,&amp;l);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let listlabel=%scan(%getvalue(listfiles,memlabel,&amp;l),1,|);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let listfoots=%scan(%getvalue(listfiles,memlabel,&amp;l),2,|);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let listvars =%scan(%getvalue(listfiles,memlabel,&amp;l),3,|);</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %PUT listfile=&amp;listfile;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %PUT listlabel=&amp;listlabel;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %PUT listfoots=&amp;listfoots;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %PUT listvars=&amp;listvars;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %printit;</tt>
+<p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %end;&nbsp; %*- list files -;</tt></td>
+</tr>
+</table>
+
+<p>Please take time to look at the above code. Look at how easy it is to
+print a variety of reports using "proc report". Each of these reports will
+have its own title and footnotes and some will have specialized layout
+requirements and yet it is all done using a call to the internally defined
+macro "%printit". Look at how simple it is. Look at how it keeps your code
+short and simple and easy to maintain. Gone are the messy "proc report"
+steps for the different datasets that assign different footnotes and handle
+different variable reporting needs. All replaced by a simple macro call
+that uses information in the dataset label. Think on this and you might
+see many uses for this technique that can greatly simplify your reporting
+code.
+<p>Next we will see the magic inside the %printit macro - except there
+isn't any "magic" inside of it. It is very simple.
+<h2>
+%printit</h2>
+In the %printit macro I am writing to an "ods document" destination that
+could equally be an "ods pdf" destination (it will end up as a PDF anyhow
+when I put it through a "proc document" step). This is not shown in the
+macro. Because I am going to do some work with reorganising bookmarks I
+am being careful what appears in the bookmark, so I am blanking out the
+procedure label using ' <b>ods proclabel " "</b> ' and putting the title
+of the report in the "contents" at the proc report level. I am using the
+variable "<b>holder</b>", which I have as the value numeric "1" in every
+reporting dataset, to set the lowest level content to null so it does not
+show the text "Table" as the third level of the bookmark. This is a trick
+that originated from the SAS Institute itself in a paper written by them.
+You can read about this trick elsewhere on this web site.
+<p>Note that generated titles. "&amp;filename" is defined elsewhere and
+is basically what is in the macro variable "source" with ".txt" appended
+as an ending. "&amp;listlabel" we already extracted, as shown above. So
+you can see it has generated two titles. Maybe we could fit it into one
+title is the character length of "&amp;listlabel" is not too long. That
+is up to you. What you see below is not a recommendation - it is just how
+I decided (for the moment) to implement it.
+<p>Next the %dofoots macro is called to handle the footnote generation.
+That will be described in the following section.
+<p>In the "proc report" step there are two sections for handling the variable
+list, if it is non blank. The first section uppercases it and then this
+is followed by the "column" statement. The "<b>holder</b>" variable is
+declared here as it is not supposed to be in the variable list. The "prxchange"
+strips off the attached printing instructions for the variables leaving
+only the variable list. It is doing a <b>non-greedy</b> match on a literal
+asterisk that is followed by one or more non-space characters, followed
+by one or more spaces, and replacing it with just a space which is what
+you see as "/ /" at the end of the expression. The "?" that you see is
+the <b>non-greedy</b> matching instruction. What this does is to tell prxchange
+to find the shortest string that satisfies the match rather than the longest
+string that it will give us by default. So this gives us "column holder
+" followed by the list of variables without attached printing instructions.
+It is now all in upper case.
+<p>In the second section for handling the variable list (if it is non blank)
+the "define" statements are created that default to "display" type but
+can be set to "order order=internal" if an "*o" is attached to the variable
+name and an "order order=internal noprint" if an "*on" is attached to the
+variable name. It loops through the variable list until complete.
+<br>&nbsp;
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>%macro printit;</tt>
+<br><tt>&nbsp; %local i var use;</tt>
+<p><tt>&nbsp; ods proclabel " ";</tt>
+<br><tt>&nbsp; title1 "&amp;listlabel";</tt>
+<br><tt>&nbsp; title2 "(&amp;filename)";</tt>
+<br><tt>&nbsp; %dofoots;</tt>
+<p><tt>&nbsp; proc report missing nowd data=&amp;listfile contents="&amp;listlabel";</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %if %length(&amp;listvars) %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let listvars=%upcase(&amp;listvars);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; column holder %sysfunc(prxchange(s/\*[^\s]+
++?/ /,-1,&amp;listvars%str( )));</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; define holder / noprint order;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; break before holder / page contents='';</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %if %length(&amp;listvars) %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let i=1;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let var=%scan(%scan(&amp;listvars,&amp;i,%str(
+)),1,*);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let use=%scan(%scan(&amp;listvars,&amp;i,%str(
+)),2,*);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %do %while(%length(&amp;var));</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; define &amp;var /</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %if &amp;use EQ O %then
+%do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; order order=internal</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %if &amp;use EQ ON %then
+%do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; order order=internal
+noprint</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %else %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; display</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let i=%eval(&amp;i+1);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let var=%scan(%scan(&amp;listvars,&amp;i,%str(
+)),1,*);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %let use=%scan(%scan(&amp;listvars,&amp;i,%str(
+)),2,*);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+<br><tt>&nbsp; run;</tt>
+<br><tt>&nbsp; title1;</tt>
+<br><tt>&nbsp; footnote1;</tt>
+<p><tt>%mend printit;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<p>And there we have it. The %doofoots macro is explained next.
+<h2>
+%dofoots</h2>
+The %dofoots macro loops through the &amp;listfoots value and generated
+a footnote according to the footnote identifier it has found. These footnote
+macro variables FT01, FT02 etc. are defined in the code. Right at the end,
+it generates a final footnote "lastfoot" that is also defined in the code.
+It will leave a gap of one footnote position if any footnotes have been
+generated or use the footnote1 position if none have been generated.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>%macro dofoots;</tt>
+<br><tt>&nbsp; %local i foot;</tt>
+<br><tt>&nbsp; %let i=1;</tt>
+<br><tt>&nbsp; %let foot=%scan(&amp;listfoots,&amp;i,%str( ));</tt>
+<br><tt>&nbsp; %do %while(%length(&amp;foot));</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; footnote&amp;i &amp;&amp;&amp;foot;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %let i=%eval(&amp;i+1);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %let foot=%scan(&amp;listfoots,&amp;i,%str(
+));</tt>
+<br><tt>&nbsp; %end;</tt>
+<br><tt>&nbsp; %if &amp;i GT 1 %then %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; footnote%eval(&amp;i+1) &amp;lastfoot;</tt>
+<br><tt>&nbsp; %end;</tt>
+<br><tt>&nbsp; %else %do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; footnote1 &amp;lastfoot;</tt>
+<br><tt>&nbsp; %end;</tt>
+<br><tt>%mend dofoots;</tt></td>
+</tr>
+</table>
+
+<p>Just to finish off, and this is not important - just a curiosity I thought
+I would throw in, the last footnote "&amp;lastfoot" is defined as follows.
+Since I am using "ods document" as my destination then I know that prior
+to sas v9.4 then "left" and "right" alignment of footnote elements will
+be lost. When the code runs under sas v9.4 or later I want to use those
+alignment features but before then I will fake the "right" alignment as
+best as I can using repeated spaces.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td>
+<br><tt>&nbsp; %let lastfoot="^S={font_weight=medium color=blue}</tt>
+<br><tt>ba_content_check_report.pdf, JobID: &amp;jobid, &amp;sysdate %sysfunc(repeat(%str(
+),131))</tt>
+<br><tt>page ^{thispage} / ^{lastpage}";</tt>
+<p><tt>&nbsp; %if %sysevalf(&amp;sysver GT 9.3) %then&nbsp;</tt>
+<br><tt>&nbsp; %let lastfoot=j=l "^S={font_weight=medium color=blue}</tt>
+<br><tt>ba_content_check_report.pdf, JobID: &amp;jobid, &amp;sysdate"</tt>
+<br><tt>&nbsp; j=r "page ^{thispage} / ^{lastpage}";</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<h2>
+Further developments</h2>
+I see these macros as something that should exist as inline code with different
+modifications made to them depending on reporting needs. For example, I
+might want to combine the two titles into one title if "&amp;listlabel"
+resolves to less than 120 characters or whatever. It depends on what the
+users want to see. Also, I have not coded for a split character in the
+title text that indicates separate titles should be used. I have no need
+for it at present but I will add it if needed. Also I might want to extend
+the processing of the variable list to cover "across" variables as well.
+Changes such as these I will make as and when the need arises. Consequently,
+I hope that you will regard these macros as non-fixed and not a recommendation
+that you should follow, so that you will feel free to make changes as you
+see fit to support your reporting needs.
+<h2>
+Where else apart from the dataset label can I store print layout information?</h2>
+Now you have read this page so far, can you think of another place to store
+256 characters of print layout information .......?&nbsp;&nbsp;&nbsp; I
+have dropped a big hint already......&nbsp;&nbsp; :o)
+<p>Well, to answer that, you might have noticed that I have a variable
+named "<b>holder</b>" that is present in every reporting dataset I create
+and has the value "1" (numeric). I use this as per the published SAS Institute
+trick, to prevent the third level of PDF bookmarks appearing and showing
+the text "Table" (of course the variable could have a different name to
+"holder" or could be a one byte character variable to save space, but I
+use that name and make it numeric because of the published SAS paper).
+I never display this "holder" variable nor use it for anything else apart
+from suppressing the third level bookmark, so <b>I have the "holder" variable
+label to use as I please</b> and that too is 256 characters in length.
+So, if for some reason, I were unable to use the dataset label for the
+purpose presented on this page, then I could put the same information in
+the "holder" variable label and use my <b>%varlabel</b> macro (that you
+can download from this web site) to extract the same information. Or maybe,
+if I were sure that 256 characters would be enough for all my footnote
+needs, I could put the text of the footnotes in the "holder" variable label
+in full with a delimiter character for when it has to be split into different
+footnotes. So you see we are not limited to just the 256 characters in
+the dataset label. We have the "<b>holder</b>" variable label to use as
+well.
+<p>So now we have <b>two</b> places to store print layout information.
+<b>Any
+more?</b>
+<p><b>Yes,</b> there are more places we could store print layout information.
+Beyond using the "holder" variable label, we could set up dummy variables
+and call them <b>ft1, ft2, ft3</b> etc. that are maybe only one character
+in length and contain just a space for all datasets, and we could put separate
+footnote lines in their variable labels and extract those using the <b>%varlabel</b>
+macro. And what if we do not know if there be a ft1, ft2, ft3 variable?
+Well, you can use my <b>%hasvars</b> macro (that you can download from
+this web site) to check on whether a variable exists and to extract the
+footnote information only if the variable exists. We could do the same
+for titles and have one byte dummy variables called <b>tl1, tl2, tl3</b>
+etc. and put the title information in there and define a list of variables
+to print that exclude these and declare these to the "holder" variable
+label. Or maybe not bother with a list of variables to print and have our
+macro automatically exclude these variables from being printed. So the
+possibilities are endless for automating our report production. We can
+extend it as we need to. Using the ideas presented on this page, then for
+"ods pdf" output where you are not interested in column widths and you
+have chosen the correct labels for your columns so you don't need to specify
+column labels in "proc report", then you should be able to wave goodbye
+to tailored "proc report" code except for very special reporting needs.
+<h2>
+Where do we go from here?</h2>
+If I were to create a new utility macro for handling this situation then
+this is how I would do it. I would leave the dataset label untouched and
+just leave it for useful descriptive text of what the dataset contains.
+I would look for variables named<b> _title1, _title2, _title3</b> etc.
+that I would assume were one byte character variables not containing anything
+that needed displaying and use the variable labels as the titles. I would
+look for variables named <b>_footnote1, _footnote2, _footnote3</b> etc.
+used similarly and use the variable labels as the footnotes. I would look
+for the "proc report" variable list with the attached printing instructions
+in the label of a variable<b> _columns</b>. If this variable label were
+blank then I would generate a list of variables using my <b>%varlist</b>
+macro that starts with the "<b>holder</b>" variable hard-coded and lists
+the rest of the variables in the order the variables occur in the dataset
+(that
+<b>%varlist</b> automatically gives me) but excluding the "<b>holder</b>"
+variable and any "<b>_title(n)</b>" and any "<b>_footnote(n)</b>" and the
+"<b>_columns</b>" variables from the list of variables.
+<p>Although the direction I am indicating is opposite to the title of this
+page, if you have followed the thinking so far, I think you will agree
+that the logical developments suggest a new path for us to follow that
+leaves behind the use of the dataset label.
+<p><b>If we are using sas v9.4 </b>or higher versions then we have available
+to us <b>extended attributes</b> for datasets that we can use. For <b>sas
+v9.4</b> there is no point in putting the print layout information in variable
+labels any more. We can assign them as extended dataset attributes and
+give them non "<b>_</b>" prefixed names of "<b>title1</b>", "<b>title2</b>"
+etc. , "<b>footnote1</b>", "<b>footnote2</b>" etc. and "<b>columns</b>".
+<p>I have already written a version of the macro I am suggesting. It may
+go through many changes. You can link to the current version here - <a href="Spectre/utilmacros/printit.sas" target="_blank">%printit</a>.
+<h2>
+Conclusion</h2>
+You have been shown how to use the dataset label (plus other variable labels)
+to automate your reporting. If&nbsp; you can see the possibilities that
+the information on this page opens up for your organization's reporting
+needs, then please share this page with your work colleagues.
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<center>
+<p>Go back to the home <a href="index-2.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/dslabel.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:03 GMT -->
+</html>

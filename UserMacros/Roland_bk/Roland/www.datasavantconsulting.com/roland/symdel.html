@@ -1,0 +1,280 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/symdel.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:06 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="Deleting any or all global macro variables">
+   <meta name="KeyWords" content="Deleting global macro variables sas">
+   <meta name="robots" content="noindex,nofollow">
+   <title>Deleting any or all global macro variables</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Deleting any or all global macro variables</h1></center>
+
+<h2>
+Introduction</h2>
+A lot of hits on my web site are the result of people searching on "global
+macro variables". This page will tell you how to list these variables and
+delete them.
+<h2>
+Listing all global macro variables</h2>
+To list all the global macro variables and their values in your current
+sas session then use "<b><tt>%put _all_;</tt></b>" All your global macro
+variables will be listed in the log. This is what appeared in my log when
+I did this.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>595&nbsp; %put _all_;</tt>
+<br><tt>GLOBAL FPATIENT 'Arial / Bold'</tt>
+<br><tt>GLOBAL HPOS 50</tt>
+<br><tt>GLOBAL HPOSMINGAP 1.3</tt>
+<br><tt>GLOBAL FITEMTEXT 'Arial'</tt>
+<br><tt>GLOBAL HPOSDMEAN 35</tt>
+<br><tt>GLOBAL HPOSMINFIGWIDTH 0.3</tt>
+<br><tt>GLOBAL HSCALETEXT 0.8</tt>
+<br><tt>GLOBAL DRAWBLOCKBOX 1</tt>
+<br><tt>GLOBAL HPATIENT 2</tt>
+<br><tt>GLOBAL CITEMTEXT maroon</tt>
+<br><tt>GLOBAL CFIGURE BIYG</tt>
+<br><tt>GLOBAL HBLOCKDESC 1</tt>
+<br><tt>GLOBAL CBLOCKBOX maroon</tt>
+<br><tt>GLOBAL HITEMDESC 0.8</tt>
+<br><tt>GLOBAL USEARROWS 1</tt>
+<br><tt>GLOBAL MAXUCLETTERS 23</tt>
+<br><tt>GLOBAL CSTRIPE beige</tt>
+<br><tt>GLOBAL HPOSDMIN 20</tt>
+<br><tt>GLOBAL CBLOCKDESC black</tt>
+<br><tt>GLOBAL CBLOCKDESCBG CXE0E0E0</tt>
+<br><tt>GLOBAL HFIGURE 0.4</tt>
+<br><tt>GLOBAL UNIFORMSCALE 1</tt>
+<br><tt>GLOBAL CSCALE maroon</tt>
+<br><tt>GLOBAL FITEMDESC 'Arial'</tt>
+<br><tt>GLOBAL CPATIENT black</tt>
+<br><tt>GLOBAL CPATIENTBG CXE0E0E0</tt>
+<br><tt>GLOBAL HITEMTEXT 0.7</tt>
+<br><tt>GLOBAL CBACK white</tt>
+<br><tt>GLOBAL MAXMCLETTERS 29</tt>
+<br><tt>GLOBAL VPOS 150</tt>
+<br><tt>GLOBAL FBLOCKDESC 'Arial / Bold'</tt>
+<br><tt>GLOBAL CITEMDESC maroon</tt>
+<br><tt>GLOBAL CITEMDESCTRUNC blue</tt>
+<br><tt>GLOBAL YPIXELS 2000</tt>
+<br><tt>GLOBAL HPOSDMAX 50</tt>
+<br><tt>GLOBAL XPIXELS 1000</tt>
+<br><tt>AUTOMATIC AFDSID 0</tt>
+<br><tt>AUTOMATIC AFDSNAME</tt>
+<br><tt>AUTOMATIC AFLIB</tt>
+<br><tt>AUTOMATIC AFSTR1</tt>
+<br><tt>AUTOMATIC AFSTR2</tt>
+<br><tt>AUTOMATIC FSPBDV</tt>
+<br><tt>AUTOMATIC SYSBUFFR</tt>
+<br><tt>AUTOMATIC SYSCC 1012</tt>
+<br><tt>AUTOMATIC SYSCHARWIDTH 1</tt>
+<br><tt>AUTOMATIC SYSCMD</tt>
+<br><tt>AUTOMATIC SYSDATE 22MAR08</tt>
+<br><tt>AUTOMATIC SYSDATE9 22MAR2008</tt>
+<br><tt>AUTOMATIC SYSDAY Saturday</tt>
+<br><tt>AUTOMATIC SYSDEVIC</tt>
+<br><tt>AUTOMATIC SYSDMG 0</tt>
+<br><tt>AUTOMATIC SYSDSN SASUSER RGPP_STYLE</tt>
+<br><tt>AUTOMATIC SYSENDIAN LITTLE</tt>
+<br><tt>AUTOMATIC SYSENV FORE</tt>
+<br><tt>AUTOMATIC SYSERR 0</tt>
+<br><tt>AUTOMATIC SYSFILRC 0</tt>
+<br><tt>AUTOMATIC SYSINDEX 5</tt>
+<br><tt>AUTOMATIC SYSINFO 0</tt>
+<br><tt>AUTOMATIC SYSJOBID 3252</tt>
+<br><tt>AUTOMATIC SYSLAST SASUSER.RGPP_STYLE</tt>
+<br><tt>AUTOMATIC SYSLCKRC 0</tt>
+<br><tt>AUTOMATIC SYSLIBRC 0</tt>
+<br><tt>AUTOMATIC SYSMACRONAME</tt>
+<br><tt>AUTOMATIC SYSMAXLONG 2147483647</tt>
+<br><tt>AUTOMATIC SYSMENV S</tt>
+<br><tt>AUTOMATIC SYSMSG</tt>
+<br><tt>AUTOMATIC SYSNCPU 1</tt>
+<br><tt>AUTOMATIC SYSPARM</tt>
+<br><tt>AUTOMATIC SYSPBUFF</tt>
+<br><tt>AUTOMATIC SYSPROCESSID 41D6AD4FCBCBF7CF4020000000000000</tt>
+<br><tt>AUTOMATIC SYSPROCESSNAME DMS Process</tt>
+<br><tt>AUTOMATIC SYSPROCNAME</tt>
+<br><tt>AUTOMATIC SYSRC 0</tt>
+<br><tt>AUTOMATIC SYSSCP WIN</tt>
+<br><tt>AUTOMATIC SYSSCPL XP_HOME</tt>
+<br><tt>AUTOMATIC SYSSITE 0042234001</tt>
+<br><tt>AUTOMATIC SYSSIZEOFLONG 4</tt>
+<br><tt>AUTOMATIC SYSSIZEOFUNICODE 2</tt>
+<br><tt>AUTOMATIC SYSSTARTID</tt>
+<br><tt>AUTOMATIC SYSSTARTNAME</tt>
+<br><tt>AUTOMATIC SYSTIME 17:53</tt>
+<br><tt>AUTOMATIC SYSUSERID Roland</tt>
+<br><tt>AUTOMATIC SYSVER 9.1</tt>
+<br><tt>AUTOMATIC SYSVLONG 9.01.01M3P020206</tt>
+<br><tt>AUTOMATIC SYSVLONG4 9.01.01M3P02022006</tt></td>
+</tr>
+</table>
+
+<p>What you see above is all the global macro variables I set up as "GLOBAL"
+macro variables. What follows are the "AUTOMATIC" macro variables that
+sas sets up. You can see from SYSVER, third from the bottom, that I am
+using version 9.1 of sas.
+<p>You can go one better than using "<tt>%put _all_;</tt>" if all you want
+to see are global macro variables. Use "<b><tt>%put _global_;</tt></b>"
+instead.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>618&nbsp; %put _global_;</tt>
+<br><tt>GLOBAL FPATIENT 'Arial / Bold'</tt>
+<br><tt>GLOBAL HPOS 50</tt>
+<br><tt>GLOBAL HPOSMINGAP 1.3</tt>
+<br><tt>GLOBAL FITEMTEXT 'Arial'</tt>
+<br><tt>GLOBAL HPOSDMEAN 35</tt>
+<br><tt>GLOBAL HPOSMINFIGWIDTH 0.3</tt>
+<br><tt>GLOBAL HSCALETEXT 0.8</tt>
+<br><tt>GLOBAL DRAWBLOCKBOX 1</tt>
+<br><tt>GLOBAL HPATIENT 2</tt>
+<br><tt>GLOBAL CITEMTEXT maroon</tt>
+<br><tt>GLOBAL CFIGURE BIYG</tt>
+<br><tt>GLOBAL HBLOCKDESC 1</tt>
+<br><tt>GLOBAL CBLOCKBOX maroon</tt>
+<br><tt>GLOBAL HITEMDESC 0.8</tt>
+<br><tt>GLOBAL USEARROWS 1</tt>
+<br><tt>GLOBAL MAXUCLETTERS 23</tt>
+<br><tt>GLOBAL CSTRIPE beige</tt>
+<br><tt>GLOBAL HPOSDMIN 20</tt>
+<br><tt>GLOBAL CBLOCKDESC black</tt>
+<br><tt>GLOBAL CBLOCKDESCBG CXE0E0E0</tt>
+<br><tt>GLOBAL HFIGURE 0.4</tt>
+<br><tt>GLOBAL UNIFORMSCALE 1</tt>
+<br><tt>GLOBAL CSCALE maroon</tt>
+<br><tt>GLOBAL FITEMDESC 'Arial'</tt>
+<br><tt>GLOBAL CPATIENT black</tt>
+<br><tt>GLOBAL CPATIENTBG CXE0E0E0</tt>
+<br><tt>GLOBAL HITEMTEXT 0.7</tt>
+<br><tt>GLOBAL CBACK white</tt>
+<br><tt>GLOBAL MAXMCLETTERS 29</tt>
+<br><tt>GLOBAL VPOS 150</tt>
+<br><tt>GLOBAL FBLOCKDESC 'Arial / Bold'</tt>
+<br><tt>GLOBAL CITEMDESC maroon</tt>
+<br><tt>GLOBAL CITEMDESCTRUNC blue</tt>
+<br><tt>GLOBAL YPIXELS 2000</tt>
+<br><tt>GLOBAL HPOSDMAX 50</tt>
+<br><tt>GLOBAL XPIXELS 1000</tt></td>
+</tr>
+</table>
+
+<h2>
+Deleting global macro variable using %symdel</h2>
+You can remove all trace of a global macro variable by using <b>%symdel</b>.
+You put one or more global macro variable names after a "%symdel" call
+and it will delete those global macro variables. Here is my log again after
+I deleted the first three global macro variables listed.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>619&nbsp; %symdel fpatient hpos hposmingap;</tt>
+<br><tt>620&nbsp; %put _global_;</tt>
+<br><tt>GLOBAL FITEMTEXT 'Arial'</tt>
+<br><tt>GLOBAL HPOSDMEAN 35</tt>
+<br><tt>GLOBAL HPOSMINFIGWIDTH 0.3</tt>
+<br><tt>GLOBAL HSCALETEXT 0.8</tt>
+<br><tt>GLOBAL DRAWBLOCKBOX 1</tt>
+<br><tt>GLOBAL HPATIENT 2</tt>
+<br><tt>GLOBAL CITEMTEXT maroon</tt>
+<br><tt>GLOBAL CFIGURE BIYG</tt>
+<br><tt>GLOBAL HBLOCKDESC 1</tt>
+<br><tt>GLOBAL CBLOCKBOX maroon</tt>
+<br><tt>GLOBAL HITEMDESC 0.8</tt>
+<br><tt>GLOBAL USEARROWS 1</tt>
+<br><tt>GLOBAL MAXUCLETTERS 23</tt>
+<br><tt>GLOBAL CSTRIPE beige</tt>
+<br><tt>GLOBAL HPOSDMIN 20</tt>
+<br><tt>GLOBAL CBLOCKDESC black</tt>
+<br><tt>GLOBAL CBLOCKDESCBG CXE0E0E0</tt>
+<br><tt>GLOBAL HFIGURE 0.4</tt>
+<br><tt>GLOBAL UNIFORMSCALE 1</tt>
+<br><tt>GLOBAL CSCALE maroon</tt>
+<br><tt>GLOBAL FITEMDESC 'Arial'</tt>
+<br><tt>GLOBAL CPATIENT black</tt>
+<br><tt>GLOBAL CPATIENTBG CXE0E0E0</tt>
+<br><tt>GLOBAL HITEMTEXT 0.7</tt>
+<br><tt>GLOBAL CBACK white</tt>
+<br><tt>GLOBAL MAXMCLETTERS 29</tt>
+<br><tt>GLOBAL VPOS 150</tt>
+<br><tt>GLOBAL FBLOCKDESC 'Arial / Bold'</tt>
+<br><tt>GLOBAL CITEMDESC maroon</tt>
+<br><tt>GLOBAL CITEMDESCTRUNC blue</tt>
+<br><tt>GLOBAL YPIXELS 2000</tt>
+<br><tt>GLOBAL HPOSDMAX 50</tt>
+<br><tt>GLOBAL XPIXELS 1000</tt></td>
+</tr>
+</table>
+
+<h2>
+Deleting ALL global macro variables</h2>
+I have a macro named <a href="http://www.datasavantconsulting.com/roland/globlist.sas" target="_blank">%globlist</a>
+on this web site that lists all global macro variables. This is what I
+get in the log when I use it to display a list of all global macro variables.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>598&nbsp; %put %globlist;</tt>
+<br><tt>FITEMTEXT HPOSDMEAN HPOSMINFIGWIDTH HSCALETEXT DRAWBLOCKBOX HPATIENT
+CITEMTEXT CFIGURE HBLOCKDESC</tt>
+<br><tt>CBLOCKBOX HITEMDESC USEARROWS MAXUCLETTERS CSTRIPE HPOSDMIN CBLOCKDESC
+CBLOCKDESCBG HFIGURE</tt>
+<br><tt>UNIFORMSCALE CSCALE FITEMDESC CPATIENT CPATIENTBG HITEMTEXT CBACK
+MAXMCLETTERS VPOS FBLOCKDESC</tt>
+<br><tt>CITEMDESC CITEMDESCTRUNC YPIXELS HPOSDMAX XPIXELS</tt></td>
+</tr>
+</table>
+
+<p>If I want to delete all global macro variables then I can use it with
+%symdel in this simple form: "<b><tt>%symdel %globlist;</tt></b>". This
+is what I get when I run it.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>621&nbsp; %symdel %globlist;</tt>
+<br><tt>622&nbsp; %put _global_;</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p>You can see that all the global macro variables are gone!
+<h2>
+Conclusion</h2>
+You have seen how to list out all global macro variables and how to delete
+them singly or collectively.
+<br>&nbsp;
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="http://www.datasavantconsulting.com/roland/counter.php" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/symdel.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:06 GMT -->
+</html>

@@ -1,0 +1,629 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/mvarlen.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:04 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <title>Testing whether macro parameters are set</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Testing whether macro parameters are set</h1></center>
+<b>Author: Roland Rashleigh-Berry</b>
+<br><b>Updated: 10 Oct 2012</b>
+<p><i>This page assumes you are familiar with "macro quoting" issues and
+the difficulty macro variable values can give you when resolved in macro
+code. If you are not aware of these issues then read the following page
+and return to this topic at a later time.</i>
+<p><a href="mquoting.html">Macro Quoting Functions</a>
+<h2>
+Introduction</h2>
+Quite often, when you are writing a macro, you need to test whether a macro
+parameter has been given a value or not. The user of your macro has full
+control over this and you need to know what they are trying to do when
+caling your macro. You maybe need to substitute a default value if nothing
+has been specified for the parameter or perhaps exit the macro and give
+diagnostics. This sounds very easy to do but you need to keep in mind that
+when a person is calling the macro you have written then the supplied parameter
+values may contain unexpected characters that maybe need to be "masked"
+using "macro quoting".
+<p>This page will lead you to a robust way of testing whether a macro parameter
+has been supplied with a value or not. The same also applies to testing
+whether macro variables in open code have been supplied with a value or
+not.
+<h2>
+Version 1 - The problem of macro parameter value testing</h2>
+To illustrate the problem that might not be obvious at this stage, I have
+written a "<b>Version 1</b>" of a macro that puts out a message saying
+whether a macro parameter has been set or not. Subsequent sections will
+just be named according to the test macro version number. You will get
+used to it.
+<p>Here is our first attempt to test for a macro parameter being set to
+a value. Don't expect miracles at this stage. We will learn as we go along.
+<p><b>The code to run:</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%macro putv1(state);</tt>
+<br><tt>%if &amp;state NE %then %put >>>> state value given as expected;</tt>
+<br><tt>%else %put >>>> NO STATE VALUE GIVEN !!;</tt>
+<br><tt>%mend putv1;</tt>
+<br><tt></tt>&nbsp;<tt></tt>
+<p><tt>%putv1;</tt><tt></tt>
+<p><tt>%putv1(MI);</tt><tt></tt>
+<p><tt>%putv1(TX);</tt><tt></tt>
+<p><tt>%putv1(OR);</tt></td>
+</tr>
+</table>
+
+<p><b>The resulting log:</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>509&nbsp; %macro putv1(state);</tt>
+<br><tt>510&nbsp; %if &amp;state NE %then %put >>>> state value given as
+expected;</tt>
+<br><tt>511&nbsp; %else %put >>>> NO STATE VALUE GIVEN !!;</tt>
+<br><tt>512&nbsp; %mend putv1;</tt>
+<br><tt>513</tt>
+<br><tt>514</tt>
+<br><tt>515&nbsp; %putv1;</tt>
+<br><tt>>>>> NO STATE VALUE GIVEN !!</tt>
+<br><tt>516</tt>
+<br><tt>517&nbsp; %putv1(MI);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>518</tt>
+<br><tt>519&nbsp; %putv1(TX);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>520</tt>
+<br><tt>521&nbsp; %putv1(OR);</tt>
+<br><tt>ERROR: A character operand was found in the %EVAL function or %IF
+condition where a numeric operand is required. The condition was: &amp;state
+NE</tt>
+<br><tt>ERROR: The macro PUTV1 will stop executing.</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p>We hit a problem as you can see from the log.
+<h2>
+Version 2</h2>
+Why should the macro object to the user putting in the abbreviation for
+Oregon? The reason is because it sees it as the word "OR" and that is a
+logical operator and "%if OR NE ", as it gets resolved, does not make sense.
+I am sure we can do something about this.
+<p><b>The code:</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%macro putv2(state);</tt>
+<br><tt>%if %nrbquote(&amp;state) NE %then %put >>>> state value given
+as expected;</tt>
+<br><tt>%else %put >>>> NO STATE VALUE GIVEN !!;</tt>
+<br><tt>%mend putv2;</tt>
+<br><tt></tt>&nbsp;<tt></tt>
+<p><tt>%putv2;</tt><tt></tt>
+<p><tt>%putv2(MI);</tt><tt></tt>
+<p><tt>%putv2(TX);</tt><tt></tt>
+<p><tt>%putv2(OR);</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p><b>The resulting log:</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>522&nbsp; %macro putv2(state);</tt>
+<br><tt>523&nbsp; %if %nrbquote(&amp;state) NE %then %put >>>> state value
+given as expected;</tt>
+<br><tt>524&nbsp; %else %put >>>> NO STATE VALUE GIVEN !!;</tt>
+<br><tt>525&nbsp; %mend putv2;</tt>
+<br><tt>526</tt>
+<br><tt>527</tt>
+<br><tt>528&nbsp; %putv2;</tt>
+<br><tt>>>>> NO STATE VALUE GIVEN !!</tt>
+<br><tt>529</tt>
+<br><tt>530&nbsp; %putv2(MI);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>531</tt>
+<br><tt>532&nbsp; %putv2(TX);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>533</tt>
+<br><tt>534&nbsp; %putv2(OR);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p>Everything looks good in the log. Maybe we are onto a winner. Let's
+try a few more values. See if the macro gets confused if we give it more
+than one state. The third call will create at least a single warning as
+it will try to resolve "&amp;TX" and there is no macro variable "TX":
+<p><b>The code:</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%putv2(MI TX);</tt><tt></tt>
+<p><tt>%putv2(MI &amp; TX);</tt><tt></tt>
+<p><tt>%putv2(MI&amp;TX); %*-- bad call as it will try to resolve "&amp;TX"
+--;</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p><b>The log:</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>535</tt>
+<br><tt>536&nbsp; %putv2(MI TX);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>537</tt>
+<br><tt>538&nbsp; %putv2(MI &amp; TX);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>539</tt>
+<br><tt>540&nbsp; %putv2(MI&amp;TX); %*-- bad call as it will try to resolve
+"&amp;TX" --;</tt>
+<br><tt>WARNING: Apparent symbolic reference TX not resolved.</tt>
+<br><tt>WARNING: Apparent symbolic reference TX not resolved.</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p>In the log we have two warning messages. The first is caused by the
+bad call to the macro and <b>the second is generated within the macro itself.</b>
+The first warning message in the log is enough for debugging purposes.
+The second warning does not help us and it would be better if the macro
+did not issue it. We are just testing whether a value has been supplied,
+not whether it is acceptable or not. Try again!
+<h2>
+Version 3</h2>
+What if instead of %nrbquote() we use double quotes? Time to launch version
+3 !
+<p><b>The code:</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%macro putv3(state);</tt>
+<br><tt>%if "&amp;state" NE "" %then %put >>>> state value given as expected;</tt>
+<br><tt>%else %put >>>> NO STATE VALUE GIVEN !!;</tt>
+<br><tt>%mend putv3;</tt><tt></tt>
+<p><tt>%putv3;</tt><tt></tt>
+<p><tt>%putv3(TX);</tt><tt></tt>
+<p><tt>%putv3(OR);</tt><tt></tt>
+<p><tt>%putv3(MI TX);</tt><tt></tt>
+<p><tt>%putv3(MI &amp; TX);</tt><tt></tt>
+<p><tt>%putv3(MI&amp;TX); %*-- with expected single WARNING --;</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p><b>The log:</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>541&nbsp; %macro putv3(state);</tt>
+<br><tt>542&nbsp; %if "&amp;state" NE "" %then %put >>>> state value given
+as expected;</tt>
+<br><tt>543&nbsp; %else %put >>>> NO STATE VALUE GIVEN !!;</tt>
+<br><tt>544&nbsp; %mend putv3;</tt>
+<br><tt>545</tt>
+<br><tt>546&nbsp; %putv3;</tt>
+<br><tt>>>>> NO STATE VALUE GIVEN !!</tt>
+<br><tt>547</tt>
+<br><tt>548&nbsp; %putv3(TX);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>549</tt>
+<br><tt>550&nbsp; %putv3(OR);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>551</tt>
+<br><tt>552&nbsp; %putv3(MI TX);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>553</tt>
+<br><tt>554&nbsp; %putv3(MI &amp; TX);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>555</tt>
+<br><tt>556&nbsp; %putv3(MI&amp;TX); %*-- with expected single WARNING
+--;</tt>
+<br><tt>WARNING: Apparent symbolic reference TX not resolved.</tt>
+<br><tt>WARNING: Apparent symbolic reference TX not resolved.</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p>Using double quotes does not improve the situation as you can see.
+<h2>
+Version 4</h2>
+A very common macro function to test for macro variable contents is %length().
+The Spectre macros you can download from this web site&nbsp; use this method
+for checking whether a parameter has been set. It is efficient but not
+fully robust. Let's see what happens in our&nbsp; version 4 macro. We will
+use it in the form "%if %length(&amp;state) %then %put..." such that if
+the length is not zero then it has a state to display. We are using it
+in the boolean sense.
+<p><b>The code:</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%macro putv4(state);</tt>
+<br><tt>%if %length(&amp;state) %then %put >>>> state value given as expected;</tt>
+<br><tt>%else %put >>>> NO STATE VALUE GIVEN !!;</tt>
+<br><tt>%mend putv4;</tt><tt></tt>
+<p><tt>%putv4;</tt><tt></tt>
+<p><tt>%putv4(TX);</tt><tt></tt>
+<p><tt>%putv4(OR);</tt><tt></tt>
+<p><tt>%putv4(MI TX);</tt><tt></tt>
+<p><tt>%putv4(MI &amp; TX);</tt><tt></tt>
+<p><tt>%putv4(MI&amp;TX); %*-- with expected single WARNING --;</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p><b>The log:</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>557&nbsp; %macro putv4(state);</tt>
+<br><tt>558&nbsp; %if %length(&amp;state) %then %put >>>> state value given
+as expected;</tt>
+<br><tt>559&nbsp; %else %put >>>> NO STATE VALUE GIVEN !!;</tt>
+<br><tt>560&nbsp; %mend putv4;</tt>
+<br><tt>561</tt>
+<br><tt>562&nbsp; %putv4;</tt>
+<br><tt>>>>> NO STATE VALUE GIVEN !!</tt>
+<br><tt>563</tt>
+<br><tt>564&nbsp; %putv4(TX);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>565</tt>
+<br><tt>566&nbsp; %putv4(OR);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>567</tt>
+<br><tt>568&nbsp; %putv4(MI TX);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>569</tt>
+<br><tt>570&nbsp; %putv4(MI &amp; TX);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>571</tt>
+<br><tt>572&nbsp; %putv4(MI&amp;TX); %*-- with expected single WARNING
+--;</tt>
+<br><tt>WARNING: Apparent symbolic reference TX not resolved.</tt>
+<br><tt>WARNING: Apparent symbolic reference TX not resolved.</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p>Still no joy as %length(&amp;state) has to allow the contents of "state"
+to resolve and it first resolved to "MI&amp;TX" and then it attempts to
+resolve "&amp;TX" which is not possible.
+<h2>
+Version 5</h2>
+We somehow need to stop "&amp;TX" from attempting to resolve. We can use
+the macro quoting function %superq() for that. We need to remember for
+%superq() that you must supply the macro variable NAME to it and not its
+value that you would get from putting a "&amp;" in front of the macro variable
+name.
+<p>Here goes version 5.
+<p><b>The code:</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%macro putv5(state);</tt>
+<br><tt>%if %superq(state) NE %then %put >>>> state value given as expected;</tt>
+<br><tt>%else %put >>>> NO STATE VALUE GIVEN !!;</tt>
+<br><tt>%mend putv5;</tt><tt></tt>
+<p><tt>%putv5;</tt><tt></tt>
+<p><tt>%putv5(TX);</tt><tt></tt>
+<p><tt>%putv5(OR);</tt><tt></tt>
+<p><tt>%putv5(MI TX);</tt><tt></tt>
+<p><tt>%putv5(MI &amp; TX);</tt><tt></tt>
+<p><tt>%putv5(MI&amp;TX); %*-- with expected single WARNING --;</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p><b>The log</b>:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>573&nbsp; %macro putv5(state);</tt>
+<br><tt>574&nbsp; %if %superq(state) NE %then %put >>>> state value given
+as expected;</tt>
+<br><tt>575&nbsp; %else %put >>>> NO STATE VALUE GIVEN !!;</tt>
+<br><tt>576&nbsp; %mend putv5;</tt>
+<br><tt>577</tt>
+<br><tt>578&nbsp; %putv5;</tt>
+<br><tt>>>>> NO STATE VALUE GIVEN !!</tt>
+<br><tt>579</tt>
+<br><tt>580&nbsp; %putv5(TX);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>581</tt>
+<br><tt>582&nbsp; %putv5(OR);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>583</tt>
+<br><tt>584&nbsp; %putv5(MI TX);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>585</tt>
+<br><tt>586&nbsp; %putv5(MI &amp; TX);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>587</tt>
+<br><tt>588&nbsp; %putv5(MI&amp;TX); %*-- with expected single WARNING
+--;</tt>
+<br><tt>WARNING: Apparent symbolic reference TX not resolved.</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p>Now we have the single warning message we were hoping for.
+<p>It looks like <b>we are onto a winner!!</b>
+<p>However, we are conscientious programmers, so we will "try to break
+it" with a bit of extra testing.
+<p><b>More code:</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%putv5(123456789);</tt><tt></tt>
+<p><tt>%putv5(NE 123456789 NE);</tt><tt></tt>
+<p><tt>%putv5(NE AND 123456789 NE ' ' );</tt><tt></tt>
+<p><tt>%putv5(12345678901234567890123456789);</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p><b>The log:</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>620&nbsp; %putv5(123456789);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>621</tt>
+<br><tt>622&nbsp; %putv5(NE 123456789 NE);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>623</tt>
+<br><tt>624&nbsp; %putv5(NE AND 123456789 NE ' ' );</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>625</tt>
+<br><tt>626&nbsp; %putv5(12345678901234567890123456789);</tt>
+<br><tt>ERROR: Overflow has occurred; evaluation is terminated.</tt>
+<br><tt>ERROR: The macro PUTV5 will stop executing.</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p><b>Oh dear!! It did not like that big number.</b>
+<p>It seems that the more testing you do, the more errors you find in your
+own wonderful code.
+<p>Shame&nbsp; <b>:(</b>
+<h2>
+Version 6</h2>
+The error message mentioned an "evaluation". What if we try to avoid that
+evaluation by cutting out the " NE ". We could check the results of the
+%superq() length using %length(). We'll do that and add to the list of
+checks by making sure it can handle null values and some of the checks
+we used before. Where a marked space %str( ) is supplied then we will assume
+this is a deliberate value that the macro variable has been set to and
+so it has a length.
+<p>Here goes version 6.
+<p><b>The code:</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%macro putv6(state);</tt>
+<br><tt>%if %length(%superq(state)) %then %put >>>> state value given as
+expected;</tt>
+<br><tt>%else %put >>>> NO STATE VALUE GIVEN !!;</tt>
+<br><tt>%mend putv6;</tt>
+<br><tt></tt>&nbsp;<tt></tt>
+<p><tt>%putv6(123456789);</tt><tt></tt>
+<p><tt>%putv6(NE 123456789 NE);</tt><tt></tt>
+<p><tt>%putv6(NE AND 123456789 NE ' ' );</tt><tt></tt>
+<p><tt>%putv6(12345678901234567890123456789);</tt><tt></tt>
+<p><tt>%putv6;</tt><tt></tt>
+<p><tt>%putv6();</tt><tt></tt>
+<p><tt>%putv6(%str( ));</tt><tt></tt>
+<p><tt>%putv6(TX);</tt><tt></tt>
+<p><tt>%putv6(OR);</tt><tt></tt>
+<p><tt>%putv6(MI TX);</tt><tt></tt>
+<p><tt>%putv6(MI &amp; TX);</tt><tt></tt>
+<p><tt>%putv6(MI&amp;TX); %*-- with expected single WARNING --;</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p><b>The log:</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>678&nbsp; %macro putv6(state);</tt>
+<br><tt>679&nbsp; %if %length(%superq(state)) %then %put >>>> state value
+given as expected;</tt>
+<br><tt>680&nbsp; %else %put >>>> NO STATE VALUE GIVEN !!;</tt>
+<br><tt>681&nbsp; %mend putv6;</tt>
+<br><tt>682</tt>
+<br><tt>683</tt>
+<br><tt>684&nbsp; %putv6(123456789);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>685</tt>
+<br><tt>686&nbsp; %putv6(NE 123456789 NE);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>687</tt>
+<br><tt>688&nbsp; %putv6(NE AND 123456789 NE ' ' );</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>689</tt>
+<br><tt>690&nbsp; %putv6(12345678901234567890123456789);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>691</tt>
+<br><tt>692&nbsp; %putv6;</tt>
+<br><tt>>>>> NO STATE VALUE GIVEN !!</tt>
+<br><tt>693</tt>
+<br><tt>694&nbsp; %putv6();</tt>
+<br><tt>>>>> NO STATE VALUE GIVEN !!</tt>
+<br><tt>695</tt>
+<br><tt>696&nbsp; %putv6(%str( ));</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>697</tt>
+<br><tt>698&nbsp; %putv6(TX);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>699</tt>
+<br><tt>700&nbsp; %putv6(OR);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>701</tt>
+<br><tt>702&nbsp; %putv6(MI TX);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>703</tt>
+<br><tt>704&nbsp; %putv6(MI &amp; TX);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>705</tt>
+<br><tt>706&nbsp; %putv6(MI&amp;TX); %*-- with expected single WARNING
+--;</tt>
+<br><tt>WARNING: Apparent symbolic reference TX not resolved.</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p>We have finally got there. A combination of %length() and %superq()
+will give us a very robust way for testing whether a macro parameter has
+been supplied with a value.
+<h2>
+Version 7</h2>
+It might be useful to write this test into a macro so that people get into
+the habit of using it. If we start the name with "<b>superq</b>" then people
+will remember that they have to supply the macro variable name without
+a "&amp;" in front. Inside the macro you will see I have put a "&amp;"
+in front of "parm" when calling %superq(). That is not a mistake as I need
+it to resolve to the macro variable name supplied when calling the macro.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%macro superql(parm);</tt>
+<br><tt>%length(%superq(&amp;parm))</tt>
+<br><tt>%mend superql;</tt></td>
+</tr>
+</table>
+
+<p>Finally we have version 7 of our macro that calls this new <b>%superql
+</b>macro.
+<p><b>The code:</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%macro putv7(state);</tt>
+<br><tt>%if %superql(state) %then %put >>>> state value given as expected;</tt>
+<br><tt>%else %put >>>> NO STATE VALUE GIVEN !!;</tt>
+<br><tt>%mend putv7;</tt>
+<br><tt></tt>&nbsp;<tt></tt>
+<p><tt>%putv7(123456789);</tt><tt></tt>
+<p><tt>%putv7(NE 123456789 NE);</tt><tt></tt>
+<p><tt>%putv7(NE AND 123456789 NE ' ' );</tt><tt></tt>
+<p><tt>%putv7(12345678901234567890123456789);</tt><tt></tt>
+<p><tt>%putv7;</tt><tt></tt>
+<p><tt>%putv7();</tt><tt></tt>
+<p><tt>%putv7(%str( ));</tt><tt></tt>
+<p><tt>%putv7(TX);</tt><tt></tt>
+<p><tt>%putv7(OR);</tt><tt></tt>
+<p><tt>%putv7(MI TX);</tt><tt></tt>
+<p><tt>%putv7(MI &amp; TX);</tt><tt></tt>
+<p><tt>%putv7(MI&amp;TX); %*-- with expected single WARNING --;</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p><b>The log:</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>739&nbsp; %macro putv7(state);</tt>
+<br><tt>740&nbsp; %if %superql(state) %then %put >>>> state value given
+as expected;</tt>
+<br><tt>741&nbsp; %else %put >>>> NO STATE VALUE GIVEN !!;</tt>
+<br><tt>742&nbsp; %mend putv7;</tt>
+<br><tt>743</tt>
+<br><tt>744</tt>
+<br><tt>745&nbsp; %putv7(123456789);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>746</tt>
+<br><tt>747&nbsp; %putv7(NE 123456789 NE);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>748</tt>
+<br><tt>749&nbsp; %putv7(NE AND 123456789 NE ' ' );</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>750</tt>
+<br><tt>751&nbsp; %putv7(12345678901234567890123456789);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>752</tt>
+<br><tt>753&nbsp; %putv7;</tt>
+<br><tt>>>>> NO STATE VALUE GIVEN !!</tt>
+<br><tt>754</tt>
+<br><tt>755&nbsp; %putv7();</tt>
+<br><tt>>>>> NO STATE VALUE GIVEN !!</tt>
+<br><tt>756</tt>
+<br><tt>757&nbsp; %putv7(%str( ));</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>758</tt>
+<br><tt>759&nbsp; %putv7(TX);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>760</tt>
+<br><tt>761&nbsp; %putv7(OR);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>762</tt>
+<br><tt>763&nbsp; %putv7(MI TX);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>764</tt>
+<br><tt>765&nbsp; %putv7(MI &amp; TX);</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt>766</tt>
+<br><tt>767&nbsp; %putv7(MI&amp;TX); %*-- with expected single WARNING
+--;</tt>
+<br><tt>WARNING: Apparent symbolic reference TX not resolved.</tt>
+<br><tt>>>>> state value given as expected</tt>
+<br><tt></tt>&nbsp;</td>
+</tr>
+</table>
+
+<p>Everything works as expected. If you remember that <b>%superql </b>means
+the <b>length</b> of the <b>%superq</b> result so you know to supply the
+macro name to it without a "<b>&amp;</b>" in front then you can call this
+little macro inside the macros you write when you want to test for parameters
+being set and you can be sure it will work correctly.
+<p><b>The macro %superql again (just to remind you):</b>
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%macro superql(parm);</tt>
+<br><tt>%length(%superq(&amp;parm))</tt>
+<br><tt>%mend superql;</tt></td>
+</tr>
+</table>
+
+<h2>
+Conclusion</h2>
+You have seen the attempts to test for a macro parameter having a value
+and the limitations of various methods. Finally, we arrived at the robust
+method of using %length(%superq()).
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page</font>
+<br>&nbsp;
+<br>&nbsp;
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/mvarlen.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:04 GMT -->
+</html>

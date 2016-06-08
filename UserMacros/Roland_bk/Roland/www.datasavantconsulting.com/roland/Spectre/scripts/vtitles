@@ -1,0 +1,37 @@
+#!/bin/bash
+#<pre><b>
+# Script     : vtitles
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 15-Jul-2004
+# Purpose    : Production script to make sure .titles members have a correctly
+#              matching program name inside.
+# SubScripts : none
+# Notes      : Run in the current directory
+# Usage      : vtitles
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not supply any parameters
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+grep -i '^program:' *.titles /dev/null | sed 's/ *$//' | \
+gawk '{sub(/\.titles:[Pp][Rr][Oo][Gg][Rr][Aa][Mm]: */,":");print}' | \
+gawk -F: '$1 != $2' > ~/vtitles_$$.tmp
+
+while read line ; do
+  file=$(echo "$line" | cut -d: -f1).titles
+  owner=$(ls -l $file | gawk '{print $3}')
+  prog=$(echo "$line" | cut -d: -f2)
+  echo "Error: (vtitles) $file owned by $owner has mismatched program name
+$prog" 1>&2
+done < ~/vtitles_$$.tmp
+
+rm -f ~/vtitles_$$.tmp

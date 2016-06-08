@@ -1,0 +1,59 @@
+#!/bin/bash
+#<pre><b>
+# Script     : donesectchk
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 12-Jan-2005
+# Purpose    : To check that the donelist section files have all the entries in
+#              donelist.txt
+# SubScripts : none
+# Notes      : none
+# Usage      : donesectchk 
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+# N/A  Do not supply any parameters
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# No parameters required
+if [ $# -gt 0 ] ; then
+  echo "Error: (donelistchk) Do not supply any parameters" 1>&2
+  exit 1
+fi
+
+
+sections=$(ls -1 donesect*.txt | grep '^donesect[0-9][0-9]*\.txt$' | wc -l)
+
+
+if [ $sections -eq 0 ] ; then
+  echo "There are no donelist section files in this directory" 1>&2
+  echo "so no checking will be done." 1>&2
+  exit
+fi
+
+
+cat $(ls -1 donesect*.txt | grep '^donesect[0-9][0-9]*\.txt$') | \
+grep '^...-...-...-...-...-... ' | sort > ~/donesectchk_$$.tmp
+
+
+diff donelist.txt ~/donesectchk_$$.tmp > ~/donecheck_$$.tmp
+
+if [ -s ~/donecheck_$$.tmp ] ; then
+  echo "Differences were found"
+  echo "Entries missed from donelist.txt will be shown with a \"<\" in front"
+  echo "Entries additional to what is in donelist.txt will be shown with a \">\"
+in front"
+  cat ~/donecheck_$$.tmp
+else
+  echo "No differences were found"
+fi
+
+
+rm -f ~/donesectchk_$$.tmp ~/donecheck_$$.tmp

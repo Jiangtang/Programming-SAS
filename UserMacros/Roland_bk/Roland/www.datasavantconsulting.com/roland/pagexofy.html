@@ -1,0 +1,158 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/pagexofy.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="SAS tips and techniques by Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="sas tips techniques">
+   <title>whosgot</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+pagexofy</h1></center>
+<b>[last updated - 28 July 2003]</b>
+<p>This is an <b>nawk</b> (new awk) implementation of the macro I wrote
+of the same name to add <b>"Page x of Y"</b> labels to output. You can
+view the SAS macro that does this <a href="pagexofy.sas">here</a>. You
+are going to see that with <b>nawk</b> it is a lot shorter and when you
+run it you will find it is a lot faster. Now a word of warning, there are
+a number of versions of awk. Nawk is one of them. There is <b>gawk</b>
+as well which is what I am using on my PC. If you are not running on a
+full-blown Unix system then you might not have nawk. You might have gawk
+or awk. And they have slightly different syntax. For gawk, when you reference
+external variables to gawk, you must enclose those variable references
+with a sequence of differing quotes as shown in the script code below for
+the gawk block. For nawk it is different - you don't need to surround the
+single quotes with double quotes.
+<p>Whatever you choose, the utility will want access to the function gsub()
+to globally substitute ann 'FE'x (\xfe) characters with a space. I use
+this non-printable character at the end of a string using proc report so
+that when I use a column header alignment of center or right, the information
+in the columns doesn't get shifted. It is what I call a "substitute space"
+and I choose 'FE'x (\xfe in Unix notation) for this. So when I add page
+numbers to output I check for this character and substitute a space for
+it when I find it. This utility will do the same if it can. But the function
+gsub() that it uses to do this may not be in your implementation of awk/nawk/gawk.
+If you work on a full-blown Unix site then you will have nawk so it should
+work.
+<p>If you can not get the gsub() to work because it is not available then
+all is not lost. If you have carefully read the Unix tips here sequentially
+then you are already in a position to be able to amend these scripts. You
+can always use the <b>tr</b> utility to substitute the 'FE'x for a space
+(\xfe in Unix notation). I've already introduced <b>tr</b> to you. Twice,
+in fact. So you should be able to amend the script to use it if you have
+to. Also, if you never use a substitute space like I do, then you can delete
+the line with the gsub() call in it and it should work.
+<p>I'll remind you how the original SAS macro worked. It doesn't bother
+counting page throw characters. There is a target character (by default
+'FF'x or \xff) where you want the "Page x of Y" label to go so it assumes
+you have one of these per page and counts those instead. You'll see a few
+features in the following script that I have not introduced before.
+<pre><b>#!/bin/sh
+# Script&nbsp;&nbsp;&nbsp;&nbsp; : pagexofy
+# Version&nbsp;&nbsp;&nbsp; : 1.0
+# Author&nbsp;&nbsp;&nbsp;&nbsp; : Roland Rashleigh-Berry
+# Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 28 July 2003
+# Contact&nbsp;&nbsp;&nbsp; : rolandberry@hotmail.com
+# Purpose&nbsp;&nbsp;&nbsp; : To add "Page x of Y" labels to report output
+# SubScripts : none
+# Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : The "page x of Y" label gets added where the target character
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'FF'x is found. In addition, if any characters 'FE'x are found
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; the spaces will be substituted for them.
+# Usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : pagexofy input.lst > output.lst
+#&nbsp;
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+#&nbsp; 1&nbsp;&nbsp; input file
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+#&nbsp;
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+if [ $# -lt 1 ] ; then
+&nbsp; echo "Usage: pagexofy infile.lst > outfile.lst" 1>&amp;2
+&nbsp; exit 1
+fi
+
+totpages=`awk '/\xff/' $1 | wc -l`
+
+#-- This is the gawk version that I think will work when uncommented --
+#gawk 'BEGIN{page=0} \
+#{gsub("\xfe"," ")} \
+#{if (index($0,"\xff")>0) {page++ ; str="page "page " of "'"$totpages"'""}} \
+#{if (substr($0,1,1)=="\xff") \
+# print str substr($0,length(str)+1) ; \
+#else if (substr($0,length($0),1)=="\xff") \
+# print substr($0,1,length($0)-length(str)) str ; \
+#else print $0}' $1
+
+#-- This is the nawk version that I think will work when uncommented --
+nawk 'BEGIN{page=0} \
+{gsub("\xfe"," ")} \
+{if (index($0,"\xff")>0) {page++ ; str="page "page " of '$totpages'"}} \
+{if (substr($0,1,1)=="\xff") \
+&nbsp;print str substr($0,length(str)+1) ; \
+else if (substr($0,length($0),1)=="\xff") \
+&nbsp;print substr($0,1,length($0)-length(str)) str ; \
+else print $0}' $1</b>
+
+</pre>
+The header and check for parameters you should know about. But the first
+line of code that follows is something I have not introduced before. Here
+it is on its own:
+<p><b><tt>totpages=`awk '/\xff/' $1 | wc -l`</tt></b>
+<p>The first thing to note is the quotes. The quotes on the extreme left
+and right are not the single quotes you normally use. They are the strange
+quotes you have at the top left of your keyboard. I call them "do it now"
+quotes. It will execute whatever is inside it and return the results to
+the variable. Inside the quotes there is a call to awk immediately followed
+by a pattern to match. That pattern is defined as <b><tt>'/\xff/'</tt></b>
+and you can see that this pattern is enclosed in normal single quotes.
+What this is doing is selecting only those lines that have this pattern
+in it. These are the target characters for the "Page x of Y" labels. So
+it is selecting only those and piping it to the <b>wc</b> utility. This
+is the "word count" utility. But because the <b>-l</b> option is used with
+wc it counts the number of lines rather than words. So the number of lines
+with our "Page x of Y" target character in gets assigned to the variable
+totpages. This the total number of pages (at least it should be if you
+have put one of these target characters on each page). We resolve that
+value in our call to nawk/gawk. If you use nawk then totpages gets referred
+to as <b><tt>'$totpages'</tt></b> but if you use gawk then it gets referred
+to as <b><tt>"'"$totpages"'"</tt></b> . If it finds the target character
+at the start of a line then the "Page x of Y" label will start from that
+point but it the target character is at the end of the line then it will
+start earlier in the line and end on that character. But if that target
+character is not there it will just print out the existing line.
+<p>Needless to say, output goes to the terminal window. It is up to you
+to redirect output to a file.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><br>
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/pagexofy.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+</html>

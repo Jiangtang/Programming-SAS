@@ -1,0 +1,54 @@
+#!/bin/bash
+#<pre><b>
+# Script     : vop (view o/p)
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 15-Oct-2004
+# Purpose    : To view output with the supplied table/appendix reference
+# SubScripts : none
+# Notes      : This can take a while to run if there are many output files to
+#              search. Assumes output takes the form *.lis, *.lis[a-z], *.lst
+#              or *.LST but will ignore the file titles.lis
+# Usage      : vop 13.7.2.1
+#              
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# One reference number and one only required
+if [ $# -ne 1 ] ; then
+  echo "Usage: vop 13.7.3.1" 1>&2
+  exit 1
+fi
+
+# mask the dots
+pattern=$(echo "$1" | sed 's%\.%\\\.%g')
+
+echo  "Searching.." 1>&2
+egrep -ic "   *table $pattern *$|   *appendix $pattern *$" *.lis *.lis[a-z] *.LST *.lst /dev/null 2>/dev/null \
+| grep -v ':0$' | sed 's/:.*$//' | grep -v '^titles\.lis$' > $HOME/vop.tmp
+
+
+lines=$(cat $HOME/vop.tmp | wc -l)
+
+if [ $lines -eq 0 ] ; then
+  echo "Output for table/appendix $1 not found" 1>&2
+elif [ $lines -gt 1 ] ; then
+  echo "More than one output found for table/appendix $1" 1>&2
+  cat $HOME/vop.tmp 1>&2
+else
+  echo "Found a match in $(cat $HOME/vop.tmp)" 1>&2
+  dtpad -viewOnly $(cat $HOME/vop.tmp) &
+fi
+
+sleep 1
+rm -f $HOME/vop.tmp

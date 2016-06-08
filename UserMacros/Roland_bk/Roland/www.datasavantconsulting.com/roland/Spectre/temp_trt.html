@@ -1,0 +1,88 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/Spectre/temp_trt.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:25 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="Use of Temporary Treatment Variables">
+   <meta name="Description" content="Spectre collisions">
+   <title>Use of Temporary Treatment Variables</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Use of Temporary Treatment Variables</h1></center>
+<b>Last updated: 29 May 2015</b>
+<p>You can use the Spectre Clinical macro to reproduce some quite complicated
+report layouts where you are showing treatment variables side by side,
+maybe from different studies that you are pooling together. The secret
+lies in setting up one or more temporary treatment variables (usually numeric),
+previously setting up formats to be assigned to each of these temporary
+treatment variables that map the numeric value to the lowest level description
+of the treatment arm (such as "Placebo", "Drug A", "Drug B") in the orginal
+study. You feed this data into the %popfmt macro so that it creates a modified
+format for you that adds the population at the end of the labels and creates
+the series of variables TRT1, TRT2, TRT3 etc.. Of course, you lose the
+top label of these columns that tells you what study or grouping it originally
+belonged to, but when you call the Spectre Clinical macros to display the
+values then you can restore the labels that identify which study or group
+the treatment values belong to using the trtvarlist= parameter in the call
+to the macro (see the description of the trtvarlist= parameter in the macro
+header).
+<p>Another technique you can use when pooling data is when you know you
+are showing the same subject data in more than one column. This is easy
+to handle. Just repeat your data and in the copies of the data, assign
+different treatment values to the temporary treatment variable so that
+the data appears in the correct column.
+<p>Don't think you are doing something strange in setting up temporary
+treatment variables. The Spectre Clinical macros were designed to make
+full use of them when pooling studies together in differing combinations.
+Temporary treatment variables are your friend!
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../../www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/Spectre/temp_trt.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:25 GMT -->
+</html>

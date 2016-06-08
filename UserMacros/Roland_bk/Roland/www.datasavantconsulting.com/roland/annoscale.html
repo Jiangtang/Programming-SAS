@@ -1,0 +1,180 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/annoscale.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:06 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="Creating a scale using an annotate dataset">
+   <meta name="KeyWords" content="Creating scale annotate dataset">
+   <meta name="robots" content="noindex,nofollow">
+   <title>Creating a scale using an annotate dataset</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Creating a scale using an annotate dataset</h1></center>
+
+<h2>
+Introduction</h2>
+What I am going to show you on this page is one way to create a time scale
+using an annotate dataset.
+<h2>
+annotate macros</h2>
+If you are aware of <b>annotate datasets</b> then you might or might not
+be aware of a set of macros called the "<b>annotate macros</b>" supplied
+by the SAS Institute. They are all held inside one of the autocall members
+named <b>%annomac</b>. This is unusual because normally they are single
+macros with the same name as the member name. You have this macro in your
+"core" sasmacro library if you look. The SAS Institute supply it. It isn't
+one of mine (for a change). These annotate macros don't save you much work,
+since you have to understand how annotate datasets work in their raw form
+to be able to use these macros - but they can make your code shorter and
+easier to understand. So long as using these macros suits the application
+you are trying to write, you will probably prefer to use them rather than
+use raw annotate dataset code. Of course, there is nothing to stop you
+mixing raw code and calls to these macros.
+<p>How to use the annotate macros has been the subject of a number of papers
+and I am not going to write such a paper. You can search Google for these.
+What I am going to show you on this page is a fairly complicated use of
+them when creating and using a time scale.
+<h2>
+patient profiler time scale</h2>
+What I am going to do on this page is to recreate the outline of a page
+created for an example graphical patient profiler. It is the first figure
+shown in the following document. You have to scroll down a bit
+<br><a href="http://www.lexjansen.com/pharmasug/2007/ad/ad03.pdf" target="_blank">A
+Low Cost Graphical Patient Profiler with SAS MetaViewApplet</a>
+<p>Note that the scale is shown from day -40 to 150 with the scale marks
+you can see at the bottom of the page. This is what I am going to reproduce
+in this document. I won't be adding any other details at this stage. That
+would make things too complicated. I just want you to see how I have reproduced
+this scale. In my code you will see how I can plot a day number to an x
+axis coordinate so if I wanted to I could add other details just like the
+patient profiler is doing. But for your sake, I will keep things simple.
+<h2>
+The code</h2>
+Note that <b>%annomac</b> has to be called so that the macros inside it
+can be complied and therefore called from inside the data step. I will
+be calling a few of these macros, namely <b>%dclanno, %system, %frame,
+%move, %draw</b> and <b>%label</b>. Don't regard my goptions as authoritative.
+I just keep changing them until it works for me. Feel free to change them
+yourself. The only complicated thing about the code below is perhaps the
+"drawscale" routine. This loops through the scale and calls "calcx" for
+each day to work out what the "x" coordinate should be. It then writes
+the scale value and draws a line in the graph area. If you want to play
+around with this code then remove "dev=html" in the goptions so that you
+can see the results in your output window, rather than having to look at
+an html file.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%*- The minimum and maximum days for the x axis and the scale to
+use -;</tt>
+<br><tt>%let minday=-40;</tt>
+<br><tt>%let maxday=150;</tt>
+<br><tt>%let scale= -40/-40 | 0/D1 | 14/W2 | 28/W4 | 56/W8 | 84/W12 | 112/W16
+| 150/150 ;</tt>
+<p><tt>goptions reset=all vpos=60 hpos=120 papersize='A4' rotate=landscape</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vsize=0in hsize=0in
+dev=html; /* remove dev=html if you are testing */</tt>
+<p><tt>%*- compile the annotate macros -;</tt>
+<br><tt>%annomac(nomsg)</tt>
+<br>&nbsp;
+<p><tt>data test;</tt>
+<br><tt>&nbsp; retain minday &amp;minday&nbsp;&nbsp; maxday &amp;maxday</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; scale "&amp;scale"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xmin 30&nbsp;&nbsp;
+xmax 100</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xmin2 32&nbsp;&nbsp;
+xmax2 98</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ymin 3&nbsp; ymax
+99</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; i 0</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+<br><tt>&nbsp; length text $ 80&nbsp;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bit $ 30</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+<p><tt>&nbsp; %dclanno</tt>
+<br><tt>&nbsp; %system(3,3)</tt>
+<br><tt>&nbsp; %frame(black,1,1)</tt>
+<p><tt>&nbsp; *- if first time through then draw the box and the scale
+-;</tt>
+<br><tt>&nbsp; if _n_=1 then do;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; link drawbox;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; link drawscale;</tt>
+<br><tt>&nbsp; end;</tt>
+<p><tt>&nbsp; *- put "set" statement processing after this line and before
+the "return" -;</tt>
+<br><tt>&nbsp; return;</tt>
+<br>&nbsp;
+<p><tt>drawbox:</tt>
+<br><tt>&nbsp; %move(xmin,ymin)</tt>
+<br><tt>&nbsp; %draw(xmax,ymin,black,1,2)</tt>
+<br><tt>&nbsp; %draw(xmax,ymax,black,1,2)</tt>
+<br><tt>&nbsp; %draw(xmin,ymax,black,1,2)</tt>
+<br><tt>&nbsp; %draw(xmin,ymin,black,1,2)</tt>
+<br><tt>&nbsp; return;</tt>
+<p><tt>drawscale:</tt>
+<br><tt>&nbsp; y=2;</tt>
+<br><tt>&nbsp; i=1;</tt>
+<br><tt>&nbsp; bit=scan(scale,i,"|");</tt>
+<br><tt>&nbsp; do while(bit ne " ");</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; day=input(scan(bit,1,"/"),6.);</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; text=scan(bit,2,"/");</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; link calcx;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %label(x,2,text,black,0,0,1.2,'Times New Roman',+)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %move(x,ymin)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; %draw(x,90,vpab,1,1)</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; i=i+1;</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; bit=scan(scale,i,"|");</tt>
+<br><tt>&nbsp; end;</tt>
+<br><tt>&nbsp; return;</tt>
+<p><tt>calcx:</tt>
+<br><tt>&nbsp; *- calculate x coordinate using the day -;</tt>
+<br><tt>&nbsp; x=((day-minday)/(maxday-minday))*(xmax2-xmin2)+xmin2;</tt>
+<br><tt>&nbsp; return;</tt>
+<p><tt>run;</tt>
+<br>&nbsp;
+<p><tt>proc ganno annotate=test;</tt>
+<br><tt>run;</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<h2>
+The output</h2>
+Here is the output. Note that the layout is the same as the first figure
+in the document I provided a link for. To see that output then click on
+this <a href="http://www.datasavantconsulting.com/roland/annoscale2.html" target="_blank">link</a>.
+<h2>
+Conclusion</h2>
+This document shows you one way to create a time scale using an annotate
+dataset, with particular emphasis given to the "<b>annotate macros</b>"
+to achieve this.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="http://www.datasavantconsulting.com/roland/counter.php" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/annoscale.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:06 GMT -->
+</html>

@@ -1,0 +1,66 @@
+#!/bin/bash
+#<pre><b>
+# Script     : getitles_sas
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 05-Dec-2005
+# Purpose    : To extract the titles from an output listing (use SAS)
+# SubScripts : none
+# Notes      : This is the SAS version of getitles. It runs much slower and
+#              lacks some of the functionality of getitles. This will read the
+#              first ten lines only.
+# Usage      : getitles_sas filename.ext
+#
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   Output file to extract titles from
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+#
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# One file name only should be supplied
+if [ $# -ne 1 ] ; then
+  echo "Usage: getitles2 filename.ext" 1>&2
+  exit 1
+fi
+
+
+# Feed SAS code into standard input
+sas -stdio -noautoexec -sasuser work 2>/dev/null << -----FINISH-----
+data _null_;
+  length title $ 400 pop $ 100;
+  retain blcount 0 llength 0 title " " pop " ";
+  file stdout;
+  infile "$1";
+  do i=1 to 10;
+    input;
+    if i=1 then llength=length(_infile_);
+    *- look for the title at the end of the second line (appendix tables or listings) -;
+    if i=2 and length(_infile_) gt 0.75*llength 
+      then title=left(substr(_infile_,index(_infile_,"   ")));
+    *- look for population at the end of the third line (appendix tables or listings) -;
+    if i=3 and length(_infile_) gt 0.75*llength 
+      then pop=left(substr(_infile_,index(_infile_,"   ")));
+    *- Titles are expected in line 5 and later but a -;
+    *- blank line after line 6 signals no more titles. -;
+    else if i>4 then do;
+      if _infile_ ne " " then do;
+        title=trim(title)||" "||left(_infile_);
+      end;
+      else do;
+        if i>6 then i=99;
+      end;
+    end;
+  end;
+  title=left(trim(title)||" "||pop);
+  *- write title to standard output -;
+  put title;
+  stop;
+run;
+-----FINISH-----

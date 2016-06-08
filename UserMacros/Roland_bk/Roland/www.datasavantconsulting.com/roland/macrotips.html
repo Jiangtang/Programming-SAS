@@ -1,0 +1,745 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/macrotips.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Generator" content="Microsoft Word 97">
+   <meta name="keywords" content="writing sas macros">
+   <meta name="Description" content="tips on writing sas macros">
+   <meta name="Template" content="C:\PROGRAM FILES\MSOFFICE\OFFICE\html.dot">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="writing sas macros tips">
+   <title>Tips on writing sas macros</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Tips on writing SAS macros</h1></center>
+<b>[This site is not connected with the SAS Institute]</b>
+<p><b>[Last updated - 22 May 2011]</b>
+<h2>
+Introduction</h2>
+A well-written SAS macro is a very valuable thing and can endure for a
+long time. Indeed, a macro once written can quickly become a "standard"
+macro and shape the way future sas programs are developed, so it is important
+that macros be written well the first time. Many people aspire to writing
+SAS macros. They want to write "good" macros. But how do you go about writing
+a "good" macro as opposed to a "not-so-good" macro? The learning curve
+for writing macros can be long, slow and painful. As your experience grows
+you might be appalled at what you had written maybe only two years earlier.
+Wouldn't it be nice if you could jump over all the obstacles that you will
+encounter in your first years of writing macros and instantly reach that
+point where you know your macros are written to a high standard? Well,
+hopefully, if you follow the tips on this page then you will be able to
+do just that. There are quite a lot of ideas on this page to digest, however,
+and some careful thinking to be done.
+<h2>
+Before You Start</h2>
+Before you write a SAS macro you need to understand something. And that
+is that sas <b><i>macro</i></b> code is separate from sas code. They are
+not the same. They have a different syntax. Also, and of highest importance,
+sas macro code gets processed <b>before</b> the sas code. The sas macro
+code gets interpreted and, as a result of this action, substitutes something
+in to the code that then gets passed on to the sas compiler. There is a
+lot of confusion about this so I want to borrow from other computing languages
+to help clarify this. So forget SAS, for a moment, and allow me to explain.
+Macro code in other languages is commonly used to <b><i>tailor</i></b>
+the actual code. Depending on what parameters are set it will <b><i>change</i></b>
+the code. The idea being that under different circumstances you want to
+run slightly different code. So the macro code runs and it might change
+some file names or add or skip a chunk of code or what have you. But the
+point is that it is not running at the same time as the code. It runs before
+the code and its job is done before the code itself starts running. "Macro"
+means "bigger" or "larger in scope". It is this "larger in scope" concept
+that applies. It sees the bigger picture, if you like, and sits above actual
+code. It is like an organizer or editor of code. It makes substitutions
+or makes deletions before passing on the resulting code to the compiler
+or interpreter. So its job gets done separately and before the actual code
+gets run. Back to SAS again - SAS MACRO CODE IS THE SAME. It is done and
+gone before the sas code itself gets run. The macro usually makes a substitution
+that gets stuck into the stream of SAS code and then passed on to the compiler.
+So let's make this the first tip and keep it simple so you remember it
+- <b>macro code runs BEFORE sas code</b>. This is not something you can
+just skip over and hope it falls into place at a later date. I'll put it
+another way - all macro code gets removed or substituted in sas code so
+that when the sas code runs the macro code is no longer there.
+<h2>
+Macros you should NOT write</h2>
+Writing a macro is aimed at adding value over and above not having that
+macro. I sometimes come across macros written to call "proc sort". This
+is a prime example of when NOT to write a macro. Calling "proc sort" going
+through a macro is worse than calling "proc sort" itself. All programmers
+know how to call "proc sort" and expecting them to call a macro to do it
+does not add anything of value and is a nuisance instead. So here is my
+next tip -- <b>you need a good reason to write a macro</b>.
+<h2>
+Utility macros vs. project macros</h2>
+Experience has taught me that there are two type of macros and different
+rules apply to each. "Utility" macros, as I see it, are simple macros that
+perform some sort of useful sas task for you. Project macros, on the other
+hand, will be creating something of direct relevance for whatever project
+you are involved with. So utility macros belong in the realm of SAS and
+project macros belong in the realm of the project and for me they should
+be kept separate and will have different guidelines on how they should
+be written. So this is the next tip. <b>There are two types of sas macros
+-- utilty macros and project macros -- and guidelines for one type are
+not good for the other.</b>
+<h2>
+Utility macros</h2>
+As mentioned before, utility macros are small macros that do a "SAS" sort
+of thing. They belong in the realms of SAS. They should look and feel like
+SAS. If we look in the sasautos library supplied with the sas product then
+we will see old macros there like %left() and %trim(). These act just like
+macro functions. Firstly, they have positional parameters, not named parameters.
+This makes them easier to call and allows them to look and feel like sas
+macro functions. So the next tip is <b>utility macros should have positional
+parameters.</b>
+<p>A macro like %trim() is known as a function-style macro. It returns
+a result. It sort of "boils down" into the result. It does not "push" any
+SAS code. It executes sas <i>macro </i>code, alright, but not sas code.
+There is a big difference and you should be sure you understand this because
+you will not be able to write good utility macros until you do. You will
+see something odd inside these macros. Have a look at the code and look
+for an odd line with no semicolon near the end in the macro <a href="Spectre/utilmacros/words.sas">words</a>.
+That "%eval(&amp;i - 1)" you see with no semi-colon at the end is not an
+error. It is what the %words() macro "boils down" to. It subtracts one
+from the "i" counter and it boils down into that value to give you the
+number of words. If you look at the alphabetical order macro page, jump
+to the "purposes" and look for those macros described as "function-style"
+then you will see one of these strange lines without a semi-colon at the
+end in all of <a href="Spectre/maclist2.html">them</a>.
+The macros "boil down" into that value. This is what makes them function-style
+macros. You need to understand how they work and appreciate that they are
+running sas <i>macro</i> code and not "pushing" sas code itself. They are
+boiling down into an expression that is the result you want. So this my
+next tip is <b>know what a function-style macro is and how to write one.</b>
+Use those examples to guide you.
+<p>You can open and close datasets and even read them using %sysfunc calls
+and using this system is better that "pushing" sas code. And why? It is
+because if you do not "push" sas code in your macro then you can slot in
+a call to a macro right in the middle of your sas data step or whatever.
+If it did push sas code and you called it in the middle of a data step
+then the macro call would resolve itself into the sas code it was using
+and so you would get sas code inserted into your data step and your program
+would crash. If you can avoid using sas code and use %sysfunc calls instead
+then this is of benefit. Take a look at an example where a flat file is
+being assigned, opened, read, closed and deassigned all without a single
+line of actual data step sas code in the macro <a href="Spectre/utilmacros/readfile.sas">readfile</a>.
+<p>Suppose you want to know the number of observations in a dataset. You
+could do it like this...
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data _null_;</tt>
+<br><tt>&nbsp; set dsname nobs=nobs;</tt>
+<br><tt>&nbsp; call symput('nobs',compress(put(nobs,11.)));</tt>
+<br><tt>&nbsp; stop;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>...and maybe think you had the beginnings of a jolly useful macro. But
+this would not be a "good" macro because you could have avoided using data
+step sas code at all for this task. It is better to use %sysfunc calls,
+even at the expense of simplicity. Take a look at the macro that does this
+(i.e. gives the number of observations in a dataset) webbed on this site
+called <a href="Spectre/utilmacros/nobs.sas">nobs</a>
+and the macro it calls called <a href="Spectre/utilmacros/attrn.sas">attrn</a>.
+Yes, it looks much more complicated, but this is a "good" utility macro
+because it avoids using data steps or procedures. So the next tip is <b>when
+writing utility macros, avoid "pushing" sas code if at all possible</b>.
+<h2>
+Project macros</h2>
+By "project" macros I mean macros that perform a project task, rather than
+do something useful within the sas environment. The rules for these are
+different to that of utility macros. Typically, these macros will contain
+five or more parameters so it does not make sense to use positional parameters
+like for utility macros. And if we are going to use explicit parameters
+then we should ensure naming standards are adhered to. It is annoying to
+have data= and out= for the input and output of one macro whereas having
+dsin= and dsout= in another macro in the same project. You need to stick
+to a set of standard names and adhere to them throughout your collection
+of project macros. I will straightway recommend you use dsin=, dsout=,
+dspop= and ds???= for whatever datasets you have going into and coming
+out of these project macros. So the next two tips are <b>use explicit parameters
+for project macros</b> and <b>use the dsin=, dsout=, ds???= naming convention
+for dataset parameters</b>.
+<p>Sometimes you will have a project macro with only a few parameters that
+would be useful to other projects as well. Since you won't know if these
+other projects will use the same parameter naming convention then you might
+like to break the above rule in special cases.
+<h2>
+Commenting Macro Code</h2>
+Do not mix up the two comments styles when writing macro. The <b>" * ;
+"</b> style is for sas code whereas the <b>" %* ; "</b> style is for macro
+code. Do not mix them up. If you have a part of your macro that is sas
+code then comment with sas code comments. If another part is macro code
+then comment with macro code comment. Certainly, for utility macros that
+are pure macro code, you will get an error if you use non-macro comments.
+If you use <b>" /* */ "</b> style comments then they are good for both.
+But remember, <b>do not use " * ; " style comments for macro code. Use
+" %* ; " instead</b>.
+<h2>
+Macro variables and their scope</h2>
+The thing that will cause you the most difficult to solve problems with
+macros is sloppy use of macro variables. You need not ever suffer from
+this so long as you are disciplined and always declare your macro variables
+as being local to your macro. If you do not do this then a macro variable
+such as "i" that you are using in one macro could be altered by a call
+to a sub macro that again uses the macro variable "i" without declaring
+it local. So this very important tip is <b>always declare your macro variables
+as local </b>like I have done in this example <a href="Spectre/utilmacros/remove.sas">remove.</a>
+<p>The most common one to forget is the "i" as in %do i=1 %to... I'll put
+my hand up and admit to having made this mistake many times and this is
+the one that will cause you the most trouble for nested macros.
+<h2>
+Shortening and defaulting parameter values</h2>
+You might have a parameter that the user sets to "yes". They might set
+it to "YES" instead or even "y" or "Y". Your macro needs to cope with this
+variation. The best way to handle this is to firstly make sure the parameter
+has a default value if it is supposed to and then set it to the uppercase
+first character. Then if it was set to "yes" or whatever it will always
+by "Y" you test for in the macro code and if set to "no" or whatever variation
+you just test for the "N" in your code. <b>If the first character of the
+parameter value is enough information to identify the setting then always
+reset the parameter to first character uppercase</b>.
+<h2>
+Don't duplicate variable lists</h2>
+Suppose you have been passed a list of variables by a parameter then you
+can use the <a href="Spectre/utilmacros/quotelst.sas">%quotelst()</a>
+and <a href="Spectre/utilmacros/commas.sas">%commas()</a>
+sasautos extension macros to put quotes round them or delimit them with
+commas for the benefit of proc sql or whatever. <b>There is no need to
+duplicate lists of variables for different purposes.</b>
+<h2>
+Using %sysfunc() to give you more macro functions</h2>
+If you look at the SAS documentation on macro functions then you might
+think you are limited to using only those functions in your macros. This
+is not the case, however. Most of the functions available in sas code can
+be accessed using %sysfunc() so you can use many more functions in your
+macros. In the example below, you see me using the ceil() function.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>17&nbsp;&nbsp; %put %sysfunc(ceil(-2.4));</tt>
+<br><tt>-2</tt></td>
+</tr>
+</table>
+
+<h2>
+%sysfunc() with a format</h2>
+If you add a second parameter to a %sysfunc() call then this second parameter
+is treated as a format that is used to display the result of what you supplied
+as the first parameter. In this way you can use it like a data step "put"
+statement. It is easy to forget about this second parameter format. See
+below for an example of where the date9. format is applied to today's date.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>33&nbsp;&nbsp; data _null_;</tt>
+<br><tt>34&nbsp;&nbsp;&nbsp;&nbsp; x=date();</tt>
+<br><tt>35&nbsp;&nbsp;&nbsp;&nbsp; put x=date9.;</tt>
+<br><tt>36&nbsp;&nbsp; run;</tt>
+<p><tt>x=14DEC2007</tt>
+<br><tt>NOTE: DATA statement used (Total process time):</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; real time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.10 seconds</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cpu time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.03 seconds</tt>
+<p><tt>37</tt>
+<br><tt>38&nbsp;&nbsp; %put %sysfunc(date(),date9.);</tt>
+<br><tt>14DEC2007</tt></td>
+</tr>
+</table>
+
+<h2>
+%eval() and %sysevalf()</h2>
+For many years, macro programmers were limited to calculations done in
+integers only, or having the result from calculations shown as an integer
+when it should have been a floating point number. This limitation was removed
+with the %sysevalf() function which handles floating point numbers. Here
+you see the two macro functions compared. Note that %eval() returns the
+number 2 but %sysevalf() returns the floating point number 2.5 .
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>55&nbsp;&nbsp; %put %eval(5/2);</tt>
+<br><tt>2</tt>
+<p><tt>56</tt>
+<br><tt>57&nbsp;&nbsp; %put %sysevalf(5/2);</tt>
+<br><tt>2.5</tt>
+<br>&nbsp;</td>
+</tr>
+</table>
+
+<h2>
+Be careful using %index() for matching</h2>
+It is common careless macro coding to match on variable names like this:
+<p><tt>%if %index(ONE TWO THREE,THR) %then %do...</tt>
+<p>The reason the above may not work correctly is because a match may be
+found on substrings of names and not the whole name itself. In the example
+above, "THR" will match with the first three letters of "THREE" and we
+may not want this.&nbsp; Better would be to use a macro function %indexw,
+if it existed, to match on whole words. No such macro function exists but
+we can use the sas code function indexw() through a %sysfunc call like
+this:
+<p><tt>%if %sysfunc(indexw(ONE TWO THREE,THR)) %then %do...</tt>
+<p>I use the <a href="Spectre/utilmacros/quotelst.sas">%quotelst</a>
+sasautos extension macro to ensure I get a full and correct match, bearing
+in mind that the %quotelst macro adds double quotes and not single quotes
+around each list element.
+<p><tt>%if %index(%quotelst(ONE TWO THREE),"THR") %then %do...</tt>
+<p>So my tip is
+<b>match on quoted list elements, not unquoted ones, or
+match on whole words</b>.
+<h2>
+The "%global" declaration trick</h2>
+This is the tip - <b>declaring a macro variable as %global does not change
+its contents</b>. You can declare a global macro as global multiple times
+and no warnings will be issued. You can use this as a trick to see if a
+global macro variable you are expecting has been set up or not. It's a
+"dirty" trick because it would be better if the value were passed as a
+parameter but sometimes you will want to use it. Here is an example of
+when you might choose to use this trick. Suppose you have a clinical trial
+and you have a global macro variable set up in the start of each code member
+that is called TAPERVIS and is set to a value corresponding to the start
+of a drug taper phase. And suppose you have a macro that gathers together
+the important dates for each subject, including the start of their taper
+phase. This macro could be useful to many projects, some of which do not
+have a taper phase. So you would either calculate this date or not depending
+on whether this global macro parameter has been set. So if you do this
+near the top of the macro:
+<p><tt>%global TAPERVIS;</tt>
+<p>...then later on you can test whether it was set and process accordingly
+using:
+<p><tt>%if %length(&amp;TAPERVIS) %then....</tt>
+<p>Yes, its dirty, but I bet you'll use it sometimes now you know about
+it.
+<h2>
+Boolean Expressions</h2>
+I use this technique but maybe I should not. I will tell you about it here
+rather than recommend it. If a value is other than 0 in SAS then it is
+true. If it is 0 then it is false. It's the same for sas code and sas macro
+code and it can save a bit of space. So if you see something like this:
+<p><tt>%if %length(&amp;dspop) %then...</tt>
+<p>...then it is testing for whether the dspop= parameter has been set
+to something (i.e. has a non-zero length) and if so will go off and do
+something. The long way of writing it would be:
+<p><tt>%if %length(&amp;dspop) GT 0 %then...</tt>
+<p>It saves a bit of space but is not a recommended practice. So my next
+tip is simply <b>learn to recognize boolean expressions for what they are.</b>
+<h2>
+Setting up a "byline" Macro Variable</h2>
+Suppose you have a by= parameter in your macro so that the user can specify
+the "by" variables. If this is set then you will probably need to add the
+line "by &amp;by ;" underneath some of the procedure calls. This can be
+handled by setting up a macro variable like in the following:
+<p><tt>%local byline;</tt>
+<br><tt>%if %length(&amp;by) %then %let byline=by &amp;by %str(;);</tt>
+<p>and then you can add this line under your procedure calls as follows:
+<p><tt>proc summary nway data=ds;</tt>
+<br><tt>&amp;byline</tt>
+<p>In this way you either get nothing if the by= parameter was not set
+or you get the correct "by" line.
+<p>Actually, if you try it out, all the sas procedures I know of will accept
+a null "by" line in the form "by ;" and will just ignore the line. This
+isn't documented anywhere, though, and so I wonder how long that will remain
+the case. That makes me think it is better to do it the way I am suggesting
+above.
+<h2>
+Testing for quotes</h2>
+If you don't know how to test for quote marks you can waste a lot of time
+and see a lot of strange error messages. <b>Use %str(%"%') and %qsubstr()
+to test for the existence of quotes</b> when you need to. %str(%'%") is
+the way to tell the macro parser that you really do mean a quote mark as
+a string.
+<p>Here is a bit of code you can play with that tests for quotes, compresses
+for quotes and finally inserts a space inside the quoted string if the
+second character is not a space:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>%macro test;</tt>
+<br><tt>%let str="test";</tt>
+<br><tt>%if %qsubstr(&amp;str,1,1)=%str(%') %then %put >>>>> single quote;</tt>
+<br><tt>%else %if %qsubstr(&amp;str,1,1)=%str(%") %then %put >>>>> double
+quote;</tt>
+<br><tt>%if %index(%str(%'%"),%qsubstr(&amp;str,1,1)) %then %put >>>> quoted;</tt>
+<br><tt>%put str=&amp;str;</tt>
+<br><tt>%put str=%sysfunc(compress(&amp;str,%str(%'%")));</tt>
+<br><tt>%if %qsubstr(&amp;str,2,1) NE %str( ) %then %let str=%qsubstr(&amp;str,1,1)
+%qsubstr(&amp;str,2);</tt>
+<br><tt>%put str=&amp;str;</tt>
+<br><tt>%mend;</tt>
+<br><tt>%test</tt></td>
+</tr>
+</table>
+
+<h2>
+Making Sure Something is Quoted</h2>
+Carrying on from the previous tip, suppose the user has supplied a split=
+value to a parameter that you will be passing on to a proc report step
+where the syntax expects is to be quoted. You can't be sure that the user
+has supplied it as a quoted string or an unquoted one. You want it quoted,
+but you don't want it quoted twice, of course. You can do it like this:
+<p><tt>proc report... split="%sysfunc(compress(&amp;split,%str(%'%")))"
+....;</tt>
+<h2>
+Use %commas() to delimit variable list with commas</h2>
+If you are using proc sql on a list of variables then you may not know
+which of the parameters have been supplied a value. This can lead to syntax
+errors in sql as you might have followed an unset parameter value with
+a comma. You end up with two commas together which sql will certainly complain
+about. <b>Use the sasautos extension macro <a href="Spectre/utilmacros/commas.sas">%commas</a>
+to delimit a parameter list of variables for sql</b> and you will never
+have a problem.
+<h2>
+Adding to macro strings</h2>
+Sometimes you'll be mixing sas code and macro code. You'll have no choice
+in certain circumstances. And you may want to output an accumulation of
+values to a macro variable. If you are storing the result in a data step
+character variable then you should set the length to the maximum size of
+32767 bytes so that you are not losing any data off the end of the string<b>.
+Another way you can accumulate values and not have to bother about overflowing
+a length limit is to use "call execute"s</b> within your data step that
+increment the value of the macro variable. These will be performed after
+the data step completes and will safely build up your macro variable contents
+to whatever size you like. You will see how I have done this in the macro
+<a href="Spectre/utilmacros/missvars.sas">missvars</a>.
+Here is a piece of the code that does this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>do i=1 to &amp;nvarsn;</tt>
+<br><tt>&nbsp; if _nmiss(i) EQ '1' then call execute('%let &amp;globvar=&amp;&amp;&amp;globvar
+'|| trim(vname(_num(i)))||';');</tt>
+<br><tt>end;</tt></td>
+</tr>
+</table>
+
+<h2>
+Input and output dataset names</h2>
+The next tip is <b>always assume the user calling your macro has put any
+combination of where/drop/keep/rename after their dataset name</b>. Not
+just input but output names as well. You have to process around it. Don't
+even force it to uppercase as the "where" clause might contain a case-sensitive
+string. The best way to avoid problems is to make a temporary copy of the
+dataset like this:
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data _npctin;</tt>
+<br><tt>&nbsp; set &amp;dsin;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>Also, when it comes to creating the final output dataset, do it something
+like this.
+<br>&nbsp;
+<table BORDER COLS=1 WIDTH="100%" BGCOLOR="#FFFFFF" >
+<tr>
+<td><tt>data &amp;dsout;</tt>
+<br><tt>&nbsp; set _temp;</tt>
+<br><tt>run;</tt></td>
+</tr>
+</table>
+
+<p>Note that although I highly recommend the above, you can not use this
+technique where your macro does not push any sas code such as function-style
+macros that have SCL at their base like <a href="Spectre/utilmacros/nobs.sas">%nobs</a>
+which calls <a href="Spectre/utilmacros/attrn.sas">%attrn</a>.
+<h2>
+Defaulting an output dataset name</h2>
+It is common practice to default an output dataset name to that of the
+input dataset name if no output name is specified. But keep in mind the
+previous tip that the user could have supplied where/drop/keep/rename modifiers
+with the input dataset so you need to scan up to the first bracket. Use
+this technique whether the input dataset has modifiers supplied with it
+or not. It will always give you the result you want. Note that, like a
+quote mark, the left parenthesis must be both enclosed in a %str() statement
+and be preceded by an %.
+<p><tt>%if not %length(&amp;dsout) %then %let dsout=%scan(&amp;dsin,1,%str(%());</tt>
+<h2>
+Never assume both character and numeric variables are present</h2>
+<b>Don't write sas code within your macros that assume both character and
+numeric variables are present</b>. They could all be numeric or all characater,
+sometimes. If you declare temporary arrays mapped to _numeric_ and _character_
+then you could get a problem. It is better to count them using the <a href="Spectre/utilmacros/nvarsn.sas">%nvarsn</a>
+and <a href="Spectre/utilmacros/nvarsc.sas">%nvarsc</a>
+macro as in the sasautos extensions. You can see I have done this in the
+macro that counts missing values called
+<a href="Spectre/utilmacros/misscnt.sas">misscnt</a>.
+<h2>
+Testing parameters for numeric</h2>
+If a value supplied to a macro parameter has to be numeric for the macro
+to work, then it helps if you test this value to see whether it is numeric
+or not and to issue an error message if there is a problem with the value
+that clearly states what the problem is, rather than letting the value
+through to cause a syntax error in the macro code. <b>To test a value for
+numeric, use the %datatyp macro</b> supplied by the SAS Institute in their
+macro autocall library. You have this macro if you have SAS. Use of it
+is documented in the SAS online documentation.
+<h2>
+Catch as many errors as you can</h2>
+If a user calling one of your macros has forgotten to set some of the parameter
+then they have probably forgotten to set others as well. Instead of just
+giving them the one error message you might as well give them all the error
+messages possible you can so it has a chance of working second time round.
+The next tip is the same as the title, which is <b>catch as many errors
+as you can</b>.
+<p>The way I code it is to declare a local macro variable called "error"
+and set it to "0" (false). Then when I spot an error in a parameter I set
+it to "1" (true). I check a number of parameters like this and they put
+out error messages but it carries on running. Then I do the test "%if &amp;error
+%then %goto error;" and it branches to a point an the bottom of the macro
+and exits with yet another error message saying that it is leaving the
+macro due to the errors listed. I'll point you to some code shortly. You
+might want to put in more than one section to check for errors in parameters.
+Firstly making sure you have got enough of them set and then after that
+to make sure the settings are consistent with dataset contents, field lengths
+or whatever. "Good" macros are written to catch errors. If you have "bad"
+going into your macro then you will have "bad" coming out. I have a clinical
+reporting macro that does a veritable "blitz" on possible errors. Take
+a look at the two error detection sections at the start of the code and
+also look at where the "error" label is at the end of the code and how
+it exits. It's a lot easier and neater to do it like this rather than using
+the "%else %do; %end;" sort of processing. The macro to look at is <a href="Spectre/clinmacros/npcttab.sas">npcttab</a>.
+<h2>
+Naming temporary datasets</h2>
+Your macro might contain many temporary datasets. But what do you call
+them? There is a danger that you could overwrite an existing dataset. There
+are various ways to get round this. You could have a special macro data
+library such that your temporary dataset would be called <b>macro.temp</b>
+instead of just <b>temp</b>. That would get round it. But some of the datasets
+might be huge and although there may exist enough space in the work files
+then there might not be enough in your "macro" data area so let's skip
+that idea. It would not be a "good" macro if it fell over occasionally
+due to lack of space. It has to go in the work area but we need to avoid
+overwriting an existing dataset. I use two methods for this. One is to
+start the temporary datasets with an underscore. This makes it is sort
+of reserved class of words especially for macros. The other is I start
+the name of the dataset with the start of the macro name. This way, if
+you are nesting macros such that one macro is being called by another macro
+then they will not overwrite each others temporary datasets. I think this
+is good enough to be a tip so <b>start your temporary macro datasets with
+an underscore and follow with the start of your macro name to avoid good
+datasets being overwritten</b>. You can see I am doing this in <a href="Spectre/clinmacros/npcttab.sas">npcttab</a>.
+<h2>
+Naming temporary variables</h2>
+Suppose you are adding new calculated values to an input dataset somewhere
+in your macro. If the user is free to specify the input variables then
+there is just a chance that the variable name you choose is the same as
+one that already exists. To avoid this problem, <b>if you are adding a
+temporary variable to an input dataset then start it with an underscore
+if there is any possibility of a name clash</b>.
+<h2>
+More than one by= variable</h2>
+<b>If you have a by= parameter for your "by" variables then keep in mind
+that the user will sometimes supply a list of these variables</b>. And
+they could have very valid reasons for doing so so your code should be
+able to cope with it. So don't use expressions like "if last.&amp;by then..."
+in your code. Use something like "if last.%scan(&amp;by,-1) then.." to
+refer to the rightmost variable or whatever is appropriate.
+<h2>
+Be careful with global macro variables</h2>
+<b>Be careful and sparing when it comes to declaring macro variables as
+global</b>. You will certainly not be doing anybody a favor if you declare
+these liberally without the user's knowledge. You might be overwriting
+some of their own global macro variables. "Good" macros use global macro
+variables sparingly. "Good" macros also use a convention for them so they
+become a sort of reserved class of name. I usually start and end global
+macro variables with an underscore with the understanding that any global
+macro variable that starts and ends with an underscore is reserved for
+my macro use only. Also, by convention, a macro variable that starts and
+ends with an underscore MUST be declared global.
+<p>Keep these limited and starting and ending with an underscore in your
+macro collection and you are unlikely to ever encounter a problem.
+<h2>
+Restore System Options</h2>
+If you change one of the system options in your macro to suppress notes
+or temporarily change line size, for example, then be sure to restore them
+before leaving the macro. Suppose you want to suppress notes at a stage
+in your macro. Then if you don't restore them before leaving the macro
+then this "nonotes" option will remain in effect and rob the user of useful
+notes in their log. So my next tip is <b>if you change system options then
+restore them to original before leaving the macro</b>. That is unless you
+really did want an option to remain in effect. But you had better document
+that well and warn the user that that would happen.
+<p>The way to code this is to set up a local macro variable, get the list
+of options you are about to change and assign them to that variable and
+then use that string to restore options at the end.
+<p><tt>%local opts;</tt>
+<br><tt>%let opts=%sysfunc(getoption(ls,keyword)) %sysfunc(getoption(notes,keyword));</tt>
+<p>...and then at the end of the macro....
+<p><tt>options &amp;opts;</tt>
+<p>Note that I used the "keyword" option. This will give you the form of
+the statement that you use to restore that option. If you do this with
+"linesize" for example and the linesize was 100 then it would return "LINESIZE=100"
+rather than just "100". For other options such as "notes" it will have
+no effect. It is safer to do it this way and it allows you to use the above
+method without any thought as to what mix of options you will be resetting
+and restoring.
+<h2>
+Using Shell Macros</h2>
+You can make the user's life easier sometimes if you use shell macros.
+These are macros that do hardly any work except call another macro. You
+can pick a helpful name for your shell macro and have many values conveniently
+defaulting so that the user does not have to remember what the parameter
+settings should be. Suppose you have a macro called "aetab", for example,
+that produces a table of AEs (Adverse Events) and their counts and percentages.
+This macro could be used in other circumstances not directly related to
+AEs. But instead of the user having to call this "aetab" then you could
+use a shell macro with a better name that just calls aetab. Maybe you could
+have the variable names defaulting as well as defaults for column widths.
+That could save the user having to look up a manual on the macro. In fact
+the aetab macro that does all the work might be better off being renamed
+into something more general and then you could have a shell macro called
+aetab that called it. So my next tip is <b>using shell macros can make
+life easier</b>.
+<p>Most of the sasautos extension macros are shell macros. The low level
+macros <a href="Spectre/utilmacros/attrc.sas">%attrc</a>,
+<a href="Spectre/utilmacros/attrn.sas">%attrn</a>
+and
+<a href="Spectre/utilmacros/attrv.sas">%attrv</a>
+do most of the work. Take a look at the macro called <a href="Spectre/utilmacros/nobs.sas">nobs</a>.
+<h2>
+Disabling chunks of code</h2>
+If you want to disable a chunk of code then chances are you can not do
+it with /* */ since parts of the code itself might contain comments like
+it. In this case the comments would only work up to the first */. So the
+best way to disable chunks of code is to put it in a macro declaration
+and never call the macro, like this:
+<p><tt>%macro dontdo;</tt>
+<br><tt>---</tt>
+<br><tt>---</tt>
+<br><tt>%mend dontdo;</tt>
+<h2>
+Writing "really big" macros</h2>
+I am in the process of writing a monster macro at the moment. It is going
+to be called "aetab". It will list out the "N" counts and the percentages
+of subjects suffering from Adverse Events as broken down by body system.
+The macro will do so much processing that it will be very, very large.
+Maybe a thousand lines in total or more. But it doesn't bother me. I don't
+even get stressed about it. If you are disciplined and you use the methods
+described so far then you can do it. You can't do it in a day, maybe, but
+you can do it in a week or two. The extra tip to add is that <b>you can
+write extremely large and complex macros so long as you learn to break
+down your tasks into achievable, logically separable pieces</b>. I think
+Henry Ford said something like that but I don't know the reference. Once
+it is all written in pieces then you might want to bring the pieces together
+or not. It is up to you. But you can always set yourself the task that
+is a piece of the big macro that is achievable and achieve it. I am getting
+there in the process of writing "aetab" by writing a sub-macro called "npctcalc"
+that will calculate totals for "N" and "PCT" without producing any output.
+It will just create an output dataset. I'll leave the rest to "aetab" proper.
+I might absorb the code I write into the final "aetab" macro or not. I
+think I'll leave it sitting outside as I have used the code for "npctcalc"
+to illustrate various coding techniques and so it serves a useful purpose
+as an independent entity. If you can split a task into knowingly achievable
+pieces then you can achieve it. If there is any special skill you need
+to learn then it is knowing where to put that split. And if there is an
+extra tip to state here then that is to split a large task into pieces
+in such a way the separated pieces can stand on their own to a large degree
+and have independent achievable goals. It is just a restatement of what
+I highlighted already so I won't restate it as a tip. I can't give much
+in the way of detail on how to do this but consider that some people have
+built their own houses from the dirt upwards. They just had the sense to
+separate each task and achieve each one in turn to get there. And building
+a house is much harder than writing a major macro. So if they were able
+to do it using their common sense then so will you be able to write your
+major macro. It's just a case of being methodical and using a logical approach.
+<h2>
+Think Before You Code</h2>
+<b>Think before you code</b>. Don't start coding if you have only part
+thought out a macro. Always give yourself time to think about it before
+you even start coding. The longer you think about it the clearer things
+will become. Other things will fall into place around your ideas and you
+will get further ideas. Possible problems will spring to mind and then
+you will think of ways round that and perhaps reformulate your ideas. The
+longer you give yourself time to think, the better the macro or system
+of macros you will write. If your ideas are clear then your code will almost
+drop into place. Conversely, if you are getting bogged down in your coding
+it could indicate that your ideas have not been thought out correctly.
+Coding won't be a big effort which it can otherwise be if your ideas are
+not clear. You will never get bogged down if you have thought out everything.
+If you allow yourself the time to think things through carefully then you
+will write better macros quicker so never code macros under pressure. Once
+a macro goes into production and people start to use it then it is maybe
+too late for making changes that you thought of afterwards. You've got
+to do all your thinking ahead of writing the macro.
+<p>Realize that you are a limited resource. Never code when you are tired.
+If you find yourself making silly little errors then stop and do something
+different for the rest of the day. In the morning you should be fine again.
+Take frequent breaks to avoid getting tired. You can spend four hours trying
+to solve a problem when you are tired, just digging a deeper hole for yourself,
+that you could probably solve in four minutes the next morning. You won't
+be doing yourself or your employer any favors by pushing yourself too hard.
+Writing macros is not an endurance test and if you turn it into an endurance
+test then you will be writing poor code and will have to go back and rewrite
+some of it later.
+<h2>
+Batch development is best</h2>
+I develop my complex macros in batch, rather than using interactive SAS.
+To describe a bit more, I have my macro code open in an editor ("Notepad"
+usually) and after I have amended it, I run the sas program in batch using
+a command on the command line. I have Cygwin on my PC so when I develop
+SAS code it is just like using Unix for me. The reason it is better to
+develop code this way is because when you get macro errors, these can persist
+in an interactive session, even if you have amended the macro to fix a
+problem. You can always delete the macro from the work/sasmacr library,
+using the "Explorer", but often this does not restore things the way it
+should be. You can get error messages saying a macro is not found, even
+if you know it is there. You can get even stranger "SCL code" error messages.
+These can be frustrating and these sorts of annoying problems are not helpful
+if you are developing complex macros. If you develop in batch then you
+get a fresh sessions each time you run your code, which is much better,
+so my advice is to <b>develop complex macros in batch rather than using
+interactive SAS sessions</b>.
+<h2>
+Deep Crisis Debugging</h2>
+I am sure you know about using the options mprint and symbolgen to give
+you more details about why a macro isn't working. There's "mlogic" as well
+if you have time to wade through all the log comments. But if you have
+written a large macro there could be errors in it that stop it being recognized
+as a macro and you get no diagnostics at all. Instead you get something
+like a message saying you have a missing %mend when you know full well
+you have put it there. If things get really nasty then you need to use
+the PC SAS editor. Read the macro into the editor. It sets colors for different
+parts of the syntax and it might know where your error is and it will show
+it as an unexpected color change. The recognized macro code will be in
+blue. Check it very carefully to make sure you have your %then's matching
+your %if's etc. Your problem will usually be caused by an "%if" being written
+as "if" and a "%then" written as "then". Don't go too much on the error
+messages you get out. If your macro isn't compiling at all then the PC
+SAS editor with its different colors is your best bet.
+<h2>
+Tidy up afterwards</h2>
+<b>You should delete all macro temporary datasets before leaving the macro</b>.
+This can be done with a "proc datasets". Take a look at the end of <a href="Spectre/clinmacros/npcttab.sas">npcttab</a>
+for an example of this. This is the last bit of macro processing you should
+do and that is why I made this the last tip on this page.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<center>
+<p>Go back to the home <a href="index-2.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/macrotips.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+</html>

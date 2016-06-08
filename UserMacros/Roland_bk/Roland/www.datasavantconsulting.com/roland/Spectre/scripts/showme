@@ -1,0 +1,107 @@
+#!/bin/bash
+#<pre><b>
+# Script     : showme
+# Version    : 2.2
+# Author     : Roland Rashleigh-Berry
+# Date       : 15-Mar-2007
+# Purpose    : To display the header of a sas macro or script or display the 
+#              index of the script or macro directory.
+# SubScripts : none
+# Notes      : To distinguish a sas macro then you must use the .sas extension.
+#              if you choose "scripts" or "macros" (no extension) then you get
+#              the index list of the corresponding directory.
+#              YOU NEED TO EDIT THIS SCRIPT NEAR THE TOP TO SAY WHERE THE MACROS
+#              AND SCRIPTS ARE LOCATED.
+# Usage      : showme titles.sas
+#              showme sasb
+#              showme scripts
+#              showme macros
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   (optional) script or sas macro to display header of
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  18Feb07         Version 2.0 uses "less" to display output
+# rrb  12Mar07         Use "less" to display the scripts or macros index but use
+#                      what is defined to VISUAL to display individual macros or
+#                      scripts or "less" if VISUAL not set (v2.1)
+# rrb  15Mar07         Go to home directory at end so Wordpad can work with
+#                      file name if that is defined to VISUAL (v 2.2)
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# point to macros and scripts as Unix paths -- EDIT EDIT EDIT
+macropath=/cygdrive/c/spectre/macros
+scrpath=/cygdrive/c/spectre/scripts
+
+
+# Edit the test below for the number of expected parameters and put out
+# a usage note if an incorrect number supplied. Remove if not required.
+if [ $# -ne 1 ] ; then
+  echo "Usage: showme macroname.sas" 1>&2
+  echo "       showme scriptname" 1>&2
+  echo "       showme scripts" 1>&2
+  echo "       showme macros" 1>&2
+  exit 1
+fi
+
+
+# if "macros" or "scripts" specified then display the directory index
+if [ "$1" == "scripts" ] ; then
+  less $scrpath/@index.txt
+  exit
+elif [ "$1" == "macros" ] ; then
+  less $macropath/@index.txt
+  exit
+fi
+
+
+# determine whether script or macro and set up full path name
+if [[ "$1" == *.sas ]] ; then
+  type=macro
+  root=$macropath
+  fullname=$root/$1
+elif [[ "$1" == [!.]* ]] ;then
+  type=script
+  root=$scrpath
+  fullname=$scrpath/$1
+else
+  echo "Error: File \"$1\" is neither a macro nor a script"
+  exit 2
+fi
+
+
+# make sure file exists and if not do a directory listing
+if [ ! -f "$fullname" ] ; then
+  echo "Error: File \"$1\" does not exist"
+  echo "Here is a list of files in the $type folder:"  
+  ls $root
+  exit 2
+fi
+
+
+# write the header only to a temporary file in the users home area
+justhdr "$fullname" > ~/showme.tmp
+
+
+# change to home directory to help Wordpad find temporary file
+cd ~
+
+
+# Display the temporary file with just the header in it
+if [ -n "$VISUAL" ] ; then
+  if [ "$VISUAL" == "vi" ] || [ "$VISUAL" == "less" ] ; then
+    # done in current terminal window for "less" and "vi"
+    $VISUAL showme.tmp
+  else
+    # done as a background task
+    $VISUAL showme.tmp &
+  fi
+else
+  # default is to use "less" in current terminal window
+  less showme.tmp
+fi

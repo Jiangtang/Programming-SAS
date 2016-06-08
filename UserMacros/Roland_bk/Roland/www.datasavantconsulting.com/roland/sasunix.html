@@ -1,0 +1,118 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/sasunix.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:05:03 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="Getting SAS to work with Unix">
+   <meta name="KeyWords" content="sas work with unix">
+   <title>Getting SAS to work with Unix</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Getting SAS to work with Unix</h1></center>
+<b>[last updated - 08 Sep 2007]</b>
+<h2>
+The BIG Secret</h2>
+You have launched SAS jobs from Unix maybe thousands of times. But how
+do you get SAS to be Unix-like and pass on information to native Unix utilities?
+I bet you think you are going to learn a BIG secret here. I'm going to
+tell you that BIG secret right away. Here it is. Ready for it?
+<p><b>The BIG secret is.................................&nbsp;&nbsp; that
+there <i><font size=+1>is</font></i> no BIG secret</b>
+<p>This is what I am doing with SAS to get it to talk to other Unix utilities.
+<ul>
+<li>
+Create a SAS program from inside a shell script that reroutes output to
+a file</li>
+
+<li>
+run it</li>
+
+<li>
+delete the sas program (and optionally the log)</li>
+
+<li>
+"cat" the output file to the screen (standard output)</li>
+
+<li>
+delete the output file</li>
+</ul>
+Now what could be simpler than that?
+<h2>
+Simpler still</h2>
+It can get simpler and I have made it simpler. Shell script syntax is very
+unforgiving. It is easy to make mistakes and the messages you get out when
+that happens are often less than helpful. So I wrote a utility called <b>sasunixskeleton</b>
+that creates utilities. Yes, you read that right. A utility that writes
+utilities. More specifically, it generates the script code for you so that
+you need not write any script code yourself. All you have to do is design
+the usage message that will be put to the terminal if the user invokes
+the utility without any parameters (in other words they don't know how
+to use the utility and want a help message) and get on with the business
+of coding the SAS code. And you can spot the places you do this because
+it says EDIT there in clear letters. You also get instructions on how to
+do this within the generated utility.
+<h2>
+A good Unix book</h2>
+Once you have generated your own scripts then you are going to get hungry
+for Unix knowledge. You are going to see that it was easy all along and
+you are going to want to come up to speed with Unix and will want to know
+more about Unix commands and utilities. But what single book is best for
+this? I'll tell you. It is that one you have sitting on your shelf at work
+that you don't bother reading. It is called <b>"Unix in a Nutshell"</b>
+and is published by <b>O'Reilly</b>. The book is useless if you don't know
+any Unix but once you do know some Unix then the book becomes invaluable.
+It is a concise source of all the important things you will need to know.
+As for books on writing shell scripts, then I bought a book to help me
+start out down that path as I had no guide. But it is easier to learn shell
+script writing by following other people's examples and you will find plenty
+of examples on this web site. You have no need for a separate book on this.
+<h2>
+Think Unix - think simple</h2>
+Native Unix utilities give you <b>simple</b> information and always display
+that information at your <b>terminal</b>. If you are going to write SAS
+utilities to work on Unix then you must do the same. It is not like writing
+a Clinical report. Remember the <b>"simple"</b> and <b>"write to the terminal"</b>
+rule. Once you write a script for somebody else and they wake up to the
+power that could be there at their fingertips then chances are you will
+asked to amend your utility to make it "more user friendly in that it writes
+to a file" or "it would be nice to show this extra information as well".
+And you will have to refuse this request because it breaks the <b>"simple"</b>
+and <b>"write to the terminal"</b> rule. You can't see at this stage why
+this has to be a hard and fast rule. You will just have to take my word
+for it for now. I'll try to explain, though, but you may not have a grasp
+on it at this stage. The thing is that the real power of Unix utilities
+lies in being able to pass information from one utility to another. And
+in order for this to happen then the utilies expect other utilies to write
+their information to "standard output" (the terminal by default) and need
+to be able to pick up that information easily (and simply). So it is only
+by keeping it simple like this that the utilities can talk to each other
+and the full power of Unix be realised. In writing utilities such as these
+you should not be thinking "How can I make it better?". You should be thinking
+"How can I make it simpler?". Use "better" for Clinical reporting. Use
+"simpler" for utilities.
+<h2>
+sasunixskeleton</h2>
+It's the utlity that writes utilities that call SAS. Here it <a href="skeleton.html">is</a>.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<center>
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/sasunix.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:05:03 GMT -->
+</html>

@@ -1,0 +1,174 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/contentsl.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:11 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="SAS tips and techniques by Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="sas tips techniques">
+   <title>whosgot</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+contentsl</h1></center>
+<b>[last updated - 30 July 2003]</b>
+<p>Make your data directory your current directory to run <b>contentsl</b>.
+It will list your dataset with variable type, length, format and label.
+You can use this to check whether you have added all the labels to a dataset.
+You can list a few datasets if you want to. If you invoke it without parameters
+then it will run on the whole library.
+<pre>
+<b>#!/bin/sh
+# Script&nbsp;&nbsp;&nbsp;&nbsp; : contentsl
+# Version&nbsp;&nbsp;&nbsp; : 1.0
+# Author&nbsp;&nbsp;&nbsp;&nbsp; : Roland Rashleigh-Berry
+# Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : 30 July 2003
+# Contact&nbsp;&nbsp;&nbsp; : rolandberry@hotmail.com
+# Purpose&nbsp;&nbsp;&nbsp; : To list the contents (in long form) of one or more datasets or a&nbsp;
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; whole library
+# SubScripts : none
+# Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Must be run with data directory as current directory
+# Usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : contentsl demog
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; contentsl demog elig
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; contentsl
+#&nbsp;
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+#&nbsp; 1&nbsp;&nbsp; one or more datasets (optional - will work on whole library by default)
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+#&nbsp;
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+if [ -f $HOME/contentsl.sas ]
+then
+&nbsp; echo "You will need to back up your SAS program CONTENTSL.SAS in your home" 1>&amp;2
+&nbsp; echo "directory and maybe its log file as this utility will overwrite it " 1>&amp;2
+&nbsp; exit 1
+fi
+
+
+# Delete the output file if it already exists
+rm -f $HOME/contentsl.tmp 2> /dev/null
+
+
+if [ $# -lt 1 ]
+then
+
+###### no datasets specified so do for the whole library #####
+
+# Write SAS code out to a temporary file
+cat > $HOME/contentsl.sas &lt;&lt; FINISH
+options validvarname=any nofmterr;
+proc format;
+&nbsp; value type 1='N' 2='C';
+run;
+libname here './' access=readonly;
+filename _outfile '$HOME/contentsl.tmp';
+proc contents noprint data=here._all_ out=contents;
+data contents;
+&nbsp; length newfmt $ 15;
+&nbsp; set contents;
+&nbsp; newfmt=format;
+&nbsp; if formatl>0 then do;
+&nbsp;&nbsp;&nbsp; newfmt=trim(newfmt)||compress(put(formatl,3.))||'.';
+&nbsp;&nbsp;&nbsp; if formatd>0 then newfmt=trim(newfmt)||compress(put(formatd,3.));
+&nbsp; end;
+&nbsp; else if newfmt ne ' ' then newfmt=trim(newfmt)||'.';
+data _null_;
+&nbsp; file _outfile notitle noprint;
+&nbsp; set contents;
+&nbsp; put @1 memname @10 name @21 length @25 type type. @27 newfmt @40 label;
+run;
+FINISH
+
+
+# Run the SAS code
+sas -log "$HOME" -sysin "$HOME/contentsl.sas"
+
+
+# Delete the temporary SAS code and optionally the log
+rm -f $HOME/contentsl.sas # $HOME/contentsl.log&nbsp;
+
+
+# If output file exists then cat it and delete it
+if [ -f $HOME/contentsl.tmp ]
+then
+&nbsp; cat $HOME/contentsl.tmp
+&nbsp; rm -f $HOME/contentsl.tmp
+fi
+
+
+else
+
+########### one or more dataset specified so do for each #########
+
+for dataset in "$@" ; do
+
+
+# Write SAS code out to a temporary file
+cat > $HOME/contentsl.sas &lt;&lt; FINISH
+options validvarname=any nofmterr;
+proc format;
+&nbsp; value type 1='N' 2='C';
+run;
+libname here './' access=readonly;
+filename _outfile '$HOME/contentsl.tmp';
+proc contents noprint data=here.$dataset out=contents;
+data contents;
+&nbsp; length newfmt $ 15;
+&nbsp; set contents;
+&nbsp; newfmt=format;
+&nbsp; if formatl>0 then do;
+&nbsp;&nbsp;&nbsp; newfmt=trim(newfmt)||compress(put(formatl,3.))||'.';
+&nbsp;&nbsp;&nbsp; if formatd>0 then newfmt=trim(newfmt)||compress(put(formatd,3.));
+&nbsp; end;
+&nbsp; else if newfmt ne ' ' then newfmt=trim(newfmt)||'.';
+data _null_;
+&nbsp; file _outfile notitle noprint;
+&nbsp; set contents;
+&nbsp; put @1 memname @10 name @21 length @25 type type. @27 newfmt @40 label;
+run;
+FINISH
+
+
+# Run the SAS code
+sas -log "$HOME" -sysin "$HOME/contentsl.sas"
+
+
+# Delete the temporary SAS code and optionally the log
+rm -f $HOME/contentsl.sas # $HOME/contentsl.log&nbsp;
+
+
+# If output file exists then cat it and delete it
+if [ -f $HOME/contentsl.tmp ]
+then
+&nbsp; cat $HOME/contentsl.tmp
+&nbsp; rm -f $HOME/contentsl.tmp
+fi
+
+done
+
+fi
+</b></pre>
+
+<center>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/contentsl.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:11 GMT -->
+</html>

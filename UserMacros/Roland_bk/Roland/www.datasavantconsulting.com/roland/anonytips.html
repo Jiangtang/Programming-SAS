@@ -1,0 +1,2686 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+  
+<!-- Mirrored from www.datasavantconsulting.com/roland/anonytips.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+<head>
+    <meta http-equiv="Content-Type" content="text/html;
+      charset=windows-1252">
+    <meta name="keywords" content="Anonymization (De-Identification)
+      Programming Tips">
+    <meta name="Description" content="Anonymization (De-Identification)
+      Programming Tips">
+    <meta name="Template" content="C:\PROGRAM
+      FILES\MSOFFICE\OFFICE\html.dot">
+    <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U)
+      [Netscape]">
+    <meta name="Author" content="Roland Rashleigh-Berry">
+    <meta name="KeyWords" content="Anonymization (De-Identification)
+      Programming Tips">
+    <title>Anonymization (De-Identification) Programming Tips</title>
+  </head>
+  <body alink="#FF0080" bgcolor="#C0C0FF" link="#0000FF" text="#000000"
+    vlink="#800080">
+    <center>
+      <h1>
+        Anonymization (De-Identification) Programming Tips</h1>
+    </center>
+    <b><font size="+1">Author: Roland Rashleigh-Berry</font></b>
+    <br>
+    <b><font size="+1">Last Updated:&nbsp; 05 Nov 2015</font></b>
+    <h2>
+      Introduction</h2>
+    All pharmaceutical companies that I am aware of have to make their
+    clinical
+    trial data available to selected researchers to allow independent
+    analysis
+    of the clinical trial data. To achieve this, they need to provide
+    copies
+    of their clinical trial data (both the original data and derived
+    data)
+    in an "anonymized" or "de-identified" form so that the researchers
+    have
+    access to the data but not access to individual subject details such
+    that
+    the subjects can be identified from the data presented. I was quite
+    deeply
+    involved in the programming work for this in 2014 and I thought I
+    would
+    pass on a few programming tips for SAS programmers asked to work on
+    this
+    project. You will find plenty of useful tips on this page to bring
+    you
+    up to speed and I feel that this will be important in 2015 and 2016
+    as
+    some pharmaceutical companies have not started outting this in place
+    (I think it should
+    have been in place by 01 Jan 2015 for studies submitted to the FDA)
+    and
+    will find themselves under pressure to deliver. And with that, you,
+    the
+    SAS programmer will be under pressure to deliver as well, and the
+    programming
+    is not particularly easy.
+    <h2>
+      What is Anonymization (De-Identification)?</h2>
+    Firstly I would like to clear up that "Anonymization" and
+    "De-identification"
+    are the same thing. On the American continent it is called
+    "De-identification".
+    On the European continent it is called "Anonymization". Rather than
+    explain
+    it myself, I would point you to just one of the many sources about
+    this
+    that you can find on the Internet. I would ask you to read through
+    the whole thing and gain some sort of understanding of it before
+    reading
+    this page further as I will use the information in it as my jumping
+    off
+    point for the rest of the page.
+    <p><a
+href="http://www.transceleratebiopharmainc.com/wp-content/uploads/2015/04/CDT-Data-Anonymization-Paper-FINAL.pdf"
+        target="_blank">Data
+        De-identification and Anonymization</a>
+    </p>
+    <h2>
+      My summary of Anonymization</h2>
+    Just to save a bit of keyboard work and because I am based in
+    Europe, I
+    will use the European term "Anonymization" throughout and not the
+    term
+    "De-Identification" which means exactly the same thing and I hope
+    you
+    will understand that the terms are interchangeable.
+    <p>In my own words, and put in very crude terms, <b>dates</b> and <b>datetimes</b>
+      get
+      "<b>shifted</b>" by generating a fake "consent date", that lies
+      within the range
+      of consent dates for all the subjects on the trial. It is
+      sometimes done by shifting the "reference start date", that lies
+      within the range of reference start dates
+      for all the subjects on that trial, but either will do. Relative
+      dates and visit days are preserved in this as for any subject all
+      the dates are shifted by the same amount. And if a subject
+      consented to a trial but did not start it then at least you do not
+      have to invent a date for that subject.<br>
+    </p>
+    <p>A subject's <b>age</b> gets slotted into an "<b>age band</b>"
+      and any direct information
+      that can be used to identify a subject gets wiped out, not using "<b>--redacted--</b>"
+      as in the article you can link to above (because the text might be
+      longer
+      than some of the text fields) but using a shorter code of "<b><tt>.D</tt></b>"
+      for character fields and the numeric missing value <b><tt>.D</tt></b>
+      for
+      numeric fields. The "D" indicates that the data has been deleted.
+      As for the <b>unique
+        subject number</b>, then the original subject number gets <b>randomized
+        to a new
+        number</b>. There will be a "key dataset" that equates the old
+      subject study,
+      trial and subject number to the new identifier along with the
+      shift in
+      the consent date or reference start date. This "key dataset" will
+      be used
+      to check the new data generated and then this "key dataset" will
+      be deleted
+      and by deleting it, and with the other information deleted, the
+      link between
+      the original subject identifier and the newly generated subject
+      identifier gets broken.
+    </p>
+    <h2>
+      Is Anonymization foolproof?</h2>
+    The answer is "<b>definitely not</b>". Those controlling the
+    Anonymization
+    process need to be aware of the data. But <b>it is possible to do
+      too much
+      anonymization</b> as I will explain.
+    <p>For the rest of this section then I am giving my own personal
+      opinion.
+      I am explaining things according to my own views because I do not
+      find
+      a good explanation anywhere else about this anonymization process.
+      For
+      me, the main strength of anonymization is in redacting personal
+      details
+      about a subject such as name, initials, place where they live,
+      telephone
+      and SSN details - things that link back directly to a person. But
+      when
+      it comes to anonymizing their clinical trial data then <b>it is
+        limited
+        what you can do and should do</b>. Consider the randomization
+      process.
+      This is far from being random. There are bands of categories that
+      are important
+      for safety analysis such as gender and age. Perhaps race as well.
+      Subjects
+      get randomized within these bands - and that is a world of
+      difference to
+      being randomized into one of these bands. Each of these bands has
+      to meet
+      a quota so there are sufficient subjects in each band for a safety
+      statistical
+      analysis to have enough power to compare these different bands
+      against
+      each other. If these bands were considered important for analysis
+      then
+      after "anonymizing" the data is should still be possible to do the
+      same
+      analysis and get the same results as from the analysis of the
+      original
+      data. So, to my way of thinking, these bands need to still be the
+      same
+      for the anonymized data. So gender has to stay the same. And age
+      band has
+      to stay the same, and then the original age could be redacted.
+      That is if we want to be able to get the same analysis results.
+      But maybe the researcher requesting the data does not want to
+      check the analysis and needs the data for an anbalysis of their
+      own.<br>
+    </p>
+    <p>More on this problem with age. I have read a few papers that
+      state something
+      to the effect that people &gt;89 years of age get banded into the
+      band "&gt;89"
+      and then their original age redacted. That is what the code on
+      this page
+      does, but I don't think it is a good way of anonymizing data.
+      Suppose it
+      is known that one a trial that there was only one person older
+      than 89
+      years of age then how does this help anonymize them? I would say
+      that it
+      is not helping at all. But if the upper end of the safety and
+      efficacy
+      analysis was for the age group "&gt;65" and each age group was
+      designed to
+      have 60 subjects in them or close then would it not be better to
+      use this
+      age band and redact the age for all subjects? Surely this would
+      give them
+      greater anonymity and the person who was older than 89 years of
+      age would
+      be masked by the numbers of subjects in this band.
+    </p>
+    <p>On the other hand, if this anonymized data is for a new analysis
+      (perhaps
+      pooled with data from other trials) and the integer age of
+      subjects were
+      kept in case it were needed then there would be unique values for
+      this
+      age for individual trials that would allow some subjects to be
+      re-identified.
+      "Race" is another category that can cause a problem. Suppose there
+      was
+      only one Native American Indian who could be recruited onto a
+      trial and
+      this race was combined with another race with an expected similar
+      reaction.
+      If the race is kept as "Native American Indian" then the subject
+      is easily
+      re-identified.
+    </p>
+    <p>In my opinion, subjects should be banded as they were for the
+      analysis
+      for that trial and then the original values that put them into
+      this band
+      should be redacted. This would apply to "race" as well if some
+      races were
+      combined into race bands. I think that a lot more thought should
+      have been
+      investing into this anonymization process and at the very least it
+      should
+      have been made clear what the requirements were from the
+      anonymized data.
+      Should this data allow the same safety and efficacy results to be
+      calculated
+      as was presented as the results from the original trial? If so
+      then the
+      data should either be banded with the original values removed that
+      put
+      them into that band or both be banded and the original data kept.
+      If the
+      latter, then more productive analysis can be performed, especially
+      when
+      pooling studies, which would be a useful and valuable exercise,
+      but at
+      much higher risks of re-identification for individual trials.
+    </p>
+    If dates and datetimes get shifted for a subject then these will be
+    shifted by the same amount for that subject. There might be efficacy
+    analysis that relies on these dates and the separation between them.
+    So,
+    although we can shift them all the same amount, we should not change
+    the
+    period between them as this might result in a different efficacy
+    analysis
+    result. This goes for the death date as well. We would need to shift
+    that
+    by the same amount as the number of days to death could be part of
+    the
+    efficacy analysis. This causes us a problem for anonymization. If it
+    is
+    somehow known that a famous person died after ten days on a clinical
+    trial
+    then that ten days cannot be altered to something else otherwise it
+    would
+    devalue the data for efficacy analysis.
+    <p>If we know the original gender, the age band and the study days
+      of the
+      visits on trial and the study day of the day of death (if the
+      subject died)
+      then none of these will have changed if we expect post-analysis of
+      the
+      trial data to give the same safety and efficacy results. And from
+      these
+      things, and assuming you have the original data that fully
+      identifies the
+      subjects, you can reverse engineer the anonymization process and
+      re-identify
+      the subjects. Any programmer like me could do that in a short
+      time. But
+      the main point is that the original data is not going to be shown
+      to people
+      you allow access to the anonymized data so <b>they can't use this
+        original
+        data to identify subjects</b> like you can as a programmer.<br>
+    </p>
+    <p>So, to sum up my concerns on this and my opinions on keeping data
+      both
+      useful for analysis but with low risk of re-identification then
+      the analysis
+      bands must not be changed for a subject (so that the same result
+      can be
+      derived for safety analysis) but I think it would be a good idea
+      to drop
+      the original values. Nor can their date and datetime separations
+      be changed
+      (so that the same result can be derived for efficacy analysis). I
+      think
+      <b>these
+        bands need to be preserved</b> and <b>the code you see on this
+        page is
+        not capable of achieving that</b> without substantial change, if
+      indeed
+      people agree with my conclusions and wish to keep these bands.
+      That is
+      why I feel free to show the code that I once used on this page in
+      its entirety. Maybe the code is not suitable<b></b> and you should
+      not
+      use it. But the code that creates the spreadsheet is probably good
+      enough
+      if some of the redundant stuff is removed.
+    </p>
+    <p>I will finish this section by listing some of the weaknesses of
+      my own
+      preferred approach. That is, in banding subjects according to the
+      original
+      trial analysis banding and by anonymizing the original data that
+      put them
+      into that band, then although it helps anonymize the subjects, it
+      gives
+      you problems when later combining with other trials for the more
+      powerful
+      analysis that greater subjects can give you, in that <b>it is
+        unlikely
+        that the bands will be the same</b> unless some sort of drug
+      indication
+      and project standard was set up for banding such that all trials
+      had to
+      adhere to the same bands. Clinical trial design and analysis of
+      the trial
+      is based around testing a few ideas and having sufficient a
+      population
+      in each band to show up any statistical significance if it is
+      there. Clinical
+      trials never have been designed to build in flexibility for the
+      purposes
+      of pooled meta-analysis. So my approach of helping the
+      anonymization process
+      by dropping original banding information, will stop people
+      creating new
+      bands from that information for meta-analysis purposes. For
+      example for
+      "race", using my approach then you might end up having to base the
+      new
+      bands on the banding information available and you might end up
+      with only
+      the two race bands "White Caucasian" and "Other". For age bands it
+      could
+      be even more difficult to create new age bands based on the age
+      bands available
+      as these will likely overlap such that one trial will have bands
+      "&lt;60",
+      "&gt;=60" and another trial "&lt;65", "&gt;=65" and then it
+      becomes impossible
+      to form combined bands. And yet correct age banding might be
+      important.
+    </p>
+    <h2>
+      Performance considerations</h2>
+    When you anonymize data for a trial you have to do it for the whole
+    trial
+    and keep all that data. That could be a lot of data. And you will be
+    adding to the volume of that data as well such as adding WHO code
+    information
+    and MedDRA information along with system Organ Class data that will
+    increase
+    the volume of the data. You need to keep the sorting of the data
+    down to
+    a minimum because of this. And yet you cannot avoid doing a sort on
+    patient
+    data because if you keep it in the same order as the original data
+    then
+    it can be re-identified from the record position. You will be
+    changing
+    the subject data and resorting based on the new subject ID as well
+    as other
+    variables such as the dates you "shifted" so sort you must, and it
+    might
+    take a long time, but if you only sort once then the delay should
+    not be
+    great. Also, if you can cleverly use the WORK library storage then
+    most
+    likely it is mapped to a Solid State Device, rather than a hard disk
+    drive,
+    and the sorting will be much faster. But then again, you will have
+    to keep
+    this WORK library area tidy and delete temporary data when it is no
+    longer
+    required.
+    <p>You can avoid sorting data for joining on key fields if you use <b>hash
+        objects</b>. What you do is read the data off mass storage and
+      write to
+      the WORK library or even directly to the output library using hash
+      objects
+      to add the data that you need. This should be very fast <b>if you
+        are not
+        using compressed datasets in the WORK library</b> (you should <b>never
+use
+        compressed datasets</b> in the WORK library - SAS is very
+      inefficient
+      at processing its own compressed datasets). Then, when all the
+      data is
+      added and the data "anonymized", you can sort the patient data to
+      a subdirectory
+      of the WORK library and then delete the original unsorted data so
+      you free
+      up the valuable space in the WORK library that is sitting on a
+      high performance
+      Solid State Device.
+    </p>
+    <p>Performance is important. Get it wrong and you will slow things
+      down
+      a lot and impact other users of the computer. And this
+      "Anonymization"
+      process will have to be run on possibly all your trials to date
+      (and perhaps once for each researcher with particular needs) so it
+      might
+      be like doubling or more the workload on your computer unless you
+      do things efficiently.
+    </p>
+    <h2>
+      Creation of an Anonymization spreadsheet</h2>
+    The Anonymization process cannot be automated, unfortunately, for
+    reasons
+    previously stated on this page. That means that people need to make
+    decisions
+    about the data like what gets "anonymized" and dates and datetimes
+    to shift
+    and what to leave alone. And whatever is decided must be able to be
+    stored
+    somewhere and must be able to drive the anonymization process. For
+    this, a spreadsheet seems most appropriate. The spreadsheet can be
+    generated
+    for them by SAS and then the users can fill in what processes need
+    to be
+    run on what variables and then a later program can check the
+    spreadsheet
+    contents and then if what it contains seems to be correct then apply
+    the
+    changes to the data.
+    <p>Here is a sample of the code I am using to create the
+      spreadsheet. Note
+      that it uses many of the <b>Spectre utility macros</b> that you
+      can download
+      from this web site.
+    </p>
+    <p>The following code will need to be changed for your organization.
+      Some
+      of the information shown, like inconsistent attributes for
+      same-named variables
+      in different datasets, is of very little use and if corrections
+      are made
+      to these attributes then it would not be a good idea to fix this
+      in the
+      data because these inconsistencies existed in the data that
+      created the
+      clinical trial report and so it is too late to change it.
+      <br>
+      &nbsp;
+      <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+        <tbody>
+          <tr>
+            <td>
+              <br>
+              <tt>*- Put the Spectre utility macros on the SASAUTOS path
+                -;</tt>
+              <br>
+              <tt>options NOFMTERR mrecall NOMPRINT&nbsp;</tt>
+              <br>
+              <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                sasautos=("!Xxxxxxx\xxxxxxxxx\utilmacros",
+                SASAUTOS);</tt>
+              <br>
+              &nbsp;
+              <p><tt>&nbsp;&nbsp;&nbsp;
+                  /************************************</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Define values
+                  to macro variables&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;
+                  ************************************/</tt>
+              </p>
+              <p><tt>%*- Input libref(s) (separated by spaces - case not
+                  important) -;</tt>
+                <br>
+                <tt>%let inlibs=X_OC X_ADS;</tt>
+              </p>
+              <p><tt>%*- Output destination for the created
+                  anonymisation spreadsheet
+                  (quoted) -;</tt>
+                <br>
+                <tt>%let
+                  anonym_xldest="V:\SAS\Xxxxxxx\xxxxxxxxx\pgm\xxxx_xxxx\xxxx_Config.xls";</tt>
+              </p>
+              <p><tt>%*- The Patient ID variable (case not important) -;</tt>
+                <br>
+                <tt>%let pid_var=PTNO;</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>*################&nbsp; DO NOT EDIT BELOW THIS
+                  LINE&nbsp; ################;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>%macro anony_spreadsheet;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  /***********************************</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  Uppercase
+                  variables and librefs</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  ***********************************/</tt>
+              </p>
+              <p><tt>&nbsp; %*- uppercase some parameter values to make
+                  the programming
+                  easier -;</tt>
+                <br>
+                <tt>&nbsp; %let inlibs=%upcase(&amp;inlibs);</tt>
+                <br>
+                <tt>&nbsp; %let pid_var=%upcase(&amp;pid_var);</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; *- run a proc contents on all the datasets
+                  -;</tt>
+                <br>
+                <tt>&nbsp;
+                  %cont2dict(%suffix(._ALL_,&amp;inlibs),_alldata);</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; *- uppercase some values from "proc
+                  contents" -;</tt>
+                <br>
+                <tt>&nbsp; data _alldata;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; set _alldata;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; name=upcase(name);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; libname=upcase(libname);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; memname=upcase(memname);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; format=upcase(format);</tt>
+                <br>
+                <tt>&nbsp; run;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; *- sort ready for a later merge -;</tt>
+                <br>
+                <tt>&nbsp; proc sort data=_alldata;</tt>
+                <br>
+                <tt>&nbsp; by libname memname name;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; PROC SQL NOPRINT;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; *- create a list of patient
+                  datasets -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; create table _patdsets as</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; select libname, memname</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; from _alldata</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; where name EQ "&amp;pid_var"</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; order by libname, memname;</tt>
+                <br>
+                <tt>&nbsp; QUIT;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; *- merge and flag datasets that have the
+                  patient variable
+                  -;</tt>
+                <br>
+                <tt>&nbsp; data _alldata;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; length patdset $ 1;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; merge _patdsets(in=_pat)
+                  _alldata(in=_all);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; by libname memname;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; if _all;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; if _pat then patdset='X';</tt>
+                <br>
+                <tt>&nbsp; run;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; *- sort ready to flag variables that have a
+                  mix of attributes
+                  -;</tt>
+                <br>
+                <tt>&nbsp; proc sort data=_alldata;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; by name libname memname;</tt>
+                <br>
+                <tt>&nbsp; run;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; *- flag when there is a change in variable
+                  attributes -;</tt>
+                <br>
+                <tt>&nbsp; data _alldata2;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; LENGTH comments $ 200 process $
+                  20 alert $ 1&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  holdtype
+                  $ 4 holdfmt $ 49 holdlen 8;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; RETAIN comments process holdtype
+                  holdfmt ' '
+                  holdlen .;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; SET _alldata;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; BY name libname memname;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; if not first.name then do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if holdtype NE type</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; or holdfmt NE format</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; or length NE length</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; then alert='X';</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; holdtype=type;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; holdfmt=format;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; holdlen=length;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; KEEP alert patdset process name
+                  libname memname
+                  type format label comments;</tt>
+                <br>
+                <tt>&nbsp; run;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; *- get sample values from all the variables
+                  -;</tt>
+                <br>
+                <tt>&nbsp;
+%samplevars(%suffix(._ALL_,&amp;inlibs),_samplevars,500,5,a,condense=yes);</tt><br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; *- sort the sample values ready for a later
+                  merge -;</tt>
+                <br>
+                <tt>&nbsp; proc sort data=_samplevars(keep=name libname
+                  memname samples);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; by name libname memname;</tt>
+                <br>
+                <tt>&nbsp; run;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; *- merge in the sample values -;</tt>
+                <br>
+                <tt>&nbsp; data SHEET1;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; RETAIN process name libname
+                  memname type format
+                  label alert patdset samples comments;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; MERGE _alldata2 _samplevars;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; by name libname memname;</tt>
+                <br>
+                <tt>&nbsp; run;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; *- export to the spreadsheet -;</tt>
+                <br>
+                <tt>&nbsp; proc export dbms=EXCEL data=sheet1
+                  file=&amp;anonym_xldest
+                  replace;</tt>
+                <br>
+                <tt>&nbsp; run;</tt>
+              </p>
+              <p><tt>%mend anony_spreadsheet;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>%anony_spreadsheet;</tt>
+                <br>
+                &nbsp;</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </p>
+    <h2>
+      Processing the Anonymization spreadsheet</h2>
+    Please note that this code is unlikely to work for you. It only
+    covers
+    simple cases. It has only two age bands. It does not create new
+    investigator
+    or site numbers that might sometimes be required. It works in simple
+    cases
+    only and a lot of the variable names are hard coded. They will
+    likely be
+    different at your site.
+    <p>Note that the "date shift" is based on the "informed consent
+      date". This is the usual preferred option.<br>
+    </p>
+    <p>The code <b>generates SAS code</b> depending on what it finds in
+      a dataset.
+      This is a very advanced technique that requires careful and
+      thoughtful
+      programming.
+    </p>
+    <p>Look for "declare hash" for the hash objects it is using. This is
+      so
+      you can include all the information you need using just one pass
+      through
+      a data step without previously sorting and merging/joining.
+      Sorting large
+      datasets is something you must avoid as much as possible to gain
+      speed.
+    </p>
+    <p>Look in the "START" section of the SAS Code Generation. It is
+      writing
+      directly to the SAS output dataset for non-patient data but
+      writing to
+      a temporary dataset for patient data as it needs to do a later
+      sort. This
+      means only a single pass through the data for the non-patient data
+      and
+      improves efficiency and avoids cluttering up the WORK library.
+    </p>
+    <p>Look in the "END" section of the SAS Code Generation. It is
+      sorting
+      patient datasets out to their destination and when done it is
+      deleting
+      that unsorted datasets using "proc datasets". This is very
+      important for
+      freeing up space in the WORK library which is probably held on a
+      high performance
+      Solid State Device and the space on it is at a premium.
+    </p>
+    <p>Again, the code uses many of the <b>Spectre utility macros</b>
+      that
+      you can download from this web site.
+      <br>
+      &nbsp;
+      <table cols="1" bgcolor="#FFFFFF" border="" width="100%">
+        <tbody>
+          <tr>
+            <td>
+              <br>
+              <tt>*- Put the utility macros on the SASAUTOS path -;</tt>
+              <br>
+              <tt>options NOFMTERR mrecall NOMPRINT&nbsp;</tt>
+              <br>
+              <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                sasautos=("!Xxxxxxx\xxxxxxxxx\utilmacros",
+                SASAUTOS);</tt>
+              <br>
+              &nbsp;
+              <p><tt>&nbsp;&nbsp;&nbsp;
+                  /************************************</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Define values
+                  to macro variables&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;
+                  ************************************/</tt>
+              </p>
+              <p><tt>%*- Input libref(s) (separated by spaces - case not
+                  important) -;</tt>
+                <br>
+                <tt>%let inlibs=X_OC X_ADS;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>%*- Dictionary MedDRA version to use -;</tt>
+                <br>
+                <tt>%let medver=17.0;</tt>
+              </p>
+              <p><tt>%*- Location of MedDRA dataset/view -;</tt>
+                <br>
+                <tt>%let medsrc=dict.medbase;</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>%*- Dictionary WHO version to use -;</tt>
+                <br>
+                <tt>%let whover=07.4;</tt>
+              </p>
+              <p><tt>%*- Location of MedDRA dataset/view -;</tt>
+                <br>
+                <tt>%let whosrc=dict.wlltbase;</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>%*- Output destination for the created
+                  anonymisation spreadsheet
+                  (quoted) -;</tt>
+                <br>
+                <tt>%let
+                  anonym_xldest="V:\SAS\Xxxxxxx\xxxxxxxxx\pgm\xxxx_xxxx\xxxx_Config.xls";</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>%*- Output root path for the copied and/or modified
+                  -;</tt>
+                <br>
+                <tt>%*- datasets (no quotes - do not end with a slash -
+                  -;</tt>
+                <br>
+                <tt>%*- case is
+important).&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-;</tt>
+                <br>
+                <tt>%let outpath=%sysfunc(pathname(WORK));</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>%*- The next two should be single variables that
+                  should both be
+                  -;</tt>
+                <br>
+                <tt>%*- present in any dataset in any of the input
+                  libraries where&nbsp;
+                  -;</tt>
+                <br>
+                <tt>%*- that dataset stores patient information. It is
+                  the STUDY&nbsp;&nbsp;&nbsp;
+                  -;</tt>
+                <br>
+                <tt>%*- and the Patient ID variable (case not
+                  important).&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  -;</tt>
+                <br>
+                <tt>%let study_var=STUDY;</tt>
+                <br>
+                <tt>%let pid_var=PTNO;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>%*- Specify in libname.dataset form (one only) the
+                  dataset to&nbsp;&nbsp;
+                  -;</tt>
+                <br>
+                <tt>%*- be used for the consent date and what that
+                  consent date&nbsp;&nbsp;&nbsp;&nbsp;
+                  -;</tt>
+                <br>
+                <tt>%*- variable is called (case not important). It is
+                  assumed that
+                  -;</tt>
+                <br>
+                <tt>%*- the STUDY and PATIENT variables are as specified
+                  above.&nbsp;&nbsp;&nbsp;&nbsp;
+                  -;</tt>
+                <br>
+                <tt>%let key_src_ds=p_oc.patd;</tt>
+                <br>
+                <tt>%let key_icdt_var=condt;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>%*- Output variable sort order for anonymized
+                  patient datasets.&nbsp;&nbsp;&nbsp;
+                  -;</tt>
+                <br>
+                <tt>%*- The first variable should always be adp_pid.
+                  Other variables&nbsp;&nbsp;
+                  -;</tt>
+                <br>
+                <tt>%*- specified will be used in the sort sequence if
+                  these variables
+                  -;</tt>
+                <br>
+                <tt>%*- exist in the dataset to be
+sorted.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-;</tt>
+                <br>
+                <tt>%let patsortvars=adp_pid actevent visitdt;</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>*################&nbsp; DO NOT EDIT BELOW THIS
+                  LINE&nbsp; ################;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>%macro anonymize;</tt>
+              </p>
+              <p><tt>&nbsp; %local i err errflag qclibs lib path keyds
+                  pid_var_type&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  icdt_var_type
+                  study trial icdt_lo icdt_hi ext rem keyrem</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  mpt_lbl mptcd_lbl
+                  msoccd_lbl msoc_lbl ctpncd_lbl ctpn_lbl</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  sortvars</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;</tt>
+                <br>
+                <tt>&nbsp; %let err=ERR%str(OR);</tt>
+                <br>
+                <tt>&nbsp; %let errflag=0;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  /***********************************</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  Uppercase
+                  variables and librefs</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  ***********************************/</tt>
+              </p>
+              <p><tt>&nbsp; %*- Uppercase all libref, variable and
+                  dataset names to make
+                  the programming easier -;</tt>
+                <br>
+                <tt>&nbsp; %let inlibs=%upcase(&amp;inlibs);</tt>
+                <br>
+                <tt>&nbsp; %let study_var=%upcase(&amp;study_var);</tt>
+                <br>
+                <tt>&nbsp; %let pid_var=%upcase(&amp;pid_var);</tt>
+                <br>
+                <tt>&nbsp; %let key_src_ds=%upcase(&amp;key_src_ds);</tt>
+                <br>
+                <tt>&nbsp; %let key_icdt_var=%upcase(&amp;key_icdt_var);</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; *- Set rem (remote flag) to something if the
+                  output path&nbsp;
+                  -;</tt>
+                <br>
+                <tt>&nbsp; *- has a different file system to the WORK
+                  library path.&nbsp;
+                  -;</tt>
+                <br>
+                <tt>&nbsp; *- This will be used in the call to the macro
+                  "mkdir" and
+                  -;</tt>
+                <br>
+                <tt>&nbsp; *- the libname statement that follows
+it.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-;</tt>
+                <br>
+                <tt>&nbsp; %let rem=;</tt>
+                <br>
+                <tt>&nbsp; %if ("%substr(&amp;outpath,1,1)" EQ "/"&nbsp;</tt>
+                <br>
+                <tt>&nbsp; and "%substr(%sysfunc(pathname(WORK)),1,1)"
+                  NE "/")</tt>
+                <br>
+                <tt>&nbsp; OR&nbsp; ("%substr(&amp;outpath,1,1)" EQ
+                  "$"&nbsp;</tt>
+                <br>
+                <tt>&nbsp; and "%substr(%sysfunc(pathname(WORK)),1,1)"
+                  NE "$")</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %then %let rem=X;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  /***********************************</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Check
+                  the spreadsheet</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  ***********************************/</tt>
+              </p>
+              <p><tt>&nbsp; *- open the spreadsheet -;</tt>
+                <br>
+                <tt>&nbsp; libname anonymxl EXCEL
+                  path=&amp;anonym_xldest;</tt>
+              </p>
+              <p><tt>&nbsp; *- extract the spreadsheet information and
+                  upper case the
+                  values -;</tt>
+                <br>
+                <tt>&nbsp; data sheet1;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; set anonymxl.sheet1;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; name=upcase(name);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; memname=upcase(memname);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; libname=upcase(libname);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; process=upcase(process);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; type=upcase(type);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; if process=:'DTSH' then
+                  process='DTSHFT';</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; else if
+                  process=:'DTTM'&nbsp;&nbsp; then process='DTTMSHFT';</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; else if process=:'ADDAGE' then
+                  process='ADDAGE';</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; else if process=:'ADDMED' then
+                  process='ADDMED';</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; else if process=:'ADDWHO' then
+                  process='ADDWHO';</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; else if
+                  process=:'AN'&nbsp;&nbsp;&nbsp;&nbsp;
+                  then process='ANONYM';</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; KEEP process patdset name type
+                  memname libname;</tt>
+                <br>
+                <tt>&nbsp; run;</tt>
+              </p>
+              <p><tt>&nbsp; *- close the spreadsheet now we got what we
+                  needed -;</tt>
+                <br>
+                <tt>&nbsp; libname anonymxl CLEAR;</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; *- run a "proc contents" on the input
+                  libraries -;</tt>
+                <br>
+                <tt>&nbsp;
+                  %cont2dict(%suffix(._ALL_,&amp;inlibs),_alldata);</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; *- upper case some "proc contents" values -;</tt>
+                <br>
+                <tt>&nbsp; data _alldata;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; set _alldata;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; name=upcase(name);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; libname=upcase(libname);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; memname=upcase(memname);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; type=upcase(type);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; format=upcase(format);</tt>
+                <br>
+                <tt>&nbsp; run;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; PROC SQL NOPRINT;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; *- unexpected process names -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; create table badprocs as select
+                  process, name,
+                  libname, memname</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; from sheet1</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; where process not in (' ',
+                  'DTSHFT', 'DTTMSHFT',
+                  'ADDAGE',</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'ADDMED', 'ADDWHO',
+                  'ANONYM');</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; *- variables in the source data
+                  that are not
+                  in the spreadsheet -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; create table missvars as select
+                  name, type,
+                  libname, memname</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; from _alldata as A</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; where not exists (select 1 from
+                  sheet1 as B</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; where a.libname=b.libname and
+                  a.memname=b.memname</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; and a.name=b.name and
+                  a.type=b.type);</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; *- variables in the spreadsheet
+                  not in the source
+                  data -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; create table extravars as select
+                  name, type,
+                  libname, memname</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; from sheet1 as A</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; where not exists (select 1 from
+                  _alldata as
+                  B</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; where a.libname=b.libname and
+                  a.memname=b.memname</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; and a.name=b.name and
+                  a.type=b.type);</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; *- create a list of patient
+                  datasets -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; create table _patdsets as</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; select libname, memname</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; from _alldata</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; where upcase(name) EQ
+                  "&amp;pid_var";</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; *- variables flagged as
+                  belonging to a patient
+                  dataset incorrectly -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; create table notpatdset as</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; select patdset, name, libname,
+                  memname</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; from sheet1 as a</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; where patdset is not
+                  missing&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; and not exists
+                  (select 1 from _patdsets
+                  as b</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; where
+                  a.libname=b.libname and a.memname=b.memname);</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; *- variables flagged as NOT
+                  belonging to a patient
+                  dataset incorrectly -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; create table ispatdset as</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; select patdset, name, libname,
+                  memname</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; from sheet1 as a</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; where patdset is missing&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; and exists (select 1
+                  from _patdsets
+                  as b</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; where
+                  a.libname=b.libname and a.memname=b.memname);</tt>
+              </p>
+              <p><tt>&nbsp; QUIT;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; %if %nobs(badprocs) %then %do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %let errflag=1;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %put &amp;err: (anonymize)
+                  Unexpected processes
+                  detected;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; data _null_;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set badprocs;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put (_all_) (=);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; run;</tt>
+                <br>
+                <tt>&nbsp; %end;</tt>
+              </p>
+              <p><tt>&nbsp; %if %nobs(missvars) %then %do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %let errflag=1;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %put &amp;err: (anonymize) Some
+                  variables in
+                  the source libraries were not in the spreadsheet;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; data _null_;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set missvars;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put (_all_) (=);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; run;</tt>
+                <br>
+                <tt>&nbsp; %end;</tt>
+              </p>
+              <p><tt>&nbsp; %if %nobs(extravars) %then %do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %let errflag=1;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %put &amp;err: (anonymize) Some
+                  variables in
+                  the spreadsheet were not in the source libraries;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; data _null_;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set extravars;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put (_all_) (=);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; run;</tt>
+                <br>
+                <tt>&nbsp; %end;</tt>
+              </p>
+              <p><tt>&nbsp; %if %nobs(notpatdset) %then %do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %let errflag=1;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %put &amp;err: (anonymize) Some
+                  variables are
+                  flagged as belonging to patient datasets incorrectly;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; data _null_;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set notpatdset;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put (_all_) (=);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; run;</tt>
+                <br>
+                <tt>&nbsp; %end;</tt>
+              </p>
+              <p><tt>&nbsp; %if %nobs(ispatdset) %then %do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %let errflag=1;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %put &amp;err: (anonymize) Some
+                  variables are
+                  not flagged as belonging to patient datasets when they
+                  should be;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; data _null_;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set ispatdset;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put (_all_) (=);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; run;</tt>
+                <br>
+                <tt>&nbsp; %end;</tt>
+              </p>
+              <p><tt>&nbsp; %if &amp;errflag %then %goto exit;</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  /***********************************</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  Get MedDRA
+                  data for hash object</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  ***********************************/</tt>
+              </p>
+              <p><tt>&nbsp; %let medver=%sysfunc(dequote(&amp;medver));</tt>
+                <br>
+                <tt>&nbsp; data _meddra;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; set
+                  &amp;medsrc(where=(mver="&amp;medver" and
+                  mppath=1)</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+rename=(mptcd=adp_mptcd
+                  mpt=adp_mpt msoccd=adp_msoccd</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  msoc=adp_msoc));</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; KEEP mlltcd adp_mptcd adp_mpt
+                  adp_msoccd adp_msoc;</tt>
+                <br>
+                <tt>&nbsp; run;</tt>
+              </p>
+              <p><tt>&nbsp; %let mptcd_lbl=
+                  %varlabel(_meddra,adp_mptcd);</tt>
+                <br>
+                <tt>&nbsp; %let mpt_lbl=&nbsp;&nbsp;
+                  %varlabel(_meddra,adp_mpt);</tt>
+                <br>
+                <tt>&nbsp; %let
+                  msoccd_lbl=%varlabel(_meddra,adp_msoccd);</tt>
+                <br>
+                <tt>&nbsp; %let msoc_lbl=&nbsp;
+                  %varlabel(_meddra,adp_msoc);</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  /***********************************</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  Get
+                  WHO data for hash object</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  ***********************************/</tt>
+              </p>
+              <p><tt>&nbsp; %let whover=%sysfunc(dequote(&amp;whover));</tt>
+                <br>
+                <tt>&nbsp; data _who;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; set
+                  &amp;whosrc(where=(mver="&amp;whover")</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+rename=(ctpncd=adp_ctpncd
+                  ctpn=adp_ctpn));</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; ctlltcd=strip(ctlltcd);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; KEEP ctlltcd adp_ctpncd adp_ctpn;</tt>
+                <br>
+                <tt>&nbsp; run;</tt>
+              </p>
+              <p><tt>&nbsp; %let ctpncd_lbl=%varlabel(_who,adp_ctpncd);</tt>
+                <br>
+                <tt>&nbsp; %let ctpn_lbl=&nbsp;
+                  %varlabel(_who,adp_ctpn);</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  /****************************</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  ****************************</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+CREATE
+                  KEY DATASET</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  ****************************</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  ****************************/</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp;
+                  /************************************************************</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp; Assign numeric values for
+                  study, trial,
+                  patient and icdt</tt>
+                <br>
+                <tt>&nbsp;&nbsp;
+                  ************************************************************/</tt>
+              </p>
+              <p><tt>&nbsp; *- Determine variable types to avoid syntax
+                  problems -;</tt>
+                <br>
+                <tt>&nbsp; *- in the following data
+step.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-;</tt>
+              </p>
+              <p><tt>&nbsp; %let
+                  pid_var_type=%vartype(&amp;key_src_ds,&amp;pid_var);</tt>
+                <br>
+                <tt>&nbsp; %let
+                  icdt_var_type=%vartype(&amp;key_src_ds,&amp;key_icdt_var);</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; data _key_src_ds;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; set &amp;key_src_ds;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; *- Assume that either a single
+                  hyphen or an
+                  underscore -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; *- separates the study, trial and
+                  pid numbervalue.&nbsp;&nbsp;&nbsp;&nbsp;
+                  -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;
+                  _studyn=input(scan(&amp;study_var,1,'-_'),comma13.);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;
+                  _trialn=input(scan(&amp;study_var,2,'-_'),comma13.);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %if &amp;pid_var_type EQ N %then
+                  %do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _pidn=&amp;pid_var;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %else %do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *- Assume the pid
+                  value is the last
+                  part of the string -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *- delimited by a
+                  single hyphen
+                  or
+                  underscore.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  _pidn=input(scan(&amp;pid_var,-1,'-_'),comma13.);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; _icdtn=.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %if &amp;icdt_var_type EQ N %then
+                  %do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  _icdtn=&amp;key_icdt_var;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %else %do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if
+                  length(&amp;key_icdt_var) EQ
+                  7 then _icdtn=input(&amp;key_icdt_var,date7.);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else if
+                  length(&amp;key_icdt_var)
+                  EQ 8&nbsp; then
+                  _icdtn=input(&amp;key_icdt_var,yymmdd8.);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else if
+                  length(&amp;key_icdt_var)
+                  EQ 9&nbsp; then
+                  _icdtn=input(&amp;key_icdt_var,date9.);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else if
+                  length(&amp;key_icdt_var)
+                  EQ 10 then _icdtn=input(&amp;key_icdt_var,yymmdd10.);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; *- run checks -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; if _studyn=. or _trialn=. or
+                  _pidn=. then do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; call
+                  symput('errflag','1');</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put "&amp;err:
+                  (CreateKeyTable)
+                  Study/Trial/PID could not be identified for "&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  &amp;study_var=
+                  &amp;pid_var=;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; if _icdtn=. then&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put "NOTE:
+                  (CreateKeyTable) Informed
+                  Consent Date is missing/partial for "&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  &amp;study_var=
+                  &amp;pid_var= &amp;key_icdt_var=;</tt>
+                <br>
+                <tt>&nbsp; run;</tt>
+              </p>
+              <p><tt>&nbsp; %if &amp;errflag %then %goto exit;</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; /************************************</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp; Find out lowest and highest
+                  ICDT</tt>
+                <br>
+                <tt>&nbsp;&nbsp; ************************************/</tt>
+              </p>
+              <p><tt>&nbsp; proc sql noprint;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %let icdt_lo=0;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %let icdt_hi=0;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; select min(_icdtn),
+                  max(_icdtn),&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  put(max(_studyn),z4.),
+                  put(max(_trialn),z4.) into&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp; :icdt_lo separated by ' '</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; ,:icdt_hi separated by ' '</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; ,:study separated by ' '</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; ,:trial separated by ' '</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; from _key_src_ds</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; where _icdtn is not missing;</tt>
+                <br>
+                <tt>&nbsp; quit;</tt>
+              </p>
+              <p><tt>&nbsp; %let KEY_DS_NAME=_&amp;trial._&amp;study;</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp;
+                  /****************************************************************</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp; Assign new PID number, new
+                  ICDT and the
+                  resulting date shift</tt>
+                <br>
+                <tt>&nbsp;&nbsp;
+                  ****************************************************************/</tt>
+              </p>
+              <p><tt>&nbsp; proc sort data=_key_src_ds;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; by _studyn _trialn _pidn;</tt>
+                <br>
+                <tt>&nbsp; run;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; *- create a random sort key -;</tt>
+                <br>
+                <tt>&nbsp; data _key_src_ds;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; set _key_src_ds;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; _ranuni=ranuni(0);</tt>
+                <br>
+                <tt>&nbsp; run;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; *- sort in randon key order -;</tt>
+                <br>
+                <tt>&nbsp; proc sort data=_key_src_ds;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; by _ranuni;</tt>
+                <br>
+                <tt>&nbsp; run;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; *- Assign a new pid number, a new informed
+                  consent date -;</tt>
+                <br>
+                <tt>&nbsp; *- and the resulting date shift which is the
+                  old date&nbsp;&nbsp;
+                  -;</tt>
+                <br>
+                <tt>&nbsp; *- minus the new
+date.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-;</tt>
+                <br>
+                <tt>&nbsp; data _key_src_ds;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; retain _icdt_lo &amp;icdt_lo
+                  _icdt_hi &amp;icdt_hi;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; length adp_pid $ 20;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; set _key_src_ds;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; *- assign a new pid number -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; _newpidn=_n_;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; _newicdtn=0;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; *- plug the value for a missing
+                  original ICDT
+                  -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; if missing(_icdtn) then
+                  _icdtn=_icdt_lo+floor(ranuni(0)*(_icdt_hi-_icdt_lo+1));</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; *- generate a new ICDT value that
+                  is different
+                  from the original -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; do until(_newicdtn NE _icdtn);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  _newicdtn=_icdt_lo+floor(ranuni(0)*(_icdt_hi-_icdt_lo+1));</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;
+adp_pid=put(_studyn,z4.)||"-"||put(_trialn,z4.)||"-"||put(_newpidn,z10.);</tt><br>
+                <tt>&nbsp;&nbsp;&nbsp; *- this is the date shift -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; adp_dtsh=_icdtn-_newicdtn;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; format _icdtn _newicdtn _icdt_lo
+                  _icdt_hi DATE9.;&nbsp;</tt>
+                <br>
+                <tt>&nbsp; run;</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; /*******************************</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp; Output to final key dataset</tt>
+                <br>
+                <tt>&nbsp;&nbsp; *******************************/</tt>
+              </p>
+              <p><tt>&nbsp; proc sort data=_key_src_ds;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; by &amp;study_var &amp;pid_var;</tt>
+                <br>
+                <tt>&nbsp; run;</tt>
+              </p>
+              <p><tt>&nbsp; data &amp;KEY_DS_NAME;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; retain &amp;pid_var
+                  &amp;study_var adp_pid adp_dtsh;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; set _key_src_ds(KEEP=&amp;pid_var
+                  &amp;study_var
+                  adp_pid adp_dtsh);</tt>
+                <br>
+                <tt>&nbsp; run;</tt>
+              </p>
+              <p><tt>&nbsp; proc copy in=work out=keytable;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; select &amp;KEY_DS_NAME;</tt>
+                <br>
+                <tt>&nbsp; quit;</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  /********************************</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  ********************************</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+PROCESS
+                  INPUT DATASETS</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  ********************************</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  ********************************/</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; %*- The process is repeated once per input
+                  library -;</tt>
+                <br>
+                <tt>&nbsp; %do i=1 %to %words(&amp;inlibs);</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; %*- Get libref of input library
+                  for this loop
+                  iteration -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %let
+                  lib=%scan(&amp;inlibs,&amp;i,%str( ));</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; %*- Look for the last nnnn_nnnn
+                  study number
+                  occurence in the input&nbsp;&nbsp; -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %*- library path and add the
+                  ending of the path
+                  onto the output path. -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %let
+ext=%sysfunc(prxchange(s%^.*\d\d\d\d[-_]\d\d\d\d%%,1,%sysfunc(pathname(&amp;lib))));</tt><br>
+                <tt>&nbsp;&nbsp;&nbsp; %let
+                  path=%combpath(&amp;outpath,&amp;ext);</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %put &gt;&gt;&gt;&gt;&gt;&gt;
+                  Directory path to create will be
+                  &amp;path;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; *- Create the directory -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %mkdir(&amp;path,&amp;rem);</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; *- Assign output path directory
+                  to the OUTLIB
+                  libref -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %if not %length(&amp;rem) %then
+                  %do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; libname OUTLIB&amp;i
+                  "&amp;path";</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %else %do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; libname OUTLIB&amp;i
+                  remote "&amp;path"
+                  server=sasdef;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %end;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; *- delete any existing datasets
+                  in this output
+                  library -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; proc datasets nolist
+                  lib=OUTLIB&amp;i KILL;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; quit;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; PROC SQL NOPRINT;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /*** Date Shift ***/</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; create table
+                  _dateshift as select
+                  * from sheet1</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; where
+                  libname="&amp;lib" and process="DTSHFT"</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; order by memname,
+                  name, type;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /*** Datetime Shift
+                  ***/</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; create table
+                  _dttmshift as select
+                  * from sheet1</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; where
+                  libname="&amp;lib" and process="DTTMSHFT"</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; order by memname,
+                  name, type;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /*** AddAge ***/</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; create table _addage
+                  as select *
+                  from sheet1</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; where
+                  libname="&amp;lib" and process="ADDAGE"</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; order by memname,
+                  name, type;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /*** AddMedClass
+                  ***/&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; create table _addmed
+                  as select *
+                  from sheet1</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; where
+                  libname="&amp;lib" and process="ADDMED"</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; order by memname,
+                  name, type;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *- same as before but
+                  only one memname
+                  -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; create table _addmedx
+                  as select
+                  distinct memname from _addmed;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /*** AddWHOClass
+                  ***/</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; create table _addwho
+                  as select *
+                  from sheet1</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; where
+                  libname="&amp;lib" and process="ADDWHO"</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; order by memname,
+                  name, type;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *- same as before but
+                  only one memname
+                  -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; create table _addwhox
+                  as select
+                  distinct memname from _addwho;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /*** Anonymise ***/</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; create table _anonym
+                  as select *
+                  from sheet1</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; where
+                  libname="&amp;lib" and process="ANONYM"</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; order by memname,
+                  name, type;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /** All datasets */</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; create table
+                  _alldsets as select
+                  distinct memname, patdset from sheet1</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; where
+                  libname="&amp;lib"</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; order by memname;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /*** Add flags to
+                  all datastes to
+                  indicate when a hash object needs to be created ***/</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; create table
+                  _alldsets_plus as&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; select a.memname,
+                  a.patdset</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; , (select "X" from
+                  _addmedx where
+                  memname=a.memname) as _addmed</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; , (select "X" from
+                  _addwhox where
+                  memname=a.memname) as _addwho</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; from _alldsets as a</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; order by memname;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; QUIT;</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  /********************************</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  ********************************</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+SAS
+                  CODE GENERATION</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  ********************************</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  ********************************/</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; *- temporary file to receive the
+                  generated SAS
+                  code -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; filename codegen TEMP;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; *- generate the code to create
+                  the output datasets
+                  -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; data _null_;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; length str $ 120
+                  holdpatdset holdhash
+                  $ 1;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; retain holdpatdset
+                  holdhash ' ';</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; file codegen;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set _alldsets_plus
+                  _dateshift _dttmshift
+                  _addage&nbsp;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  _addmed
+                  _addwho _anonym;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; by memname;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ***********&nbsp;
+                  START&nbsp; **********;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if first.memname then
+                  do;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if
+                  patdset NE ' ' or
+                  _addmed='X' or _addwho='X' then holdhash='X';</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else
+                  holdhash=' ';</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if
+                  patdset NE ' ' then
+                  holdpatdset='X';</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else
+                  holdpatdset=' ';</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *- For
+                  patient datasets
+                  we will be sorting to the -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *- output
+                  library rather
+                  than writing directly.&nbsp;&nbsp; -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if
+                  holdpatdset='X' then
+                  do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="DATA
+                  "||trim(memname)||";";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="DATA
+                  OUTLIB&amp;i.."||trim(memname)||";";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if
+                  patdset NE ' ' or
+                  _addmed='X' or _addwho='X' then do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;
+                  if _n_=1 then do;";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if
+                  patdset NE ' ' then
+                  do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  LENGTH adp_pid $ 20;";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  declare hash key(dataset:
+                  '"||"&amp;key_ds_name"||"');";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  LABEL adp_pid='ADP patient identifier';";put str
+                  $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  _rc = key.defineKey('"||"&amp;pid_var"||"');"; put str
+                  $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  _rc = key.defineData('adp_pid', 'adp_dtsh');"; put str
+                  $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  _rc = key.defineDone();";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  call missing(adp_pid, adp_dtsh);"; put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if
+                  _addmed="X" then
+                  do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  LENGTH adp_mptcd adp_msoccd $ 10";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+adp_mpt
+                  adp_msoc&nbsp;&nbsp;&nbsp;&nbsp; $ 200;";put str
+                  $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  LABEL adp_mptcd=""&amp;mptcd_lbl"";";put str
+                  $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  LABEL adp_mpt=""&amp;mpt_lbl"";";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  LABEL adp_msoccd=""&amp;msoccd_lbl"";";put str
+                  $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  LABEL adp_msoc=""&amp;msoc_lbl"";";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  declare hash medra(dataset: '_meddra');";put str
+                  $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  _rc = medra.defineKey('MLLTCD');"; put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  _rc = medra.defineData('adp_mptcd', 'adp_mpt',
+                  'adp_msoccd', 'adp_msoc');";</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  put str
+                  $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  _rc = medra.defineDone();";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  call missing(adp_mptcd, adp_mpt, adp_msoccd,
+                  adp_msoc);"; put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if
+                  _addwho="X" then
+                  do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  LENGTH adp_ctpncd $ 20 adp_ctpn $ 200;";put str
+                  $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  LABEL adp_ctpncd=""&amp;ctpncd_lbl"";";put str
+                  $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  LABEL adp_ctpn=""&amp;ctpn_lbl"";";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  declare hash who(dataset: '_who');";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  _rc = who.defineKey('CTLLTCD');"; put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  _rc = who.defineData('adp_ctpncd', 'adp_ctpn');";put
+                  str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  _rc = who.defineDone();";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  call missing(adp_ctpncd, adp_ctpn);"; put str
+                  $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if
+                  patdset NE ' ' or
+                  _addmed='X' or _addwho='X' then do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;
+                  end;";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp; SET &amp;lib.."||trim(memname)||";";put
+                  str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if
+                  patdset NE ' ' then
+                  do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;
+                  _rc=key.find();";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;
+                  if _rc NE 0 then put 'ERR' 'OR: No match for patient '
+                  &amp;pid_var=;";</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+put
+                  str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ***********&nbsp;
+                  DATESHIFT&nbsp;
+                  **********;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if process EQ
+                  "DTSHFT" then do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if type
+                  EQ "CHAR" then
+                  do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;
+                  if length("||trim(name)||") &gt; 9 then do;";put str
+                  $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  if input("||trim(name)||",??yymmdd10.) NE . then
+                  substr("||trim(name)||</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+",1,10)=put(input("||trim(name)||",yymmdd10.)+adp_dtsh,yymmdd10.);";put
+                  str&nbsp;</tt>
+                <br>
+                <tt>$char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  else "||trim(name)||"='.D';";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;
+                  end;";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;
+                  else "||trim(name)||"='.D';";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;
+                  "||trim(name)||"="||trim(name)||"+adp_dtsh;";put str
+                  $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ***********&nbsp;
+                  DATETIME SHIFT&nbsp;
+                  **********;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if process EQ
+                  "DTTMSHFT" then do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if type
+                  EQ "CHAR" then
+                  do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;
+                  if length("||trim(name)||") &gt; 9 then do;";put str
+                  $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  if input("||trim(name)||",??yymmdd10.) NE . then
+                  substr("||trim(name)||</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+",1,10)=put(input("||trim(name)||",yymmdd10.)+adp_dtsh,yymmdd10.);";</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  put str
+                  $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  else "||trim(name)||"='.D';";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;
+                  end;";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;
+                  else "||trim(name)||"='.D';";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;
+                  "||trim(name)||"="||trim(name)||"+(adp_dtsh*24*60*60);";put
+                  str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ***********&nbsp;
+                  ADDAGE&nbsp; **********;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if process EQ
+                  "ADDAGE" then do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp; LENGTH adp_"||trim(name)||"
+                  $ 4;";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp; LABEL adp_"||trim(name)||"='ADP
+                  age category';";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp; adp_age="||trim(name)||";";put
+                  str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp; if "||trim(name)||"&gt;89
+                  then do;";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  adp_"||trim(name)||"='&gt;89';";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  "||trim(name)||"='.D';";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp; end;";put
+                  str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp; else adp_"||trim(name)||"='&lt;=89';";put
+                  str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ***********&nbsp;
+                  ADDMED&nbsp; **********;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if process EQ
+                  "ADDMED" then do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp; mlltcd=strip("||trim(name)||");";put
+                  str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp; if mlltcd
+                  NE ' ' then do;";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  _rc=medra.find();";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  if _rc NE 0 then put 'ERR' 'OR: No MedDRA match for '
+                  "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  ||trim(name)||"= &amp;pid_var=;";put
+                  str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  "||trim(name)||"='.D';";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp; end;";put
+                  str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if name
+                  NE "MLLTCD"
+                  then do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;
+                  DROP MLLTCD;";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ***********&nbsp;
+                  ADDWHO&nbsp; **********;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if process EQ
+                  "ADDWHO" then do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp; ctlltcd=strip("||trim(name)||");";put
+                  str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp; if ctlltcd
+                  NE ' ' then do;";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  _rc=who.find();";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  if _rc NE 0 then put 'ERR' 'OR: No WHO match for ' "</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  ||trim(name)||"= &amp;pid_var=;";put
+                  str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;&nbsp;&nbsp;
+                  "||trim(name)||"='.D';";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp; end;";put
+                  str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if name
+                  NE "CTLLTCD"
+                  then do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;
+                  DROP CTLLTCD;";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ***********&nbsp;
+                  ANONYMIZE&nbsp;
+                  **********;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if process EQ
+                  "ANONYM" then do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if type
+                  EQ "CHAR" then
+                  do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;
+                  "||trim(name)||"='.D';";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;
+                  "||trim(name)||"=.D;";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ***********&nbsp;
+                  END&nbsp; **********;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if last.memname then
+                  do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if
+                  holdpatdset='X' then
+                  do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  %if &amp;pid_var_type
+                  EQ CHAR %then %do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+str="&nbsp;
+                  &amp;pid_var='.D';";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  %end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  %else %do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+str="&nbsp;
+                  &amp;pid_var=.D;";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  %end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;
+                  DROP adp_dtsh;";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if
+                  holdhash='X' then
+                  do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;
+                  DROP _rc;";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put
+                  "run;";</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put " ";</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if
+                  holdpatdset='X' then
+                  do;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str='%let
+sortvars=%match(&amp;patsortvars,%varlist('||trim(memname)||'));';</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  put str
+                  $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str='%put
+                  &gt;&gt;&gt;&gt;&gt; sortvars=&amp;sortvars;';</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  put str
+                  $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="proc
+                  sort data="||trim(memname)||"
+                  out=OUTLIB&amp;i.."||trim(memname)||";";</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  put str
+                  $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str='&nbsp;
+                  by &amp;sortvars;';put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  put "run;";</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  put "proc
+                  datasets nolist;";</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  str="&nbsp;
+                  delete "||trim(memname)||";";put str $char120.;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  put "quit;";</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  put " ";</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; run;</tt>
+                <br>
+                &nbsp;
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; /*******************</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; *- Display for development
+                  checking purposes
+                  only, with -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; *- the following "run the
+                  generated code" disabled.&nbsp;&nbsp;&nbsp;&nbsp;
+                  -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; data _null_;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; infile codegen;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; input;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put _infile_;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; run;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; ********************/</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; *- run the generated code -;</tt>
+                <br>
+                <tt>&nbsp;&nbsp;&nbsp; %include codegen / source;</tt>
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; filename codegen CLEAR;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp;&nbsp;&nbsp; ****libname OUTLIB&amp;i CLEAR;</tt>
+              </p>
+              <p><tt>&nbsp; %end;</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>&nbsp; %goto skip;</tt>
+                <br>
+                <tt>&nbsp; %exit: %put &amp;err: (Anonymize) Leaving
+                  macro due to problem(s)
+                  listed;</tt>
+                <br>
+                <tt>&nbsp; %skip:</tt>
+                <br>
+                &nbsp;
+              </p>
+              <p><tt>%mend anonymize;</tt>
+              </p>
+              <p><tt>%anonymize;</tt>
+                <br>
+                &nbsp;</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      &nbsp;
+      <br>
+      &nbsp;
+      <br>
+      &nbsp;
+      <br>
+      &nbsp;
+    </p>
+    <p><!-- Start of StatCounter Code -->
+      <script type="text/javascript" language="javascript">
+
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+      <script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+      <noscript><a href="http://www.statcounter.com/" target="_blank"><img src="counter.html" alt="statistics" border="0"></a></noscript><!-- End of StatCounter Code -->
+      <br>
+      &nbsp;
+      <br>
+      &nbsp;
+      <br>
+      <br>
+    </p>
+    <center>
+      <p>Go back to the home <a href="index-2.html">page</a>.
+      </p>
+      <p>E-mail the macro and web site <a
+          href="mailto:rolandberry@hotmail.com">author</a>.</p>
+    </center>
+  </body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/anonytips.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:36 GMT -->
+</html>

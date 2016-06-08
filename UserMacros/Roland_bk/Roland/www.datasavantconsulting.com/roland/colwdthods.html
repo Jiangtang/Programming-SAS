@@ -1,0 +1,178 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/colwdthods.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:42 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="How to Control Column Widths for Proc Report ODS Output">
+   <meta name="KeyWords" content="How to Control Column Widths for Proc Report ODS Output">
+   <meta name="robots" content="noindex,nofollow">
+   <meta name="author" content="Roland Rashleigh-Berry">
+   <meta name="description" content="Control Column Widths for Proc Report ODS Output">
+   <title>How to Control Column Widths for Proc Report ODS Output</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+How to Control Column Widths for Proc Report ODS Output</h1></center>
+<b>[last updated: 02 June 2008]</b>
+<h2>
+Introduction</h2>
+One of the interview questions asked of me over the years was something
+like "What is it you would next like to do with SAS software". And I have
+said for the past six years, "I'd like to do more work with ODS". Well,
+six years have passed and I have done <b>plenty</b> of work with ODS during
+that time. First, was using ODS to get hold of the datasets created by
+the stats procedures. I now feel comfortable with that. Next, was controlling
+the format of the output from "proc report". I now feel comfortable with
+that as well, but in this case, <b>the learning curve was very steep</b>.
+It took tens of hours of studying the documentation and trying things out
+to get things to work correctly. I thought I had arrived late on the scene
+of ODS and was expecting advice to be on sas websites all round the world.
+It was not, however. Instead, I found myself almost alone on this treck.
+Instead of following in well-trod footsteps, I felt like I had become a
+trail-blazer. For proc report output, I tried setting up styles using proc
+template and got nowhere. I will not claim I understand what "proc template"
+can give you, but by the time I abandoned a study of the subject, I felt
+I knew enough in that it wasn't going to give me what I needed. So I investigated
+the statements that could be used with proc report and finally found what
+I wanted.
+<p>Eveybody will go down the proc report ODS route in the future, if you
+are in the field of clinical reporting, and in the absence of good help,
+will waste tens of hours in trying to learn how to achieve what they want.
+That is, unless they have good help that they can find on a web site somewhere.
+This is why I have written this page. "My pain will be your gain", as the
+well-worn phrase goes. Actually, all this information is already on this
+web site, but it is covered in different topics. This page will address
+this issue of setting column width directly, and refer you to other existing
+pages on this web site.
+<h2>
+Width=xxx doesn't seem to work</h2>
+You set up proc report to give ODS output, you know you have your column
+widths defined correctly for ascii reports but wonder why the column widths
+are not correct for the ODS output produced. You notice that some of your
+columns are a minimum width and they don't look right. Why didn't ODS honor
+the column width you specified? The answer is that it relies on a different
+system for column widths. It relies on the <b>cellwidth=</b> option setting
+and if you don't specify it, ODS will choose the column widths itself and
+will try to "squash things in" to best fit the page and minimize the total
+report width. At this point in time I would like you to open the SAS online
+documentation in a different browser window and search on the term "cellwidth".
+What you will discover is that although you can find the word, you can
+probably find out nothing on how to use this parameter. This whole topic
+is extremely poorly linked in the documentation and could explain why ODS
+reporting has not "taken off" as it should have done. The phrase to search
+on is "Style Attributes and Their Values" and if you search on that you
+will find "TEMPLATE Procedure: Creating a Style Definition Style Attributes
+and Their Values". I hope the following link works for you.
+<p><a href="http://support.sas.com/onlinedoc/913/getDoc/en/odsug.hlp/a003079951.htm" target="_blank">TEMPLATE
+Procedure: Creating a Style Definition Style Attributes and Their Values</a>
+<p>There are two attributes you need to know about for adjusting column
+width in ODS. <b>Cellwidth=</b> as applied to individual columns and <b>outputwidth=</b>
+as applied to the whole report.
+<h2>
+Using cellwidth= and outputwidth=</h2>
+You can use different dimensions when you specify values for these two
+attributes. I use <b>percentages</b> as I have found this to work best
+for me so I will only describe percentage values here. But feel free to
+experiment with the other dimensions.
+<p>For <b>outputwidth=</b> , if you specify a percentage that is the report
+percentage width of the output area. Obviously you can not go above 100%.
+For html output, I have found that if I multiply the report width (if this
+is known) by 2/3 then this gives me a good percentage width. Obviously,
+if the report width were greater than 150 columns then you must not allow
+your outputwidth= value to be above 100% so you will have to set 100% as
+the value if you calculate a value higher than this. Suppose your report
+width were 120 columns then, multiplying by 2/3, you would specify <b>outputwidth=80%</b>
+. Note that percentage values must be integer values so you might have
+to round it or use the %eval() function which will works with integer values
+only.
+<p>For <b>cellwidth=</b> values, again I supply these as percentages, but
+they are <b>percentages of the report width</b> and not the output area
+as for the outputwidth= used at the report level. For the individual columns
+you should specify these for every column except for the widest column
+which will "soak up" what is left. Again, I am assuming you know your total
+report width in columns. Also, the spacing between columns. Your percentage
+value is then %eval(100*(&amp;cwidth+&amp;spacing)/&amp;repwidth) assuming
+you have such macro variables set up. Suppose you report width were 120
+and your column width 10 columns and the spacing 2 columns then 100*(10+2)/120
+would give you the value 10 and so you would specify <b>cellwidth=10%</b>
+. Again, note that the value must be an integer. This is partly why I let
+the widest column "soak up" the rest of the width. It's because I don't
+know which way the other cell widths will round so I can't be sure what
+percentage value will complete it up to 100%.
+<h2>
+Where to specify outputwidth= and cellwidth=</h2>
+As I said, all the knowledge about setting column widths for proc report
+ODS output is already on this web site, but under different topics. I have
+a macro named %unistats that calls a macro %unicatrep to produce reports
+of a certain type. There are a lot of ODS parameters written into the %unistats
+macro that get passed through to the %unicatrep macro. I will provide a
+link to the %unicatrep macro below and then you can locate the "proc report"
+step and look for the outputwidth= attribute and the cellwidth= attributes
+applied to each column. You will find these attributes and a lot more in
+that macro. Note that in calculating percentage values for cellwidth= ,
+I am assuming that cellspacing=0 which is the spacing between cells. I
+recommend that you use the same setting.
+<p><a href="http://www.datasavantconsulting.com/roland/unicatrep.sas" target="_blank">%unicatrep</a>
+<h2>
+SAS v9.2 and "spanrows"</h2>
+With SAS v9.2, things got a whole lot better for "proc report" ODS output
+with the addition of the "<b>spanrows</b>" option that you can use with
+the "proc report" statement. What this does, if in effect, is allow "group"
+or "order" text to flow but without leaving a gap in the "display" lines.
+This new option acts on ODS output only and is a very welcome improvement
+(it has no effect on ascii output - the problem is still there). Pharmaceutical
+companies will be the main beneficiaries of this new option, for their
+clinical reports, when they finally move over to ODS output. Many of these
+companies have not moved over to SAS v9.1.3 yet, let alone SAS v9.2, but
+the benefits of skipping out on SAS v9.1.3 and upgrading directly to SAS
+v9.2 would be very beneficial, in my opinion. In SAS v9.2 the graphics
+and drill-down capabilities are also improved and this could add a whole
+new dimension to clinical reporting, once the benefits of graphical reporting
+are realized.
+<p>Coming back to "<b>spanrows</b>", if you search the %unicatrep code,
+that you can link to above, and search for "spanrows", you will see how
+I have implemented it. It will cause a syntax error in sas versions pre-v9.2
+but I have coded around that problem, as you will see.
+<h2>
+More to learn</h2>
+There is a great deal more to learn about getting "proc report" output
+to look right beyond getting columns to be the right width. You will see
+a lot of attributes used in the %unicatrep macro. I recommend one of my
+other sas tips pages which is below. A lot of the above information will
+be repeated there.
+<p><a href="http://www.datasavantconsulting.com/roland/fancyprint.html" target="_blank">Fancy Printing - ODS->html->MS
+Office</a>
+<h2>
+Conclusion</h2>
+This document has shown you my recommended way for controlling column widths
+for "proc report" ODS output.
+<br>&nbsp;
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="http://www.datasavantconsulting.com/roland/counter.php" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<p><br>
+<br>
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/colwdthods.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:42 GMT -->
+</html>

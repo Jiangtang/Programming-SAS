@@ -1,0 +1,36 @@
+#!/bin/bash
+#<pre><b>
+# Script     : dashes
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 08-Nov-2004
+# Purpose    : To list files that have spanning dashed lines in them
+# SubScripts : none
+# Notes      : Use this when you expect all your output listings to have solid
+#              spanning lines rather than dashed lines. Sometimes, spanning
+#              dashed lines might be deliberate, for example for the cells in
+#              shift tables.
+# Usage      : dashes *.lis
+#              owner $(dashes *.lis)  # lists the owner in front of file name
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   file(s) to check
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# 
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Must have at least one file
+if [ $# -lt 1 ] ; then
+  echo "Usage: dashes *.lis" 1>&2
+  exit 1
+fi
+
+# use grep to get a count, drop zero count files and chop off count ending
+grep -c '^ *--------------------------------------------------------------------* *$' "$@" | \
+grep -v ':0$' | sed 's/:[0-9]*$//'

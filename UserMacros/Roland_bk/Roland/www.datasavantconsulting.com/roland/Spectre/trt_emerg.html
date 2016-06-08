@@ -1,0 +1,219 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/Spectre/trt_emerg.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:25 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="KeyWords" content="Reporting Treatment-Emergent Adverse Events">
+   <meta name="Description" content="Spectre collisions">
+   <title>Reporting Treatment-Emergent Adverse Events</title>
+</head>
+<body text="#000000" bgcolor="#FFF0F0" link="#FF0000" vlink="#800080" alink="#0000FF">
+
+<center>
+<h1>
+Reporting Treatment-Emergent Adverse Events</h1></center>
+<b>Last updated: 30 May 2015</b>
+<h2>
+Introduction</h2>
+Both macros %npcttab and %aetab can be used to report counts and percentages
+of adverse events but you need a very clear idea of what is happening inside
+these macros. To explain what they are doing in simple terms is to state
+that they are producing counts and percentages of <b>whatever they find
+in the input data</b>. There is no clever logic inside that "collapses"
+adverse event multiple records or works out what adverse events happened
+on treatment and only reports those. It does nothing like that. It produces
+counts and percentages of whatever it finds in the input data. So if you
+have adverse event data and you want %npcttab or %aetab to only give you
+counts and percentages of treatment-emergent adverse events then it is
+up to you to make sure that the input dataset for the macros only contains
+what you define as treatment-emergent adverse events. These are general-purpose
+counts and percentages macros that know nothing about your adverse event
+data and what fields mean what. You have to know what your own data means
+and only pass to these macros the final data you want to see counts and
+percentages for. You have to do that work yourself.
+<h2>
+Problems in defining "Treatment-Emergent"</h2>
+Now it has been clarified that %npcttab and %aetab give counts and percentages
+of whatever exists in the input dataset, irrespective of any identifying
+information which says whether the records should be used or not, then
+it is you the programmer who has to be careful to only pass to the macros
+the adverse events to be counted and reported. You maybe need an in-house
+written macro or piece of code to select only treatment-emergent adverse
+events. The Spectre macros cannot do that for you. So the rest of this
+page is to get you t think, in the case of treatment-emergent adverse events,
+what defines these. And the definition of this will vary from site to site.
+<h2>
+Pre-Treatment "Treatment-Emergent"</h2>
+This is the first piece of controversy I am giving you to think about.
+And that is, if an adverse event that occurred before the first dose was
+taken was caused by the drug. Logically you would think not. But in some
+circumstances it might be. Here is a description of a scenario. A subject
+comes in for a visit to be given a new set of drugs, this time not a placebo
+run-in, to be taken the following morning. The doctor dispensing the drugs
+is not the same person who records the subject adverse events and so the
+way the trial is designed, there is no collection of adverse events done
+on that day and recorded on a specific CRF page that would indicate that
+the adverse events must have been pre-treatment. Besides, they are not
+supposed to take the "real" drugs until the next morning and a pre-treatment
+adverse event might happen later in the day. So what defines a treatment-emergent
+adverse event will be any adverse event starting the following day when
+the subject takes the drug.
+<p>Everything looks simple so far.
+<p>But then things go wrong. Many subjects will be fully aware that a drug
+has a placebo run-in period. They have maybe read about it on the Internet
+and their reading about it on the Internet is maybe why they signed up
+for the trial in the first place. So the subject knows that at last they
+have the drug. And as soon as they get home they take the first pill, even
+though they have been told to take the first pill the following morning.
+After taking the pill they immediately get an adverse event such as nausea,
+headache or a metallic taste in the mouth (very common for anti-depressants)
+and they note down the date and when it happened. So when it comes for
+the visit where they tell the person about their adverse events then they
+report this, but don't say they took the drug a day early and the adverse
+events happened after they had taken the drug. So from the date of the
+adverse event and the expected date of the first dose, these adverse events
+will be recorded as pre-treatment adverse events. They may get exactly
+the same adverse events for the first two weeks, but when it comes to reporting
+treatment-emergent adverse events then so long as the intensity and severity
+has not increased, these might not be regarded as treatment-emergent, because
+they already happened before the drug was taken.
+<p>I hope you can understand the problem. What should have happened to
+avoid this situation is to assume that the date of start of treatment was
+the date the drugs were <b>DISPENSED</b> to the subject and not the planned
+date of first dose. And if adverse events were recorded at the visit the
+drug was dispensed then it would be clear that all those adverse events
+were definitely pre-treatment. It is all a matter of trial design.
+<h2>
+Post-Treatment "Treatment-Emergent"</h2>
+Drugs are toxic and have to be broken down by the liver and turned into
+different substances that are safe for the body to flush out of their system.
+Different people have different liver functions so for some people, their
+liver might change the drug into something more toxic that the original
+drug. So let's say a clinical trial ended and then a month after the trial
+ended a subject's fingernails start dropping out. This, for sure, is in
+the post-treatment period so how can it be treatment-emergent? In the case
+of fingernails dropping out or anything unusual then it is safer to assume
+that it is drug related. It could even be an adverse event like falling
+own some stairs. maybe the drug had a long-term effect on the balance of
+the subject. So some adverse events happening post treatment may be drug
+related and others not. And the possibly drug related ones have to be reported
+as such and are really therefore treatment-emergent.
+<p>The way this is usually handled in clinical trials is to have two different
+study end dates used for classifying adverse events into periods. For serious
+adverse events, a later date is used for trial end and therefore the definition
+of on-treatment.
+<h2>
+Drug-related "Treatment-Emergent"</h2>
+The trial investigator usually has the option of deciding and recording
+an adverse event as being drug-related and if they have done this then
+it is normal to classify this adverse event as treatment-emergent no matter
+what the onset date was.
+<h2>
+Mistakes in "Collapsing" Adverse Events</h2>
+I have seen a few white papers on the Internet about how to "collapse"
+adverse events. This is where you have multiple adverse event records that
+relate to the same adverse event. For example, if you have a single adverse
+event recorded twice for two contiguous periods, and the intensity is greater
+for the second period, then this adverse event will be "collapsed" into
+a single adverse event for the combined period using the higher intensity.
+Unfortunately, this will be the wrong thing to do unless the (true) treatment
+start data is taken into account. If the second period happened after treatment
+start then with its higher intensity it should be treated as a new adverse
+event that is treatment-emergent. "Collapsing" adverse event records only
+makes sense if they all happened in the same trial period. Indiscriminate
+"collapsing" of adverse events should be avoided.
+<p>It is worth mentioning at this point that you should only "collapse"
+data if you really need to. If there are multiple records for the same
+adverse events for the same subjects then the count that %npcttab and %aetab
+gives you is the unique subject count, so if a subject has multiple records
+for the same adverse event then they will only be counted once. It is only
+important to "collapse" adverse events where the number of "events" is
+additionally requested, and this is rarely requested.
+<p>Finally, for this section, I will describe another difficult scenario.
+Suppose you have an adverse event for a subject that has five periods and
+all five periods are contiguous as follows. <b>01Jan2010-20Jan2010 Grade
+1, 21Jan2010-18Jan2010 Grade 2, 19Jan2010-10Feb2010 Grade 1, 11Feb2010-24Feb2010
+Grade 2, 25Feb2010-08Mar2010 Grade 1</b>. Treatment start date was 05Jan2010
+which was during the first period as a Grade 1 adverse event. How should
+this be treated when it comes to collapsing and is it right to collapse
+into a single adverse event in this case? You can see that if we collapse
+all five periods and assign the worst grade for this period then we have
+a Grade 2 event starting 01Jan2010 and ending 08Mar2010. Using this collapsed
+single event implies the adverse event was not treatment-emergent since
+it existed as a Grade 2 adverse event pre-treatment. But this is not correct
+because the adverse event worsened to a Grade 2 on-treatment. Because of
+this, we will ignore the Grade 1 periods on treatment such that it only
+becomes an adverse event for Grade 2 or above. So we have a choice: do
+we have a Grade 2 adverse event that is treatment-emergent starting on
+the treatment start date of 05Jan2010 and ending 08Mar2010? Or do we wait
+until the start of the first Grade 2 period such that we have a Grade 2
+adverse event starting 21Jan2010 and ending 08Mar2010? Or should we skip
+the fifth period altogether, since this was only a Grade 1 and was present
+pre-treatment, such that the two previous scenarios had an end date of
+24Feb2010? A further difficulty comes with the counts of treatment emergent
+adverse events. What is the worst case, since in doubt, we report the worst
+case? Is two adverse events at Grade 2 worse than just the one collapsed
+adverse event at Grade 2? In which case we should not collapse into one.
+Or is the longer period at Grade 2 that spans the 19Jan2010-10Feb2010 Grade
+1 period the worst case? You could make a convincing argument for either
+for this situation! This illustrates the dangers of collapsing adverse
+events where the adverse event was present pre-treatment at the same Grade
+as on-treatment for the periods you are trying to collapse.
+<h2>
+Conclusion</h2>
+As was explained at the start of this page, the way %npcttab and %aetab
+work is that they assume that they need to report on all the data in the
+input dataset. They do not select on this data in any way. So it was explained
+to you, for the case of treatment-emergent adverse events, how you might
+define which adverse event belong to the treatment-emergent category so
+that only relevant data is passed to %npcttab or %aetab as input data to
+produce a report on.
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477338; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="94c7c574"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../../www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="counter hit make" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<p><font face="Arial,Helvetica">Use the "<b>Back</b>" button of your browser
+to return to the previous page.</font>
+<center>
+<p><a href="contact.html" target="_blank">contact the author</a></center>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/Spectre/trt_emerg.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:03:25 GMT -->
+</html>

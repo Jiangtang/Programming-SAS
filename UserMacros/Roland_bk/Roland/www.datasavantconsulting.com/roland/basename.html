@@ -1,0 +1,53 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/basename.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Generator" content="Microsoft Word 97">
+   <meta name="keywords" content="sas tips techniques">
+   <meta name="Description" content="SAS tips and techniques by Roland Rashleigh-Berry">
+   <meta name="Template" content="C:\PROGRAM FILES\MSOFFICE\OFFICE\html.dot">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   <title>whosgot</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+basename</h1></center>
+<b>[last updated - 05 August 2003]</b>
+<p>The basename utility is used for stripping off path names. Try the following
+command and you will see how it works:
+<p><b><tt>basename /aa/bb/ccc.sas</tt></b>
+<p>You will see that ccc.sas is returned which is what you want. You will
+often see it in scripts enclosed in the do-it-now quotes like this:
+<p><b><tt>prog=`basename $file`</tt></b>
+<p>It is fine for single instances like that. But you should not come to
+the conclusion that it is the only way to strip a path name off. You can
+also do it with <b>sed</b>. Try this:
+<p><b><tt>echo /aa/bb/ccc.sas | sed 's%.*/%%'</tt></b>
+<p>sed will do this for a stream of input like this:
+<p><b><tt>ls -1 ./sasmacros/*.sas | sed 's%.*/%%'</tt></b>
+<p>This is the technique you should use for chopping the path names off
+lists of things. To do the same with basename you would have to use this
+command:
+<p><b><tt>ls -1 ./sasmacros/*.sas | xargs -i{} basename {}</tt></b>
+<p>The above will work but will take many times longer to run compared
+to using sed. This is because basename's argument must follow it. What
+the above is doing is telling xargs to insert what it receives from standard
+input where it finds the "{}" pattern. In other words, after basename.
+<p>To sum up, <b>basename</b> has its place for stripping off path names,
+but it should only be used on single items. Use <b>sed</b> for multiple
+items.
+<center>
+<p>Go back to the home <a href="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</a>.
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+<br>&nbsp;
+<br>&nbsp;
+<br>
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/basename.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:10 GMT -->
+</html>

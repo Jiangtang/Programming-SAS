@@ -1,0 +1,448 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:09 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="keywords" content="Roland's sas macros">
+   <meta name="Description" content="SAS macros written by Roland Rashleigh-Berry">
+   <title>Roland's SAS Macros</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Roland's SAS&reg; Macros</h1></center>
+
+<center><b>[This site is not connected with the SAS Institute]</b>
+<p><b>(Author: Roland Rashleigh-Berry&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Last updated: 22 Feb 2016)</b>
+<br><b>
+<a href="Spectre/index.html">Spectre</a> ---- 
+<a href="Spectre/updates2.html">Latest updates</a> ---- 
+<a href="Spectre/maclist2.html">Macro list</a> ---- 
+<a href="Spectre/download.html">Download</a> ---- 
+<a href="sastips.html">SAS Tips</a> ---- 
+<a href="RGPP/rgpp.html">RGPP</a>
+</b></center>
+<img SRC="Roland1.jpg" height=150 width=200 align=RIGHT><form method=get action=http://www.google.com/search target=_blank>
+  
+<div 
+style="float:right; margin-right: 50px; WIDTH: 750px; color:red;
+BORDER-BOTTOM: red 2px solid; BORDER-LEFT: red 2px solid; PADDING-BOTTOM: 4px; PADDING-LEFT: 8px; PADDING-RIGHT: 8px; BORDER-TOP: red 2px solid; BORDER-RIGHT: red 2px solid; PADDING-TOP: 4px">
+<p>
+  We regret to inform you that Roland Rashleigh-Berry sadly passed away on Tuesday 12th April 2016.
+</p>
+<p>
+Therefore, please don't be surprised if the website is no longer available at some point in future or that Roland doesn't respond to any emails that are sent to him.
+With that in mind we strongly suggest that you download his SAS macros whilst they are still available.
+</p>
+<p>
+We're sure that many of you have made use of his SAS macros and expertise over the years. This he did out of his own time and without ever charging a fee.
+</p>
+<p>
+  Roland will be a sad loss to the SAS world but more so to his friends and family that he left behind.
+</p>
+</div>
+
+<div 
+style="BORDER-BOTTOM: blue 1px solid; BORDER-LEFT: blue 1px solid; PADDING-BOTTOM: 4px; PADDING-LEFT: 4px; WIDTH: 16em; PADDING-RIGHT: 4px; BORDER-TOP: blue 1px solid; BORDER-RIGHT: blue 1px solid; PADDING-TOP: 4px">
+<a href="http://www.google.com/" target="_blank"><img SRC="Logo_25gry.gif" ALT="google" BORDER=0></a>
+<table BORDER=0 CELLPADDING=0 >
+<caption><TBODY>
+<br></TBODY></caption>
+
+<tr>
+<td><input maxLength=255 size=25 
+  name=q><input value=Search type=submit></td>
+</tr>
+
+<tr>
+<td ALIGN=CENTER style="FONT-SIZE: 75%"><input 
+      value=datasavantconsulting.com/roland/ CHECKED type=checkbox 
+      name=sitesearch>only
+search this site</td>
+</tr>
+</table>
+</div>
+</form>
+
+<br /> <br /> <br /> <br /> <br /> <br />
+<h2>
+Are you a multi-language programmer developing SAS code for high-data-volume clients?</h2>
+I ask if you are, because if true, you are probably making a huge mistake
+in your technical approach to writing SAS code, unless you started out
+programming with high volume data. For high volume data there are usually 
+two phases to a SAS program -- the first to summarise data in the most condensed 
+and efficient way imaginable, followed by a second phase, to report it with 
+all sorts of bells and whistles added in to make the report look good. 
+<b>Two phases.</b>
+The first, a stripped-back-to-nothing extract of data fed through to 
+the summarisation routines with almost no manipulation with huge effort
+made to pass this data on to the summarisation processes as quickly and 
+efficiently as possible --- and the second phase, after the data is summarised, 
+to make it much more presentable such as merging in identifying information.
+
+<p>There are tips on this web site on how you 
+can achieve this. Without bearing this principle in mind, then if you are a 
+mixed language programmer, you can be the best programmer in the world at 
+general programming at the same time as being the <b>worst</b> SAS programmer 
+in the world because, for high volume data clients, if you don't understand 
+that there are two phases of a program and you code for one phase only then 
+you will be ruining the performance of the software you are writing for the 
+client.
+
+<p>For high volume data clients, then if you are not writing code that can 
+achieve processing <b>ten thousand observations per second,</b> then it would 
+be better if you were employed in a different role. But follow the tips on 
+this web site and you will achieve that rate of ten thousand observation per 
+second processed and perhaps hugely more.
+
+
+<h2>
+Everything on this web site is free to use</h2>
+Because the low-cost SAS Learning Edition is no longer available, I can not
+continue to support any of the code available from this web site unless I 
+have a paid-for support contract to allow me a working copy of SAS. I don't
+have such a contract as yet. So what I have decided to do
+is to give away the code by putting it all into the public domain and
+people are therefore free to use it, amend it and do what they like with
+it. This includes making commercial use of it in any way people see fit
+(although it would be common courtesy not to charge people money for using
+the software as found on this web site since it now exists in the public 
+domain). So I no longer can give SAS coding support to any of the
+code and I can't fix any bugs that are found. If you report bugs to
+me then I will not be able to check them out without a SAS licence so I
+won't be able to act on them. If you are setting up these macros for your
+client then I can give you support to help you get it set up and running
+but my time is limited for this unless I have a support contract.
+
+<p>You do not need a support contract from me personally. If anybody out 
+there wants to independently provide paid support for any of the code on 
+this web site then they are welcome to do so.
+
+<p>The total amount of time I spent on developing the macros and documenting 
+them plus all the other work on this web site must come to about 3000 
+hours. All this is free for you to use unless you choose to enter into a 
+support contract. The cost of a support contract (from me) is given on the 
+Spectre Download page (the cost depends on the region).
+
+<p><a href="Spectre/download.html">Spectre download</a>
+
+<h2>
+Why this web site is called "Roland's SAS Macros"</h2>
+This web site is called "Roland's SAS Macros" because its main emphasis is
+in showing you how to write macros in SAS that have a family relationship.
+I don't just mean a single macro that stands apart from anything else. I mean 
+about how to write macros that might need to call other macros and how to 
+build up a family of macros that is suitable for this purpose. Here, it gets 
+difficult. There is no official documentation to help you. But that 
+documentation is here on this web site as my personal opinion to help you.
+
+<p>If you can write a good family of macros that can work with each other 
+then you have the potential of turning the quite ordinary language of SAS
+into something enormously valuable for the organisation you work for. Your
+organisation should then be able to call these macros, as tailored to their 
+needs, to do all the analysis they need to do very easily and so help the 
+organisation to become more competitive and successful.
+
+<p>I think that SAS is an old and limited language, but at the same time, 
+I think it still has enormous potential for making your organisation 
+more efficient through good use of interactive SAS macros, if only you "knew
+how". This web site is aimed at giving you that "know-how".
+
+<p>I am not the best SAS programmer in the world, but I think I am in the
+top 10% of those. But that is not my forté. My forté, and the reason for this
+web site being here, is about writing SAS macros that interact with each other 
+such that they hold the potential of adding value to the organisation that has
+them. There are no other SAS programmers with those skills who publish that 
+knowledge.
+
+<p>I share my knowledge. Most knowledgeable SAS programmers do not, as they
+feel it would put them out of their job. I think theirs is a valid approach,
+but it is not in my nature to keep my knowledge to myself. I hope you are 
+maybe a young SAS programmer who will absorb and put into good use 
+everything you find on this web site to give you the boost to acquire all 
+his knowledge, overtake the competition and apply a skill level in the 
+future that would be beyond imagination.
+<h2>
+*';*";*/;*);run;%put >>> NOW WORKING;</h2>
+Copy and paste the above line of code into your sas session and run it
+three times if your session gets stuck in that you submit things and see
+it echoed in the log but it does not do anything. If you see the ">>> NOW
+WORKING" message starting at column one in the log then your session just
+came back to life again (hopefully).
+
+<h2>
+Multiprocessing using SAS</h2>
+If you have SAS/Connect (use %SYSPROD(connect) and if it returns 1 then 
+you have it licensed) then did you know that you can multiprocess sessions 
+in SAS even on your laptop? Parts of the industry already know this but 
+some parts of the industry are a bit behind the times (the pharmaceutical 
+industry especially) so many programmers are unaware of it, even though 
+this has been possible since the earliest release of SAS v8.0 in November 
+1999. On my SAS Tips page you can link to above you will find a whole 
+section on this plus my ultimate solution in the macro 
+<a href="Spectre/utilmacros/rsubmitter.sas" target="_blank">%rsubmitter</a>. 
+Click on the SAS Tips page above and read the Multiprocessing section for 
+more details.
+
+<h2>
+%aetab available</h2>
+A clinical reporting macro has been added to Spectre that can do multi-level
+AE reporting beyond the current three-level reporting limit of %npcttab.
+Note that there is a current limitation in that <b>only Western character
+sets will be correctly aligned</b> with this macro. The same applies to
+the style=3 reporting for %npcttab. This is because it uses the utility
+macro %splitvar to do the alignment and this assumes one letter takes up
+one byte. This is not the case for many Asian character sets.
+<br><a href="Spectre/aetab.html">%aetab</a>
+
+
+<h2>
+Sasautos extensions</h2>
+Old-time SAS programmers will be familiar with the macros %left, %lowcase
+and %trim. These have been supplied with the sasautos library distributed
+with copies of SAS for many years. They behave like macro functions and
+yet they are macros. They have now been made redundant, because %sysfunc
+calls can replace them, but %left and %trim have been used by programmers
+for years not knowing or caring whether they are macro language functions
+or macros. You use them in the same way. There is no rationale as to why
+some of these macros are there and some not. You might be familiar with
+the %words macro that you can find on the SAS Technical Support site. That
+has never been a member of the supplied sasautos library and yet it is
+obviously a useful macro that deserves a place in the autocall library.
+The point is, <b>it is up to you to decide what utility macros you want
+to make available</b> and to create those that you need or would like to
+be there and available for you to use. You could think of me thinking
+about my "utility macros" as the add-on sasautos extensions I will need
+to call when developing applications in the clinical reporting field.
+
+<p>Obvious candidates for adding to the sasautos library are the very useful
+function calls used in SCL for extracting variable and data set information.
+In SCL you need to open the data set and give it a file handle before you
+can get this information but it is easy enough to write this code into
+a macro in a way that the whole macro behaves like a macro function. I
+have used this technique for many of the sasautos extension macros. This
+is not at all efficient when you are making many of these calls, because
+the data sets are being opened and closed multiple times when once would
+have been better, but when you are developing more complex macros, such
+as I have done for some clinical reporting macros, then the convenience
+outweighs the efficiency considerations.
+
+<p>Modern software development is usually done using components so that
+reliable applications can be built more quickly using smaller programming
+teams. This is the best way to understand why I have built up a large collection
+of low-level, general-purpose utility macros. I think with them and use
+them to build sas applications. I have over 200 of these webbed here and
+I use them frequently in my work. If you ever think of a low level utility
+macro you need then there is a 95% chance or higher that it is already
+in my macro collection and so it might save you time to check there first.
+To see these macros in alphabetical order plus their purposes then use
+the link below. Not all sas programmers will need these or even see the
+need for them but if you are developing sas applications then you might
+find they are ideal for your purposes and can save you a great deal of
+time and can put the development of complex applications within the scope
+of individual sas programmers.
+<p><a href="Spectre/maclist2.html">Alphabetical list of macros plus their
+descriptions</a>.
+<p>All the macros can be downloaded as a zip file from the page you can
+link to below.
+<p><a href="Spectre/download.html">download</a>
+
+<p>An important thing to bear in mind is that if you put these macros on
+your SASAUTOS path then you are not resricted to using them for your entire
+SAS session. When you no longer require them to perform the task you need
+to do, you can simply restate the SASAUTOS path with your own macros removed 
+from the path. That way you can return to any setup used as a company
+standard. Naturally, use of a special library on your own SASAUTOS path has 
+no effect on other SAS users and their SAS environments.
+<h2>
+Are these macros "Open Source"?</h2>
+From time to time I get asked why I don't distribute my macros under an
+"Open Source" license. This sounds like a good idea except that the idea
+of "Open Source" encourages software to be improved upon. Again, this sounds
+like a good idea but the trouble with my macros is that they are tightly
+interlinked. The more complex macros rely on lower level macros and if
+the functionality or calling convention of these lower-level macros changes
+then the more complex macros might encounter errors or it might change
+their functionality. This has to be avoided so any changes to them are
+only safely made by myself, since I know all their dependencies. So instead
+of "Open Source" they are <b>public domain</b> software (this does not
+apply to the major clinical reporting macros) and this suits many of the
+smaller utility macros since they are just commonly-used code (i.e. already
+"public domain" knowledge) encapsulated into a macro and as such are not
+Copyrighted by myself partly because they are not substantial pieces of
+work and partly because key elements of the code they use was not developed
+by myself. And if I am not claiming Copyright then I do not have the right
+to assign them over to an "Open Source" licensing system. But as for using
+these macros, you are free to use them as if they were Open Source. Use
+them freely but I advise against amending them for the reason stated.
+<h2>
+Are there bugs in these macros?</h2>
+<b>Almost certainly.</b> All complex software has bugs in it no matter
+who tells you otherwise. And if not bugs, changes are required, sometimes,
+for the software to be more useful or understandable. You will see from
+the "Bugs and changes log" page below that there have been many bug fixes
+and changes made to these macros. More bugs will be found in the future
+and more changes made. I don't feel I am a bad programmer because of this.
+It is normal for this sort of thing. For those who used to work on IBM
+mainframes, even the program <b>IEFBR14</b> had bugs in it or at least
+had to be amended more than once to get it to work properly. And what did
+IEFBR14 do, you might wonder? I will tell you -- it did <b><i>nothing</i></b>.
+It was a null program that would instantly return control to the calling
+program by using the instruction "BR 14" which means "Branch to the address
+in register 14" so the only instruction it originally contained was one
+to exit the program. Even that went wrong so don't expect my macros to
+be entirely bug free as, collectively, they are about a million times more
+complicated. Because of this, if you intend to use these macros in a production
+environment, especially the more complex macros, then it is only wise to
+do so if they are covered by some sort of support contract.
+<p><a href="http://en.wikipedia.org/wiki/IEFBR14" target="_blank">IEFBR14</a>
+<h2>
+How to use the macros</h2>
+All the macros you can download here are intended to be put in a library
+and included on the <b>sasautos</b> path. The major macros often call lower-level
+macros so these will only work correctly if <b><i>all </i></b>these macros
+are made available and declared to the sasautos path. I sometimes get asked
+by email why the major macros don't work and why it is complicated by them
+calling other macros but this is the whole point of this web site and the
+approach it takes. It is all to do with the "sasautos extensions" idea
+that I advocate and by that I mean building your own library full of all
+the utility macros you will ever need and putting them on the sasautos
+path. If you do this right then all the macros will work correctly and
+you should be far more productive in your work.
+<h2>
+What's BAD about these macros?</h2>
+The biggest complaint I get about my macros are that most are not stand-alone.
+They call other macros. I have to design my macros this way to remove code
+duplication. I place the commonly used routines in small macros where I
+can maintain the code in one place.
+<p>I use the sasautos approach in that all the utility macros I need are
+in one library and this library gets declared to the sasautos= system option.
+In other words, it is a <b>second autocall library</b>. You received one
+of these autocall libraries from the SAS Institute with your copy of SAS
+and now I am giving you a second library which you are supposed to put
+on the sasautos path in front of SASAUTOS. If you are working on your own
+PC or in your own work area then this is easy enough. The trouble comes
+when you use my macros to create a solution that other people are supposed
+to use. You then have to install my sasautos library somewhere centrally
+where all the users can access them. Here it gets more difficult as most
+sites will not want to see all these macros appear - especially in their
+production area and especially because none of my macros have been formally
+validated. However, what might be acceptable, is a minimum set of these
+macros that are needed to implement a needed solution. How to identify
+a minimum set of macros and copy just those macros across to a library
+is explained on the page you can link to below.
+<p><a href="minmacros.html">Copying a minimum set of macros to a library</a>
+<h2>
+SAS software tips and techniques</h2>
+As I think of them, I will be adding my own sas tips and techniques to
+this site. You can get to them by clicking on the link below.
+<p><a href="sastips.html">SAS software tips and techniques</a>.
+<h2>
+Roland's Graphical Patient Profiler</h2>
+A few years ago I wrote a graphical patient profiler very much like the
+one written by Ya Huang and described in the following article.
+<br><a href="http://www.lexjansen.com/pharmasug/2007/ad/ad03.pdf" target="_blank">A
+Low Cost Graphical Patient Profiler with SAS MetaViewApplet</a>
+<p>The patient profiler described in the article is similar in parts to
+the PPD Patient Profiles.
+<br><a href="http://www.csscomp.com/web/products/patientprofiles.htm" target="_blank">PPD
+Patient Profiles</a>
+<p>I wrote an entirely independent version of a graphical patient profiler.
+I consider it to be a very important enhancement to the clinical trials
+process. Clinicians, who follow the progress of clinical trials, will know
+about the serious adverse events and the successes. They will probably
+find this out via telephone calls or faxes because the data from the clinical
+trial will be "unclean". Indeed, I have had access to this unclean data
+from many clinical trials and it is truly unclean, even with wrong years
+for events. It takes months to sort out the irregularities. But there is
+a lot of useful data in there that could be used for the benefit of patient
+safety. If the clinician had access to the data and could visualise the
+situation, they could, perhaps, spot danger-signals for patients on the
+trial, based on the profile of patients who have already withdrawn from
+the trial or patients who had suffered drug-related adverse events. If
+the data were clean enough to use, and the patient profiling software were
+good enough and flexible enough, then perhaps potential problems could
+be spotted in advance, much to the benefit of patient safety.
+<p><a href="RGPP/rgpp.html">Roland's Graphical Patient Profiler</a>
+<h2>
+Unix tutorials and shell scripts</h2>
+As a sas programmer working on Linux/Unix, you may think you do not need
+to learn Unix beyond knowing how to use some of the common commands. This
+is largely true but if you work in a high-production environment, such
+as clinical trials reporting, then having a good knowledge of Unix commands
+and being able to write shell scripts can increase your productivity so
+learning more about it becomes worthwhile. To help you in this, I have
+written several pages to do with Unix and using it with SAS software.
+<p>If you have never written shell scripts before and your knowledge of
+Unix is limited then you are better off using this <a href="unix.html">link</a>.
+<p>If you already have a shell script library you use and you want to hunt
+for more useful tips and shell scripts then go direct to this <a href="unixtips.html">page</a>.
+<h2>
+Spectre (Clinical)</h2>
+Spectre (Clinical) is a clinical reporting system I wrote from late 2003
+onwards. It is a full and complete clinical reporting system with shell
+scripts, sas macros and extensive documentation. Its SAS macros are the
+same ones you can download from this web site so you will not find any
+more macros there. You can link to it below.
+<br><a href="Spectre/index.html" target="_blank">Spectre (Clinical)</a>
+<p>You can download Spectre using the link at the end of this section.
+What follows is the current status of Spectre that you can download.
+<br><a href="Spectre/bugs.html" target="_blank">Bugs and changes log</a>
+<br><b>spectre.zip (documentation) - 17 Jun 2015</b>
+<br><b>clinmacros.zip (macros) - 07 Jun 2015</b>
+<br><b>utilmacros.zip (macros) - 20 Jan 2015</b>
+<br><b>sysmacros.zip (macros) - 08 May 2011</b>
+<br><b>scripts.zip (scripts) - 23 Mar 2011</b>
+<p>Spectre (Clinical) can be downloaded from the following page.
+<br><a href="Spectre/download.html">Spectre download</a>
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<center>
+<!-- <p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center> -->
+
+<p><script language=javascript type=text/javascript 
+src="index_files/navbar.html"> </script>
+<noscript>
+<center><table BORDER=2 CELLSPACING=0 BGCOLOR="#808080" >
+<caption>
+<center><TBODY>
+<br></TBODY></center>
+</caption>
+
+<tr>
+<td>
+<table BORDER=0 CELLSPACING=0 CELLPADDING=2 >
+<caption><TBODY>
+<br></TBODY></caption>
+
+<tr>
+<td ALIGN=CENTER><font face="arial"><font size=-1>This site is a member
+of WebRing.&nbsp;</font></font>
+<br><font face="arial"><font size=-1>To browse visit <a href="http://ss.webring.com/navbar?f=l;y=rolandrb;u=defurl">Here</a>.</font></font></td>
+</tr>
+</table>
+</td>
+</tr>
+</table></center>
+</noscript>
+<p>SAS and all other SAS Institute Inc. product or service names are registered
+trademarks or trademarks of SAS Institute Inc. in the USA and other countries.
+&reg; indicates USA registration.
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js">
+</script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="#" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:04:09 GMT -->
+</html>

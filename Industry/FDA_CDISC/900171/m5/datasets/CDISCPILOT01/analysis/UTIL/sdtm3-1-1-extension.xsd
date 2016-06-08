@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xs:schema targetNamespace="http://www.cdisc.org/ns/odm/v1.3" 
+           xmlns="http://www.cdisc.org/ns/odm/v1.3"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+
+
+           xmlns:crt="http://www.cdisc.org/ns/crt/v3.1.1" 
+           xmlns:odm="http://www.cdisc.org/ns/odm/v1.3" 
+           xmlns:sdtm="http://www.cdisc.org/ns/sdtm/v3.1.1" 
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+           
+           
+    <xs:import namespace="http://www.cdisc.org/ns/sdtm/v3.1.1" schemaLocation="sdtm3-1-1-ns.xsd"/>
+
+
+    <xs:redefine schemaLocation="Foundation/ODM1-3-0.xsd">
+
+      <!--  
+             ODM element
+        -->  
+      <xs:group name="ODMElementExtension">
+            <xs:sequence>
+              <xs:group ref="ODMElementExtension"/>
+              <xs:element      ref="sdtm:DomainData"          minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+      </xs:group>
+
+        
+    </xs:redefine>
+
+    
+</xs:schema>

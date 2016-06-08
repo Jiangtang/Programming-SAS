@@ -1,0 +1,233 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/unix.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:02:52 GMT -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Roland Rashleigh-Berry">
+   <meta name="GENERATOR" content="Mozilla/4.8 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="why you need to learn unix">
+   <meta name="KeyWords" content="why need learn unix">
+   <title>Unix and why you need to learn it</title>
+</head>
+<body text="#000000" bgcolor="#C0C0FF" link="#0000FF" vlink="#800080" alink="#FF0080">
+
+<center>
+<h1>
+Unix and Why You Need to Learn It</h1></center>
+<b>[last updated - 08 September 2007]</b>
+<h2>
+Introduction</h2>
+You think learning Unix is not for you? Stick with SAS because there's
+enough there yet to learn? True, there's plenty more to learn in SAS. Very
+true for me, and I have been programming in it intensively since 1986.
+So leave Unix for the techies because it won't help you with SAS and the
+work you do? Well, think again! If you work on a Unix platform and you
+don't know Unix well then I guarantee you that you are not working as efficiently
+as you could be. Very far from it, in fact.
+<h2>
+SAS is SAS and Unix is Unix, right?</h2>
+<b><font size=+1>WRONG.</font></b> This is probably the assumption you
+are making and you couldn't be more wrong. That is why you don't bother
+learning more about Unix. Don't blame yourself, though, because this is
+what 99% or more of SAS programmers on Unix platforms think. But, in fact,
+you can combine SAS and native Unix commands easily and in so doing open
+up whole new possibilities for ease and greater efficiency. Once you start
+out down this route, you will never look back. But you can't see that now,
+so I would like you to step into my shoes for a few minutes so you can
+see things from my point of view. I will tell you about a typical day of
+mine using SAS with Unix.
+<h2>
+How I use Unix with SAS</h2>
+I have written a number of Unix utilities and many of these execute SAS
+within them. I use some of these utilities every day at work. I can't remember
+a day, now, in the past year, when I have not used at least one of them.
+I'll give you a list of the SAS/Unix utilities I use often as well as some
+of the pure Unix ones that still relate to the work I do with SAS. I'd
+like you to imagine what it could be like working in the following way
+that I will illustrate. Put yourself in my place and imagine doing the
+same thing.
+<ul>
+<h3>
+contents</h3>
+I create a dataset and place it in a library. I want to check that I have
+assigned labels to all the variables. I make that directory the current
+directory and type in the command at the Unix prompt <b>contents demog</b>.
+I see the contents of the <b>demog</b> dataset displayed on the screen.
+If I want to see more details then I type in <b>contentsl demog</b> instead
+(a <b>l</b>onger version of my <b>contents</b> utility) and see the length,
+variable type and formats as well. I will soon see if I have missed off
+a label. Maybe I want to see the contents of <b><i>all</i></b> the datasets
+in that library. I just type the command <b>contents</b> and there it is
+for every dataset. If I want to route what I see to a file then I type
+in something like <b>contents > cont</b> instead and can browse the file
+<b>cont</b>
+later. Suppose I want to know what datasets contain the variable
+<b>SESS</b>
+then I can pipe the output of the <b>contents</b> command to
+<b>grep</b>
+like this <b>contents | grep SESS</b> and there, on the screen, are all
+the datasets that contain the variable <b>SESS</b>. Do you see how SAS
+and Unix can work together? Do you see how simple it is? There's more to
+come.
+<h3>
+allmiss</h3>
+I've created a dataset in the output library. I've used <b>contents</b>
+to check the labels. All is well. But have I populated all the variables?
+I just type in the command <b>allmiss demog</b> and it will tell me if
+I have any all-missing character or numeric variables. I type in <b>misscnt
+demog</b> if I want a count of the number of missing values for each variable
+rather than be informed about the all-missing variables. Suppose I want
+to check the whole library for all-missing variables. I just type in <b>allmiss</b>
+with no parameters.
+<h3>
+printalln</h3>
+I come across a strange subject whose data just doesn't add up. I need
+to look at all the data I have for that subject and piece together what
+is going wrong by cross-referencing the information in the various datasets.
+I do this nearly every day. I type in the command <b>printalln subject=1234
+> subj1234</b> and then all the data for subject 1234 in that library is
+put in the file <b>subj1234 </b>where I can browse it. If I were interested
+in data for an unexpected session then I could type in something like <b>printalln
+sess=99 > sess99</b> and go look at it in the file <b>sess99</b>. It's
+as easy as that. Yes. it is running SAS behind the scenes. Of course it
+is. But you won't find any sas code or logs being left behind in those
+directories. It just does its work and then disappears. It is just like
+a native Unix command except that you have SAS working for you instead.
+<p><b><font size=+1>intitlesnoprogs</font></b>
+<p>I have a tight deadline. Time is running short. There is a "titles"
+dataset somewhere with all the titles and footnotes in it for all the code
+that produces output. Is meeting this deadline going to be possible? How
+many reporting programs haven't been written yet? Well, it's easy for me
+to find out. I just type in the command <b>intitlesnoprogs</b> in any relevent
+study directory and I get a list up on the screen of all the missing reporting
+programs. The utility has read the titles dataset, has searched the program
+directories (or perhaps all the programs directories for that study area)
+and got a list of entries and told me which sas programs haven't been written
+yet. This is SAS and Unix working directly together to provide you useful
+SAS project information.
+<p><b><font size=+1>clash</font></b>
+<p>This is a simple one I wrote years ago. I have created a library of
+SAS datasets and I want to know where there are discrepancies of label,
+length, format or whatever among identically-named variables throughout
+that library. I just type in the command <b>clash</b> and then I see the
+discrepancies listed. If there are a number of them I might repeat the
+command but direct it to a file where I can mull over the discrepancies
+at my leisure like this <b>clash > clash</b>.
+<p><b><font size=+1>scanlogs</font></b>
+<p>This should be made compulsory for QC'ing, in my opinion. A suite of
+programs has run. Have all the error messages and warning messages been
+checked? What about the important note statements put out in the log? I
+can just type in the command <b>scanlogs</b> for a directory and it will
+scan all the logs for important messages that programmers need to check
+out. I could pick a single log, if I wanted to, or a specific group of
+logs like this <b>scanlogs d3p*.log</b>.
+<p><b><font size=+1>rescue</font></b>
+<p>I once managed to delete all the programs in a directory by using the
+Unix command <b>rm *.sas</b> when I meant to type in <b>rm *.log</b>. I
+was tired that day. Since that day I create and maintain a <b>backup</b>
+sub-directory in all program directories and would advise others to do
+the same. This was a small disaster but I still had all the logs from the
+programs, so I wrote a utility called <b>rescue</b>. It gets back the code
+from the program logs. It can be implemented using SAS talking to Unix
+or using pure Unix utilities (<b>awk</b> or <b>nawk</b> to be precise).
+That's got to be better than making a fool of yourself to Unix support
+and waiting three days for them to bring back your backed-up SAS programs.
+Especially if you have to deliver your reports the next day in any case.
+<p><b><font size=+1>hdr</font></b>
+<p>If I create a new program, I use a script I wrote called <b>hdr</b>
+something like this: <b>hdr newprog</b> . It prompts me for a program purpose
+and creates the SAS member with all sorts of useful information filled
+in including the project and study identity it has pulled out of the directory
+name. It has pulled out my name as the program author and puts in the date.
+If it is a macro, and I want more in the header, then I use the command
+<b>mhdr</b>
+instead. If it is a Unix shell script then I use <b>shdr</b> instead. Documentation
+of code is a pain, but this helps. It almost makes documentation a fun
+thing to do. And when your study documentation is good and easy then things
+are on the up and up, programming wise.
+<h3>
+ddiff</h3>
+You may or may not have heard about the <b>diff</b> utility that is native
+to Unix. You use it to compare two files. These files could be report output
+files. You know that sometimes you need to do a complete rerun due to a
+couple of data changes and you want to make sure that the outputs have
+only changed in the way you want. And you are not interested in seeing
+listing of differences of who ran what when such as lines like: <b>"userid:/sas/programs/thisprog.sas&nbsp;&nbsp;
+23JUL03&nbsp;&nbsp; 15:13&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Page 2 of
+88"</b> . You just want to see real differences in figures that you are
+expecting. Well, I wrote one to do that based on the native <b>diff
+</b>utility.
+You go to a subdirectory of your output directory where you have stored
+all your previous outputs and type in the command <b>ddiff</b> and you
+will see a list of all differences between the outputs in the subdirectory
+compared to those in the parent directory. This only takes seconds to run
+and for you to check that the outputs match what you expected. Better than
+re-QC'ing the whole lot. But in order for this to work well you will need
+to know a bit about something called "pattern matching" so you can spot
+and blank out those lines you are not interested in.
+<h3>
+listempty and pages</h3>
+More on report outputs. I can check to see if any reports don't contain
+anything by just typing in the command <b>listempty *.lst</b>. Once I am
+satisfied that all the reports contain something then I might want to print
+out pages 2 to 4 only for all the reports and write them to a file. I can
+do this with <b>pages 2 4 *.lst > pages2to4</b>.
+<h3>
+sasunixskeleton</h3>
+These Unix utilities that I have listed above that run SAS (or sometimes
+not) have the generic name of <b>"Unix shell scripts"</b>. They have a
+language syntax that is quite different to SAS (actually there are a few
+different types each with their own peculiarities of syntax) and it might
+put you off trying to learn them. So you might feel that you will never
+be able to write your own utility that calls SAS and interacts with Unix
+like the ones I have listed. I thought about that and the problems that
+SAS programmers might face making a start on this so I wrote a utility
+that writes utilities. Yes, you read that right - <b>It's a utility that
+writes utilities !!</b>. You call this utility named <b>sasunixskeleton</b>
+and it asks you what you want to call your new utiility and what it does
+and it writes the shell script for you. All you have to do is add a bit
+of code where it says EDIT to supply a usage message and your SAS code.
+The rest of the shell script you leave alone and it will work, even if
+you haven't got a clue what it is supposed to be doing.</ul>
+I've by no means covered all possible examples of what would be useful
+to you in your Clinical trials reporting environment. There is no such
+thing as a definitive list. It all depends on the way you work. All I hope
+to have achieved here, assuming you have read the above list and thought
+about it, is to open up your mind to what might be possible in your own
+workplace if you could make SAS talk to Unix in the form of utilities that
+operate to match the way you work. Let me assure you that there is very
+little "pain" to get to this stage and a great deal of "gain" to be had.
+Unix commands, and writing Unix shell scripts, is much easier than writing
+SAS
+code. It just looks odd and when you make an error it is hard to debug.
+But once you know how to do this you will be able to transform the way
+you work and raise the efficieny of your department in a way you never
+previously thought possible.
+<p>I invite you to join me in making the transition from being a pure SAS
+programmer to a SAS programmer who has married their skills to the Unix
+environment. You have maybe studied the many SAS macros on this web site
+to see how it could be applied to achieve greater efficiency in the field
+of Clinical reporting so maybe you are ready to take one more step with
+me in that direction. Click on the following link to move onto the next
+<a href="unixstart.html">stage</a>.
+<br>&nbsp;
+<p><!-- Start of StatCounter Code --><script type="text/javascript" language="javascript">
+var sc_project=1477310; 
+var sc_invisible=1; 
+var sc_partition=13; 
+var sc_security="2ed8e4a0"; 
+</script>
+<script type="text/javascript" language="javascript" src="../../www.statcounter.com/counter/counter.js"></script>
+<noscript><a href="http://www.statcounter.com/" target="_blank"><img SRC="counter.html" ALT="statistics" BORDER=0 ></a></noscript><!-- End of StatCounter Code -->
+<br>&nbsp;
+<br>&nbsp;
+<br>
+<br>
+<center>
+<p>E-mail the macro and web site <a href="mailto:rolandberry@hotmail.com">author</a>.</center>
+
+</body>
+
+<!-- Mirrored from www.datasavantconsulting.com/roland/unix.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 May 2016 00:02:52 GMT -->
+</html>

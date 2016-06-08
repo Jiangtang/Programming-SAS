@@ -1,0 +1,59 @@
+#!/bin/bash
+#<pre><b>
+# Script     : summary
+# Version    : 2.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 07-Feb-2007
+# Purpose    : To run "proc summary" on a dataset and display the output data
+#              set (uses SAS).
+# SubScripts : summary_win
+# Notes      : SAS dataset file name extension .sas7bdat will be ignored. You
+#              can subset the output dataset. See usage notes.
+# Usage      : summary sex acct
+#              summary 'sex agesub' acct
+#              summary 'sex agesub' 'acct(where=(fascd=1))'
+#              summary 'sex agesub' 'acct(where=(fascd=1))' 'where _freq_>20'
+#===============================================================================
+# PARAMETERS:
+#-pos- -------------------------------description-------------------------------
+#  1   Variable(s) to summarise. If more than one then enclose in single quotes
+#      and separate with spaces. See usage notes.
+#  2   Input dataset. Too add a "where" clause put in quotes. See usage notes.
+#  3   Subset clause on output dataset if required. See usage notes.
+#===============================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description------------------------
+# rrb  07Feb07         Call summary_win for Windows configurations
+#===============================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#===============================================================================
+
+# Put out a usage message if not enough parameters supplied
+if [ $# -lt 2 ] ; then
+  echo "Usage: summary 'var1 var2' dataset 'where _freq_ GT 1'" 1>&2
+  exit 1
+fi
+
+# if a Windows config then call summary_win and exit on return
+if [ -n "$CYGWIN" ] ; then
+  summary_win "$@"
+  exit $?
+fi
+
+dset=$(echo $2 | sed 's%\.sas7bdat$%%')
+
+
+# Feed SAS code into standard input
+sas -stdio -noautoexec -sasuser work 2>/dev/null << ----END----
+options validvarname=any nofmterr nocenter nodate nonumber;
+libname here './' access=readonly;
+proc summary nway missing data=here.$dset;
+  class $1;
+  output out=summary(drop=_type_);
+run;
+title;
+proc print data=summary;
+$3;
+run;
+----END----
