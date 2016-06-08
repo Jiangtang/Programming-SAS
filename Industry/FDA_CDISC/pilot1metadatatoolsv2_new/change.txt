@@ -1,8 +1,0 @@
-md2excel
-mdbuild (format F)
-mdcheck (typo in header)
-mdcpput
-mdmake
-mdprint
-mdshortlong
-
