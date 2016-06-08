@@ -1,0 +1,96 @@
+http://support.sas.com/documentation/cdl/en/lefunctionsref/67960/HTML/default/viewer.htm#p0w6napahk6x0an0z2dzozh2ouzm.htm
+
+IV. SAS.OS ??
+III. External Files
+II.Variable Control and Variable Information
+I. SAS File I/O
+
+SYSEXIST (argument)
+SYSMSG()
+SYSRC()
+ENVLEN(argument)
+IORCMSG()
+
+LIBNAME(libref <, SAS-library <, engine <, options>>>)
+LIBREF(libref)
+PATHNAME((fileref | libref) <, search-ref>)
+RENAME(old-name, new-name <, type <, description <, password <, generation>>>>)
+
+FCOPY('fileref-1', 'fileref-2')
+
+EXIST(member-name <, member-type <, generation>>)
+CEXIST(entry<, 'U'>)
+
+dsid = OPEN(dataSet)
+CLOSE(dsid)
+DSNAME(dsid)
+
+ATTRC(dsid,attribute-name)
+ATTRN(dsid,attribute-name)  ** Vnumber=attrn(dsid, "nvars") in loop;
+
+Vnumber = VARNUM(dsid, Vname)  *& Vname=varname(dsid, i) or varnum(dsid,'age');
+VARNAME(dsid, Vnumber)
+VARTYPE(dsid, Vnumber)
+VARLEN(dsid, Vnumber)
+VARLABEL(dsid, Vnumber)
+VARINFMT(dsid, Vnumber)
+VARFMT(dsid, Vnumber)
+
+GETVARN(dsid, Vnumber)
+GETVARC(dsid, Vnumber)
+
+FETCH(dsid <, 'NOSET'>)
+FETCHOBS(dsid, observation-number <, options>)
+CUROBS(dsid)
+
+NOTE(dsid)
+POINT(dsid, note-id)
+REWIND(dsid)
+DROPNOTE(dsid | file-id, note-id)
+
+II. Variable Control(*) and Variable Information  
+
+VARRAY(name)
+VARRAYX(expression)
+VINARRAY(variable)
+VINARRAYX(expression)
+
+CALL SET(dsid) *
+
+CALL VNAME(variable-1, variable-2) *
+VNAME(variable)
+VNAMEX(expression)
+
+CALL LABEL(variable-1, variable-2) *
+VLABEL(variable)
+VLABELX(expression)
+
+VLENGTH(variable)
+VLENGTHX(expression)
+
+VTYPE(variable)
+VTYPEX(expression)
+
+VVALUE(variable)
+VVALUEX(expression)
+
+VFORMAT(variable)      VINFORMAT(variable)
+VFORMATD(variable)     VINFORMATD(variable)
+VFORMATDX(expression)  VINFORMATDX(expression)
+VFORMATN(variable)     VINFORMATN(variable)
+VFORMATNX(expression)  VINFORMATNX(expression)
+VFORMATW(variable)     VINFORMATW(variable)
+VFORMATWX(expression)  VINFORMATWX(expression)
+VFORMATX(expression)   VINFORMATX(expression)
+
+III. External Files:
+
+IV: SAS.OS?
+
+Special
+	CALL SYSTEM 
+	SYSTEM
+	GETOPTION 
+	SYSEXIST (argument)
+	SYSGET('environment-variable')
+	SYSPARM()
