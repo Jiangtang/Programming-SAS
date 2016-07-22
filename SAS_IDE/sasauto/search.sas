@@ -1,6 +1,8 @@
-options nomprint nomlogic nosymbolgen nonotes;
-
+/*
+http://pgale.web.unc.edu/2015/06/24/sas-search-library/
+*/
 %macro search(librf,string);  /* parameters are unquoted, libref name, search string */
+options  nonotes;
   %let librf = %upcase(&librf);
 
   proc sql noprint;
@@ -36,7 +38,7 @@ options nomprint nomlogic nosymbolgen nonotes;
     %end;
   %end; 
 
-*options notes;
+options notes;
 
 %mend search;
 

@@ -1,24 +1,18 @@
-%let foo = bar;
-
-proc fcmp outlib=work.foo.foo;
-  function sumx(x[*]);
-    sum = 0;
-    do i = 1 to dim(x);
-      sum = sum + x[i];
-    end;
-    return (sum);
-  endsub;
-run;
-
-options cmplib=work.foo;
-
-
-
 /*
-  endsubmit;
-quit;
+basic
+Iterate +  pairs vs ipairs
+split a string
+Functions
+Missing data
+Run SAS Code
+Read SAS datasets
+list processing
+conditinal 
 */
 
+
+
+/*basic*/
 proc lua;
   submit; 
     
@@ -47,8 +41,15 @@ proc lua;
     --like SAS DATA step arrays, arrays in Lua start at index 1 by default
     local drink = shoppinglist[1]
     print(drink)
-   
 
+  endsubmit;
+quit;
+
+/*Iterate*/
+proc lua;
+  submit; 
+
+  local shoppinglist = {'milk', 'flour', 'eggs', 'sugar'}
     --4. iterate
     --[[
     The ipairs function returns two values with each iteration: 
@@ -77,6 +78,59 @@ proc lua;
     for key, value in pairs(band) do
       print(key, value)
     end
+
+  endsubmit;
+quit;
+
+/*pairs vs ipairs*/
+
+proc lua;
+	submit;
+	t = {fred='one',[0]=1; 10,20,30,40}
+		
+	    print(" ==pairs== ")
+		for k,v in pairs(t) do
+			print(k,v)
+		end
+    
+		print(" ==ipairs==  ")
+		for i,v in ipairs(t) do 
+			print(i,v) 
+		end
+		
+	endsubmit;
+run;
+
+/*split a string*/
+
+proc lua ;
+	submit;
+		local strmet  = "This is how to split a string"
+		for i in string.gmatch(strmet , "%S+") do
+		  print(i)
+		end
+	endsubmit;
+run;
+
+
+/*Functions*/
+
+%let foo = bar;
+
+proc fcmp outlib=work.foo.foo;
+  function sumx(x[*]);
+    sum = 0;
+    do i = 1 to dim(x);
+      sum = sum + x[i];
+    end;
+    return (sum);
+  endsub;
+run;
+
+options cmplib=work.foo;
+
+proc lua;
+	submit;
 
     --7.functions
     function sayHello(name)
@@ -110,6 +164,8 @@ proc lua;
       return 3.14 * r^2
     end
 
+	local pi = 3.14
+
     local a = area_of_circle(pi)
     print(a)
 
@@ -130,18 +186,73 @@ proc lua;
     local foo = sas.symget("foo")
     print(foo)
     --symputx is not available
-    sas.symputx('foo','baz')
+    --sas.symputx('foo','baz')
 
     --13. call fcmp funcitons
     local array = {1,2,3,4}
     local sum = sas.sumx(array)
     print(sum)
 
+  endsubmit;
+quit;
+
+proc lua;
+submit;
+    function split_today()
+        -- get current date
+        local date = sas.today()
+        -- return day, month, year
+        return sas.day(date), sas.month(date), sas.year(date)
+    end
+    
+    local day, month, year = split_today()
+    print("d=", day, "m=", month, "y=",year)
+
+endsubmit;
+run;
+
+%put &foo;
+
+/*Missing data*/
+
+proc lua;
+	submit;
     --14. missing
     local val = sas.inputn('.', '2.')
     print(val == sas.missing)
     print(val == sas.is_missing)
+  endsubmit;
+quit;
 
+/*Run SAS Code*/
+proc lua;
+submit;
+    sas.submit[[
+        proc sort data=sashelp.class(keep=sex age) out=class_sort;
+            by sex;
+        run;
+
+        data class_calc(keep=sex avg_age);
+            set class_sort;
+            by sex;
+            if first.sex then do;
+                age_sum     = 0;
+                num_pers = 0;
+            end;
+            age_sum + age;
+            num_pers + 1;
+            if last.sex then do;
+                avg_age = age_sum/num_pers;
+                output;
+            end;
+        run;
+    ]]
+endsubmit;
+run;
+
+
+proc lua;
+	submit;
     --15. submit sas code
     sas.submit('proc print data=sashelp.iris(obs=2);run;')
 
@@ -161,6 +272,13 @@ proc lua;
       run;
     ]], {indat = 'sashelp.heart(obs=2)'})
 
+  endsubmit;
+quit;
+
+/*Read SAS datasets*/
+
+proc lua;
+	submit;
 
     --16. read sas dataset
     local dsid = sas.open('sashelp.class')
@@ -202,18 +320,25 @@ proc lua;
     print("name=", table.tostring(sas.varinfo(dsid,"name")))
     sas.close(dsid)
 
-    
-
-
-
-
-
   endsubmit;
 quit;
 
-%put &foo;
+proc lua restart;
+submit;
+    local dsid = sas.open("sashelp.class")
+
+    for row in sas.rows(dsid) do
+        for i, value in ipairs(row) do
+            print(row,value)
+        end
+    end
+
+    sas.close(dsid)
+endsubmit;
+run;
 
 
+/*list processing*/
 
 /*
 https://www.youtube.com/watch?v=7G5Mb--iTc8
@@ -238,6 +363,30 @@ data work.mytables;
   output;
 
 run;
+
+
+proc lua;
+  submit;
+    function sort_b(ds)
+      local dsid =sas.open(ds)
+      while sas.next(dsid) do
+        local data = sas.get_value(dsid,'in')
+        local out  = sas.get_value(dsid,'out')
+        local by   = sas.get_value(dsid,'by')
+
+        sas.submit[[
+          proc sort data=@data@ out=@out@;
+            by @by@;
+          run;
+        ]]
+      end
+
+      sas.close(dsid)
+    end
+
+    sort_b("work.mytables")
+  endsubmit;
+quit;
 
 /*call execute?*/
 
@@ -270,11 +419,6 @@ run;
 
 
 
-%let ds = mytables;
-%let dsid = %sysfunc(open(&ds));
-%let in = %sysfunc(getvarc(&dsid,%sysfunc(varnum(&dsid,in))));
- %put in = &in;
-
 /*do subqual???*/
 
 %macro sortt(ds);
@@ -297,27 +441,23 @@ run;
 %mend;
 %sortt(mytables)
 
-proc lua;
-  submit;
-    function sort_b(ds)
-      local dsid =sas.open(ds)
-      while sas.next(dsid) do
-        local data = sas.get_value(dsid,'in')
-        local out =sas.get_value(dsid,'out')
-        local by = sas.get_value(dsid,'by')
-        sas.submit[[
-          proc sort data=@data@ out=@out@;
-            by @by@;
-          run;
-        ]]
-      end
-
-      sas.close(dsid)
-    end
-
-    sort_b("work.mytables")
-  endsubmit;
-quit;
 
 
 
+/*conditinal */
+proc lua ;
+submit; 
+ 
+-- example of logic control within LUA
+if not sas.exists("work.sample") then
+    print "Creating new WORK.SAMPLE"
+	sas.submit [[
+	  data work.sample;
+	    set sashelp.class;
+	  run;
+	 ]]
+   else print "WORK.SAMPLE already exists"
+ end
+ 
+endsubmit;
+run;
