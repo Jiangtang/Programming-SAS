@@ -15,8 +15,8 @@ proc lua infile="m" ;
 		state[#state+1] = row.statecode
   	  end
 
---http://stackoverflow.com/questions/20066835/lua-remove-duplicate-elements 
-function getDistinct(var)
+    --http://stackoverflow.com/questions/20066835/lua-remove-duplicate-elements 
+	function getDistinct(var)
 		local hash = {}
 		local res = {}
 
@@ -32,18 +32,15 @@ function getDistinct(var)
 
 	local res = getDistinct (state)
 
+	for i,state in ipairs(res) do
+	       sas.submit[[
+			  data class@state@;
+			  	set sashelp.zipcode(where=(statecode="@state@"));
+			  run;	  
+	        ]]
+	end 
 
-
-		for i,state in ipairs(res) do
-		       sas.submit[[
-				  data class@state@;
-				  	set sashelp.zipcode(where=(statecode="@state@"));
-				  run;
-		  
-		        ]]
-		end 
-
-      sas.close(dsid)
+    sas.close(dsid)
 	endsubmit;
 run;
 

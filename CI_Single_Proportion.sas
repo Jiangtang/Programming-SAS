@@ -34,7 +34,7 @@
 *License            : public domain, ABSOLUTELY NO WARRANTY                                                       *;
 *Platform           : tested in SAS/Base 9.4 (TS1M2)                                                              *;
 *Version            : V1.0                                                                                        *;
-*Date   	        : 21May2015                                                                                   *;
+*Date               : 21May2015                                                                                   *;
 *******************************************************************************************************************;
 
 
@@ -42,12 +42,12 @@
 
 proc fcmp outlib=work.func.CI;
    function acceptbin(r, n, p) label = "computes the Blaker acceptability of p when x is observed and X is bin(n, p)";
-		p1 = 1 - CDF('BINOMIAL', r - 1,p,n);
-		p2 = CDF('BINOMIAL', r,p,n);
+        p1 = 1 - CDF('BINOMIAL', r - 1,p,n);
+        p2 = CDF('BINOMIAL', r,p,n);
 
-		a1 = p1 + CDF('BINOMIAL', quantile('BINOM', p1, p, n)-1,  p, n) ;
-		a2 = p2 + 1 -  CDF('BINOMIAL', quantile('BINOM', 1-p2, p, n),  p, n) ;
-	    return (min(a1,a2));
+        a1 = p1 + CDF('BINOMIAL', quantile('BINOM', p1, p, n)-1,  p, n) ;
+        a2 = p2 + 1 -  CDF('BINOMIAL', quantile('BINOM', 1-p2, p, n),  p, n) ;
+        return (min(a1,a2));
    endsub;
 run;
 
@@ -59,7 +59,7 @@ data param;
           n = &n;
           alpha = &alpha;
           p = r/n;
-		  q = 1 - p;
+          q = 1 - p;
           z = probit (1-alpha/2);
     output;
     end; 
@@ -72,15 +72,15 @@ data CI5;
 
     if i=1 then do;
           Method = "1. Simple asymptotic, Without CC | Wald";
-		  se = (sqrt(&n*p*(1-p)))/n; *standard error;
+          se = (sqrt(&n*p*(1-p)))/n; *standard error;
           p_CI_low = p - z * se;
           p_CI_up  = p + z * se;  
     end;
 
     if i=2 then do;
           Method = "2. Simple asymptotic, With CC";
-		  se = (sqrt(&n*p*(1-p)))/n; *standard error;
-		  cc = 1/(2*&n);             *continuity correction;
+          se = (sqrt(&n*p*(1-p)))/n; *standard error;
+          cc = 1/(2*&n);             *continuity correction;
           p_CI_low = p - (z * se + cc);
           p_CI_up  = p + (z * se + cc);
           
@@ -90,12 +90,25 @@ data CI5;
     
     if i=3 then do;
           Method = "3. Score method, Without CC | Wilson";
+          *n1=2*r+z**2;
+		  *n2=z*sqrt(z**2+4*r*q);
+		  *d=2*(n+z**2);
+          *p_CI_low = (n1 - n2)/d;
+          *p_CI_up = (n1 + n2)/d;
+
           p_CI_low = ( 2*r+z**2 - (z*sqrt(z**2+4*r*q)) ) / (2*(n+z**2));
           p_CI_up  = ( 2*r+z**2 + (z*sqrt(z**2+4*r*q)) ) / (2*(n+z**2));        
     end;
     
     if i=4 then do;
           Method = "4. Score method, With CC";
+          *n1=2*r+z**2;
+          *n12=z*sqrt(z**2 - 2- 1/n + 4*p*(n*q+1));
+          *n22=z*sqrt(z**2 + 2- 1/n + 4*p*(n*q-1));
+          *d=2*(n+z**2);
+          *p_CI_low = ( n1 -1 - n12) / d;
+          *p_CI_up  = ( n1 +1 + n22) / d;
+
           p_CI_low = ( 2*r+z**2 -1 - z*sqrt(z**2 - 2- 1/n + 4*p*(n*q+1))) / (2*(n+z**2));
           p_CI_up  = ( 2*r+z**2 +1 + z*sqrt(z**2 + 2- 1/n + 4*p*(n*q-1))) / (2*(n+z**2));  
           
@@ -120,8 +133,8 @@ data CI5;
     
     if i=9 then do;
           Method = "9. Agresti-Coull, pseudo frequency, z^2/2 successes| psi = z^2/2";        
-		  psi = z**2/2;
-		  p2=(r+psi)/(n+2*psi);		  
+          psi = z**2/2;
+          p2=(r+psi)/(n+2*psi);       
 
           p_CI_low =p2 - z*(sqrt(p2*(1-p2)/(n+2*psi)));
           p_CI_up  =p2 + z*(sqrt(p2*(1-p2)/(n+2*psi)));
@@ -133,8 +146,8 @@ data CI5;
     if i=10 then do;
           Method = "10. Agresti-Coull, pseudo frequency, 2 successes and 2 failures| psi = 2";
 
-		  psi = 2;
-		  p2=(r+psi)/(n+2*psi);		  
+          psi = 2;
+          p2=(r+psi)/(n+2*psi);       
 
           p_CI_low =p2 - z*(sqrt(p2*(1-p2)/(n+2*psi)));
           p_CI_up  =p2 + z*(sqrt(p2*(1-p2)/(n+2*psi)));
@@ -143,11 +156,11 @@ data CI5;
           if p_CI_up>1  then p_CI_up =1;
     end;
 
-	if i=11 then do;
+    if i=11 then do;
           Method = "11. Agresti-Coull, pseudo frequency, psi = 1";
 
-		  psi = 1;
-		  p2=(r+psi)/(n+2*psi);		  
+          psi = 1;
+          p2=(r+psi)/(n+2*psi);       
 
           p_CI_low =p2 - z*(sqrt(p2*(1-p2)/(n+2*psi)));
           p_CI_up  =p2 + z*(sqrt(p2*(1-p2)/(n+2*psi)));
@@ -156,11 +169,11 @@ data CI5;
           if p_CI_up>1  then p_CI_up =1;
     end;
 
-	if i=12 then do;
+    if i=12 then do;
           Method = "12. Agresti-Coull, pseudo frequency, psi = 3";
 
-		  psi = 3;
-		  p2=(r+psi)/(n+2*psi);		  
+          psi = 3;
+          p2=(r+psi)/(n+2*psi);       
 
           p_CI_low =p2 - z*(sqrt(p2*(1-p2)/(n+2*psi)));
           p_CI_up  =p2 + z*(sqrt(p2*(1-p2)/(n+2*psi)));
@@ -175,26 +188,26 @@ data CI5;
           p_CI_up =exp(log(p/(1-p)) + z*sqrt(n/(r*(n-r))))/(1+exp(log(p/(1-p)) + z*sqrt(n/(r*(n-r)))));
     end;
 
-	if i=14 then do;
+    if i=14 then do;
           Method = "14. Blaker";  
-		  tolerance=1e-05;
-	      lower = 0;
-		  upper = 1;
+          tolerance=1e-05;
+          lower = 0;
+          upper = 1;
 
-		  if r ^= 0 then do;
-		     lower = quantile('BETA',alpha/2, r, n-r+1);
-			 do while (acceptbin(r, n, lower + tolerance) < (alpha));
-		           lower = lower + tolerance;
-			 end;
-		  end;
+          if r ^= 0 then do;
+             lower = quantile('BETA',alpha/2, r, n-r+1);
+             do while (acceptbin(r, n, lower + tolerance) < (alpha));
+                   lower = lower + tolerance;
+             end;
+          end;
 
 
-		  if r ^= n then do;	  
-			upper = quantile('BETA',1 - alpha/2, r+1, n-r);
-			do while (acceptbin(r, n, upper - tolerance) < (alpha));
-		              upper = upper - tolerance;
-		    end;
-		  end; 
+          if r ^= n then do;      
+            upper = quantile('BETA',1 - alpha/2, r+1, n-r);
+            do while (acceptbin(r, n, upper - tolerance) < (alpha));
+                      upper = upper - tolerance;
+            end;
+          end; 
 
           p_CI_low=lower;
           p_CI_up =upper;
@@ -205,96 +218,96 @@ run;
 data param6;
     set param(where=(i=6));
     max_idx=alpha/2;
-	min_idx=1-alpha/2;
+    min_idx=1-alpha/2;
 
-	do j=0.000001 to 0.999999 by 0.00001;
-		if (r>0 and r<n) then a2=0.5*probbnml(j,n,r-1) + 0.5*probbnml(j,n,r);
-		output;
-	end;
+    do j=0.000001 to 0.999999 by 0.00001;
+        if (r>0 and r<n) then a2=0.5*probbnml(j,n,r-1) + 0.5*probbnml(j,n,r);
+        output;
+    end;
 run;
 
 proc sql;
-	create table max as
-		select max(j) as p_CI_up
-		from param6		
-		where a2 > max_idx and r>0 and r<n
-		;
+    create table max as
+        select max(j) as p_CI_up
+        from param6     
+        where a2 > max_idx and r>0 and r<n
+        ;
 
-	create table min as
-		select min(j) as p_CI_low
-		from param6		
-		where a2 <= min_idx and r>0 and r<n
-		;
+    create table min as
+        select min(j) as p_CI_low
+        from param6     
+        where a2 <= min_idx and r>0 and r<n
+        ;
 
-	create table param6_2 as
-		select *
-		from param
+    create table param6_2 as
+        select *
+        from param
         where i=6
-		;
+        ;
 quit;
 
 data CI6;
-	merge param6_2 min max;
+    merge param6_2 min max;
     Method = "6. Binomial-based, Mid-p";
-	
-	if r=0 then do;
-		p_CI_low=0;
-		p_CI_up = 1-alpha**(1/n);
-	end;
+    
+    if r=0 then do;
+        p_CI_low=0;
+        p_CI_up = 1-alpha**(1/n);
+    end;
 
-	if r=n then do;
-		p_CI_low=alpha**(1/n);
-		p_CI_up = 1;
-	end;
+    if r=n then do;
+        p_CI_low=alpha**(1/n);
+        p_CI_up = 1;
+    end;
 run;
 
 /*method 7;*/
 data param7;
     set param(where=(i=7));
 
-	k=-cinv(1-alpha,1)/2;
+    k=-cinv(1-alpha,1)/2;
 
-	do j=0.000001 to 0.999999 by 0.00001;
-		lik=pdf('Binomial',r,j,n);		 
-		output;
-	end;
+    do j=0.000001 to 0.999999 by 0.00001;
+        lik=pdf('Binomial',r,j,n);       
+        output;
+    end;
 run;
 
-proc sql;	
-	create table max as
-		select i,max(lik) as max
-		from param7
-	;
+proc sql;   
+    create table max as
+        select i,max(lik) as max
+        from param7
+    ;
 quit;
 
 data test1;
-	merge param7 max;
+    merge param7 max;
     by i;
 
-	if lik ^= 0 then
-	logLR = log(lik/max);
+    if lik ^= 0 then
+    logLR = log(lik/max);
 run;
 
 proc sql;
-	create table max2 as
-		select min(j) as p_CI_low,max(j) as p_CI_up
-		from test1		
-		where logLR>k
-		;
+    create table max2 as
+        select min(j) as p_CI_low,max(j) as p_CI_up
+        from test1      
+        where logLR>k
+        ;
 
-	create table param7_2 as
-		select distinct *
-		from param
+    create table param7_2 as
+        select distinct *
+        from param
         where i=7
-		;
+        ;
 quit;
 
 data CI7;
-	merge param7_2 max2;
+    merge param7_2 max2;
     Method = "7. Likelihood-based";
-	
-	if r=0 then p_CI_low=0;
-	if r=n then p_CI_up =1;
+    
+    if r=0 then p_CI_low=0;
+    if r=n then p_CI_up =1;
 run;
 
 /*put together,1-12;*/
@@ -338,40 +351,40 @@ datalines;
 ;
 
 proc freq data=test;
-	tables outcome / binomial;
-	weight Count;
+    tables outcome / binomial;
+    weight Count;
 run;
 
 ods select BinomialCLs;
 proc freq data=test;
-	tables outcome / binomial (CL=ALL);
-	weight Count;
+    tables outcome / binomial (CL=ALL);
+    weight Count;
 run;
 
 
 
 ods select BinomialCLs;
 proc freq data=test;
-	tables outcome / binomial (CL=
-							   WALD
-							   WILSON
-							   CLOPPERPEARSON
-							   MIDP
-							   LIKELIHOODRATIO
-							   JEFFREYS
-							   AGRESTICOULL
-							   LOGIT
-							   BLAKER  
-							  );
-	weight Count;
+    tables outcome / binomial (CL=
+                               WALD
+                               WILSON
+                               CLOPPERPEARSON
+                               MIDP
+                               LIKELIHOODRATIO
+                               JEFFREYS
+                               AGRESTICOULL
+                               LOGIT
+                               BLAKER  
+                              );
+    weight Count;
 run;
 
 ods select BinomialCLs; 
 proc freq data=test; 
     tables outcome / binomial (CL = 
-							  WILSON(CORRECT) 
-							  WALD(CORRECT)
-							  ); 
+                              WILSON(CORRECT) 
+                              WALD(CORRECT)
+                              ); 
     weight Count; 
 run;
 
