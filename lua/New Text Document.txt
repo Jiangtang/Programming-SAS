@@ -1,0 +1,36 @@
+
+proc lua;
+submit;
+   local dsid = sas.open( "work.test", "o" )
+   sas.add_vars( dsid, {{name="VAR1", type="N"},
+                                    {name="VAR2", type="C", length="20"}} )
+   sas.close( dsid )
+endsubmit;
+run;
+
+proc lua;
+submit;
+   local dsid = sas.open("work.test","u")
+   sas.append(dsid)
+   sas.put_value(dsid, "VAR1", "1")
+   sas.put_value(dsid, "VAR2", "aaa")
+   sas.update(dsid)
+   sas.close(dsid)
+endsubmit;
+run;
+
+
+proc lua;
+submit;
+   local dsid = sas.open("work.test","u")
+   sas.add_vars(dsid, {{name="VAR3", type="N"}})
+   sas.close(dsid)
+endsubmit;
+run;
+
+
+proc lua;
+submit;
+   sas.submit([[ data TEST; set TEST; length VAR3 8.; run; ]])
+endsubmit;
+run;
