@@ -10,6 +10,7 @@
     select memname into :ds1 - :ds&numds
     from dictionary.tables
     where libname="&librf";
+  quit;
 
   %do i=1 %to &numds;
 

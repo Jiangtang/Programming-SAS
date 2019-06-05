@@ -20,7 +20,9 @@ options mautosource sasautos=(sasautos,
 	"C:\Users\jhu\Documents\GitHub\Programming-SAS\SAS_IDE\sasauto",
 	"C:\Users\jhu\Documents\GitHub\Programming-SAS\roland\utilmacros",
 	"C:\Users\jhu\Documents\GitHub\SAS_ListProcessing",
-	"C:\Users\jhu\Documents\GitHub\Programming-SAS\utilities"
+	"C:\Users\jhu\Documents\GitHub\Programming-SAS\utilities",
+	"C:\Users\jhu\Documents\GitHub\Programming-SAS\SAS_IDE\sasauto"
+
 ); 
 
 proc options option=config value; run;

@@ -29,12 +29,7 @@ run;
 
 ods select all;
 
-title color=red "Source: Error (Within Group Variation; Error Sum of Squares: SSE)";
-title3 HEIGHT=2 "The MEANS Procedure";
-proc print data=__Summary2;
-    var &group Nobs &var._Mean &var._CSS;
-    sum &var._CSS;
-run;
+
 
 title color=red "Source: Model (Between Group Variation; Model Sum of Squares: SSM)";
 proc means data=__summary2 mean css;
@@ -42,6 +37,14 @@ proc means data=__summary2 mean css;
     weight nobs;
 run;
 title;
+
+
+title color=red "Source: Error (Within Group Variation; Error Sum of Squares: SSE)";
+title3 HEIGHT=2 "The MEANS Procedure";
+proc print data=__Summary2;
+    var &group Nobs &var._Mean &var._CSS;
+    sum &var._CSS;
+run;
 
 proc delete data=__summary2;
 run;
