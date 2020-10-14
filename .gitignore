@@ -1,10 +1,4 @@
-SAS_IDE/SAS94_WIN/logcheck.sas7bcat
-SAS_IDE/SAS94_WIN/profile.sas7bcat
-SAS_IDE/SAS94_WIN/templat.sas7bitm
-SAS_IDE/SAS94_WIN/profile.sas7bcat
-SAS_IDE/SAS94_WIN/logcheck.sas7bcat
-SAS_IDE/SAS94_WIN/profile2.sas7bcat
-SAS_IDE/SAS94_WIN/logcheck.sas7bcat
-SAS_IDE/SAS94_WIN/logcheck.sas7bcat
+SAS_IDE/SAS94_WIN/*.sas7bcat
+SAS_IDE/SAS94_WIN/*.sas7bitm
 *.sas7bcat
 *.sas7bitm
